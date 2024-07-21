@@ -1,7 +1,7 @@
 <script>
   import { onMount } from "svelte";
 
-  let url = "https://localhost:7054/WeatherForecast";
+  let url = "https://localhost:7210/WeatherForecast";
   let test = [];
 
   onMount(async () => {
