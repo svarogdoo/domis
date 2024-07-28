@@ -19,5 +19,8 @@
 		"typescript": "^5.0.0",
 		"vite": "^5.3.4"
 	},
-	"type": "module"
+	"type": "module",
+	"dependencies": {
+		"@fontsource/fira-mono": "^5.0.13"
+	}
 }
