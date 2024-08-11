@@ -10,10 +10,8 @@ public static class SeedData
         var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
         var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
 
-        // Seed roles
         await SeedRolesAsync(roleManager);
 
-        // Seed admin user
         await SeedAdminUserAsync(userManager, roleManager);
     }
 

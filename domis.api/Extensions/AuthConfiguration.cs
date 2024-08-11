@@ -12,7 +12,7 @@ public static class AuthConfiguration
         services.AddIdentityCore<User>()
                 .AddRoles<IdentityRole>()
                 .AddUserManager<CustomUserManager<User>>()
-                //.AddRoleManager<RoleManager<IdentityRole>>()
+                .AddRoleManager<RoleManager<IdentityRole>>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddApiEndpoints();
 
@@ -31,8 +31,6 @@ public static class AuthConfiguration
                 .AddBearerToken(IdentityConstants.BearerScheme);
 
         services.AddAuthorization();
-
-        //services.AddScoped<UserManager<User>, CustomUserManager<User>>();
 
         services.AddSwaggerGen(c =>
         {
@@ -61,17 +59,4 @@ public static class AuthConfiguration
             });
         });
     }
-
-    //public static async Task SeedRolesAsync(IServiceProvider serviceProvider)
-    //{
-    //    var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-
-    //    var roles = Enum.GetValues(typeof(Roles)).Cast<Roles>().Select(r => r.GetRoleName()).ToArray();
-
-    //    foreach (var role in roles)
-    //    {
-    //        if (!await roleManager.RoleExistsAsync(role))
-    //            await roleManager.CreateAsync(new IdentityRole(role));
-    //    }
-    //}
 }
