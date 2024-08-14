@@ -1,0 +1,758 @@
+2024-08-14 20:14:36.480 +02:00 [DBG] An 'IServiceProvider' was created for internal use by Entity Framework.
+2024-08-14 20:14:36.772 +02:00 [DBG] The index {'UserId'} was not created on entity type 'IdentityUserRole<string>' as the properties are already covered by the index {'UserId', 'RoleId'}.
+2024-08-14 20:14:36.774 +02:00 [DBG] The index {'UserId'} was not created on entity type 'IdentityUserToken<string>' as the properties are already covered by the index {'UserId', 'LoginProvider', 'Name'}.
+2024-08-14 20:14:36.906 +02:00 [DBG] Entity Framework Core 8.0.7 initialized 'ApplicationDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:8.0.4+51faf6e9c9c7ef99c3e98d98a96adb8fa8ae4553' with options: None
+2024-08-14 20:14:36.918 +02:00 [DBG] Creating DbConnection.
+2024-08-14 20:14:36.949 +02:00 [DBG] Created DbConnection. (30ms).
+2024-08-14 20:14:36.955 +02:00 [DBG] Opening connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.047 +02:00 [DBG] Opened connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.050 +02:00 [DBG] Closing connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.057 +02:00 [DBG] Closed connection to database 'domisDb' on server 'tcp://localhost:5432' (4ms).
+2024-08-14 20:14:37.063 +02:00 [DBG] Creating DbCommand for 'ExecuteScalar'.
+2024-08-14 20:14:37.080 +02:00 [DBG] Created DbCommand for 'ExecuteScalar' (11ms).
+2024-08-14 20:14:37.083 +02:00 [DBG] Initialized DbCommand for 'ExecuteScalar' (21ms).
+2024-08-14 20:14:37.085 +02:00 [DBG] Opening connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.126 +02:00 [DBG] Opened connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.137 +02:00 [DBG] Executing DbCommand [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2024-08-14 20:14:37.180 +02:00 [INF] Executed DbCommand (43ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2024-08-14 20:14:37.182 +02:00 [DBG] Closing connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.186 +02:00 [DBG] Closed connection to database 'domisDb' on server 'tcp://localhost:5432' (3ms).
+2024-08-14 20:14:37.194 +02:00 [DBG] Opening connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.196 +02:00 [DBG] Opened connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.198 +02:00 [DBG] Creating DbCommand for 'ExecuteReader'.
+2024-08-14 20:14:37.199 +02:00 [DBG] Created DbCommand for 'ExecuteReader' (0ms).
+2024-08-14 20:14:37.200 +02:00 [DBG] Initialized DbCommand for 'ExecuteReader' (2ms).
+2024-08-14 20:14:37.202 +02:00 [DBG] Executing DbCommand [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2024-08-14 20:14:37.207 +02:00 [INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2024-08-14 20:14:37.213 +02:00 [DBG] Closing data reader to 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.216 +02:00 [DBG] A data reader for 'domisDb' on server 'tcp://localhost:5432' is being disposed after spending 6ms reading results.
+2024-08-14 20:14:37.219 +02:00 [DBG] Closing connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.220 +02:00 [DBG] Closed connection to database 'domisDb' on server 'tcp://localhost:5432' (1ms).
+2024-08-14 20:14:37.223 +02:00 [DBG] Migrating using database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.224 +02:00 [DBG] Opening connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.252 +02:00 [DBG] Opened connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.253 +02:00 [DBG] Closing connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.255 +02:00 [DBG] Closed connection to database 'domisDb' on server 'tcp://localhost:5432' (1ms).
+2024-08-14 20:14:37.258 +02:00 [DBG] Creating DbCommand for 'ExecuteScalar'.
+2024-08-14 20:14:37.259 +02:00 [DBG] Created DbCommand for 'ExecuteScalar' (1ms).
+2024-08-14 20:14:37.261 +02:00 [DBG] Initialized DbCommand for 'ExecuteScalar' (3ms).
+2024-08-14 20:14:37.265 +02:00 [DBG] Opening connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.267 +02:00 [DBG] Opened connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.268 +02:00 [DBG] Executing DbCommand [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2024-08-14 20:14:37.272 +02:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2024-08-14 20:14:37.274 +02:00 [DBG] Closing connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.275 +02:00 [DBG] Closed connection to database 'domisDb' on server 'tcp://localhost:5432' (1ms).
+2024-08-14 20:14:37.276 +02:00 [DBG] Opening connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.304 +02:00 [DBG] Opened connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.306 +02:00 [DBG] Closing connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.308 +02:00 [DBG] Closed connection to database 'domisDb' on server 'tcp://localhost:5432' (1ms).
+2024-08-14 20:14:37.310 +02:00 [DBG] Creating DbCommand for 'ExecuteScalar'.
+2024-08-14 20:14:37.311 +02:00 [DBG] Created DbCommand for 'ExecuteScalar' (1ms).
+2024-08-14 20:14:37.313 +02:00 [DBG] Initialized DbCommand for 'ExecuteScalar' (3ms).
+2024-08-14 20:14:37.315 +02:00 [DBG] Opening connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.317 +02:00 [DBG] Opened connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.319 +02:00 [DBG] Executing DbCommand [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2024-08-14 20:14:37.323 +02:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2024-08-14 20:14:37.326 +02:00 [DBG] Closing connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.328 +02:00 [DBG] Closed connection to database 'domisDb' on server 'tcp://localhost:5432' (2ms).
+2024-08-14 20:14:37.330 +02:00 [DBG] Opening connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.331 +02:00 [DBG] Opened connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.332 +02:00 [DBG] Creating DbCommand for 'ExecuteReader'.
+2024-08-14 20:14:37.333 +02:00 [DBG] Created DbCommand for 'ExecuteReader' (0ms).
+2024-08-14 20:14:37.334 +02:00 [DBG] Initialized DbCommand for 'ExecuteReader' (1ms).
+2024-08-14 20:14:37.335 +02:00 [DBG] Executing DbCommand [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2024-08-14 20:14:37.338 +02:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2024-08-14 20:14:37.341 +02:00 [DBG] Closing data reader to 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.343 +02:00 [DBG] A data reader for 'domisDb' on server 'tcp://localhost:5432' is being disposed after spending 1ms reading results.
+2024-08-14 20:14:37.347 +02:00 [DBG] Closing connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.348 +02:00 [DBG] Closed connection to database 'domisDb' on server 'tcp://localhost:5432' (1ms).
+2024-08-14 20:14:37.357 +02:00 [INF] No migrations were applied. The database is already up to date.
+2024-08-14 20:14:37.359 +02:00 [DBG] 'ApplicationDbContext' disposed.
+2024-08-14 20:14:37.361 +02:00 [DBG] Disposing connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.364 +02:00 [DBG] Disposed connection to database 'domisDb' on server 'tcp://localhost:5432' (2ms).
+2024-08-14 20:14:37.395 +02:00 [INF] User profile is available. Using 'C:\Users\lukar\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2024-08-14 20:14:37.407 +02:00 [DBG] Entity Framework Core 8.0.7 initialized 'ApplicationDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:8.0.4+51faf6e9c9c7ef99c3e98d98a96adb8fa8ae4553' with options: None
+2024-08-14 20:14:37.440 +02:00 [DBG] Compiling query expression: 
+'DbSet<IdentityRole>()
+    .FirstOrDefault(r => r.NormalizedName == __normalizedName_0)'
+2024-08-14 20:14:37.538 +02:00 [DBG] Generated query execution expression: 
+'queryContext => ShapedQueryCompilingExpressionVisitor.SingleOrDefaultAsync<IdentityRole>(
+    asyncEnumerable: new SingleQueryingEnumerable<IdentityRole>(
+        (RelationalQueryContext)queryContext, 
+        RelationalCommandCache.QueryExpression(
+            Projection Mapping:
+                EmptyProjectionMember -> Dictionary<IProperty, int> { [Property: IdentityRole.Id (string) Required PK AfterSave:Throw, 0], [Property: IdentityRole.ConcurrencyStamp (string) Concurrency, 1], [Property: IdentityRole.Name (string) MaxLength(256), 2], [Property: IdentityRole.NormalizedName (string) Index MaxLength(256), 3] }
+            SELECT TOP(1) a.Id, a.ConcurrencyStamp, a.Name, a.NormalizedName
+            FROM identity.AspNetRoles AS a
+            WHERE a.NormalizedName == @__normalizedName_0), 
+        null, 
+        Func<QueryContext, DbDataReader, ResultContext, SingleQueryResultCoordinator, IdentityRole>, 
+        domis.api.Database.ApplicationDbContext, 
+        False, 
+        False, 
+        True
+    ), 
+    cancellationToken: queryContext.CancellationToken)'
+2024-08-14 20:14:37.558 +02:00 [DBG] Creating DbConnection.
+2024-08-14 20:14:37.560 +02:00 [DBG] Created DbConnection. (1ms).
+2024-08-14 20:14:37.564 +02:00 [DBG] Opening connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.567 +02:00 [DBG] Opened connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.568 +02:00 [DBG] Creating DbCommand for 'ExecuteReader'.
+2024-08-14 20:14:37.569 +02:00 [DBG] Created DbCommand for 'ExecuteReader' (1ms).
+2024-08-14 20:14:37.573 +02:00 [DBG] Initialized DbCommand for 'ExecuteReader' (5ms).
+2024-08-14 20:14:37.576 +02:00 [DBG] Executing DbCommand [Parameters=[@__normalizedName_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ConcurrencyStamp", a."Name", a."NormalizedName"
+FROM identity."AspNetRoles" AS a
+WHERE a."NormalizedName" = @__normalizedName_0
+LIMIT 1
+2024-08-14 20:14:37.591 +02:00 [INF] Executed DbCommand (16ms) [Parameters=[@__normalizedName_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ConcurrencyStamp", a."Name", a."NormalizedName"
+FROM identity."AspNetRoles" AS a
+WHERE a."NormalizedName" = @__normalizedName_0
+LIMIT 1
+2024-08-14 20:14:37.612 +02:00 [DBG] Context 'ApplicationDbContext' started tracking 'IdentityRole' entity. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2024-08-14 20:14:37.624 +02:00 [DBG] Closing data reader to 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.627 +02:00 [DBG] A data reader for 'domisDb' on server 'tcp://localhost:5432' is being disposed after spending 34ms reading results.
+2024-08-14 20:14:37.630 +02:00 [DBG] Closing connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.632 +02:00 [DBG] Closed connection to database 'domisDb' on server 'tcp://localhost:5432' (1ms).
+2024-08-14 20:14:37.635 +02:00 [DBG] Opening connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.636 +02:00 [DBG] Opened connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.638 +02:00 [DBG] Creating DbCommand for 'ExecuteReader'.
+2024-08-14 20:14:37.639 +02:00 [DBG] Created DbCommand for 'ExecuteReader' (1ms).
+2024-08-14 20:14:37.640 +02:00 [DBG] Initialized DbCommand for 'ExecuteReader' (2ms).
+2024-08-14 20:14:37.642 +02:00 [DBG] Executing DbCommand [Parameters=[@__normalizedName_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ConcurrencyStamp", a."Name", a."NormalizedName"
+FROM identity."AspNetRoles" AS a
+WHERE a."NormalizedName" = @__normalizedName_0
+LIMIT 1
+2024-08-14 20:14:37.646 +02:00 [INF] Executed DbCommand (4ms) [Parameters=[@__normalizedName_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ConcurrencyStamp", a."Name", a."NormalizedName"
+FROM identity."AspNetRoles" AS a
+WHERE a."NormalizedName" = @__normalizedName_0
+LIMIT 1
+2024-08-14 20:14:37.649 +02:00 [DBG] Context 'ApplicationDbContext' started tracking 'IdentityRole' entity. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2024-08-14 20:14:37.651 +02:00 [DBG] Closing data reader to 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.652 +02:00 [DBG] A data reader for 'domisDb' on server 'tcp://localhost:5432' is being disposed after spending 3ms reading results.
+2024-08-14 20:14:37.654 +02:00 [DBG] Closing connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.655 +02:00 [DBG] Closed connection to database 'domisDb' on server 'tcp://localhost:5432' (1ms).
+2024-08-14 20:14:37.657 +02:00 [DBG] Opening connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.658 +02:00 [DBG] Opened connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.660 +02:00 [DBG] Creating DbCommand for 'ExecuteReader'.
+2024-08-14 20:14:37.661 +02:00 [DBG] Created DbCommand for 'ExecuteReader' (1ms).
+2024-08-14 20:14:37.663 +02:00 [DBG] Initialized DbCommand for 'ExecuteReader' (2ms).
+2024-08-14 20:14:37.664 +02:00 [DBG] Executing DbCommand [Parameters=[@__normalizedName_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ConcurrencyStamp", a."Name", a."NormalizedName"
+FROM identity."AspNetRoles" AS a
+WHERE a."NormalizedName" = @__normalizedName_0
+LIMIT 1
+2024-08-14 20:14:37.669 +02:00 [INF] Executed DbCommand (4ms) [Parameters=[@__normalizedName_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ConcurrencyStamp", a."Name", a."NormalizedName"
+FROM identity."AspNetRoles" AS a
+WHERE a."NormalizedName" = @__normalizedName_0
+LIMIT 1
+2024-08-14 20:14:37.671 +02:00 [DBG] Context 'ApplicationDbContext' started tracking 'IdentityRole' entity. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2024-08-14 20:14:37.672 +02:00 [DBG] Closing data reader to 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.673 +02:00 [DBG] A data reader for 'domisDb' on server 'tcp://localhost:5432' is being disposed after spending 2ms reading results.
+2024-08-14 20:14:37.675 +02:00 [DBG] Closing connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.676 +02:00 [DBG] Closed connection to database 'domisDb' on server 'tcp://localhost:5432' (1ms).
+2024-08-14 20:14:37.679 +02:00 [DBG] Opening connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.681 +02:00 [DBG] Opened connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.683 +02:00 [DBG] Creating DbCommand for 'ExecuteReader'.
+2024-08-14 20:14:37.684 +02:00 [DBG] Created DbCommand for 'ExecuteReader' (1ms).
+2024-08-14 20:14:37.686 +02:00 [DBG] Initialized DbCommand for 'ExecuteReader' (3ms).
+2024-08-14 20:14:37.688 +02:00 [DBG] Executing DbCommand [Parameters=[@__normalizedName_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ConcurrencyStamp", a."Name", a."NormalizedName"
+FROM identity."AspNetRoles" AS a
+WHERE a."NormalizedName" = @__normalizedName_0
+LIMIT 1
+2024-08-14 20:14:37.691 +02:00 [INF] Executed DbCommand (4ms) [Parameters=[@__normalizedName_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ConcurrencyStamp", a."Name", a."NormalizedName"
+FROM identity."AspNetRoles" AS a
+WHERE a."NormalizedName" = @__normalizedName_0
+LIMIT 1
+2024-08-14 20:14:37.693 +02:00 [DBG] Context 'ApplicationDbContext' started tracking 'IdentityRole' entity. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2024-08-14 20:14:37.695 +02:00 [DBG] Closing data reader to 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.696 +02:00 [DBG] A data reader for 'domisDb' on server 'tcp://localhost:5432' is being disposed after spending 2ms reading results.
+2024-08-14 20:14:37.698 +02:00 [DBG] Closing connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.699 +02:00 [DBG] Closed connection to database 'domisDb' on server 'tcp://localhost:5432' (1ms).
+2024-08-14 20:14:37.701 +02:00 [DBG] Opening connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.702 +02:00 [DBG] Opened connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.704 +02:00 [DBG] Creating DbCommand for 'ExecuteReader'.
+2024-08-14 20:14:37.705 +02:00 [DBG] Created DbCommand for 'ExecuteReader' (1ms).
+2024-08-14 20:14:37.707 +02:00 [DBG] Initialized DbCommand for 'ExecuteReader' (3ms).
+2024-08-14 20:14:37.709 +02:00 [DBG] Executing DbCommand [Parameters=[@__normalizedName_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ConcurrencyStamp", a."Name", a."NormalizedName"
+FROM identity."AspNetRoles" AS a
+WHERE a."NormalizedName" = @__normalizedName_0
+LIMIT 1
+2024-08-14 20:14:37.713 +02:00 [INF] Executed DbCommand (4ms) [Parameters=[@__normalizedName_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ConcurrencyStamp", a."Name", a."NormalizedName"
+FROM identity."AspNetRoles" AS a
+WHERE a."NormalizedName" = @__normalizedName_0
+LIMIT 1
+2024-08-14 20:14:37.716 +02:00 [DBG] Context 'ApplicationDbContext' started tracking 'IdentityRole' entity. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2024-08-14 20:14:37.718 +02:00 [DBG] Closing data reader to 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.719 +02:00 [DBG] A data reader for 'domisDb' on server 'tcp://localhost:5432' is being disposed after spending 3ms reading results.
+2024-08-14 20:14:37.721 +02:00 [DBG] Closing connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.723 +02:00 [DBG] Closed connection to database 'domisDb' on server 'tcp://localhost:5432' (1ms).
+2024-08-14 20:14:37.725 +02:00 [DBG] Opening connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.727 +02:00 [DBG] Opened connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.729 +02:00 [DBG] Creating DbCommand for 'ExecuteReader'.
+2024-08-14 20:14:37.730 +02:00 [DBG] Created DbCommand for 'ExecuteReader' (1ms).
+2024-08-14 20:14:37.732 +02:00 [DBG] Initialized DbCommand for 'ExecuteReader' (3ms).
+2024-08-14 20:14:37.733 +02:00 [DBG] Executing DbCommand [Parameters=[@__normalizedName_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ConcurrencyStamp", a."Name", a."NormalizedName"
+FROM identity."AspNetRoles" AS a
+WHERE a."NormalizedName" = @__normalizedName_0
+LIMIT 1
+2024-08-14 20:14:37.738 +02:00 [INF] Executed DbCommand (5ms) [Parameters=[@__normalizedName_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ConcurrencyStamp", a."Name", a."NormalizedName"
+FROM identity."AspNetRoles" AS a
+WHERE a."NormalizedName" = @__normalizedName_0
+LIMIT 1
+2024-08-14 20:14:37.742 +02:00 [DBG] Context 'ApplicationDbContext' started tracking 'IdentityRole' entity. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2024-08-14 20:14:37.744 +02:00 [DBG] Closing data reader to 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.745 +02:00 [DBG] A data reader for 'domisDb' on server 'tcp://localhost:5432' is being disposed after spending 3ms reading results.
+2024-08-14 20:14:37.748 +02:00 [DBG] Closing connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.749 +02:00 [DBG] Closed connection to database 'domisDb' on server 'tcp://localhost:5432' (1ms).
+2024-08-14 20:14:37.755 +02:00 [DBG] Compiling query expression: 
+'DbSet<User>()
+    .SingleOrDefault(u => u.NormalizedEmail == __normalizedEmail_0)'
+2024-08-14 20:14:37.761 +02:00 [DBG] Generated query execution expression: 
+'queryContext => ShapedQueryCompilingExpressionVisitor.SingleOrDefaultAsync<User>(
+    asyncEnumerable: new SingleQueryingEnumerable<User>(
+        (RelationalQueryContext)queryContext, 
+        RelationalCommandCache.QueryExpression(
+            Projection Mapping:
+                EmptyProjectionMember -> Dictionary<IProperty, int> { [Property: User.Id (string) Required PK AfterSave:Throw, 0], [Property: User.AccessFailedCount (int) Required, 1], [Property: User.AddressLine (string), 2], [Property: User.City (string), 3], [Property: User.ConcurrencyStamp (string) Concurrency, 4], [Property: User.Country (string), 5], [Property: User.Email (string) MaxLength(256), 6], [Property: User.EmailConfirmed (bool) Required, 7], [Property: User.FirstName (string) MaxLength(20), 8], [Property: User.LastName (string), 9], [Property: User.LockoutEnabled (bool) Required, 10], [Property: User.LockoutEnd (DateTimeOffset?), 11], [Property: User.NormalizedEmail (string) Index MaxLength(256), 12], [Property: User.NormalizedUserName (string) Index MaxLength(256), 13], [Property: User.PasswordHash (string), 14], [Property: User.PhoneNumber (string), 15], [Property: User.PhoneNumberConfirmed (bool) Required, 16], [Property: User.SecurityStamp (string), 17], [Property: User.TwoFactorEnabled (bool) Required, 18], [Property: User.UserName (string) MaxLength(256), 19], [Property: User.ZipCode (string), 20] }
+            SELECT TOP(2) a.Id, a.AccessFailedCount, a.AddressLine, a.City, a.ConcurrencyStamp, a.Country, a.Email, a.EmailConfirmed, a.FirstName, a.LastName, a.LockoutEnabled, a.LockoutEnd, a.NormalizedEmail, a.NormalizedUserName, a.PasswordHash, a.PhoneNumber, a.PhoneNumberConfirmed, a.SecurityStamp, a.TwoFactorEnabled, a.UserName, a.ZipCode
+            FROM identity.AspNetUsers AS a
+            WHERE a.NormalizedEmail == @__normalizedEmail_0), 
+        null, 
+        Func<QueryContext, DbDataReader, ResultContext, SingleQueryResultCoordinator, User>, 
+        domis.api.Database.ApplicationDbContext, 
+        False, 
+        False, 
+        True
+    ), 
+    cancellationToken: queryContext.CancellationToken)'
+2024-08-14 20:14:37.765 +02:00 [DBG] Opening connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.766 +02:00 [DBG] Opened connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.767 +02:00 [DBG] Creating DbCommand for 'ExecuteReader'.
+2024-08-14 20:14:37.768 +02:00 [DBG] Created DbCommand for 'ExecuteReader' (1ms).
+2024-08-14 20:14:37.770 +02:00 [DBG] Initialized DbCommand for 'ExecuteReader' (2ms).
+2024-08-14 20:14:37.771 +02:00 [DBG] Executing DbCommand [Parameters=[@__normalizedEmail_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."AccessFailedCount", a."AddressLine", a."City", a."ConcurrencyStamp", a."Country", a."Email", a."EmailConfirmed", a."FirstName", a."LastName", a."LockoutEnabled", a."LockoutEnd", a."NormalizedEmail", a."NormalizedUserName", a."PasswordHash", a."PhoneNumber", a."PhoneNumberConfirmed", a."SecurityStamp", a."TwoFactorEnabled", a."UserName", a."ZipCode"
+FROM identity."AspNetUsers" AS a
+WHERE a."NormalizedEmail" = @__normalizedEmail_0
+LIMIT 2
+2024-08-14 20:14:37.776 +02:00 [INF] Executed DbCommand (5ms) [Parameters=[@__normalizedEmail_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."AccessFailedCount", a."AddressLine", a."City", a."ConcurrencyStamp", a."Country", a."Email", a."EmailConfirmed", a."FirstName", a."LastName", a."LockoutEnabled", a."LockoutEnd", a."NormalizedEmail", a."NormalizedUserName", a."PasswordHash", a."PhoneNumber", a."PhoneNumberConfirmed", a."SecurityStamp", a."TwoFactorEnabled", a."UserName", a."ZipCode"
+FROM identity."AspNetUsers" AS a
+WHERE a."NormalizedEmail" = @__normalizedEmail_0
+LIMIT 2
+2024-08-14 20:14:37.785 +02:00 [DBG] Context 'ApplicationDbContext' started tracking 'User' entity. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2024-08-14 20:14:37.804 +02:00 [DBG] Closing data reader to 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.805 +02:00 [DBG] A data reader for 'domisDb' on server 'tcp://localhost:5432' is being disposed after spending 26ms reading results.
+2024-08-14 20:14:37.807 +02:00 [DBG] Closing connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.808 +02:00 [DBG] Closed connection to database 'domisDb' on server 'tcp://localhost:5432' (1ms).
+2024-08-14 20:14:37.810 +02:00 [DBG] 'ApplicationDbContext' disposed.
+2024-08-14 20:14:37.811 +02:00 [DBG] Disposing connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:14:37.813 +02:00 [DBG] Disposed connection to database 'domisDb' on server 'tcp://localhost:5432' (1ms).
+2024-08-14 20:14:37.845 +02:00 [DBG] Registered model binder providers, in the following order: ["Microsoft.AspNetCore.Mvc.ModelBinding.Binders.BinderTypeModelBinderProvider","Microsoft.AspNetCore.Mvc.ModelBinding.Binders.ServicesModelBinderProvider","Microsoft.AspNetCore.Mvc.ModelBinding.Binders.BodyModelBinderProvider","Microsoft.AspNetCore.Mvc.ModelBinding.Binders.HeaderModelBinderProvider","Microsoft.AspNetCore.Mvc.ModelBinding.Binders.FloatingPointTypeModelBinderProvider","Microsoft.AspNetCore.Mvc.ModelBinding.Binders.EnumTypeModelBinderProvider","Microsoft.AspNetCore.Mvc.ModelBinding.Binders.DateTimeModelBinderProvider","Microsoft.AspNetCore.Mvc.ModelBinding.Binders.SimpleTypeModelBinderProvider","Microsoft.AspNetCore.Mvc.ModelBinding.Binders.TryParseModelBinderProvider","Microsoft.AspNetCore.Mvc.ModelBinding.Binders.CancellationTokenModelBinderProvider"]
+2024-08-14 20:14:37.890 +02:00 [DBG] Hosting starting
+2024-08-14 20:14:37.895 +02:00 [DBG] Reading data from file 'C:\Users\lukar\AppData\Local\ASP.NET\DataProtection-Keys\key-feaf63dc-37f6-4c2a-a56a-4dd43552849f.xml'.
+2024-08-14 20:14:37.905 +02:00 [DBG] Found key {feaf63dc-37f6-4c2a-a56a-4dd43552849f}.
+2024-08-14 20:14:37.913 +02:00 [DBG] Considering key {feaf63dc-37f6-4c2a-a56a-4dd43552849f} with expiration date 2024-11-09 09:16:15Z as default key.
+2024-08-14 20:14:37.916 +02:00 [DBG] Forwarded activator type request from Microsoft.AspNetCore.DataProtection.XmlEncryption.DpapiXmlDecryptor, Microsoft.AspNetCore.DataProtection, Version=8.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60 to Microsoft.AspNetCore.DataProtection.XmlEncryption.DpapiXmlDecryptor, Microsoft.AspNetCore.DataProtection, Culture=neutral, PublicKeyToken=adb9793829ddae60
+2024-08-14 20:14:37.918 +02:00 [DBG] Decrypting secret element using Windows DPAPI.
+2024-08-14 20:14:37.920 +02:00 [DBG] Forwarded activator type request from Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel.AuthenticatedEncryptorDescriptorDeserializer, Microsoft.AspNetCore.DataProtection, Version=8.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60 to Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel.AuthenticatedEncryptorDescriptorDeserializer, Microsoft.AspNetCore.DataProtection, Culture=neutral, PublicKeyToken=adb9793829ddae60
+2024-08-14 20:14:37.923 +02:00 [DBG] Opening CNG algorithm 'AES' from provider 'null' with chaining mode CBC.
+2024-08-14 20:14:37.926 +02:00 [DBG] Opening CNG algorithm 'SHA256' from provider 'null' with HMAC.
+2024-08-14 20:14:37.928 +02:00 [DBG] Using key {feaf63dc-37f6-4c2a-a56a-4dd43552849f} as the default key.
+2024-08-14 20:14:37.930 +02:00 [DBG] Key ring with default key {feaf63dc-37f6-4c2a-a56a-4dd43552849f} was loaded during application startup.
+2024-08-14 20:14:38.046 +02:00 [INF] Now listening on: https://localhost:7210
+2024-08-14 20:14:38.047 +02:00 [INF] Now listening on: http://localhost:5051
+2024-08-14 20:14:38.048 +02:00 [DBG] Loaded hosting startup assembly domis.api
+2024-08-14 20:14:38.048 +02:00 [DBG] Loaded hosting startup assembly Microsoft.AspNetCore.Watch.BrowserRefresh
+2024-08-14 20:14:38.049 +02:00 [DBG] Loaded hosting startup assembly Microsoft.WebTools.BrowserLink.Net
+2024-08-14 20:14:38.050 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2024-08-14 20:14:38.050 +02:00 [INF] Hosting environment: Development
+2024-08-14 20:14:38.051 +02:00 [INF] Content root path: C:\_per\ahead\domis\domis.api
+2024-08-14 20:14:38.053 +02:00 [DBG] Hosting started
+2024-08-14 20:14:38.452 +02:00 [DBG] Connection id "0HN5SHJQS9AUC" accepted.
+2024-08-14 20:14:38.454 +02:00 [DBG] Connection id "0HN5SHJQS9AUC" started.
+2024-08-14 20:14:38.462 +02:00 [DBG] Connection id "0HN5SHJQS9AUD" accepted.
+2024-08-14 20:14:38.464 +02:00 [DBG] Connection id "0HN5SHJQS9AUD" started.
+2024-08-14 20:14:38.485 +02:00 [DBG] Connection id "0HN5SHJQS9AUC" received FIN.
+2024-08-14 20:14:38.485 +02:00 [DBG] Connection id "0HN5SHJQS9AUD" received FIN.
+2024-08-14 20:14:38.492 +02:00 [DBG] Failed to authenticate HTTPS connection.
+System.IO.IOException: Received an unexpected EOF or 0 bytes from the transport stream.
+   at System.Net.Security.SslStream.ReceiveHandshakeFrameAsync[TIOAdapter](CancellationToken cancellationToken)
+   at System.Net.Security.SslStream.ForceAuthenticationAsync[TIOAdapter](Boolean receiveFirst, Byte[] reAuthenticationData, CancellationToken cancellationToken)
+   at System.Net.Security.SslStream.ProcessAuthenticationWithTelemetryAsync(Boolean isAsync, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Https.Internal.HttpsConnectionMiddleware.OnConnectionAsync(ConnectionContext context)
+2024-08-14 20:14:38.492 +02:00 [DBG] Failed to authenticate HTTPS connection.
+System.IO.IOException: Received an unexpected EOF or 0 bytes from the transport stream.
+   at System.Net.Security.SslStream.ReceiveHandshakeFrameAsync[TIOAdapter](CancellationToken cancellationToken)
+   at System.Net.Security.SslStream.ForceAuthenticationAsync[TIOAdapter](Boolean receiveFirst, Byte[] reAuthenticationData, CancellationToken cancellationToken)
+   at System.Net.Security.SslStream.ProcessAuthenticationWithTelemetryAsync(Boolean isAsync, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Https.Internal.HttpsConnectionMiddleware.OnConnectionAsync(ConnectionContext context)
+2024-08-14 20:14:38.508 +02:00 [DBG] Connection id "0HN5SHJQS9AUC" stopped.
+2024-08-14 20:14:38.509 +02:00 [DBG] Connection id "0HN5SHJQS9AUD" stopped.
+2024-08-14 20:14:38.511 +02:00 [DBG] Connection id "0HN5SHJQS9AUD" sending FIN because: "The Socket transport's send loop completed gracefully."
+2024-08-14 20:14:38.511 +02:00 [DBG] Connection id "0HN5SHJQS9AUC" sending FIN because: "The Socket transport's send loop completed gracefully."
+2024-08-14 20:14:38.770 +02:00 [DBG] Connection id "0HN5SHJQS9AUE" accepted.
+2024-08-14 20:14:38.773 +02:00 [DBG] Connection id "0HN5SHJQS9AUE" started.
+2024-08-14 20:14:38.796 +02:00 [DBG] Connection 0HN5SHJQS9AUE established using the following protocol: "Tls12"
+2024-08-14 20:14:38.827 +02:00 [INF] Request starting HTTP/2 GET https://localhost:7210/swagger/index.html - null null
+2024-08-14 20:14:38.886 +02:00 [DBG] Wildcard detected, all requests with hosts will be allowed.
+2024-08-14 20:14:38.901 +02:00 [DBG] No candidates found for the request path '/swagger/index.html'
+2024-08-14 20:14:38.903 +02:00 [DBG] Request did not match any endpoints
+2024-08-14 20:14:38.908 +02:00 [DBG] AuthenticationScheme: Identity.Bearer was not authenticated.
+2024-08-14 20:14:38.951 +02:00 [DBG] Response markup is scheduled to include Browser Link script injection.
+2024-08-14 20:14:38.953 +02:00 [DBG] Response markup is scheduled to include browser refresh script injection.
+2024-08-14 20:14:38.957 +02:00 [DBG] Response markup was updated to include Browser Link script injection.
+2024-08-14 20:14:38.960 +02:00 [DBG] Response markup was updated to include browser refresh script injection.
+2024-08-14 20:14:38.963 +02:00 [INF] Request finished HTTP/2 GET https://localhost:7210/swagger/index.html - 200 null text/html;charset=utf-8 138.7878ms
+2024-08-14 20:14:38.971 +02:00 [INF] Request starting HTTP/2 GET https://localhost:7210/swagger/index.js - null null
+2024-08-14 20:14:38.971 +02:00 [INF] Request starting HTTP/2 GET https://localhost:7210/_framework/aspnetcore-browser-refresh.js - null null
+2024-08-14 20:14:38.973 +02:00 [INF] Request starting HTTP/2 GET https://localhost:7210/_vs/browserLink - null null
+2024-08-14 20:14:38.975 +02:00 [DBG] No candidates found for the request path '/swagger/index.js'
+2024-08-14 20:14:38.981 +02:00 [DBG] Request did not match any endpoints
+2024-08-14 20:14:38.987 +02:00 [DBG] AuthenticationScheme: Identity.Bearer was not authenticated.
+2024-08-14 20:14:38.995 +02:00 [INF] Request finished HTTP/2 GET https://localhost:7210/_framework/aspnetcore-browser-refresh.js - 200 13754 application/javascript; charset=utf-8 24.0584ms
+2024-08-14 20:14:39.000 +02:00 [INF] Request finished HTTP/2 GET https://localhost:7210/swagger/index.js - 200 null application/javascript;charset=utf-8 29.5965ms
+2024-08-14 20:14:39.017 +02:00 [INF] Request finished HTTP/2 GET https://localhost:7210/_vs/browserLink - 200 null text/javascript; charset=UTF-8 44.6747ms
+2024-08-14 20:14:39.055 +02:00 [INF] Request starting HTTP/2 GET https://localhost:7210/swagger/v1/swagger.json - null null
+2024-08-14 20:14:39.057 +02:00 [DBG] No candidates found for the request path '/swagger/v1/swagger.json'
+2024-08-14 20:14:39.058 +02:00 [DBG] Request did not match any endpoints
+2024-08-14 20:14:39.060 +02:00 [DBG] AuthenticationScheme: Identity.Bearer was not authenticated.
+2024-08-14 20:14:39.141 +02:00 [INF] Request finished HTTP/2 GET https://localhost:7210/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 86.4635ms
+2024-08-14 20:15:13.750 +02:00 [DBG] An 'IServiceProvider' was created for internal use by Entity Framework.
+2024-08-14 20:15:14.055 +02:00 [DBG] The index {'UserId'} was not created on entity type 'IdentityUserRole<string>' as the properties are already covered by the index {'UserId', 'RoleId'}.
+2024-08-14 20:15:14.057 +02:00 [DBG] The index {'UserId'} was not created on entity type 'IdentityUserToken<string>' as the properties are already covered by the index {'UserId', 'LoginProvider', 'Name'}.
+2024-08-14 20:15:14.194 +02:00 [DBG] Entity Framework Core 8.0.7 initialized 'ApplicationDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:8.0.4+51faf6e9c9c7ef99c3e98d98a96adb8fa8ae4553' with options: None
+2024-08-14 20:15:14.203 +02:00 [DBG] Creating DbConnection.
+2024-08-14 20:15:14.233 +02:00 [DBG] Created DbConnection. (28ms).
+2024-08-14 20:15:14.239 +02:00 [DBG] Opening connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:14.333 +02:00 [DBG] Opened connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:14.336 +02:00 [DBG] Closing connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:14.343 +02:00 [DBG] Closed connection to database 'domisDb' on server 'tcp://localhost:5432' (4ms).
+2024-08-14 20:15:14.349 +02:00 [DBG] Creating DbCommand for 'ExecuteScalar'.
+2024-08-14 20:15:14.354 +02:00 [DBG] Created DbCommand for 'ExecuteScalar' (4ms).
+2024-08-14 20:15:14.356 +02:00 [DBG] Initialized DbCommand for 'ExecuteScalar' (7ms).
+2024-08-14 20:15:14.358 +02:00 [DBG] Opening connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:14.402 +02:00 [DBG] Opened connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:14.408 +02:00 [DBG] Executing DbCommand [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2024-08-14 20:15:14.449 +02:00 [INF] Executed DbCommand (41ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2024-08-14 20:15:14.453 +02:00 [DBG] Closing connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:14.455 +02:00 [DBG] Closed connection to database 'domisDb' on server 'tcp://localhost:5432' (1ms).
+2024-08-14 20:15:14.463 +02:00 [DBG] Opening connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:14.465 +02:00 [DBG] Opened connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:14.466 +02:00 [DBG] Creating DbCommand for 'ExecuteReader'.
+2024-08-14 20:15:14.467 +02:00 [DBG] Created DbCommand for 'ExecuteReader' (1ms).
+2024-08-14 20:15:14.468 +02:00 [DBG] Initialized DbCommand for 'ExecuteReader' (2ms).
+2024-08-14 20:15:14.469 +02:00 [DBG] Executing DbCommand [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2024-08-14 20:15:14.474 +02:00 [INF] Executed DbCommand (5ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2024-08-14 20:15:14.481 +02:00 [DBG] Closing data reader to 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:14.484 +02:00 [DBG] A data reader for 'domisDb' on server 'tcp://localhost:5432' is being disposed after spending 5ms reading results.
+2024-08-14 20:15:14.486 +02:00 [DBG] Closing connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:14.487 +02:00 [DBG] Closed connection to database 'domisDb' on server 'tcp://localhost:5432' (1ms).
+2024-08-14 20:15:14.489 +02:00 [DBG] Migrating using database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:14.491 +02:00 [DBG] Opening connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:14.518 +02:00 [DBG] Opened connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:14.520 +02:00 [DBG] Closing connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:14.522 +02:00 [DBG] Closed connection to database 'domisDb' on server 'tcp://localhost:5432' (1ms).
+2024-08-14 20:15:14.524 +02:00 [DBG] Creating DbCommand for 'ExecuteScalar'.
+2024-08-14 20:15:14.525 +02:00 [DBG] Created DbCommand for 'ExecuteScalar' (1ms).
+2024-08-14 20:15:14.527 +02:00 [DBG] Initialized DbCommand for 'ExecuteScalar' (3ms).
+2024-08-14 20:15:14.529 +02:00 [DBG] Opening connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:14.531 +02:00 [DBG] Opened connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:14.533 +02:00 [DBG] Executing DbCommand [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2024-08-14 20:15:14.536 +02:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2024-08-14 20:15:14.539 +02:00 [DBG] Closing connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:14.540 +02:00 [DBG] Closed connection to database 'domisDb' on server 'tcp://localhost:5432' (1ms).
+2024-08-14 20:15:14.543 +02:00 [DBG] Opening connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:14.570 +02:00 [DBG] Opened connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:14.572 +02:00 [DBG] Closing connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:14.574 +02:00 [DBG] Closed connection to database 'domisDb' on server 'tcp://localhost:5432' (1ms).
+2024-08-14 20:15:14.576 +02:00 [DBG] Creating DbCommand for 'ExecuteScalar'.
+2024-08-14 20:15:14.578 +02:00 [DBG] Created DbCommand for 'ExecuteScalar' (1ms).
+2024-08-14 20:15:14.579 +02:00 [DBG] Initialized DbCommand for 'ExecuteScalar' (2ms).
+2024-08-14 20:15:14.581 +02:00 [DBG] Opening connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:14.582 +02:00 [DBG] Opened connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:14.584 +02:00 [DBG] Executing DbCommand [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2024-08-14 20:15:14.588 +02:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1 FROM pg_catalog.pg_class c
+    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname='public' AND
+          c.relname='__EFMigrationsHistory'
+)
+2024-08-14 20:15:14.591 +02:00 [DBG] Closing connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:14.592 +02:00 [DBG] Closed connection to database 'domisDb' on server 'tcp://localhost:5432' (1ms).
+2024-08-14 20:15:14.594 +02:00 [DBG] Opening connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:14.596 +02:00 [DBG] Opened connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:14.597 +02:00 [DBG] Creating DbCommand for 'ExecuteReader'.
+2024-08-14 20:15:14.599 +02:00 [DBG] Created DbCommand for 'ExecuteReader' (1ms).
+2024-08-14 20:15:14.601 +02:00 [DBG] Initialized DbCommand for 'ExecuteReader' (3ms).
+2024-08-14 20:15:14.602 +02:00 [DBG] Executing DbCommand [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2024-08-14 20:15:14.605 +02:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+2024-08-14 20:15:14.608 +02:00 [DBG] Closing data reader to 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:14.616 +02:00 [DBG] A data reader for 'domisDb' on server 'tcp://localhost:5432' is being disposed after spending 8ms reading results.
+2024-08-14 20:15:14.618 +02:00 [DBG] Closing connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:14.620 +02:00 [DBG] Closed connection to database 'domisDb' on server 'tcp://localhost:5432' (1ms).
+2024-08-14 20:15:14.627 +02:00 [INF] No migrations were applied. The database is already up to date.
+2024-08-14 20:15:14.629 +02:00 [DBG] 'ApplicationDbContext' disposed.
+2024-08-14 20:15:14.631 +02:00 [DBG] Disposing connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:14.633 +02:00 [DBG] Disposed connection to database 'domisDb' on server 'tcp://localhost:5432' (1ms).
+2024-08-14 20:15:14.664 +02:00 [INF] User profile is available. Using 'C:\Users\lukar\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2024-08-14 20:15:14.676 +02:00 [DBG] Entity Framework Core 8.0.7 initialized 'ApplicationDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:8.0.4+51faf6e9c9c7ef99c3e98d98a96adb8fa8ae4553' with options: None
+2024-08-14 20:15:14.710 +02:00 [DBG] Compiling query expression: 
+'DbSet<IdentityRole>()
+    .FirstOrDefault(r => r.NormalizedName == __normalizedName_0)'
+2024-08-14 20:15:14.807 +02:00 [DBG] Generated query execution expression: 
+'queryContext => ShapedQueryCompilingExpressionVisitor.SingleOrDefaultAsync<IdentityRole>(
+    asyncEnumerable: new SingleQueryingEnumerable<IdentityRole>(
+        (RelationalQueryContext)queryContext, 
+        RelationalCommandCache.QueryExpression(
+            Projection Mapping:
+                EmptyProjectionMember -> Dictionary<IProperty, int> { [Property: IdentityRole.Id (string) Required PK AfterSave:Throw, 0], [Property: IdentityRole.ConcurrencyStamp (string) Concurrency, 1], [Property: IdentityRole.Name (string) MaxLength(256), 2], [Property: IdentityRole.NormalizedName (string) Index MaxLength(256), 3] }
+            SELECT TOP(1) a.Id, a.ConcurrencyStamp, a.Name, a.NormalizedName
+            FROM identity.AspNetRoles AS a
+            WHERE a.NormalizedName == @__normalizedName_0), 
+        null, 
+        Func<QueryContext, DbDataReader, ResultContext, SingleQueryResultCoordinator, IdentityRole>, 
+        domis.api.Database.ApplicationDbContext, 
+        False, 
+        False, 
+        True
+    ), 
+    cancellationToken: queryContext.CancellationToken)'
+2024-08-14 20:15:14.828 +02:00 [DBG] Creating DbConnection.
+2024-08-14 20:15:14.829 +02:00 [DBG] Created DbConnection. (1ms).
+2024-08-14 20:15:14.831 +02:00 [DBG] Opening connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:14.833 +02:00 [DBG] Opened connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:14.834 +02:00 [DBG] Creating DbCommand for 'ExecuteReader'.
+2024-08-14 20:15:14.835 +02:00 [DBG] Created DbCommand for 'ExecuteReader' (1ms).
+2024-08-14 20:15:14.838 +02:00 [DBG] Initialized DbCommand for 'ExecuteReader' (4ms).
+2024-08-14 20:15:14.842 +02:00 [DBG] Executing DbCommand [Parameters=[@__normalizedName_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ConcurrencyStamp", a."Name", a."NormalizedName"
+FROM identity."AspNetRoles" AS a
+WHERE a."NormalizedName" = @__normalizedName_0
+LIMIT 1
+2024-08-14 20:15:14.856 +02:00 [INF] Executed DbCommand (15ms) [Parameters=[@__normalizedName_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ConcurrencyStamp", a."Name", a."NormalizedName"
+FROM identity."AspNetRoles" AS a
+WHERE a."NormalizedName" = @__normalizedName_0
+LIMIT 1
+2024-08-14 20:15:14.879 +02:00 [DBG] Context 'ApplicationDbContext' started tracking 'IdentityRole' entity. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2024-08-14 20:15:14.890 +02:00 [DBG] Closing data reader to 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:14.891 +02:00 [DBG] A data reader for 'domisDb' on server 'tcp://localhost:5432' is being disposed after spending 31ms reading results.
+2024-08-14 20:15:14.895 +02:00 [DBG] Closing connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:14.897 +02:00 [DBG] Closed connection to database 'domisDb' on server 'tcp://localhost:5432' (1ms).
+2024-08-14 20:15:14.901 +02:00 [DBG] Opening connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:14.903 +02:00 [DBG] Opened connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:14.905 +02:00 [DBG] Creating DbCommand for 'ExecuteReader'.
+2024-08-14 20:15:14.906 +02:00 [DBG] Created DbCommand for 'ExecuteReader' (1ms).
+2024-08-14 20:15:14.908 +02:00 [DBG] Initialized DbCommand for 'ExecuteReader' (2ms).
+2024-08-14 20:15:14.909 +02:00 [DBG] Executing DbCommand [Parameters=[@__normalizedName_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ConcurrencyStamp", a."Name", a."NormalizedName"
+FROM identity."AspNetRoles" AS a
+WHERE a."NormalizedName" = @__normalizedName_0
+LIMIT 1
+2024-08-14 20:15:14.912 +02:00 [INF] Executed DbCommand (3ms) [Parameters=[@__normalizedName_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ConcurrencyStamp", a."Name", a."NormalizedName"
+FROM identity."AspNetRoles" AS a
+WHERE a."NormalizedName" = @__normalizedName_0
+LIMIT 1
+2024-08-14 20:15:14.914 +02:00 [DBG] Context 'ApplicationDbContext' started tracking 'IdentityRole' entity. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2024-08-14 20:15:14.915 +02:00 [DBG] Closing data reader to 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:14.917 +02:00 [DBG] A data reader for 'domisDb' on server 'tcp://localhost:5432' is being disposed after spending 2ms reading results.
+2024-08-14 20:15:14.919 +02:00 [DBG] Closing connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:14.920 +02:00 [DBG] Closed connection to database 'domisDb' on server 'tcp://localhost:5432' (1ms).
+2024-08-14 20:15:14.922 +02:00 [DBG] Opening connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:14.923 +02:00 [DBG] Opened connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:14.924 +02:00 [DBG] Creating DbCommand for 'ExecuteReader'.
+2024-08-14 20:15:14.926 +02:00 [DBG] Created DbCommand for 'ExecuteReader' (1ms).
+2024-08-14 20:15:14.928 +02:00 [DBG] Initialized DbCommand for 'ExecuteReader' (3ms).
+2024-08-14 20:15:14.929 +02:00 [DBG] Executing DbCommand [Parameters=[@__normalizedName_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ConcurrencyStamp", a."Name", a."NormalizedName"
+FROM identity."AspNetRoles" AS a
+WHERE a."NormalizedName" = @__normalizedName_0
+LIMIT 1
+2024-08-14 20:15:14.933 +02:00 [INF] Executed DbCommand (4ms) [Parameters=[@__normalizedName_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ConcurrencyStamp", a."Name", a."NormalizedName"
+FROM identity."AspNetRoles" AS a
+WHERE a."NormalizedName" = @__normalizedName_0
+LIMIT 1
+2024-08-14 20:15:14.935 +02:00 [DBG] Context 'ApplicationDbContext' started tracking 'IdentityRole' entity. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2024-08-14 20:15:14.936 +02:00 [DBG] Closing data reader to 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:14.937 +02:00 [DBG] A data reader for 'domisDb' on server 'tcp://localhost:5432' is being disposed after spending 2ms reading results.
+2024-08-14 20:15:14.939 +02:00 [DBG] Closing connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:14.940 +02:00 [DBG] Closed connection to database 'domisDb' on server 'tcp://localhost:5432' (1ms).
+2024-08-14 20:15:14.941 +02:00 [DBG] Opening connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:14.943 +02:00 [DBG] Opened connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:14.944 +02:00 [DBG] Creating DbCommand for 'ExecuteReader'.
+2024-08-14 20:15:14.945 +02:00 [DBG] Created DbCommand for 'ExecuteReader' (1ms).
+2024-08-14 20:15:14.947 +02:00 [DBG] Initialized DbCommand for 'ExecuteReader' (2ms).
+2024-08-14 20:15:14.948 +02:00 [DBG] Executing DbCommand [Parameters=[@__normalizedName_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ConcurrencyStamp", a."Name", a."NormalizedName"
+FROM identity."AspNetRoles" AS a
+WHERE a."NormalizedName" = @__normalizedName_0
+LIMIT 1
+2024-08-14 20:15:14.952 +02:00 [INF] Executed DbCommand (3ms) [Parameters=[@__normalizedName_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ConcurrencyStamp", a."Name", a."NormalizedName"
+FROM identity."AspNetRoles" AS a
+WHERE a."NormalizedName" = @__normalizedName_0
+LIMIT 1
+2024-08-14 20:15:14.954 +02:00 [DBG] Context 'ApplicationDbContext' started tracking 'IdentityRole' entity. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2024-08-14 20:15:14.956 +02:00 [DBG] Closing data reader to 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:14.957 +02:00 [DBG] A data reader for 'domisDb' on server 'tcp://localhost:5432' is being disposed after spending 2ms reading results.
+2024-08-14 20:15:14.960 +02:00 [DBG] Closing connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:14.962 +02:00 [DBG] Closed connection to database 'domisDb' on server 'tcp://localhost:5432' (1ms).
+2024-08-14 20:15:14.963 +02:00 [DBG] Opening connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:14.965 +02:00 [DBG] Opened connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:14.966 +02:00 [DBG] Creating DbCommand for 'ExecuteReader'.
+2024-08-14 20:15:14.968 +02:00 [DBG] Created DbCommand for 'ExecuteReader' (1ms).
+2024-08-14 20:15:14.969 +02:00 [DBG] Initialized DbCommand for 'ExecuteReader' (2ms).
+2024-08-14 20:15:14.971 +02:00 [DBG] Executing DbCommand [Parameters=[@__normalizedName_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ConcurrencyStamp", a."Name", a."NormalizedName"
+FROM identity."AspNetRoles" AS a
+WHERE a."NormalizedName" = @__normalizedName_0
+LIMIT 1
+2024-08-14 20:15:14.975 +02:00 [INF] Executed DbCommand (4ms) [Parameters=[@__normalizedName_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ConcurrencyStamp", a."Name", a."NormalizedName"
+FROM identity."AspNetRoles" AS a
+WHERE a."NormalizedName" = @__normalizedName_0
+LIMIT 1
+2024-08-14 20:15:14.977 +02:00 [DBG] Context 'ApplicationDbContext' started tracking 'IdentityRole' entity. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2024-08-14 20:15:14.978 +02:00 [DBG] Closing data reader to 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:14.979 +02:00 [DBG] A data reader for 'domisDb' on server 'tcp://localhost:5432' is being disposed after spending 2ms reading results.
+2024-08-14 20:15:14.980 +02:00 [DBG] Closing connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:14.982 +02:00 [DBG] Closed connection to database 'domisDb' on server 'tcp://localhost:5432' (1ms).
+2024-08-14 20:15:14.984 +02:00 [DBG] Opening connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:14.985 +02:00 [DBG] Opened connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:14.987 +02:00 [DBG] Creating DbCommand for 'ExecuteReader'.
+2024-08-14 20:15:14.988 +02:00 [DBG] Created DbCommand for 'ExecuteReader' (0ms).
+2024-08-14 20:15:14.989 +02:00 [DBG] Initialized DbCommand for 'ExecuteReader' (2ms).
+2024-08-14 20:15:14.990 +02:00 [DBG] Executing DbCommand [Parameters=[@__normalizedName_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ConcurrencyStamp", a."Name", a."NormalizedName"
+FROM identity."AspNetRoles" AS a
+WHERE a."NormalizedName" = @__normalizedName_0
+LIMIT 1
+2024-08-14 20:15:14.993 +02:00 [INF] Executed DbCommand (3ms) [Parameters=[@__normalizedName_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."ConcurrencyStamp", a."Name", a."NormalizedName"
+FROM identity."AspNetRoles" AS a
+WHERE a."NormalizedName" = @__normalizedName_0
+LIMIT 1
+2024-08-14 20:15:14.996 +02:00 [DBG] Context 'ApplicationDbContext' started tracking 'IdentityRole' entity. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2024-08-14 20:15:14.997 +02:00 [DBG] Closing data reader to 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:14.998 +02:00 [DBG] A data reader for 'domisDb' on server 'tcp://localhost:5432' is being disposed after spending 2ms reading results.
+2024-08-14 20:15:14.999 +02:00 [DBG] Closing connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:15.000 +02:00 [DBG] Closed connection to database 'domisDb' on server 'tcp://localhost:5432' (1ms).
+2024-08-14 20:15:15.006 +02:00 [DBG] Compiling query expression: 
+'DbSet<User>()
+    .SingleOrDefault(u => u.NormalizedEmail == __normalizedEmail_0)'
+2024-08-14 20:15:15.012 +02:00 [DBG] Generated query execution expression: 
+'queryContext => ShapedQueryCompilingExpressionVisitor.SingleOrDefaultAsync<User>(
+    asyncEnumerable: new SingleQueryingEnumerable<User>(
+        (RelationalQueryContext)queryContext, 
+        RelationalCommandCache.QueryExpression(
+            Projection Mapping:
+                EmptyProjectionMember -> Dictionary<IProperty, int> { [Property: User.Id (string) Required PK AfterSave:Throw, 0], [Property: User.AccessFailedCount (int) Required, 1], [Property: User.AddressLine (string), 2], [Property: User.City (string), 3], [Property: User.ConcurrencyStamp (string) Concurrency, 4], [Property: User.Country (string), 5], [Property: User.Email (string) MaxLength(256), 6], [Property: User.EmailConfirmed (bool) Required, 7], [Property: User.FirstName (string) MaxLength(20), 8], [Property: User.LastName (string), 9], [Property: User.LockoutEnabled (bool) Required, 10], [Property: User.LockoutEnd (DateTimeOffset?), 11], [Property: User.NormalizedEmail (string) Index MaxLength(256), 12], [Property: User.NormalizedUserName (string) Index MaxLength(256), 13], [Property: User.PasswordHash (string), 14], [Property: User.PhoneNumber (string), 15], [Property: User.PhoneNumberConfirmed (bool) Required, 16], [Property: User.SecurityStamp (string), 17], [Property: User.TwoFactorEnabled (bool) Required, 18], [Property: User.UserName (string) MaxLength(256), 19], [Property: User.ZipCode (string), 20] }
+            SELECT TOP(2) a.Id, a.AccessFailedCount, a.AddressLine, a.City, a.ConcurrencyStamp, a.Country, a.Email, a.EmailConfirmed, a.FirstName, a.LastName, a.LockoutEnabled, a.LockoutEnd, a.NormalizedEmail, a.NormalizedUserName, a.PasswordHash, a.PhoneNumber, a.PhoneNumberConfirmed, a.SecurityStamp, a.TwoFactorEnabled, a.UserName, a.ZipCode
+            FROM identity.AspNetUsers AS a
+            WHERE a.NormalizedEmail == @__normalizedEmail_0), 
+        null, 
+        Func<QueryContext, DbDataReader, ResultContext, SingleQueryResultCoordinator, User>, 
+        domis.api.Database.ApplicationDbContext, 
+        False, 
+        False, 
+        True
+    ), 
+    cancellationToken: queryContext.CancellationToken)'
+2024-08-14 20:15:15.015 +02:00 [DBG] Opening connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:15.016 +02:00 [DBG] Opened connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:15.018 +02:00 [DBG] Creating DbCommand for 'ExecuteReader'.
+2024-08-14 20:15:15.019 +02:00 [DBG] Created DbCommand for 'ExecuteReader' (0ms).
+2024-08-14 20:15:15.020 +02:00 [DBG] Initialized DbCommand for 'ExecuteReader' (2ms).
+2024-08-14 20:15:15.021 +02:00 [DBG] Executing DbCommand [Parameters=[@__normalizedEmail_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."AccessFailedCount", a."AddressLine", a."City", a."ConcurrencyStamp", a."Country", a."Email", a."EmailConfirmed", a."FirstName", a."LastName", a."LockoutEnabled", a."LockoutEnd", a."NormalizedEmail", a."NormalizedUserName", a."PasswordHash", a."PhoneNumber", a."PhoneNumberConfirmed", a."SecurityStamp", a."TwoFactorEnabled", a."UserName", a."ZipCode"
+FROM identity."AspNetUsers" AS a
+WHERE a."NormalizedEmail" = @__normalizedEmail_0
+LIMIT 2
+2024-08-14 20:15:15.025 +02:00 [INF] Executed DbCommand (4ms) [Parameters=[@__normalizedEmail_0='?'], CommandType='"Text"', CommandTimeout='30']
+SELECT a."Id", a."AccessFailedCount", a."AddressLine", a."City", a."ConcurrencyStamp", a."Country", a."Email", a."EmailConfirmed", a."FirstName", a."LastName", a."LockoutEnabled", a."LockoutEnd", a."NormalizedEmail", a."NormalizedUserName", a."PasswordHash", a."PhoneNumber", a."PhoneNumberConfirmed", a."SecurityStamp", a."TwoFactorEnabled", a."UserName", a."ZipCode"
+FROM identity."AspNetUsers" AS a
+WHERE a."NormalizedEmail" = @__normalizedEmail_0
+LIMIT 2
+2024-08-14 20:15:15.033 +02:00 [DBG] Context 'ApplicationDbContext' started tracking 'User' entity. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see key values.
+2024-08-14 20:15:15.054 +02:00 [DBG] Closing data reader to 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:15.055 +02:00 [DBG] A data reader for 'domisDb' on server 'tcp://localhost:5432' is being disposed after spending 27ms reading results.
+2024-08-14 20:15:15.057 +02:00 [DBG] Closing connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:15.058 +02:00 [DBG] Closed connection to database 'domisDb' on server 'tcp://localhost:5432' (1ms).
+2024-08-14 20:15:15.060 +02:00 [DBG] 'ApplicationDbContext' disposed.
+2024-08-14 20:15:15.061 +02:00 [DBG] Disposing connection to database 'domisDb' on server 'tcp://localhost:5432'.
+2024-08-14 20:15:15.062 +02:00 [DBG] Disposed connection to database 'domisDb' on server 'tcp://localhost:5432' (1ms).
+2024-08-14 20:15:15.096 +02:00 [DBG] Registered model binder providers, in the following order: ["Microsoft.AspNetCore.Mvc.ModelBinding.Binders.BinderTypeModelBinderProvider","Microsoft.AspNetCore.Mvc.ModelBinding.Binders.ServicesModelBinderProvider","Microsoft.AspNetCore.Mvc.ModelBinding.Binders.BodyModelBinderProvider","Microsoft.AspNetCore.Mvc.ModelBinding.Binders.HeaderModelBinderProvider","Microsoft.AspNetCore.Mvc.ModelBinding.Binders.FloatingPointTypeModelBinderProvider","Microsoft.AspNetCore.Mvc.ModelBinding.Binders.EnumTypeModelBinderProvider","Microsoft.AspNetCore.Mvc.ModelBinding.Binders.DateTimeModelBinderProvider","Microsoft.AspNetCore.Mvc.ModelBinding.Binders.SimpleTypeModelBinderProvider","Microsoft.AspNetCore.Mvc.ModelBinding.Binders.TryParseModelBinderProvider","Microsoft.AspNetCore.Mvc.ModelBinding.Binders.CancellationTokenModelBinderProvider"]
+2024-08-14 20:15:15.141 +02:00 [DBG] Hosting starting
+2024-08-14 20:15:15.148 +02:00 [DBG] Reading data from file 'C:\Users\lukar\AppData\Local\ASP.NET\DataProtection-Keys\key-feaf63dc-37f6-4c2a-a56a-4dd43552849f.xml'.
+2024-08-14 20:15:15.154 +02:00 [DBG] Found key {feaf63dc-37f6-4c2a-a56a-4dd43552849f}.
+2024-08-14 20:15:15.160 +02:00 [DBG] Considering key {feaf63dc-37f6-4c2a-a56a-4dd43552849f} with expiration date 2024-11-09 09:16:15Z as default key.
+2024-08-14 20:15:15.164 +02:00 [DBG] Forwarded activator type request from Microsoft.AspNetCore.DataProtection.XmlEncryption.DpapiXmlDecryptor, Microsoft.AspNetCore.DataProtection, Version=8.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60 to Microsoft.AspNetCore.DataProtection.XmlEncryption.DpapiXmlDecryptor, Microsoft.AspNetCore.DataProtection, Culture=neutral, PublicKeyToken=adb9793829ddae60
+2024-08-14 20:15:15.166 +02:00 [DBG] Decrypting secret element using Windows DPAPI.
+2024-08-14 20:15:15.168 +02:00 [DBG] Forwarded activator type request from Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel.AuthenticatedEncryptorDescriptorDeserializer, Microsoft.AspNetCore.DataProtection, Version=8.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60 to Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel.AuthenticatedEncryptorDescriptorDeserializer, Microsoft.AspNetCore.DataProtection, Culture=neutral, PublicKeyToken=adb9793829ddae60
+2024-08-14 20:15:15.170 +02:00 [DBG] Opening CNG algorithm 'AES' from provider 'null' with chaining mode CBC.
+2024-08-14 20:15:15.173 +02:00 [DBG] Opening CNG algorithm 'SHA256' from provider 'null' with HMAC.
+2024-08-14 20:15:15.176 +02:00 [DBG] Using key {feaf63dc-37f6-4c2a-a56a-4dd43552849f} as the default key.
+2024-08-14 20:15:15.178 +02:00 [DBG] Key ring with default key {feaf63dc-37f6-4c2a-a56a-4dd43552849f} was loaded during application startup.
+2024-08-14 20:15:15.299 +02:00 [INF] Now listening on: https://localhost:7210
+2024-08-14 20:15:15.300 +02:00 [INF] Now listening on: http://localhost:5051
+2024-08-14 20:15:15.300 +02:00 [DBG] Loaded hosting startup assembly domis.api
+2024-08-14 20:15:15.301 +02:00 [DBG] Loaded hosting startup assembly Microsoft.AspNetCore.Watch.BrowserRefresh
+2024-08-14 20:15:15.302 +02:00 [DBG] Loaded hosting startup assembly Microsoft.WebTools.BrowserLink.Net
+2024-08-14 20:15:15.303 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2024-08-14 20:15:15.303 +02:00 [INF] Hosting environment: Development
+2024-08-14 20:15:15.305 +02:00 [INF] Content root path: C:\_per\ahead\domis\domis.api
+2024-08-14 20:15:15.306 +02:00 [DBG] Hosting started
+2024-08-14 20:15:15.450 +02:00 [DBG] Connection id "0HN5SHK5T4AIH" accepted.
+2024-08-14 20:15:15.457 +02:00 [DBG] Connection id "0HN5SHK5T4AIH" started.
+2024-08-14 20:15:15.473 +02:00 [DBG] Connection id "0HN5SHK5T4AII" accepted.
+2024-08-14 20:15:15.478 +02:00 [DBG] Connection id "0HN5SHK5T4AII" started.
+2024-08-14 20:15:15.502 +02:00 [DBG] Connection id "0HN5SHK5T4AIH" received FIN.
+2024-08-14 20:15:15.502 +02:00 [DBG] Connection id "0HN5SHK5T4AII" received FIN.
+2024-08-14 20:15:15.508 +02:00 [DBG] Failed to authenticate HTTPS connection.
+System.IO.IOException: Received an unexpected EOF or 0 bytes from the transport stream.
+   at System.Net.Security.SslStream.ReceiveHandshakeFrameAsync[TIOAdapter](CancellationToken cancellationToken)
+   at System.Net.Security.SslStream.ForceAuthenticationAsync[TIOAdapter](Boolean receiveFirst, Byte[] reAuthenticationData, CancellationToken cancellationToken)
+   at System.Net.Security.SslStream.ProcessAuthenticationWithTelemetryAsync(Boolean isAsync, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Https.Internal.HttpsConnectionMiddleware.OnConnectionAsync(ConnectionContext context)
+2024-08-14 20:15:15.508 +02:00 [DBG] Failed to authenticate HTTPS connection.
+System.IO.IOException: Received an unexpected EOF or 0 bytes from the transport stream.
+   at System.Net.Security.SslStream.ReceiveHandshakeFrameAsync[TIOAdapter](CancellationToken cancellationToken)
+   at System.Net.Security.SslStream.ForceAuthenticationAsync[TIOAdapter](Boolean receiveFirst, Byte[] reAuthenticationData, CancellationToken cancellationToken)
+   at System.Net.Security.SslStream.ProcessAuthenticationWithTelemetryAsync(Boolean isAsync, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Https.Internal.HttpsConnectionMiddleware.OnConnectionAsync(ConnectionContext context)
+2024-08-14 20:15:15.524 +02:00 [DBG] Connection id "0HN5SHK5T4AIH" stopped.
+2024-08-14 20:15:15.525 +02:00 [DBG] Connection id "0HN5SHK5T4AII" stopped.
+2024-08-14 20:15:15.528 +02:00 [DBG] Connection id "0HN5SHK5T4AIH" sending FIN because: "The Socket transport's send loop completed gracefully."
+2024-08-14 20:15:15.528 +02:00 [DBG] Connection id "0HN5SHK5T4AII" sending FIN because: "The Socket transport's send loop completed gracefully."
+2024-08-14 20:15:15.787 +02:00 [DBG] Connection id "0HN5SHK5T4AIJ" accepted.
+2024-08-14 20:15:15.789 +02:00 [DBG] Connection id "0HN5SHK5T4AIJ" started.
+2024-08-14 20:15:15.814 +02:00 [DBG] Connection 0HN5SHK5T4AIJ established using the following protocol: "Tls12"
+2024-08-14 20:15:15.846 +02:00 [INF] Request starting HTTP/2 GET https://localhost:7210/swagger/index.html - null null
+2024-08-14 20:15:15.903 +02:00 [DBG] Wildcard detected, all requests with hosts will be allowed.
+2024-08-14 20:15:15.919 +02:00 [DBG] No candidates found for the request path '/swagger/index.html'
+2024-08-14 20:15:15.921 +02:00 [DBG] Request did not match any endpoints
+2024-08-14 20:15:15.925 +02:00 [DBG] AuthenticationScheme: Identity.Bearer was not authenticated.
+2024-08-14 20:15:15.970 +02:00 [DBG] Response markup is scheduled to include Browser Link script injection.
+2024-08-14 20:15:15.972 +02:00 [DBG] Response markup is scheduled to include browser refresh script injection.
+2024-08-14 20:15:15.977 +02:00 [DBG] Response markup was updated to include Browser Link script injection.
+2024-08-14 20:15:15.978 +02:00 [DBG] Response markup was updated to include browser refresh script injection.
+2024-08-14 20:15:15.981 +02:00 [INF] Request finished HTTP/2 GET https://localhost:7210/swagger/index.html - 200 null text/html;charset=utf-8 137.475ms
+2024-08-14 20:15:15.990 +02:00 [INF] Request starting HTTP/2 GET https://localhost:7210/swagger/index.js - null null
+2024-08-14 20:15:15.990 +02:00 [INF] Request starting HTTP/2 GET https://localhost:7210/_framework/aspnetcore-browser-refresh.js - null null
+2024-08-14 20:15:15.992 +02:00 [INF] Request starting HTTP/2 GET https://localhost:7210/_vs/browserLink - null null
+2024-08-14 20:15:15.994 +02:00 [DBG] No candidates found for the request path '/swagger/index.js'
+2024-08-14 20:15:15.999 +02:00 [DBG] Request did not match any endpoints
+2024-08-14 20:15:16.004 +02:00 [DBG] AuthenticationScheme: Identity.Bearer was not authenticated.
+2024-08-14 20:15:16.015 +02:00 [INF] Request finished HTTP/2 GET https://localhost:7210/_framework/aspnetcore-browser-refresh.js - 200 13754 application/javascript; charset=utf-8 24.6003ms
+2024-08-14 20:15:16.016 +02:00 [INF] Request finished HTTP/2 GET https://localhost:7210/swagger/index.js - 200 null application/javascript;charset=utf-8 25.9511ms
+2024-08-14 20:15:16.038 +02:00 [INF] Request finished HTTP/2 GET https://localhost:7210/_vs/browserLink - 200 null text/javascript; charset=UTF-8 45.548ms
+2024-08-14 20:15:16.075 +02:00 [INF] Request starting HTTP/2 GET https://localhost:7210/swagger/v1/swagger.json - null null
+2024-08-14 20:15:16.078 +02:00 [DBG] No candidates found for the request path '/swagger/v1/swagger.json'
+2024-08-14 20:15:16.078 +02:00 [DBG] Request did not match any endpoints
+2024-08-14 20:15:16.081 +02:00 [DBG] AuthenticationScheme: Identity.Bearer was not authenticated.
+2024-08-14 20:15:16.153 +02:00 [INF] Request finished HTTP/2 GET https://localhost:7210/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 78.3964ms

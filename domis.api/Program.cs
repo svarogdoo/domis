@@ -1,6 +1,8 @@
+using domis.api.BaseExtensions;
 using domis.api.Database;
 using domis.api.Extensions;
 using domis.api.Models;
+using domis.api.Services;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -12,26 +14,11 @@ Log.Logger = new LoggerConfiguration()
 
 builder.Host.UseSerilog();
 
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-
-builder.Services.AddAuthenticationAndAuthorization();
-
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("Database")));
-
-builder.Services.AddCors(options =>
-{
-    options.AddDefaultPolicy(
-        policy =>
-        {
-            policy.AllowAnyOrigin()
-                  .AllowAnyMethod()
-                  .AllowAnyHeader();
-        });
-});
+builder.Services.AddServices(builder.Configuration);
 
 var app = builder.Build();
+
+//app.UseExceptionHandler();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
