@@ -1,39 +1,44 @@
+using domis.api.BaseExtensions;
+using domis.api.Database;
+using domis.api.Extensions;
+using domis.api.Models;
+using domis.api.Services;
+using Microsoft.EntityFrameworkCore;
+using Serilog;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .CreateLogger();
 
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Host.UseSerilog();
 
-
-builder.Services.AddCors(options =>
-{
-    options.AddDefaultPolicy(
-        policy =>
-        {
-            policy.AllowAnyOrigin()
-                  .AllowAnyMethod()
-                  .AllowAnyHeader();
-        });
-});
+builder.Services.AddServices(builder.Configuration);
 
 var app = builder.Build();
+
+//app.UseExceptionHandler();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+
+    app.ApplyMigration();
+
+    using var scope = app.Services.CreateScope();
+    var services = scope.ServiceProvider;
+    await SeedData.SeedAsync(services);
 }
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
-
 app.UseCors();
 
 app.MapControllers();
+
+app.MapIdentityApi<User>();
 
 app.Run();
