@@ -1,35 +1,54 @@
 <script lang="ts">
   import { page } from "$app/stores";
+  import searchIcon from "$lib/icons/search.svg";
+  import cartIcon from "$lib/icons/cart.svg";
 
   let searchTerm: string;
 </script>
 
-<header>
+<header class="mb-4">
   <nav>
-    <ul>
-      <li aria-current={$page.url.pathname === "/" ? "page" : undefined}>
-        <a href="/">domis enterijeri</a>
+    <ul class="my-4 px-8">
+      <li
+        class="header-title"
+        aria-current={$page.url.pathname === "/" ? "page" : undefined}
+      >
+        <a href="/">domis</a>
+        <a href="/">enterijeri</a>
       </li>
-      <input
-        type="text"
-        id="search-field"
-        placeholder="Enter Search Term"
-        autocomplete="off"
-        bind:value={searchTerm}
-        on:input
-      />
+      <li class="input">
+        <img src={searchIcon} alt="search" class="absolute ml-4" />
+        <input
+          class="pl-12 py-3 rounded-md"
+          type="text"
+          id="search-field"
+          placeholder="Pretražite prodavnicu (upišite ime ili šifru proizvoda)"
+          autocomplete="off"
+          bind:value={searchTerm}
+          on:input
+        />
+      </li>
       <li aria-current={$page.url.pathname === "/shop" ? "page" : undefined}>
-        <a href="/shop">ŠOP</a>
+        <a href="/shop"> <img src={cartIcon} alt="cart" /></a>
       </li>
     </ul>
   </nav>
+  <div class="header-underline"></div>
 </header>
 
 <style>
   header {
     display: flex;
+    flex-direction: column;
+    align-items: center;
     width: 100%;
     justify-content: space-between;
+  }
+
+  .header-underline {
+    width: 95%;
+    border-bottom-width: 1px;
+    border-bottom-color: #787878;
   }
 
   nav {
@@ -39,21 +58,34 @@
   }
 
   ul {
-    position: relative;
     display: flex;
+    flex-direction: row;
     width: 100%;
-    margin-top: 2.3em;
-    padding: 0em 1em;
     list-style: none;
-    justify-content: space-around;
+    justify-content: space-between;
     align-items: center;
-    color: whitesmoke;
-    letter-spacing: 0.2em;
-    font-size: smaller;
-    max-width: 800px;
   }
 
-  a:hover {
-    color: white;
+  .header-title {
+    display: flex;
+    flex-direction: column;
+  }
+  .header-title a {
+    color: black;
+    text-decoration: none;
+    font-weight: 600;
+    letter-spacing: 0.3em;
+    line-height: 1.3em;
+  }
+
+  input {
+    width: 600px;
+    border-width: 1px;
+    border-color: black;
+  }
+  .input {
+    display: flex;
+    position: relative;
+    align-items: center;
   }
 </style>
