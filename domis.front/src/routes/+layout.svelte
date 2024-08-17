@@ -30,18 +30,5 @@
     flex-direction: column;
     width: 100%;
     height: 100%;
-    max-width: 64em;
-  }
-
-  footer {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 12px;
-  }
-
-  footer a {
-    font-weight: bold;
   }
 </style>

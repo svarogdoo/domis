@@ -1,5 +1,6 @@
-<script>
+<script lang="ts">
   import { onMount } from "svelte";
+  import CategoryCard from "./CategoryCard.svelte";
 
   let url = "https://localhost:7210/WeatherForecast";
   let test = [];
@@ -11,7 +12,25 @@
   });
 </script>
 
-<h1>Welcome to SvelteKit</h1>
-<p>
-  Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation
-</p>
+<section class="mt-4">
+  <div class="category-cards grid grid-cols-3 gap-x-4 gap-y-4">
+    <CategoryCard />
+    <CategoryCard />
+    <CategoryCard />
+    <CategoryCard />
+    <CategoryCard />
+    <CategoryCard />
+  </div>
+</section>
+
+<style>
+  section {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .category-cards {
+    width: 80%;
+  }
+</style>

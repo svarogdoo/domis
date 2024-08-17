@@ -10,7 +10,7 @@
   <nav>
     <ul class="my-4 px-8">
       <li
-        class="header-title"
+        class="header-title pl-4"
         aria-current={$page.url.pathname === "/" ? "page" : undefined}
       >
         <a href="/">domis</a>
@@ -33,7 +33,12 @@
       </li>
     </ul>
   </nav>
-  <div class="header-underline"></div>
+  <div class="category py-4 gap-x-12 pl-4">
+    <p>Keramika</p>
+    <p>Lajsne</p>
+    <p>Kamen</p>
+    <p>Leksan</p>
+  </div>
 </header>
 
 <style>
@@ -45,10 +50,13 @@
     justify-content: space-between;
   }
 
-  .header-underline {
+  .category {
+    display: flex;
     width: 95%;
     border-bottom-width: 1px;
     border-bottom-color: #787878;
+    border-top-width: 1px;
+    border-top-color: #787878;
   }
 
   nav {
