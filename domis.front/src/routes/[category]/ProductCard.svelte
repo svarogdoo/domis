@@ -33,8 +33,9 @@
         <p class="text-lg text-gray-800 font-thin">RSD</p>
         <p class="text-sm text-gray-400 pt-1 font-thin">po m²</p>
       </div>
-      <button class="order text-sm px-4 py-2 bg-gray-100 hover:bg-gray-200"
-        >NARUČI</button
+      <a
+        href="/category/product"
+        class="order text-sm px-4 py-2 bg-gray-100 hover:bg-gray-200">NARUČI</a
       >
     </div>
   </div>
