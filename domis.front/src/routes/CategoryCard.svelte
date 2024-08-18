@@ -3,7 +3,7 @@
 <div class="relative display flex justify-center items-center">
   <div class="absolute h-96 w-96 bg-black"></div>
   <div
-    class="image w-96 h-96 opacity-80 flex justify-center items-center text-white bg-slate-500"
+    class="image w-96 h-96 opacity-80 flex justify-center items-center text-white bg-slate-500 hover:opacity-60"
   ></div>
   <p class="absolute text-white tracking-widest text-xl">Keramika</p>
 </div>
