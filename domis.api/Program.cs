@@ -20,9 +20,9 @@ var app = builder.Build();
 
 //app.UseExceptionHandler();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+//// Configure the HTTP request pipeline.
+//if (app.Environment.IsDevelopment())
+//{
     app.UseSwagger();
     app.UseSwaggerUI();
 
@@ -31,7 +31,7 @@ if (app.Environment.IsDevelopment())
     using var scope = app.Services.CreateScope();
     var services = scope.ServiceProvider;
     await SeedData.SeedAsync(services);
-}
+//}
 
 app.UseHttpsRedirection();
 
