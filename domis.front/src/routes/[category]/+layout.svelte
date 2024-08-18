@@ -11,7 +11,7 @@
         <p>Dekorativne letvice</p>
       </div>
     </div>
-    <div class="products">
+    <div class="products mt-6">
       <slot />
     </div>
   </div>
