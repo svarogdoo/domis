@@ -7,6 +7,7 @@ public interface IProductService
 {
     Task<IEnumerable<Product>> GetAll();
     Task<Product?> GetById(int id);
+    Task<IEnumerable<Product>?> GetAllByCategory(int categoryId);
 }
 
 public class ProductService(IProductRepository repository) : IProductService
@@ -15,6 +16,11 @@ public class ProductService(IProductRepository repository) : IProductService
     public async Task<IEnumerable<Product>> GetAll()
     {
         return await repository.GetAll();
+    }
+
+    public async Task<IEnumerable<Product>?> GetAllByCategory(int categoryId)
+    {
+        return await repository.GetAllByCategory(categoryId);
     }
 
     public async Task<Product?> GetById(int id)

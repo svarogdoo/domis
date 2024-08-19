@@ -10,6 +10,7 @@ public interface IProductRepository
 {
     Task<IEnumerable<Product>> GetAll();
     Task<Product?> GetById(int id);
+    Task<IEnumerable<Product>?> GetAllByCategory(int categoryId);
 }
 
 public class ProductRepository(IDbConnection connection/*, DataContext context*/) : IProductRepository
@@ -31,6 +32,39 @@ public class ProductRepository(IDbConnection connection/*, DataContext context*/
         //var productsEF = await context.Products.ToListAsync();
 
         return products;
+    }
+
+    public async Task<IEnumerable<Product>?> GetAllByCategory(int categoryId)
+    {
+        const string sql = @"
+            WITH RECURSIVE CategoryHierarchy AS (
+                -- Anchor member: Start with the given category
+                SELECT id
+                FROM domis.category
+                WHERE id = @CategoryId
+
+                UNION ALL
+
+                -- Recursive member: Join to get all subcategories
+                SELECT c.id
+                FROM domis.category c
+                INNER JOIN CategoryHierarchy ch ON c.parent_category_id = ch.id
+            )
+
+            SELECT p.id AS Id, 
+                   p.product_name AS Name, 
+                   p.product_description AS Description,
+                   p.sku AS Sku,
+                   p.price AS Price,
+                   p.stock AS Stock,
+                   p.active AS IsActive
+            FROM domis.product p
+            INNER JOIN domis.product_category pc ON p.id = pc.product_id
+            INNER JOIN CategoryHierarchy ch ON pc.category_id = ch.id
+        ";
+
+        var parameters = new { CategoryId = categoryId };
+        return await connection.QueryAsync<Product>(sql, parameters);
     }
 
     public async Task<Product?> GetById(int id)

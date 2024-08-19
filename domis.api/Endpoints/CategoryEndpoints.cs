@@ -1,4 +1,5 @@
-﻿using domis.api.Services;
+﻿using domis.api.Models;
+using domis.api.Services;
 
 namespace domis.api.Endpoints;
 
@@ -10,8 +11,9 @@ public static class CategoryEndpoints
 
         group.MapGet("/", async (ICategoryService categoryService) =>
         {
-            var response = await categoryService.GetAll();
-            return Results.Ok(response);
+            var categories = await categoryService.GetAll();
+
+            return categories is null ? Results.NotFound() : Results.Ok(categories);
         });
 
         group.MapGet("/{id:int}", async (int id, ICategoryService categoryService) =>

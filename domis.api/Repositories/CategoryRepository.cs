@@ -6,13 +6,13 @@ namespace domis.api.Repositories;
 
 public interface ICategoryRepository
 {
-    Task<IEnumerable<Category>> GetAll();
-    Task<Product?> GetById(int id);
+    Task<IEnumerable<Category>?> GetAll();
+    Task<Category?> GetById(int id);
 }
 
 public class CategoryRepository(IDbConnection connection) : ICategoryRepository
 {
-    public async Task<IEnumerable<Category>> GetAll()
+    public async Task<IEnumerable<Category>?> GetAll()
     {
         const string sql = @"
             WITH RECURSIVE CategoryHierarchy AS (
@@ -50,6 +50,11 @@ public class CategoryRepository(IDbConnection connection) : ICategoryRepository
 
         var categories = (await connection.QueryAsync<Category>(sql)).ToList();
 
+        if (categories is null)
+        {
+            return null;
+        }
+
         // Build the hierarchical structure
         var categoryDict = categories.ToDictionary(c => c.CategoryId);
         foreach (var category in categories)
@@ -64,7 +69,7 @@ public class CategoryRepository(IDbConnection connection) : ICategoryRepository
         return categoryDict.Values.Where(c => !c.ParentCategoryId.HasValue).ToList();
     }
 
-    public async Task<Product?> GetById(int id)
+    public async Task<Category?> GetById(int id)
     {
         var sql = @"
                 SELECT 
@@ -80,7 +85,7 @@ public class CategoryRepository(IDbConnection connection) : ICategoryRepository
 
         var parameters = new { Id = id };
 
-        var product = await connection.QuerySingleOrDefaultAsync<Product>(sql, parameters);
+        var product = await connection.QuerySingleOrDefaultAsync<Category>(sql, parameters);
 
         return product;
     }
