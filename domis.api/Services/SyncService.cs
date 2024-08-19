@@ -40,34 +40,58 @@ public class SyncService : ISyncService
 
             var content = await response.Content.ReadAsStringAsync();
 
-            //var content = await _httpClient.GetStringAsync(_url);
+            var lines = content.Split([ "\n", "\r\n" ], StringSplitOptions.RemoveEmptyEntries);
 
-            var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+            foreach (var line in lines)
             {
-                Delimiter = ";",
-                HasHeaderRecord = false,
-            };
+                var splitLine = line.Split(';');
 
-            using var reader = new StringReader(content);
-            using var csv = new CsvReader(reader, config);
-
-
-            //TO-DO: maybe don't use object at all
-            var records = csv.GetRecords<NivelacijaRecord>().ToList();
-
-            foreach (var record in records)
-            {
-                var product = await _repository.GetById(record.Id);
-
-                if (product is null)
+                if (splitLine.Length != 3 ||
+                    !int.TryParse(splitLine[0], out int id) ||
+                    !decimal.TryParse(splitLine[1], out decimal price) ||
+                    !decimal.TryParse(splitLine[2], out decimal stock))
                 {
                     continue;
                 }
-                else if (record.Price != product.Price || record.Stock != product.Stock)
+
+                var product = await _repository.GetById(id);
+
+                if (product == null || (product.Price == price && product.Stock == stock))
                 {
-                    await _repository.NivelacijaUpdateProduct(record);
+                    continue;
+                }
+                else
+                {
+                    await _repository.NivelacijaUpdateProduct(id, price, stock);
                 }
             }
+
+            //// USING CSVHELPER & NivelacijaRecord OBJECT
+            //var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+            //{
+            //    Delimiter = ";",
+            //    HasHeaderRecord = false,
+            //};
+
+            //using var reader = new StringReader(content);
+            //using var csv = new CsvReader(reader, config);
+
+            ////TO-DO: maybe don't use object at all
+            //var records = csv.GetRecords<NivelacijaRecord>().ToList();
+
+            //foreach (var record in records)
+            //{
+            //    var product = await _repository.GetById(record.Id);
+
+            //    if (product is null)
+            //    {
+            //        continue;
+            //    }
+            //    else if (record.Price != product.Price || record.Stock != product.Stock)
+            //    {
+            //        await _repository.NivelacijaUpdateProduct(record);
+            //    }
+            //}
 
             result = true;
         }
