@@ -3,7 +3,9 @@ using domis.api.Extensions;
 using domis.api.Models;
 using domis.api.Services;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using Serilog;
+using System.Data;
 
 namespace domis.api.BaseExtensions;
 
@@ -25,6 +27,9 @@ public static class Configuration
 
         builder.Services.AddDbContext<DataContext>(options =>
             options.UseNpgsql(connectionString));
+
+        builder.Services.AddScoped<IDbConnection>(sp =>
+            new NpgsqlConnection(connectionString));
 
         builder.Services.AddCors(options =>
         {

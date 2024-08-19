@@ -1,28 +1,46 @@
-﻿using domis.api.Database;
+﻿using Dapper;
+using domis.api.Database;
 using domis.api.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
+using System.Data.Common;
 
 namespace domis.api.Services;
 
 public interface IProductService
 {
-    Task<List<Product>> GetAll();
+    Task<IEnumerable<Product>> GetAll();
 }
 
 public class ProductService : IProductService
 {
     private readonly DataContext _context;
+    private readonly IDbConnection _connection;
 
-    public ProductService(DataContext context)
+    public ProductService(DataContext context, IDbConnection connection)
     {
         _context = context;
+        _connection = connection;
     }
 
-    public async Task<List<Product>> GetAll()
+    public async Task<IEnumerable<Product>> GetAll()
     {
-        var products = await _context.Products.ToListAsync();
+        var sql = @"
+                    SELECT 
+                        id AS Id, 
+                        product_name AS Name, 
+                        product_description AS Description,
+                        sku AS Sku,
+                        price AS Price,
+                        stock AS Stock,
+                        active AS IsActive
+                    FROM domis.product";
 
-        return products;
+        var products = await _connection.QueryAsync<Product>(sql);
+
+        var productsEf = await _context.Products.ToListAsync();
+
+        return products.ToList();
     }
 
 

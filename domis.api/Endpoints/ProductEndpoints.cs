@@ -11,7 +11,7 @@ public static class ProductEndpoints
         group.MapGet("/", async (IProductService productService) =>
         {
             var response = await productService.GetAll();
-            return Results.Ok(null);
+            return Results.Ok(response);
         });
     }
 }
