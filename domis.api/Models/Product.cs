@@ -4,7 +4,7 @@ namespace domis.api.Models;
 
 public class Product
 {
-    [Column("id")]
+    [Column("id")] //EF Core Data Annotation
     public int? Id { get; set; }
     [Column("product_name")]
     public string? Name { get; set; }

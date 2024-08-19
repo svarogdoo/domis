@@ -1,6 +1,7 @@
 ﻿using domis.api.Database;
 using domis.api.Extensions;
 using domis.api.Models;
+using domis.api.Repositories;
 using domis.api.Services;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
@@ -13,6 +14,10 @@ public static class Configuration
 {
     public static void RegisterServices(this WebApplicationBuilder builder)
     {
+        Log.Logger = new LoggerConfiguration()
+            .ReadFrom.Configuration(builder.Configuration)
+            .CreateLogger();
+
         builder.Host.UseSerilog();
 
         //services.AddControllers();
@@ -43,6 +48,10 @@ public static class Configuration
         });
 
         builder.Services.AddScoped<IProductService, ProductService>();
+        builder.Services.AddScoped<IProductRepository, ProductRepository>();
+
+        builder.Services.AddScoped<ICategoryService, CategoryService>();
+        builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
     }
 
     public static void RegisterMiddlewares(this WebApplication app)
