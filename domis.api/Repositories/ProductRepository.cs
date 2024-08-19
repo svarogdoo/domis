@@ -3,6 +3,7 @@ using domis.api.Database;
 using domis.api.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
+using System.Data.Common;
 
 namespace domis.api.Repositories;
 
@@ -13,8 +14,7 @@ public interface IProductRepository
     Task<IEnumerable<Product>?> GetAllByCategory(int categoryId);
     Task<bool> NivelacijaUpdateProduct(NivelacijaRecord updatedRecord);
     Task<bool> NivelacijaUpdateProduct(int id, decimal price, decimal stock);
-
-
+    Task<bool> NivelacijaUpdateProductBatch(IEnumerable<NivelacijaRecord> records);
 }
 
 public class ProductRepository(IDbConnection connection/*, DataContext context*/) : IProductRepository
@@ -120,5 +120,23 @@ public class ProductRepository(IDbConnection connection/*, DataContext context*/
         //return result > 0;
 
         return false;
+    }
+
+    public async Task<bool> NivelacijaUpdateProductBatch(IEnumerable<NivelacijaRecord> records)
+    {
+        var sql = @"
+            UPDATE domis.product
+            SET price = CASE 
+                WHEN id = @Id THEN @Price
+            END,
+            stock = CASE 
+                WHEN id = @Id THEN @Stock
+            END
+            WHERE id = @Id";
+
+        // Execute the query for all records
+        var result = await connection.ExecuteAsync(sql, records);
+
+        return result > 0;
     }
 }
