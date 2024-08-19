@@ -1,26 +1,32 @@
 ﻿using domis.api.Database;
 using domis.api.Extensions;
+using domis.api.Models;
 using domis.api.Services;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 namespace domis.api.BaseExtensions;
 
 public static class Configuration
 {
-    public static void AddServices(this IServiceCollection services, IConfiguration configuration)
+    public static void RegisterServices(this WebApplicationBuilder builder)
     {
+        builder.Host.UseSerilog();
+
         //services.AddControllers();
-        services.AddEndpointsApiExplorer();
+        builder.Services.AddEndpointsApiExplorer();
 
-        services.AddAuthenticationAndAuthorization();
+        builder.Services.AddAuthenticationAndAuthorization();
 
-        services.AddDbContext<IdentityDataContext>(options =>
-            options.UseNpgsql(configuration.GetConnectionString("Database")));
+        var connectionString = builder.Configuration.GetConnectionString("Database");
 
-        services.AddDbContext<DataContext>(options =>
-            options.UseNpgsql(configuration.GetConnectionString("Database")));
+        builder.Services.AddDbContext<IdentityDataContext>(options =>
+            options.UseNpgsql(connectionString));
 
-        services.AddCors(options =>
+        builder.Services.AddDbContext<DataContext>(options =>
+            options.UseNpgsql(connectionString));
+
+        builder.Services.AddCors(options =>
         {
             options.AddDefaultPolicy(
                 policy =>
@@ -31,6 +37,25 @@ public static class Configuration
                 });
         });
 
-        services.AddScoped<IProductService, ProductService>();
+        builder.Services.AddScoped<IProductService, ProductService>();
+    }
+
+    public static void RegisterMiddlewares(this WebApplication app)
+    {
+        //if (app.Environment.IsDevelopment())
+        //{
+            app.UseSwagger();
+            app.UseSwaggerUI();
+
+            app.ApplyMigration();
+        //}
+
+        app.UseHttpsRedirection();
+
+        app.UseCors();
+
+        app.MapIdentityApi<User>();
+
+        //app.UseExceptionHandler();
     }
 }

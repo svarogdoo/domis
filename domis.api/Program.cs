@@ -1,10 +1,6 @@
 using domis.api.BaseExtensions;
 using domis.api.Database;
 using domis.api.Endpoints;
-using domis.api.Extensions;
-using domis.api.Models;
-using domis.api.Services;
-using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,34 +9,18 @@ Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
     .CreateLogger();
 
-builder.Host.UseSerilog();
-
-builder.Services.AddServices(builder.Configuration);
+builder.RegisterServices();
 
 var app = builder.Build();
 
-//app.UseExceptionHandler();
+app.RegisterMiddlewares();
 
-//// Configure the HTTP request pipeline.
 //if (app.Environment.IsDevelopment())
 //{
-    app.UseSwagger();
-    app.UseSwaggerUI();
+using var scope = app.Services.CreateScope();
+var services = scope.ServiceProvider;
+await SeedData.SeedAsync(services);
 
-    app.ApplyMigration();
-
-    using var scope = app.Services.CreateScope();
-    var services = scope.ServiceProvider;
-    await SeedData.SeedAsync(services);
-//}
-
-app.UseHttpsRedirection();
-
-app.UseCors();
-
-//app.MapControllers();
 app.RegisterProductEndpoints();
-
-app.MapIdentityApi<User>();
 
 app.Run();
