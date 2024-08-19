@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace domis.api.Database;
 
-public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) :
+public class IdentityDataContext(DbContextOptions<IdentityDataContext> options) :
         IdentityDbContext<User>(options)
 {
     override protected void OnModelCreating(ModelBuilder builder)

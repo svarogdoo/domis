@@ -11,7 +11,7 @@ using domis.api.Database;
 
 namespace domis.api.Migrations
 {
-    [DbContext(typeof(ApplicationDbContext))]
+    [DbContext(typeof(IdentityDataContext))]
     [Migration("20240802140106_IdentityUserInitMigration")]
     partial class IdentityUserInitMigration
     {
