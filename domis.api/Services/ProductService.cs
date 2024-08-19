@@ -28,7 +28,6 @@ public class ProductService(IProductRepository repository) : IProductService
         return await repository.GetById(id);
     }
 
-
     //public void Add(Product product)
     //{
     //    _products.Add(product);

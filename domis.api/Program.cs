@@ -16,6 +16,7 @@ app.RegisterMiddlewares();
 
 app.RegisterProductEndpoints();
 app.RegisterCategoryEndpoints();
+app.RegisterSyncEndpoints();
 
 app.Run();
 

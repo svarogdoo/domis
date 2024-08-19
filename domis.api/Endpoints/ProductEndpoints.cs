@@ -12,6 +12,7 @@ public static class ProductEndpoints
         group.MapGet("/", async (IProductService productService) =>
         {
             var response = await productService.GetAll();
+
             return Results.Ok(response);
         }).WithDescription("get all products");
 
@@ -28,5 +29,11 @@ public static class ProductEndpoints
 
             return product is null ? Results.NotFound() : Results.Ok(product);
         }).WithDescription("get all products of a certain category");
+
+        //group.MapGet("/nivelacija-update", async (IProductService productService) =>
+        //{
+        //    var response = await productService.NivelacijaUpdate();
+        //    return Results.Ok(response);
+        //}).WithDescription("update all products with nivelacija values");
     }
 }

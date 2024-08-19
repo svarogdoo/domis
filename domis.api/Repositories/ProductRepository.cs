@@ -11,6 +11,8 @@ public interface IProductRepository
     Task<IEnumerable<Product>> GetAll();
     Task<Product?> GetById(int id);
     Task<IEnumerable<Product>?> GetAllByCategory(int categoryId);
+    Task<bool> NivelacijaUpdateProduct(NivelacijaRecord updatedRecord);
+
 }
 
 public class ProductRepository(IDbConnection connection/*, DataContext context*/) : IProductRepository
@@ -86,5 +88,20 @@ public class ProductRepository(IDbConnection connection/*, DataContext context*/
         var product = await connection.QuerySingleOrDefaultAsync<Product>(sql, parameters);
 
         return product;
+    }
+
+    public async Task<bool> NivelacijaUpdateProduct(NivelacijaRecord updatedRecord)
+    {
+        const string sql = @"
+            UPDATE domis.product
+            SET price = @Price,
+                stock = @Stock
+            WHERE id = @ProductId";
+
+        //TO-DO: uncomment when ready
+        //var result = await connection.ExecuteAsync(sql, new { updatedRecord.Id, updatedRecord.Price, updatedRecord.Stock });
+        //return result > 0;
+
+        return false;
     }
 }

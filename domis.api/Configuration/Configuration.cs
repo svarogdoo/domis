@@ -52,6 +52,9 @@ public static class Configuration
 
         builder.Services.AddScoped<ICategoryService, CategoryService>();
         builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+
+        builder.Services.AddHttpClient<ISyncService, SyncService>();
+        builder.Services.AddScoped<ISyncService, SyncService>();
     }
 
     public static void RegisterMiddlewares(this WebApplication app)
