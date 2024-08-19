@@ -5,16 +5,19 @@ using Microsoft.EntityFrameworkCore;
 
 namespace domis.api.BaseExtensions;
 
-public static class ServiceRegistrationExtension
+public static class Configuration
 {
     public static void AddServices(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddControllers();
+        //services.AddControllers();
         services.AddEndpointsApiExplorer();
 
         services.AddAuthenticationAndAuthorization();
 
-        services.AddDbContext<ApplicationDbContext>(options =>
+        services.AddDbContext<IdentityDataContext>(options =>
+            options.UseNpgsql(configuration.GetConnectionString("Database")));
+
+        services.AddDbContext<DataContext>(options =>
             options.UseNpgsql(configuration.GetConnectionString("Database")));
 
         services.AddCors(options =>

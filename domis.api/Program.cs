@@ -1,5 +1,6 @@
 using domis.api.BaseExtensions;
 using domis.api.Database;
+using domis.api.Endpoints;
 using domis.api.Extensions;
 using domis.api.Models;
 using domis.api.Services;
@@ -37,7 +38,8 @@ app.UseHttpsRedirection();
 
 app.UseCors();
 
-app.MapControllers();
+//app.MapControllers();
+app.RegisterProductEndpoints();
 
 app.MapIdentityApi<User>();
 

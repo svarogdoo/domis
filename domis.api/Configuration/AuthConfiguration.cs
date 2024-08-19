@@ -13,7 +13,7 @@ public static class AuthConfiguration
                 .AddRoles<IdentityRole>()
                 .AddUserManager<CustomUserManager<User>>()
                 .AddRoleManager<RoleManager<IdentityRole>>()
-                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddEntityFrameworkStores<IdentityDataContext>()
                 .AddApiEndpoints();
 
         //TO-DO: Restore password requirements in production
