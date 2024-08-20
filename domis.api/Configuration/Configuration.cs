@@ -7,7 +7,6 @@ using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using Serilog;
 using System.Data;
-using AutoMapper;
 
 namespace domis.api.BaseExtensions;
 
@@ -64,10 +63,10 @@ public static class Configuration
     {
         //if (app.Environment.IsDevelopment())
         //{
-            app.UseSwagger();
-            app.UseSwaggerUI();
+        app.UseSwagger();
+        app.UseSwaggerUI();
 
-            app.ApplyMigration();
+        app.ApplyMigration();
         //}
 
         app.UseHttpsRedirection();

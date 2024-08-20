@@ -1,20 +1,20 @@
 ﻿using AutoMapper;
 using Dapper;
-using domis.api.Database;
 using domis.api.DTOs;
 using domis.api.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
-using System.Data.Common;
 
 namespace domis.api.Repositories;
 
 public interface IProductRepository
 {
     Task<IEnumerable<Product>> GetAll();
-    Task<ProductDetailDto2?> GetById(int id);
+
     Task<ProductDetailDto?> GetByIdWithCategoriesAndImages(int id);
+
     Task<IEnumerable<Product>?> GetAllByCategory(int categoryId);
+
     Task<bool> NivelacijaUpdateProductBatch(IEnumerable<NivelacijaRecord> records);
 }
 
@@ -23,9 +23,9 @@ public class ProductRepository(IDbConnection connection, IMapper mapper/*, DataC
     public async Task<IEnumerable<Product>> GetAll()
     {
         const string sql = @"
-                    SELECT 
-                        id AS Id, 
-                        product_name AS Name, 
+                    SELECT
+                        id AS Id,
+                        product_name AS Name,
                         product_description AS Description,
                         sku AS Sku,
                         price AS Price,
@@ -56,8 +56,8 @@ public class ProductRepository(IDbConnection connection, IMapper mapper/*, DataC
                 INNER JOIN CategoryHierarchy ch ON c.parent_category_id = ch.id
             )
 
-            SELECT p.id AS Id, 
-                   p.product_name AS Name, 
+            SELECT p.id AS Id,
+                   p.product_name AS Name,
                    p.product_description AS Description,
                    p.sku AS Sku,
                    p.price AS Price,
@@ -72,130 +72,83 @@ public class ProductRepository(IDbConnection connection, IMapper mapper/*, DataC
         return await connection.QueryAsync<Product>(sql, parameters);
     }
 
-    public async Task<ProductDetailDto2?> GetById(int id)
-    {
-        const string sql = @"
-            SELECT 
-                p.id AS Id, 
-                p.product_name AS Name, 
-                p.product_description AS Description,
-                p.sku AS Sku,
-                p.price AS Price,
-                p.stock AS Stock,
-                p.active AS IsActive,
-                i.image_url AS ImageUrl
-            FROM domis.product p
-            LEFT JOIN domis.product_image pi ON p.id = pi.product_id
-            LEFT JOIN domis.image i ON pi.image_id = i.id
-            WHERE p.id = @Id";
-
-        var parameters = new { Id = id };
-
-        var productDictionary = new Dictionary<int, ProductDetailDto2>();
-
-        await connection.QueryAsync<Product, string, ProductDetailDto2>(
-            sql,
-            (product, imageUrl) =>
-            {
-                if (!productDictionary.TryGetValue(id, out var existingProduct))
-                {
-                    existingProduct = mapper.Map<ProductDetailDto2>(product);
-                    productDictionary.Add(id, existingProduct);
-                }
-
-                // Add the image URL to the list
-                if (!string.IsNullOrEmpty(imageUrl))
-                {
-                    existingProduct.ImageUrls.Add(imageUrl);
-                }
-
-                return existingProduct;
-            },
-            splitOn: "ImageUrl",
-            param: parameters
-        );
-
-        return productDictionary.Values.SingleOrDefault();
-    }
-
-    //public async Task<Product?> GetById2(int id)
-    //{
-    //    const string sql = @"
-    //    SELECT 
-    //        p.id AS Id, 
-    //        p.product_name AS Name, 
-    //        p.product_description AS Description,
-    //        p.sku AS Sku,
-    //        p.price AS Price,
-    //        p.stock AS Stock,
-    //        p.active AS IsActive,
-    //        i.image_url AS ImageUrl
-    //    FROM domis.product p
-    //    LEFT JOIN domis.product_image pi ON p.id = pi.product_id
-    //    LEFT JOIN domis.image i ON pi.image_id = i.id
-    //    WHERE p.id = @Id";
-
-    //    var parameters = new { Id = id };
-
-    //    // Use a dictionary to handle potential multiple images
-    //    var productDictionary = new Dictionary<int, Product>();
-
-    //    await connection.QueryAsync<Product, string, Product>(
-    //        sql,
-    //        (product, imageUrl) =>
-    //        {
-    //            if (!productDictionary.TryGetValue((int)product.Id, out var existingProduct))
-    //            {
-    //                existingProduct = product;
-    //                existingProduct.ImageUrls = new List<string>(); // Initialize list for image URLs
-    //                productDictionary.Add((int)existingProduct.Id, existingProduct);
-    //            }
-
-    //            // Add the image URL to the list
-    //            if (imageUrl != null && !string.IsNullOrEmpty(imageUrl))
-    //            {
-    //                existingProduct.ImageUrls.Add(imageUrl);
-    //            }
-
-    //            return existingProduct;
-    //        },
-    //        splitOn: "ImageUrl",
-    //        param: parameters
-    //    );
-
-    //    // Return the product. If no product is found, return null.
-    //    return productDictionary.Values.SingleOrDefault();
-    //}
-
-
-
-    public async Task<Product?> GetByIdSimple(int id)
-    {
-        const string sql = @"
-                SELECT 
-                    id AS Id, 
-                    product_name AS Name, 
-                    product_description AS Description,
-                    sku AS Sku,
-                    price AS Price,
-                    stock AS Stock,
-                    active AS IsActive
-                FROM domis.product
-                WHERE id = @Id";
-
-        var parameters = new { Id = id };
-
-        var product = await connection.QuerySingleOrDefaultAsync<Product>(sql, parameters);
-
-        return product;
-    }
-
     public async Task<ProductDetailDto?> GetByIdWithCategoriesAndImages(int productId)
     {
+        const string sql = @"
+        WITH RECURSIVE RecursiveCategoryHierarchy AS (
+            -- Anchor member: Start with categories for the product
+            SELECT
+                pc.product_id AS ProductId,
+                c.id AS CategoryId,
+                c.parent_category_id AS ParentCategoryId,
+                c.id::text AS Path -- Start with the category ID as the path
+            FROM domis.product_category pc
+            JOIN domis.category c ON pc.category_id = c.id
+            WHERE pc.product_id = @ProductId
+
+            UNION ALL
+
+            -- Recursive member: Join to find parent categories
+            SELECT
+                rch.ProductId, -- Propagate product ID
+                c.id AS CategoryId,
+                c.parent_category_id AS ParentCategoryId,
+                c.id::text || '/' || rch.Path AS Path -- Prepend the current category ID to the existing path
+            FROM domis.category c
+            INNER JOIN RecursiveCategoryHierarchy rch
+                ON c.id = rch.ParentCategoryId
+        ),
+        ProductInfo AS (
+            SELECT
+                id AS Id,
+                product_name AS Name,
+                product_description AS Description,
+                sku AS Sku,
+                price AS Price,
+                stock AS Stock,
+                active AS IsActive
+            FROM domis.product
+            WHERE id = @ProductId
+        ),
+        ProductImages AS (
+            SELECT
+                pi.product_id AS ProductId,
+                i.image_url AS ImageUrl
+            FROM domis.product_image pi
+            JOIN domis.image i ON pi.image_id = i.id
+            WHERE pi.product_id = @ProductId
+        )
+        SELECT
+            p.Id,
+            p.Name,
+            p.Description,
+            p.Sku,
+            p.Price,
+            p.Stock,
+            p.IsActive,
+            ARRAY_AGG(DISTINCT pi.ImageUrl) AS ImageUrls,
+            ARRAY_AGG(DISTINCT rch.Path) AS CategoryPaths
+        FROM ProductInfo p
+        LEFT JOIN ProductImages pi ON p.Id = pi.ProductId
+        LEFT JOIN RecursiveCategoryHierarchy rch ON p.Id = rch.ProductId
+        WHERE rch.ParentCategoryId IS NULL
+        GROUP BY p.Id, p.Name, p.Description, p.Sku, p.Price, p.Stock, p.IsActive;";
+
+        var result = await connection.QuerySingleOrDefaultAsync<ProductDetailDto>(sql, new { ProductId = productId });
+
+        if (result == null)
+            return null;
+
+        return result;
+    }
+
+    [Obsolete("Using separate dapper calls. Slower than GetByIdWithCategoriesAndImages")]
+    public async Task<ProductDetailDto?> GetByIdWithCategoriesAndImagesSeparateQueries(int productId)
+    {
         var productQuery = @"
-            SELECT 
-                id AS Id, 
-                product_name AS Name, 
+            SELECT
+                id AS Id,
+                product_name AS Name,
                 product_description AS Description,
                 sku AS Sku,
                 price AS Price,
@@ -205,7 +158,7 @@ public class ProductRepository(IDbConnection connection, IMapper mapper/*, DataC
             WHERE id = @ProductId;";
 
         var imagesQuery = @"
-            SELECT 
+            SELECT
                 i.image_url AS ImageUrl
             FROM domis.product_image pi
             JOIN domis.image i ON pi.image_id = i.id
@@ -214,7 +167,7 @@ public class ProductRepository(IDbConnection connection, IMapper mapper/*, DataC
         var categoriesQuery = @"
             WITH RECURSIVE RecursiveCategoryHierarchy AS (
                 -- Anchor member: Start with categories for the product
-                SELECT 
+                SELECT
                     pc.product_id AS ProductId,
                     c.id AS CategoryId,
                     c.parent_category_id AS ParentCategoryId,
@@ -222,11 +175,11 @@ public class ProductRepository(IDbConnection connection, IMapper mapper/*, DataC
                 FROM domis.product_category pc
                 JOIN domis.category c ON pc.category_id = c.id
                 WHERE pc.product_id = @ProductId
-            
+
                 UNION ALL
-            
+
                 -- Recursive member: Join to find parent categories
-                SELECT 
+                SELECT
                     rch.ProductId, -- Propagate product ID
                     c.id AS CategoryId,
                     c.parent_category_id AS ParentCategoryId,
@@ -235,9 +188,9 @@ public class ProductRepository(IDbConnection connection, IMapper mapper/*, DataC
                 INNER JOIN RecursiveCategoryHierarchy rch
                     ON c.id = rch.ParentCategoryId
             )
-        
+
             -- Select only the path and product ID for top-level categories (where ParentCategoryId is NULL)
-            SELECT 
+            SELECT
                 Path
             FROM RecursiveCategoryHierarchy
             WHERE ParentCategoryId IS NULL
@@ -251,8 +204,8 @@ public class ProductRepository(IDbConnection connection, IMapper mapper/*, DataC
         var categoryPaths = (await connection.QueryAsync<string>(categoriesQuery, new { ProductId = productId })).ToList();
 
         var productDetail = mapper.Map<ProductDetailDto>(product);
-        productDetail.ImageUrls = imageUrls;
-        productDetail.CategoryPaths = categoryPaths;
+        productDetail.ImageUrls = [.. imageUrls];
+        productDetail.CategoryPaths = [.. categoryPaths];
 
         return productDetail;
     }
@@ -261,10 +214,10 @@ public class ProductRepository(IDbConnection connection, IMapper mapper/*, DataC
     {
         const string sql = @"
             UPDATE domis.product
-            SET price = CASE 
+            SET price = CASE
                 WHEN sku = @Sku THEN @Price
             END,
-            stock = CASE 
+            stock = CASE
                 WHEN sku = @Sku THEN @Stock
             END
             WHERE sku = @Sku";

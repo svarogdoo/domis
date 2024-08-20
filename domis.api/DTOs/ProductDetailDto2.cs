@@ -1,5 +1,6 @@
 ﻿namespace domis.api.DTOs;
 
+[Obsolete]
 public class ProductDetailDto2
 {
     public string? Name { get; set; }
@@ -19,6 +20,6 @@ public class ProductDetailDto
     public decimal Price { get; set; }
     public decimal Stock { get; set; }
     public bool IsActive { get; set; }
-    public List<string> ImageUrls { get; set; } = [];
-    public List<string> CategoryPaths { get; set; } = [];
+    public string[] ImageUrls { get; set; } = [];
+    public string[] CategoryPaths { get; set; } = [];
 }

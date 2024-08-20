@@ -1,10 +1,6 @@
-﻿using CsvHelper;
-using CsvHelper.Configuration;
-using domis.api.Models;
+﻿using domis.api.Models;
 using domis.api.Repositories;
 using Serilog;
-using System.Globalization;
-using System.Net.Http;
 
 namespace domis.api.Services;
 

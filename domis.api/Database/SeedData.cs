@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
-using domis.api.Models;
+﻿using domis.api.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace domis.api.Database;
 
