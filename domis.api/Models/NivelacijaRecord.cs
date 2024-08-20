@@ -3,11 +3,11 @@ using domis.api.Extensions;
 
 namespace domis.api.Models;
 
-public class NivelacijaRecord
+public class NivelacijaRecord(int id, decimal price, decimal stock)
 {
-    public int Id { get; set; }
+    public int Id { get; set; } = id;
     [TypeConverter(typeof(CustomDecimalConverter))]
-    public decimal Price { get; set; }
+    public decimal Price { get; set; } = price;
     [TypeConverter(typeof(CustomDecimalConverter))]
-    public decimal Stock { get; set; }
+    public decimal Stock { get; set; } = stock;
 }
