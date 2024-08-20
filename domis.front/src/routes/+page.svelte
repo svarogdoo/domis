@@ -2,7 +2,6 @@
   import { onMount } from "svelte";
   import CategoryCard from "./CategoryCard.svelte";
 
-  // TODO: get categories
   let categories = [
     {
       id: 1,
