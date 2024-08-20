@@ -4,7 +4,6 @@ using Microsoft.Extensions.Options;
 
 namespace domis.api.Extensions;
 
-
 public class CustomUserManager<TUser>(IUserStore<TUser> store,
                          IOptions<IdentityOptions> optionsAccessor,
                          IPasswordHasher<TUser> passwordHasher,

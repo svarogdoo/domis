@@ -7,6 +7,8 @@ namespace domis.api.Repositories;
 public interface ICategoryRepository
 {
     Task<IEnumerable<Category>?> GetAll();
+
+    //probably no need for this one
     Task<Category?> GetById(int id);
 }
 
@@ -17,18 +19,18 @@ public class CategoryRepository(IDbConnection connection) : ICategoryRepository
         const string sql = @"
             WITH RECURSIVE CategoryHierarchy AS (
                 -- Anchor member: Start with top-level categories (categories with no parent)
-                SELECT 
+                SELECT
                     id AS CategoryId,
                     parent_category_id AS ParentCategoryId,
                     category_name AS CategoryName,
                     category_description AS CategoryDescription
                 FROM domis.category
                 WHERE parent_category_id IS NULL
-                
+
                 UNION ALL
-                
+
                 -- Recursive member: Join to find subcategories
-                SELECT 
+                SELECT
                     c.id AS CategoryId,
                     c.parent_category_id AS ParentCategoryId,
                     c.category_name AS CategoryName,
@@ -37,12 +39,12 @@ public class CategoryRepository(IDbConnection connection) : ICategoryRepository
                 INNER JOIN CategoryHierarchy ch
                     ON c.parent_category_id = ch.CategoryId
             )
-            
+
             -- Select all categories and their subcategories
-            SELECT 
-                CategoryId, 
-                ParentCategoryId, 
-                CategoryName, 
+            SELECT
+                CategoryId,
+                ParentCategoryId,
+                CategoryName,
                 CategoryDescription
             FROM CategoryHierarchy
             ORDER BY CategoryId;
@@ -69,19 +71,10 @@ public class CategoryRepository(IDbConnection connection) : ICategoryRepository
         return categoryDict.Values.Where(c => !c.ParentCategoryId.HasValue).ToList();
     }
 
+    //probably no need for this one
     public async Task<Category?> GetById(int id)
     {
-        var sql = @"
-                SELECT 
-                    id AS Id, 
-                    product_name AS Name, 
-                    product_description AS Description,
-                    sku AS Sku,
-                    price AS Price,
-                    stock AS Stock,
-                    active AS IsActive
-                FROM domis.product
-                WHERE id = @Id";
+        var sql = @"";
 
         var parameters = new { Id = id };
 

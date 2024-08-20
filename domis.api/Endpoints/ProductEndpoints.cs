@@ -1,5 +1,4 @@
-﻿using domis.api.Models;
-using domis.api.Services;
+﻿using domis.api.Services;
 
 namespace domis.api.Endpoints;
 
@@ -18,8 +17,8 @@ public static class ProductEndpoints
 
         group.MapGet("/{id:int}", async (int id, IProductService productService) =>
         {
-            var product = await productService.GetById(id);
-             
+            var product = await productService.GetByIdWithImagesAndCategories(id);
+
             return product is null ? Results.NotFound() : Results.Ok(product);
         }).WithDescription("get product by id");
 
@@ -29,11 +28,5 @@ public static class ProductEndpoints
 
             return product is null ? Results.NotFound() : Results.Ok(product);
         }).WithDescription("get all products of a certain category");
-
-        //group.MapGet("/nivelacija-update", async (IProductService productService) =>
-        //{
-        //    var response = await productService.NivelacijaUpdate();
-        //    return Results.Ok(response);
-        //}).WithDescription("update all products with nivelacija values");
     }
 }
