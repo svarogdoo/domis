@@ -20,13 +20,13 @@
     justify-content: center;
   }
 
-  .product-sidebar {
-    width: 17%;
+  .category {
+    width: 95%;
+    display: flex;
   }
 
-  .category {
-    width: 90%;
-    display: flex;
+  .product-sidebar {
+    width: 17%;
   }
 
   .products {

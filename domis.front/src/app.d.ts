@@ -9,9 +9,9 @@ declare global {
     // interface Platform {}
   }
   interface Category {
-    id: string;
-    name: string;
-    subcategories?: List[Category];
+    categoryId: string;
+    categoryName: string;
+    subcategories?: Array<Category>;
   }
 }
 
