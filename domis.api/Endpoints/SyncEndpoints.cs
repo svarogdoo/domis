@@ -10,7 +10,7 @@ public static class SyncEndpoints
 
         group.MapPut("/nivelacija-update", async (ISyncService syncService) =>
         {
-            var response = await syncService.NivelacijaUpdate();
+            var response = await syncService.NivelacijaUpdateBatch();
             return Results.Ok(response);
         }).WithDescription("update all products with values from nivelacija file");
     }
