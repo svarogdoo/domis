@@ -71,17 +71,7 @@ public class CategoryRepository(IDbConnection connection) : ICategoryRepository
 
     public async Task<Category?> GetById(int id)
     {
-        var sql = @"
-                SELECT 
-                    id AS Id, 
-                    product_name AS Name, 
-                    product_description AS Description,
-                    sku AS Sku,
-                    price AS Price,
-                    stock AS Stock,
-                    active AS IsActive
-                FROM domis.product
-                WHERE id = @Id";
+        var sql = @"";
 
         var parameters = new { Id = id };
 

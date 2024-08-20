@@ -23,7 +23,7 @@ public static class CategoryEndpoints
             var product = await categoryService.GetById(id);
 
             return product is null ? Results.NotFound() : Results.Ok(product);
-        }).WithDescription("get category by id");
+        }).WithDescription("get category by id | NOT IMPLEMENTED");
 
     }
 }

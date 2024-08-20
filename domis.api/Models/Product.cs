@@ -18,4 +18,5 @@ public class Product
     public decimal? Stock { get; set; }
     [Column("active")]
     public bool? IsActive { get; set; }
+    //public List<string> ImageUrls { get; set; } = [];
 }

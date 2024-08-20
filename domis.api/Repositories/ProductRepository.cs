@@ -1,5 +1,7 @@
-﻿using Dapper;
+﻿using AutoMapper;
+using Dapper;
 using domis.api.Database;
+using domis.api.DTOs;
 using domis.api.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
@@ -10,14 +12,13 @@ namespace domis.api.Repositories;
 public interface IProductRepository
 {
     Task<IEnumerable<Product>> GetAll();
-    Task<Product?> GetById(int id);
+    Task<ProductDetailDto2?> GetById(int id);
+    Task<ProductDetailDto?> GetByIdWithCategoriesAndImages(int id);
     Task<IEnumerable<Product>?> GetAllByCategory(int categoryId);
-    Task<bool> NivelacijaUpdateProduct(NivelacijaRecord updatedRecord);
-    Task<bool> NivelacijaUpdateProduct(int id, decimal price, decimal stock);
     Task<bool> NivelacijaUpdateProductBatch(IEnumerable<NivelacijaRecord> records);
 }
 
-public class ProductRepository(IDbConnection connection/*, DataContext context*/) : IProductRepository
+public class ProductRepository(IDbConnection connection, IMapper mapper/*, DataContext context*/) : IProductRepository
 {
     public async Task<IEnumerable<Product>> GetAll()
     {
@@ -71,7 +72,104 @@ public class ProductRepository(IDbConnection connection/*, DataContext context*/
         return await connection.QueryAsync<Product>(sql, parameters);
     }
 
-    public async Task<Product?> GetById(int id)
+    public async Task<ProductDetailDto2?> GetById(int id)
+    {
+        const string sql = @"
+            SELECT 
+                p.id AS Id, 
+                p.product_name AS Name, 
+                p.product_description AS Description,
+                p.sku AS Sku,
+                p.price AS Price,
+                p.stock AS Stock,
+                p.active AS IsActive,
+                i.image_url AS ImageUrl
+            FROM domis.product p
+            LEFT JOIN domis.product_image pi ON p.id = pi.product_id
+            LEFT JOIN domis.image i ON pi.image_id = i.id
+            WHERE p.id = @Id";
+
+        var parameters = new { Id = id };
+
+        var productDictionary = new Dictionary<int, ProductDetailDto2>();
+
+        await connection.QueryAsync<Product, string, ProductDetailDto2>(
+            sql,
+            (product, imageUrl) =>
+            {
+                if (!productDictionary.TryGetValue(id, out var existingProduct))
+                {
+                    existingProduct = mapper.Map<ProductDetailDto2>(product);
+                    productDictionary.Add(id, existingProduct);
+                }
+
+                // Add the image URL to the list
+                if (!string.IsNullOrEmpty(imageUrl))
+                {
+                    existingProduct.ImageUrls.Add(imageUrl);
+                }
+
+                return existingProduct;
+            },
+            splitOn: "ImageUrl",
+            param: parameters
+        );
+
+        return productDictionary.Values.SingleOrDefault();
+    }
+
+    //public async Task<Product?> GetById2(int id)
+    //{
+    //    const string sql = @"
+    //    SELECT 
+    //        p.id AS Id, 
+    //        p.product_name AS Name, 
+    //        p.product_description AS Description,
+    //        p.sku AS Sku,
+    //        p.price AS Price,
+    //        p.stock AS Stock,
+    //        p.active AS IsActive,
+    //        i.image_url AS ImageUrl
+    //    FROM domis.product p
+    //    LEFT JOIN domis.product_image pi ON p.id = pi.product_id
+    //    LEFT JOIN domis.image i ON pi.image_id = i.id
+    //    WHERE p.id = @Id";
+
+    //    var parameters = new { Id = id };
+
+    //    // Use a dictionary to handle potential multiple images
+    //    var productDictionary = new Dictionary<int, Product>();
+
+    //    await connection.QueryAsync<Product, string, Product>(
+    //        sql,
+    //        (product, imageUrl) =>
+    //        {
+    //            if (!productDictionary.TryGetValue((int)product.Id, out var existingProduct))
+    //            {
+    //                existingProduct = product;
+    //                existingProduct.ImageUrls = new List<string>(); // Initialize list for image URLs
+    //                productDictionary.Add((int)existingProduct.Id, existingProduct);
+    //            }
+
+    //            // Add the image URL to the list
+    //            if (imageUrl != null && !string.IsNullOrEmpty(imageUrl))
+    //            {
+    //                existingProduct.ImageUrls.Add(imageUrl);
+    //            }
+
+    //            return existingProduct;
+    //        },
+    //        splitOn: "ImageUrl",
+    //        param: parameters
+    //    );
+
+    //    // Return the product. If no product is found, return null.
+    //    return productDictionary.Values.SingleOrDefault();
+    //}
+
+
+
+    public async Task<Product?> GetByIdSimple(int id)
     {
         const string sql = @"
                 SELECT 
@@ -92,34 +190,71 @@ public class ProductRepository(IDbConnection connection/*, DataContext context*/
         return product;
     }
 
-    public async Task<bool> NivelacijaUpdateProduct(NivelacijaRecord updatedRecord)
+    public async Task<ProductDetailDto?> GetByIdWithCategoriesAndImages(int productId)
     {
-        const string sql = @"
-            UPDATE domis.product
-            SET price = @Price,
-                stock = @Stock
-            WHERE id = @ProductId";
+        var productQuery = @"
+            SELECT 
+                id AS Id, 
+                product_name AS Name, 
+                product_description AS Description,
+                sku AS Sku,
+                price AS Price,
+                stock AS Stock,
+                active AS IsActive
+            FROM domis.product
+            WHERE id = @ProductId;";
 
-        //TO-DO: uncomment when ready
-        //var result = await connection.ExecuteAsync(sql, new { updatedRecord.Id, updatedRecord.Price, updatedRecord.Stock });
-        //return result > 0;
+        var imagesQuery = @"
+            SELECT 
+                i.image_url AS ImageUrl
+            FROM domis.product_image pi
+            JOIN domis.image i ON pi.image_id = i.id
+            WHERE pi.product_id = @ProductId;";
 
-        return false;
-    }
+        var categoriesQuery = @"
+            WITH RECURSIVE RecursiveCategoryHierarchy AS (
+                -- Anchor member: Start with categories for the product
+                SELECT 
+                    pc.product_id AS ProductId,
+                    c.id AS CategoryId,
+                    c.parent_category_id AS ParentCategoryId,
+                    c.id::text AS Path -- Start with the category ID as the path
+                FROM domis.product_category pc
+                JOIN domis.category c ON pc.category_id = c.id
+                WHERE pc.product_id = @ProductId
+            
+                UNION ALL
+            
+                -- Recursive member: Join to find parent categories
+                SELECT 
+                    rch.ProductId, -- Propagate product ID
+                    c.id AS CategoryId,
+                    c.parent_category_id AS ParentCategoryId,
+                    c.id::text || '/' || rch.Path AS Path -- Prepend the current category ID to the existing path
+                FROM domis.category c
+                INNER JOIN RecursiveCategoryHierarchy rch
+                    ON c.id = rch.ParentCategoryId
+            )
+        
+            -- Select only the path and product ID for top-level categories (where ParentCategoryId is NULL)
+            SELECT 
+                Path
+            FROM RecursiveCategoryHierarchy
+            WHERE ParentCategoryId IS NULL
+            ORDER BY Path;";
 
-    public async Task<bool> NivelacijaUpdateProduct(int id, decimal price, decimal stock)
-    {
-        const string sql = @"
-            UPDATE domis.product
-            SET price = @Price,
-                stock = @Stock
-            WHERE id = @ProductId";
+        var product = await connection.QuerySingleOrDefaultAsync<Product>(productQuery, new { ProductId = productId });
+        if (product == null)
+            return null;
 
-        //TO-DO: uncomment when ready
-        //var result = await connection.ExecuteAsync(sql, new { id, price, stock });
-        //return result > 0;
+        var imageUrls = (await connection.QueryAsync<string>(imagesQuery, new { ProductId = productId })).ToList();
+        var categoryPaths = (await connection.QueryAsync<string>(categoriesQuery, new { ProductId = productId })).ToList();
 
-        return false;
+        var productDetail = mapper.Map<ProductDetailDto>(product);
+        productDetail.ImageUrls = imageUrls;
+        productDetail.CategoryPaths = categoryPaths;
+
+        return productDetail;
     }
 
     public async Task<bool> NivelacijaUpdateProductBatch(IEnumerable<NivelacijaRecord> records)

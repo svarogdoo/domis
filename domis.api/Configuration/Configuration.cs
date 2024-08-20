@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using Serilog;
 using System.Data;
+using AutoMapper;
 
 namespace domis.api.BaseExtensions;
 
@@ -46,6 +47,8 @@ public static class Configuration
                           .AllowAnyHeader();
                 });
         });
+
+        builder.Services.AddAutoMapper(typeof(MappingProfile));
 
         builder.Services.AddScoped<IProductService, ProductService>();
         builder.Services.AddScoped<IProductRepository, ProductRepository>();
