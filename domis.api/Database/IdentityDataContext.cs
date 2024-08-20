@@ -7,7 +7,7 @@ namespace domis.api.Database;
 public class IdentityDataContext(DbContextOptions<IdentityDataContext> options) :
         IdentityDbContext<User>(options)
 {
-    override protected void OnModelCreating(ModelBuilder builder)
+    protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
 

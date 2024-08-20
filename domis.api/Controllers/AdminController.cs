@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using domis.api.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using domis.api.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace domis.api.Controllers;
 

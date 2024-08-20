@@ -47,6 +47,8 @@ public static class Configuration
                 });
         });
 
+        builder.Services.AddAutoMapper(typeof(MappingProfile));
+
         builder.Services.AddScoped<IProductService, ProductService>();
         builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
@@ -61,10 +63,10 @@ public static class Configuration
     {
         //if (app.Environment.IsDevelopment())
         //{
-            app.UseSwagger();
-            app.UseSwaggerUI();
+        app.UseSwagger();
+        app.UseSwaggerUI();
 
-            app.ApplyMigration();
+        app.ApplyMigration();
         //}
 
         app.UseHttpsRedirection();

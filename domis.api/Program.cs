@@ -1,6 +1,5 @@
 using domis.api.BaseExtensions;
 using domis.api.Endpoints;
-using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
