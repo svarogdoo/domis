@@ -124,17 +124,16 @@ public class ProductRepository(IDbConnection connection/*, DataContext context*/
 
     public async Task<bool> NivelacijaUpdateProductBatch(IEnumerable<NivelacijaRecord> records)
     {
-        var sql = @"
+        const string sql = @"
             UPDATE domis.product
             SET price = CASE 
-                WHEN id = @Id THEN @Price
+                WHEN sku = @Sku THEN @Price
             END,
             stock = CASE 
-                WHEN id = @Id THEN @Stock
+                WHEN sku = @Sku THEN @Stock
             END
-            WHERE id = @Id";
+            WHERE sku = @Sku";
 
-        // Execute the query for all records
         var result = await connection.ExecuteAsync(sql, records);
 
         return result > 0;

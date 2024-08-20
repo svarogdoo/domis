@@ -124,14 +124,14 @@ public class SyncService : ISyncService
                 var splitLine = line.Split(';');
 
                 if (splitLine.Length != 3 ||
-                    !int.TryParse(splitLine[0], out int id) ||
+                    !int.TryParse(splitLine[0], out int sku) ||
                     !decimal.TryParse(splitLine[1], out decimal price) ||
                     !decimal.TryParse(splitLine[2], out decimal stock))
                 {
                     continue;
                 }
 
-                updates.Add(new NivelacijaRecord(id, price, stock));
+                updates.Add(new NivelacijaRecord(sku, price, stock));
             }
 
             if (updates.Count > 0)
