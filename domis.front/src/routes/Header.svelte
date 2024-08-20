@@ -19,7 +19,7 @@
       <li class="input">
         <img src={searchIcon} alt="search" class="absolute ml-4" />
         <input
-          class="pl-12 py-3 rounded-md"
+          class="pl-12 py-3 rounded-md font-extralight"
           type="text"
           id="search-field"
           placeholder="Pretražite prodavnicu (upišite ime ili šifru proizvoda)"

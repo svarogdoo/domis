@@ -7,7 +7,9 @@
     <h2 class="text-2xl">Keramika</h2>
     <div class="px-3 py-1 border-gray-500 border rounded-full">Sortiraj</div>
   </div>
-  <div class="product-cards grid grid-cols-3 gap-x-12 gap-y-6">
+  <div
+    class="product-cards grid grid-cols-1 lg:grid-cols-3 gap-x-6 xl:gap-x-12 gap-y-6"
+  >
     <ProductCard />
     <ProductCard />
     <ProductCard />

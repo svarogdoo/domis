@@ -1,6 +1,9 @@
 <script lang="ts"></script>
 
-<div class="product-card flex flex-col p-2 shadow-lg">
+<a
+  href="/category/product"
+  class="product-card flex flex-col p-2 hover:scale-105 transition ease-in-out"
+>
   <img
     class="w-full h-60 object-cover rounded-lg mb-4"
     src="https://cdn.speedsize.com/e0ef94ef-bbea-450b-a400-575c3145c135/www.tilebar.com/media/wysiwyg/Homepage/Hero/hp-all-collections-new.jpg?01"
@@ -34,12 +37,12 @@
         <p class="text-sm text-gray-400 pt-1 font-thin">po m²</p>
       </div>
       <a
-        href="/category/product"
+        href="/category/product/product"
         class="order text-sm px-4 py-2 bg-gray-100 hover:bg-gray-200">NARUČI</a
       >
     </div>
   </div>
-</div>
+</a>
 
 <style>
   .product-card {
@@ -47,6 +50,6 @@
   }
 
   .order {
-    letter-spacing: 0.4em;
+    letter-spacing: 0.1em;
   }
 </style>
