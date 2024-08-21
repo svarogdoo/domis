@@ -1,6 +1,6 @@
 <script lang="ts">
-  import SidebarCategory from "./SidebarCategory.svelte";
   import { categories } from "../../stores/categories";
+  import SidebarCategory from "./SidebarCategory.svelte";
 
   let categoriesList: Array<Category>;
   $: categories.subscribe((value) => {

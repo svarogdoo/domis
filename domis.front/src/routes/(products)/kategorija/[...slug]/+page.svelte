@@ -2,7 +2,7 @@
   import { onMount } from "svelte";
   import { page } from "$app/stores";
   import ProductCard from "./CategoryProductCard.svelte";
-  import { getCategoryProducts } from "../../services/category-service";
+  import { getCategoryProducts } from "../../../../services/category-service";
 
   let products: Array<CategoryProduct> = [];
   let slug;
