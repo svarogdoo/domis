@@ -33,6 +33,7 @@
 
 <section>
   <div class="flex justify-between items-center mb-3">
+    <!-- TODO: use actual category name -->
     <h2 class="text-2xl">Keramika</h2>
     <div class="px-3 py-1 border-gray-500 border rounded-full">Sortiraj</div>
   </div>
