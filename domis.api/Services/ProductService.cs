@@ -10,7 +10,7 @@ public interface IProductService
 
     Task<ProductDetailDto?> GetSingle(int id);
 
-    Task<IEnumerable<ProductPreviewDto>?> GetProductsByCategory(int categoryId);
+    Task<IEnumerable<ProductPreviewDto>?> GetProductsByCategory(int categoryId, int? pageNumber, int? pageSize);
 }
 
 public class ProductService(IProductRepository repository) : IProductService
@@ -20,13 +20,17 @@ public class ProductService(IProductRepository repository) : IProductService
         return await repository.GetAll();
     }
 
-    public async Task<IEnumerable<ProductPreviewDto>?> GetProductsByCategory(int categoryId)
+    public async Task<IEnumerable<ProductPreviewDto>?> GetProductsByCategory(int categoryId, int? pageNumber, int? pageSize)
     {
-        return await repository.GetAllByCategory(categoryId);
+        if (pageNumber < 1) pageNumber = 1;
+        if (pageSize < 1 || pageSize > 50) pageSize = 20;
+
+        return await repository.GetAllByCategory(categoryId, pageNumber ?? 1, pageSize ?? 20);
     }
 
     public async Task<ProductDetailDto?> GetSingle(int id)
     {
+
         return await repository.GetByIdWithCategoriesAndImagesSeparateQueries(id);
 
         //return await repository.GetByIdWithCategoriesAndImages(id);

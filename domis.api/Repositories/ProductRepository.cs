@@ -15,7 +15,7 @@ public interface IProductRepository
     Task<ProductDetailDto?> GetByIdWithCategoriesAndImages(int id);
     Task<ProductDetailDto?> GetByIdWithCategoriesAndImagesSeparateQueries(int id);
 
-    Task<IEnumerable<ProductPreviewDto>?> GetAllByCategory(int categoryId);
+    Task<IEnumerable<ProductPreviewDto>?> GetAllByCategory(int categoryId, int pageNumber, int pageSize);
 
     Task<bool> NivelacijaUpdateProductBatch(IEnumerable<NivelacijaRecord> records);
 }
@@ -39,7 +39,7 @@ public class ProductRepository(IDbConnection connection, IMapper mapper/*, DataC
         return products;
     }
 
-    public async Task<IEnumerable<ProductPreviewDto>?> GetAllByCategory(int categoryId)
+    public async Task<IEnumerable<ProductPreviewDto>?> GetAllByCategory(int categoryId, int pageNumber, int pageSize)
     {
         const string sql = @"
             WITH RECURSIVE CategoryHierarchy AS (
@@ -81,12 +81,14 @@ public class ProductRepository(IDbConnection connection, IMapper mapper/*, DataC
                 WHERE p.active = true -- filter to include only active products
             )
             SELECT *
-            FROM ProductsWithImages;
+            FROM ProductsWithImages
+            ORDER BY Name -- Ensure you have a column to order by
+            OFFSET @Offset LIMIT @Limit;
         ";
 
         try
         {
-            var parameters = new { CategoryId = categoryId };
+            var parameters = new { CategoryId = categoryId, OffSet = pageNumber, Limit = pageSize };
             var products = await connection.QueryAsync<ProductPreviewDto>(sql, parameters);
 
             return products.ToList();
