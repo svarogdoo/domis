@@ -9,7 +9,7 @@ public class MappingProfile : Profile
     public MappingProfile()
     {
         CreateMap<Product, ProductDetailDto>()
-            .ForMember(dest => dest.ImageUrls, opt => opt.Ignore())
+            .ForMember(dest => dest.Images, opt => opt.Ignore())
             .ForMember(dest => dest.CategoryPaths, opt => opt.Ignore());
     }
 }

@@ -8,25 +8,28 @@ public static class ProductEndpoints
     {
         var group = routes.MapGroup("/api/products").WithTags("Products");
 
+
         group.MapGet("/", async (IProductService productService) =>
         {
-            var response = await productService.GetAll();
+            var response = await productService.GetProducts();
 
             return Results.Ok(response);
         }).WithDescription("get all products");
 
+
         group.MapGet("/{id:int}", async (int id, IProductService productService) =>
         {
-            var product = await productService.GetByIdWithImagesAndCategories(id);
+            var product = await productService.GetSingle(id);
 
             return product is null ? Results.NotFound() : Results.Ok(product);
         }).WithDescription("get product by id");
 
+
         group.MapGet("/category/{categoryId:int}", async (int categoryId, IProductService productService) =>
         {
-            var product = await productService.GetAllByCategory(categoryId);
+            var product = await productService.GetProductsByCategory(categoryId);
 
-            return product is null ? Results.NotFound() : Results.Ok(product);
+            return product is null ? Results.NoContent() : Results.Ok(product);
         }).WithDescription("get all products of a certain category");
     }
 }

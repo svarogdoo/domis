@@ -6,27 +6,29 @@ namespace domis.api.Services;
 
 public interface IProductService
 {
-    Task<IEnumerable<Product>> GetAll();
+    Task<IEnumerable<ProductPreviewDto>> GetProducts();
 
-    Task<ProductDetailDto?> GetByIdWithImagesAndCategories(int id);
+    Task<ProductDetailDto?> GetSingle(int id);
 
-    Task<IEnumerable<Product>?> GetAllByCategory(int categoryId);
+    Task<IEnumerable<ProductPreviewDto>?> GetProductsByCategory(int categoryId);
 }
 
 public class ProductService(IProductRepository repository) : IProductService
 {
-    public async Task<IEnumerable<Product>> GetAll()
+    public async Task<IEnumerable<ProductPreviewDto>> GetProducts()
     {
         return await repository.GetAll();
     }
 
-    public async Task<IEnumerable<Product>?> GetAllByCategory(int categoryId)
+    public async Task<IEnumerable<ProductPreviewDto>?> GetProductsByCategory(int categoryId)
     {
         return await repository.GetAllByCategory(categoryId);
     }
 
-    public async Task<ProductDetailDto?> GetByIdWithImagesAndCategories(int id)
+    public async Task<ProductDetailDto?> GetSingle(int id)
     {
-        return await repository.GetByIdWithCategoriesAndImages(id);
+        return await repository.GetByIdWithCategoriesAndImagesSeparateQueries(id);
+
+        //return await repository.GetByIdWithCategoriesAndImages(id);
     }
 }
