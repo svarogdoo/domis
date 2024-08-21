@@ -3,6 +3,7 @@ using Dapper;
 using domis.api.DTOs;
 using domis.api.Models;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using System.Data;
 
 namespace domis.api.Repositories;
@@ -83,8 +84,18 @@ public class ProductRepository(IDbConnection connection, IMapper mapper/*, DataC
             FROM ProductsWithImages;
         ";
 
-        var parameters = new { CategoryId = categoryId };
-        return await connection.QueryAsync<ProductPreviewDto>(sql, parameters);
+        try
+        {
+            var parameters = new { CategoryId = categoryId };
+            var products = await connection.QueryAsync<ProductPreviewDto>(sql, parameters);
+
+            return products.ToList();
+        }
+        catch (Exception ex)
+        {
+            Log.Error("An error occurred: {exception}", ex);
+            return null;
+        }
     }
 
     public async Task<ProductDetailDto?> GetByIdWithCategoriesAndImages(int productId)
