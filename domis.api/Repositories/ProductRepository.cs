@@ -12,15 +12,14 @@ public interface IProductRepository
 {
     Task<IEnumerable<ProductPreviewDto>> GetAll();
 
-    Task<ProductDetailDto?> GetByIdWithCategoriesAndImages(int id);
-    Task<ProductDetailDto?> GetByIdWithCategoriesAndImagesSeparateQueries(int id);
+    Task<ProductDetailDto?> GetByIdWithDetails(int id);
 
-    Task<IEnumerable<ProductPreviewDto>?> GetAllByCategory(int categoryId);
+    Task<IEnumerable<ProductPreviewDto>?> GetAllByCategory(int categoryId, int pageNumber, int pageSize);
 
     Task<bool> NivelacijaUpdateProductBatch(IEnumerable<NivelacijaRecord> records);
 }
 
-public class ProductRepository(IDbConnection connection, IMapper mapper/*, DataContext context*/) : IProductRepository
+public class ProductRepository(IDbConnection connection, IMapper mapper) : IProductRepository
 {
     public async Task<IEnumerable<ProductPreviewDto>> GetAll()
     {
@@ -33,13 +32,20 @@ public class ProductRepository(IDbConnection connection, IMapper mapper/*, DataC
                         stock AS Stock
                     FROM domis.product";
 
-        var products = await connection.QueryAsync<ProductPreviewDto>(sql);
-        //var productsEF = await context.Products.ToListAsync();
+        try
+        {
+            var products = await connection.QueryAsync<ProductPreviewDto>(sql);
+            //var productsEF = await context.Products.ToListAsync();
 
-        return products;
+            return products;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "An error occurred while fetching products"); throw;
+        }
     }
 
-    public async Task<IEnumerable<ProductPreviewDto>?> GetAllByCategory(int categoryId)
+    public async Task<IEnumerable<ProductPreviewDto>?> GetAllByCategory(int categoryId, int pageNumber, int pageSize)
     {
         const string sql = @"
             WITH RECURSIVE CategoryHierarchy AS (
@@ -81,62 +87,27 @@ public class ProductRepository(IDbConnection connection, IMapper mapper/*, DataC
                 WHERE p.active = true -- filter to include only active products
             )
             SELECT *
-            FROM ProductsWithImages;
+            FROM ProductsWithImages
+            ORDER BY Name -- Ensure you have a column to order by
+            OFFSET @Offset LIMIT @Limit;
         ";
 
         try
         {
-            var parameters = new { CategoryId = categoryId };
+            var offset = (pageNumber - 1) * pageSize;
+
+            var parameters = new { CategoryId = categoryId, Offset = offset, Limit = pageSize };
             var products = await connection.QueryAsync<ProductPreviewDto>(sql, parameters);
 
             return products.ToList();
         }
         catch (Exception ex)
         {
-            Log.Error("An error occurred: {exception}", ex);
-            return null;
+            Log.Error(ex, "An error ocurred while getting products by category"); throw;
         }
     }
 
-    public async Task<ProductDetailDto?> GetByIdWithCategoriesAndImages(int productId)
-    {
-
-        const string sql = @"";
-
-        // Execute the query
-        var result = await connection.QuerySingleOrDefaultAsync<dynamic>(sql, new { ProductId = productId });
-
-        if (result == null)
-            return null;
-
-        // Map the result to ProductDetailDto
-        var productDetail = new ProductDetailDto
-        {
-            Name = result.Name,
-            Description = result.Description,
-            Sku = result.Sku,
-            Price = result.Price,
-            Stock = result.Stock,
-            IsActive = result.IsActive,
-            CategoryPaths = ((IEnumerable<object>)result.CategoryPaths).Cast<string>().ToArray(),
-            Images = ((IEnumerable<dynamic>)result.Images)
-                .Select(img => new ImageDto
-                {
-                    Url = (string)img.Url,
-                    Type = (string)img.Type
-                })
-                .ToList()
-        };
-
-        var product = await connection.QuerySingleOrDefaultAsync<ProductDetailDto>(sql, new { ProductId = productId });
-
-        if (product == null)
-            return null;
-
-        return product;
-    }
-
-    public async Task<ProductDetailDto?> GetByIdWithCategoriesAndImagesSeparateQueries(int productId)
+    public async Task<ProductDetailDto?> GetByIdWithDetails(int productId)
     {
         var productQuery = @"
             SELECT
@@ -191,18 +162,25 @@ public class ProductRepository(IDbConnection connection, IMapper mapper/*, DataC
             WHERE ParentCategoryId IS NULL
             ORDER BY Path;";
 
-        var product = await connection.QuerySingleOrDefaultAsync<Product>(productQuery, new { ProductId = productId });
-        if (product == null)
-            return null;
+        try
+        {
+            var product = await connection.QuerySingleOrDefaultAsync<Product>(productQuery, new { ProductId = productId });
+            if (product == null)
+                return null;
 
-        var images = (await connection.QueryAsync<ImageDto>(imagesQuery, new { ProductId = productId })).ToList();
-        var categoryPaths = (await connection.QueryAsync<string>(categoriesQuery, new { ProductId = productId })).ToList();
+            var images = (await connection.QueryAsync<ImageDto>(imagesQuery, new { ProductId = productId })).ToList();
+            var categoryPaths = (await connection.QueryAsync<string>(categoriesQuery, new { ProductId = productId })).ToList();
 
-        var productDetail = mapper.Map<ProductDetailDto>(product);
-        productDetail.Images = [.. images];
-        productDetail.CategoryPaths = [.. categoryPaths];
+            var productDetail = mapper.Map<ProductDetailDto>(product);
+            productDetail.Images = [.. images];
+            productDetail.CategoryPaths = [.. categoryPaths];
 
-        return productDetail;
+            return productDetail;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "An error occurred while fetching product details"); throw;
+        }
     }
 
     public async Task<bool> NivelacijaUpdateProductBatch(IEnumerable<NivelacijaRecord> records)
@@ -217,8 +195,14 @@ public class ProductRepository(IDbConnection connection, IMapper mapper/*, DataC
             END
             WHERE sku = @Sku";
 
-        var result = await connection.ExecuteAsync(sql, records);
-
-        return result > 0;
+        try
+        {
+            var result = await connection.ExecuteAsync(sql, records);
+            return result > 0;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "An error occurred while updating products"); throw;
+        }
     }
 }
