@@ -27,7 +27,20 @@ public static class ProductEndpoints
 
         group.MapGet("/category/{categoryId:int}", async (int categoryId, int? page, int? size, IProductService productService) =>
         {
-            var products = await productService.GetAllByCategory(categoryId, page ?? 1, size ?? 20);
+            var pageNumber = page.GetValueOrDefault(1);
+            var pageSize = size.GetValueOrDefault(20);
+
+            if (pageNumber <= 0)
+            {
+                return Results.BadRequest("Page number must be greater than 0.");
+            }
+
+            if (pageSize <= 0 || pageSize > 100)
+            {
+                return Results.BadRequest("Page size must be between 1 and 100.");
+            }
+
+            var products = await productService.GetAllByCategory(categoryId, pageNumber, pageSize);
 
             return products is null ? Results.NoContent() : Results.Ok(products);
         }).WithDescription("get products by category");
