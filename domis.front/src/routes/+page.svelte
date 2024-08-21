@@ -24,7 +24,7 @@
   ];
 </script>
 
-<section class="mt-4">
+<section class="mt-4 w-full flex justify-center">
   <div
     class="w-11/12 xl:w-3/4 category-cards grid grid-cols-1 lg:grid-cols-3 gap-x-4 gap-y-4"
   >
@@ -33,11 +33,3 @@
     {/each}
   </div>
 </section>
-
-<style>
-  section {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-  }
-</style>

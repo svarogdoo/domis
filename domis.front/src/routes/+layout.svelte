@@ -4,10 +4,12 @@
   import "../app.css";
 </script>
 
-<div class="app">
+<div
+  class="w-full h-full bg-white flex flex-col items-center 2xl:w-3/4 2xl:m-auto"
+>
   <Header />
 
-  <main>
+  <main class="w-full h-full flex flex-col">
     <slot />
   </main>
 
@@ -15,21 +17,3 @@
       <p>© Copyright <a href="https://svarog.io/">svarog.io</a> 2024</p>
     </footer> -->
 </div>
-
-<style>
-  .app {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    width: 100%;
-    background-color: white;
-    align-items: center;
-  }
-
-  main {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    height: 100%;
-  }
-</style>

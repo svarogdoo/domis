@@ -1,18 +1,21 @@
-<script lang="ts"></script>
+<script lang="ts">
+  export let product: CategoryProduct;
+</script>
 
 <a
-  href="/category/product"
+  href="/proizvod/2103"
   class="product-card flex flex-col p-2 hover:scale-105 transition ease-in-out"
 >
   <img
     class="w-full h-60 object-cover rounded-lg mb-4"
-    src="https://cdn.speedsize.com/e0ef94ef-bbea-450b-a400-575c3145c135/www.tilebar.com/media/wysiwyg/Homepage/Hero/hp-all-collections-new.jpg?01"
-    alt="Product Card"
+    src={product.featuredImageUrl}
+    alt={product.name}
+    loading="lazy"
   />
   <div class="flex flex-col mx-2">
     <div class="flex justify-between">
       <div class="flex flex-col gap-y-2 font-extralight">
-        <p class="text-2xl">Azul pločica</p>
+        <p class="text-2xl">{product?.name}</p>
         <div class="flex gap-x-1">
           <p>Retificirana</p>
           <p>|</p>
@@ -27,7 +30,7 @@
           <p>|</p>
           <p>PAL:84,24</p>
         </div>
-        <p>112 na zalihama</p>
+        <p>{product?.stock} na zalihama</p>
       </div>
     </div>
     <div class="flex mt-6 mb-3 justify-between items-center">

@@ -1,13 +1,44 @@
+<script lang="ts">
+  import { onMount } from "svelte";
+  import { page } from "$app/stores";
+  import { getLastSlug } from "../../../../helpers/slugParsing";
+  import { getProduct } from "../../../../services/product-service";
+  import { formatPrice } from "../../../../helpers/numberFormatter";
+
+  let product: Product = {};
+  let featureImage: string | undefined;
+  let slug;
+
+  $: slug = $page.params.slug;
+  $: if (slug) {
+    setProduct(slug);
+  }
+  $: if (product.images) {
+    featureImage = product.images.find((x) => x.type === "Featured")?.url;
+  }
+
+  async function setProduct(slug: string) {
+    let lastSlug = getLastSlug(slug);
+    if (lastSlug) {
+      product = await getProduct(Number.parseInt(lastSlug));
+    }
+  }
+
+  onMount(async () => {
+    setProduct(slug);
+  });
+</script>
+
 <section class="w-full flex gap-x-12">
   <img
     class="w-4/5 h-auto object-cover rounded-lg"
-    src="https://cdn.speedsize.com/e0ef94ef-bbea-450b-a400-575c3145c135/www.tilebar.com/media/wysiwyg/Homepage/Hero/hp-all-collections-new.jpg?01"
-    alt="Product Card"
+    src={"https://cdn.speedsize.com/e0ef94ef-bbea-450b-a400-575c3145c135/www.tilebar.com/media/wysiwyg/Homepage/Hero/hp-all-collections-new.jpg?01"}
+    alt={product.name}
   />
   <div class="w-full flex flex-col">
     <div class="flex pb-2 justify-between border-b border-gray-400 items-end">
-      <h2 class="text-2xl">Azul pločica</h2>
-      <p class="text-gray-400 font-thin">SKU:5993</p>
+      <h2 class="text-2xl">{product.name}</h2>
+      <p class="text-gray-400 font-thin">SKU:{product.sku}</p>
     </div>
     <div class="flex mt-4 gap-x-2 font-extralight tracking-wide text-lg">
       <p>Retificirana</p>
@@ -21,11 +52,11 @@
     >
       <div class="flex flex-col gap-y-4">
         <p>Pakovanje:1.62m²</p>
-        <p class="text-xl">1230,00 RSD</p>
+        <p class="text-xl">{formatPrice(product.price)} RSD</p>
       </div>
       <div class="flex flex-col gap-y-4">
         <p>Paleta:84.42m²</p>
-        <p class="text-xl">1150,00 RSD</p>
+        <p class="text-xl">{formatPrice(product.price)} RSD</p>
       </div>
     </div>
     <!-- Input -->

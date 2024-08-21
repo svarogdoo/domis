@@ -8,10 +8,32 @@ declare global {
     // interface PageState {}
     // interface Platform {}
   }
+  interface Image {
+    url: string;
+    type: string;
+  }
+
   interface Category {
-    categoryId: string;
-    categoryName: string;
+    id: string;
+    name: string;
     subcategories?: Array<Category>;
+  }
+  interface CategoryProduct {
+    name: string;
+    sku: string;
+    price: number;
+    stock: number;
+    featuredImageUrl?: string;
+  }
+
+  interface Product {
+    name: string;
+    description: string;
+    sku: string;
+    price: number;
+    stock: number;
+    images: Array<Image>;
+    categoryPaths: Array<string>;
   }
 }
 
