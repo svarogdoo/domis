@@ -3,7 +3,7 @@
 </script>
 
 <a
-  href="/proizvod/{product.sku}"
+  href="/proizvod/2103"
   class="product-card flex flex-col p-2 hover:scale-105 transition ease-in-out"
 >
   <img

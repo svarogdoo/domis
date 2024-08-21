@@ -3,6 +3,7 @@
   import { page } from "$app/stores";
   import ProductCard from "./CategoryProductCard.svelte";
   import { getCategoryProducts } from "../../../../services/category-service";
+  import { getLastSlug } from "../../../../helpers/slugParsing";
 
   let products: Array<CategoryProduct> = [];
   let slug;
@@ -13,17 +14,10 @@
   }
 
   async function setCategoryProducts(slug: string) {
-    let lastSlug = getCategoryId(slug);
+    let lastSlug = getLastSlug(slug);
     if (lastSlug) {
       products = await getCategoryProducts(Number.parseInt(lastSlug));
     }
-  }
-  function getCategoryId(slug: string) {
-    const slugParts = slug?.split("/");
-    if (!slugParts) {
-      return;
-    }
-    return slugParts[slugParts.length - 1];
   }
 
   onMount(async () => {
