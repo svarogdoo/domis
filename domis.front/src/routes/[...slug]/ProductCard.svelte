@@ -1,5 +1,5 @@
 <script lang="ts">
-  export let product;
+  export let product: CategoryProduct;
 </script>
 
 <a
@@ -8,8 +8,8 @@
 >
   <img
     class="w-full h-60 object-cover rounded-lg mb-4"
-    src="https://cdn.speedsize.com/e0ef94ef-bbea-450b-a400-575c3145c135/www.tilebar.com/media/wysiwyg/Homepage/Hero/hp-all-collections-new.jpg?01"
-    alt="Product Card"
+    src={product.featuredImageUrl}
+    alt={product.name}
   />
   <div class="flex flex-col mx-2">
     <div class="flex justify-between">

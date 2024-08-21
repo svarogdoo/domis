@@ -4,17 +4,31 @@
   import ProductCard from "./ProductCard.svelte";
   import { getCategoryProducts } from "../../services/category-service";
 
-  let products;
-  // console.info($page.params.slug);
+  let products = [];
+  let slug;
 
-  // onMount(() => {
-  //   const slugParts = $page.params?.slug?.split("/");
-  //   if (!slugParts) {
-  //     return;
-  //   }
-  //   const lastSlug = slugParts[slugParts.length - 1];
-  //   products = await getCategoryProducts(Number.parseInt(lastSlug));
-  // });
+  $: slug = $page.params.slug;
+  $: if (slug) {
+    setCategoryProducts(slug);
+  }
+
+  async function setCategoryProducts(slug: string) {
+    let lastSlug = getCategoryId(slug);
+    if (lastSlug) {
+      products = await getCategoryProducts(Number.parseInt(lastSlug));
+    }
+  }
+  function getCategoryId(slug: string) {
+    const slugParts = slug?.split("/");
+    if (!slugParts) {
+      return;
+    }
+    return slugParts[slugParts.length - 1];
+  }
+
+  onMount(async () => {
+    setCategoryProducts(slug);
+  });
 </script>
 
 <section>
@@ -25,9 +39,9 @@
   <div
     class="product-cards grid grid-cols-1 lg:grid-cols-3 gap-x-6 xl:gap-x-12 gap-y-6"
   >
-    <!-- {#each products as product}
+    {#each products as product}
       <ProductCard {product} />
-    {/each} -->
+    {/each}
   </div>
 </section>
 

@@ -8,7 +8,7 @@ export function getCategories() {
 }
 
 export function getCategoryProducts(id: number) {
-  return fetchData<Array<Category>>(
+  return fetchData<Array<CategoryProduct>>(
     `https://domis.onrender.com/api/products/category/${id}`
   );
 }

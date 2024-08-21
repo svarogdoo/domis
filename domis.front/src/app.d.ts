@@ -13,6 +13,13 @@ declare global {
     name: string;
     subcategories?: Array<Category>;
   }
+  interface CategoryProduct {
+    name: string;
+    sku: string;
+    price: number;
+    stock: number;
+    featuredImageUrl?: string;
+  }
 }
 
 export {};
