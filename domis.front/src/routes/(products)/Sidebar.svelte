@@ -17,8 +17,9 @@
         <li
           class="w-full flex flex-col relative border-b border-gray-400 my-1 tracking-wider font-light text-wrap pr-4"
         >
-          <a href={category.id} class="hover:scale-105 transition ease-in-out"
-            >{category.name}</a
+          <a
+            href="/kategorija/{category.id}"
+            class="hover:scale-105 transition ease-in-out">{category.name}</a
           >
           {#if category.subcategories?.length && category.subcategories.length > 0}
             <SidebarCategory {category} />

@@ -6,7 +6,7 @@
   };
 </script>
 
-<a href="/83">
+<a href="kategorija/83">
   <div class="w-full relative display flex justify-center items-center">
     <div class="absolute w-full h-96 bg-black"></div>
     <img

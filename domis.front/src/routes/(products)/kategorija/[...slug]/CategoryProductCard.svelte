@@ -1,10 +1,9 @@
 <script lang="ts">
-  import { page } from "$app/stores";
   export let product: CategoryProduct;
 </script>
 
 <a
-  href="{$page.url.pathname}/{product.sku}"
+  href="/proizvod/{product.sku}"
   class="product-card flex flex-col p-2 hover:scale-105 transition ease-in-out"
 >
   <img

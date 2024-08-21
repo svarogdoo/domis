@@ -21,7 +21,7 @@
         <li
           class="relative text-wrap pr-4 hover:scale-105 transition ease-in-out"
         >
-          <a href={subcategory.id}>{subcategory.name}</a>
+          <a href="/kategorija/{subcategory.id}">{subcategory.name}</a>
           {#if subcategory.subcategories?.length && subcategory.subcategories.length > 0}
             <svelte:self category={subcategory} />
           {/if}
