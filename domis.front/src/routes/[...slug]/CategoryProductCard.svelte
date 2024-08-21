@@ -10,6 +10,7 @@
     class="w-full h-60 object-cover rounded-lg mb-4"
     src={product.featuredImageUrl}
     alt={product.name}
+    loading="lazy"
   />
   <div class="flex flex-col mx-2">
     <div class="flex justify-between">

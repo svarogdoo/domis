@@ -1,10 +1,10 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { page } from "$app/stores";
-  import ProductCard from "./ProductCard.svelte";
+  import ProductCard from "./CategoryProductCard.svelte";
   import { getCategoryProducts } from "../../services/category-service";
 
-  let products = [];
+  let products: Array<CategoryProduct> = [];
   let slug;
 
   $: slug = $page.params.slug;
