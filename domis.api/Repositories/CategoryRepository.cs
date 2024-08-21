@@ -58,7 +58,7 @@ public class CategoryRepository(IDbConnection connection) : ICategoryRepository
         }
 
         // Build the hierarchical structure
-        var categoryDict = categories.ToDictionary(c => c.CategoryId);
+        var categoryDict = categories.ToDictionary(c => c.Id);
         foreach (var category in categories)
         {
             if (category.ParentCategoryId.HasValue && categoryDict.TryGetValue(category.ParentCategoryId.Value, out var parentCategory))
