@@ -88,7 +88,9 @@ public class ProductRepository(IDbConnection connection, IMapper mapper/*, DataC
 
         try
         {
-            var parameters = new { CategoryId = categoryId, OffSet = pageNumber, Limit = pageSize };
+            var offset = (pageNumber - 1) * pageSize;
+
+            var parameters = new { CategoryId = categoryId, Offset = offset, Limit = pageSize };
             var products = await connection.QueryAsync<ProductPreviewDto>(sql, parameters);
 
             return products.ToList();
