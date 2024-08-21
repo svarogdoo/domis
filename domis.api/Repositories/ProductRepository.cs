@@ -9,7 +9,7 @@ namespace domis.api.Repositories;
 
 public interface IProductRepository
 {
-    Task<IEnumerable<Product>> GetAll();
+    Task<IEnumerable<ProductPreviewDto>> GetAll();
 
     Task<ProductDetailDto?> GetByIdWithCategoriesAndImages(int id);
     Task<ProductDetailDto?> GetByIdWithCategoriesAndImagesSeparateQueries(int id);
@@ -21,20 +21,18 @@ public interface IProductRepository
 
 public class ProductRepository(IDbConnection connection, IMapper mapper/*, DataContext context*/) : IProductRepository
 {
-    public async Task<IEnumerable<Product>> GetAll()
+    public async Task<IEnumerable<ProductPreviewDto>> GetAll()
     {
+        //TO-DO: check if we need this, and if we do, check if we want to include Featured image as well
         const string sql = @"
                     SELECT
-                        id AS Id,
                         product_name AS Name,
-                        product_description AS Description,
                         sku AS Sku,
                         price AS Price,
-                        stock AS Stock,
-                        active AS IsActive
+                        stock AS Stock
                     FROM domis.product";
 
-        var products = await connection.QueryAsync<Product>(sql);
+        var products = await connection.QueryAsync<ProductPreviewDto>(sql);
         //var productsEF = await context.Products.ToListAsync();
 
         return products;
