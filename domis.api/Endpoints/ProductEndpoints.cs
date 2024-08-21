@@ -27,9 +27,9 @@ public static class ProductEndpoints
 
         group.MapGet("/category/{categoryId:int}", async (int categoryId, IProductService productService) =>
         {
-            var product = await productService.GetProductsByCategory(categoryId);
+            var products = await productService.GetProductsByCategory(categoryId);
 
-            return product is null ? Results.NoContent() : Results.Ok(product);
+            return products is null ? Results.NoContent() : Results.Ok(products);
         }).WithDescription("get all products of a certain category");
     }
 }
