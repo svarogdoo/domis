@@ -6,28 +6,28 @@ namespace domis.api.Services;
 
 public interface IProductService
 {
-    Task<IEnumerable<ProductPreviewDto>> GetProducts();
+    Task<IEnumerable<ProductPreviewDto>> GetAll();
 
-    Task<ProductDetailDto?> GetSingle(int id);
+    Task<ProductDetailDto?> GetByIdWithDetails(int id);
 
-    Task<IEnumerable<ProductPreviewDto>?> GetProductsByCategory(int categoryId, int pageNumber, int pageSize);
+    Task<IEnumerable<ProductPreviewDto>?> GetAllByCategory(int categoryId, int pageNumber, int pageSize);
 }
 
 public class ProductService(IProductRepository repository) : IProductService
 {
-    public async Task<IEnumerable<ProductPreviewDto>> GetProducts()
+    public async Task<IEnumerable<ProductPreviewDto>> GetAll()
     {
         return await repository.GetAll();
     }
 
-    public async Task<IEnumerable<ProductPreviewDto>?> GetProductsByCategory(int categoryId, int pageNumber, int pageSize)
+    public async Task<IEnumerable<ProductPreviewDto>?> GetAllByCategory(int categoryId, int pageNumber, int pageSize)
     {
         return await repository.GetAllByCategory(categoryId, pageNumber, pageSize);
     }
 
-    public async Task<ProductDetailDto?> GetSingle(int id)
+    public async Task<ProductDetailDto?> GetByIdWithDetails(int id)
     {
-        return await repository.GetByIdWithCategoriesAndImagesSeparateQueries(id);
+        return await repository.GetByIdWithDetails(id);
         //return await repository.GetByIdWithCategoriesAndImages(id);
     }
 }

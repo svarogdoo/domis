@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using domis.api.DTOs;
 using domis.api.Models;
+using Serilog;
 using System.Data;
 
 namespace domis.api.Repositories;
@@ -48,26 +49,32 @@ public class CategoryRepository(IDbConnection connection) : ICategoryRepository
             ORDER BY Id;
         ";
 
-        var categories = (await connection.QueryAsync<CategoryPreviewDto>(sql)).ToList();
-
-        if (categories is null || categories.Count == 0)
+        try
         {
-            return null;
-        }
+            var categories = (await connection.QueryAsync<CategoryPreviewDto>(sql)).ToList();
 
-        // Build the hierarchical structure
-        var categoryDict = categories.ToDictionary(c => c.Id);
-        foreach (var category in categories)
-        {
-            if (category.ParentCategoryId.HasValue && categoryDict.TryGetValue(category.ParentCategoryId.Value, out var parentCategory))
+            if (categories is null || categories.Count == 0)
             {
-                parentCategory.Subcategories ??= [];
-                parentCategory.Subcategories.Add(category);
+                return null;
             }
-        }
 
-        // Return the top-level categories
-        return categoryDict.Values.Where(c => !c.ParentCategoryId.HasValue).ToList();
+            var categoryDict = categories.ToDictionary(c => c.Id);
+            foreach (var category in categories)
+            {
+                if (category.ParentCategoryId.HasValue && categoryDict.TryGetValue(category.ParentCategoryId.Value, out var parentCategory))
+                {
+                    parentCategory.Subcategories ??= [];
+                    parentCategory.Subcategories.Add(category);
+                }
+            }
+
+            // Return the top-level categories
+            return categoryDict.Values.Where(c => !c.ParentCategoryId.HasValue).ToList();
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "An error occurred while fetching categories"); throw;
+        }
     }
 
     //probably no need for this one

@@ -11,7 +11,7 @@ public static class ProductEndpoints
 
         group.MapGet("/", async (IProductService productService) =>
         {
-            var response = await productService.GetProducts();
+            var response = await productService.GetAll();
 
             return Results.Ok(response);
         }).WithDescription("get all products");
@@ -19,7 +19,7 @@ public static class ProductEndpoints
 
         group.MapGet("/{id:int}", async (int id, IProductService productService) =>
         {
-            var product = await productService.GetSingle(id);
+            var product = await productService.GetByIdWithDetails(id);
 
             return product is null ? Results.NotFound() : Results.Ok(product);
         }).WithDescription("get product by id");
@@ -27,9 +27,9 @@ public static class ProductEndpoints
 
         group.MapGet("/category/{categoryId:int}", async (int categoryId, int? page, int? size, IProductService productService) =>
         {
-            var products = await productService.GetProductsByCategory(categoryId, page ?? 1, size ?? 20);
+            var products = await productService.GetAllByCategory(categoryId, page ?? 1, size ?? 20);
 
             return products is null ? Results.NoContent() : Results.Ok(products);
-        }).WithDescription("get all products of a certain category");
+        }).WithDescription("get products by category");
     }
 }

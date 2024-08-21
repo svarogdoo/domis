@@ -8,6 +8,7 @@ public static class SyncEndpoints
     {
         var group = routes.MapGroup("/api/sync").WithTags("Sync");
 
+
         group.MapPut("/nivelacija-product-update", async (ISyncService syncService) =>
         {
             var response = await syncService.NivelacijaUpdateBatch();
