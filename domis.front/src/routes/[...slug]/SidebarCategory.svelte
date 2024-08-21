@@ -4,10 +4,10 @@
 </script>
 
 <div>
-  <input type="checkbox" id={category.categoryId} class="peer hidden" />
-  <label for={category.categoryId} class="w-full flex justify-between">
+  <input type="checkbox" id={category.id} class="peer hidden" />
+  <label for={category.id} class="w-full cursor-pointer">
     <img
-      class="w-auto h-2 absolute top-1 right-0"
+      class="w-auto h-2 absolute top-1 right-0 transform transition-transform duration-200 ease-in-out"
       src={dropdownIcon}
       alt="icon"
     />
@@ -21,7 +21,7 @@
         <li
           class="relative text-wrap pr-4 hover:scale-105 transition ease-in-out"
         >
-          <a href={subcategory.categoryId}>{subcategory.categoryName}</a>
+          <a href={subcategory.id}>{subcategory.name}</a>
           {#if subcategory.subcategories?.length && subcategory.subcategories.length > 0}
             <svelte:self category={subcategory} />
           {/if}
@@ -30,3 +30,9 @@
     {/if}
   </ul>
 </div>
+
+<style>
+  input:checked + label img {
+    @apply rotate-180;
+  }
+</style>

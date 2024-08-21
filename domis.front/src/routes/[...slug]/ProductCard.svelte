@@ -1,4 +1,6 @@
-<script lang="ts"></script>
+<script lang="ts">
+  export let product;
+</script>
 
 <a
   href="/category/product"
@@ -12,7 +14,7 @@
   <div class="flex flex-col mx-2">
     <div class="flex justify-between">
       <div class="flex flex-col gap-y-2 font-extralight">
-        <p class="text-2xl">Azul pločica</p>
+        <p class="text-2xl">{product?.name}</p>
         <div class="flex gap-x-1">
           <p>Retificirana</p>
           <p>|</p>
@@ -27,7 +29,7 @@
           <p>|</p>
           <p>PAL:84,24</p>
         </div>
-        <p>112 na zalihama</p>
+        <p>{product?.stock} na zalihama</p>
       </div>
     </div>
     <div class="flex mt-6 mb-3 justify-between items-center">

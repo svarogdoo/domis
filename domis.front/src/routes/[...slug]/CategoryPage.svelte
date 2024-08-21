@@ -1,5 +1,20 @@
 <script lang="ts">
+  import { onMount } from "svelte";
+  import { page } from "$app/stores";
   import ProductCard from "./ProductCard.svelte";
+  import { getCategoryProducts } from "../../services/category-service";
+
+  let products;
+  // console.info($page.params.slug);
+
+  // onMount(() => {
+  //   const slugParts = $page.params?.slug?.split("/");
+  //   if (!slugParts) {
+  //     return;
+  //   }
+  //   const lastSlug = slugParts[slugParts.length - 1];
+  //   products = await getCategoryProducts(Number.parseInt(lastSlug));
+  // });
 </script>
 
 <section>
@@ -10,13 +25,9 @@
   <div
     class="product-cards grid grid-cols-1 lg:grid-cols-3 gap-x-6 xl:gap-x-12 gap-y-6"
   >
-    <ProductCard />
-    <ProductCard />
-    <ProductCard />
-    <ProductCard />
-    <ProductCard />
-    <ProductCard />
-    <ProductCard />
+    <!-- {#each products as product}
+      <ProductCard {product} />
+    {/each} -->
   </div>
 </section>
 
