@@ -65,7 +65,7 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
                 -- Get Featured image for each product
                 SELECT
                     pi.product_id AS ProductId,
-                    i.image_url AS FeaturedImageUrl
+                    i.blob_url AS FeaturedImageUrl
                 FROM domis.product_image pi
                 JOIN domis.image i ON pi.image_id = i.id
                 JOIN domis.image_type it ON pi.image_type_id = it.id
@@ -123,7 +123,7 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
 
         var imagesQuery = @"
             SELECT
-                i.image_url AS Url,
+                i.blob_url AS Url,
                 it.image_type_name AS Type
             FROM domis.product_image pi
             JOIN domis.image i ON pi.image_id = i.id
