@@ -4,8 +4,9 @@
   import { getLastSlug } from "../../../../helpers/slugParsing";
   import { getProduct } from "../../../../services/product-service";
   import { formatPrice } from "../../../../helpers/numberFormatter";
+  import backup from "$lib/assets/backup.jpg";
 
-  let product: Product = {};
+  let product: Product;
   let featureImage: string | undefined;
   let slug;
 
@@ -33,7 +34,7 @@
   <img
     class="w-4/5 h-auto object-cover rounded-lg"
     src={"https://cdn.speedsize.com/e0ef94ef-bbea-450b-a400-575c3145c135/www.tilebar.com/media/wysiwyg/Homepage/Hero/hp-all-collections-new.jpg?01"}
-    alt={product.name}
+    alt={backup}
   />
   <div class="w-full flex flex-col">
     <div class="flex pb-2 justify-between border-b border-gray-400 items-end">

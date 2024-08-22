@@ -1,4 +1,6 @@
 <script lang="ts">
+  import backup from "$lib/assets/backup.jpg";
+
   export let category = {
     id: 1,
     name: "",
@@ -12,7 +14,7 @@
     <img
       class="w-full h-96 object-cover opacity-80 text-white bg-slate-500 hover:opacity-60"
       src={category.image}
-      alt="CategoryCard"
+      alt={backup}
     />
     <p class="absolute text-white tracking-widest text-xl">{category.name}</p>
   </div>
