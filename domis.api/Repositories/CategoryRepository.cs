@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using domis.api.DTOs;
 using domis.api.Models;
+using domis.api.Repositories.Helpers;
 using Serilog;
 using System.Data;
 
@@ -18,36 +19,7 @@ public class CategoryRepository(IDbConnection connection) : ICategoryRepository
 {
     public async Task<IEnumerable<CategoryPreviewDto>?> GetAll()
     {
-        const string sql = @"
-            WITH RECURSIVE CategoryHierarchy AS (
-                -- Anchor member: Start with top-level categories (categories with no parent)
-                SELECT
-                    id AS Id,
-                    parent_category_id AS ParentCategoryId,
-                    category_name AS Name
-                FROM domis.category
-                WHERE parent_category_id IS NULL
-
-                UNION ALL
-
-                -- Recursive member: Join to find subcategories
-                SELECT
-                    c.id AS Id,
-                    c.parent_category_id AS ParentCategoryId,
-                    c.category_name AS Name
-                FROM domis.category c
-                INNER JOIN CategoryHierarchy ch
-                    ON c.parent_category_id = ch.Id
-            )
-
-            -- Select all categories and their subcategories
-            SELECT
-                Id,
-                ParentCategoryId,
-                Name
-            FROM CategoryHierarchy
-            ORDER BY Id;
-        ";
+        const string sql = CategoryQueries.GetAll;
 
         try
         {
