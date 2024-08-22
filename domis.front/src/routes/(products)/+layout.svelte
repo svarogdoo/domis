@@ -10,7 +10,7 @@
 
 <div class="product-search">
   <div class="category gap-x-12 pt-4">
-    <div class="product-sidebar">
+    <div class="product-sidebar hidden lg:flex">
       <Sidebar />
     </div>
     <div class="products mt-6">
@@ -37,5 +37,11 @@
 
   .products {
     width: 78%;
+  }
+
+  @media (max-width: 1024px) {
+    .products {
+      width: 100%;
+    }
   }
 </style>
