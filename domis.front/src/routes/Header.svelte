@@ -16,17 +16,19 @@
         <a href="/">domis</a>
         <a href="/">enterijeri</a>
       </li>
-      <li class="input">
-        <img src={searchIcon} alt="search" class="absolute ml-4" />
-        <input
-          class="pl-12 py-3 rounded-md font-extralight"
-          type="text"
-          id="search-field"
-          placeholder="Pretražite prodavnicu (upišite ime ili šifru proizvoda)"
-          autocomplete="off"
-          bind:value={searchTerm}
-          on:input
-        />
+      <li class="w-full hidden lg:flex justify-center">
+        <div class="relative w-2/3 flex items-center">
+          <img src={searchIcon} alt="search" class="absolute ml-4" />
+          <input
+            class="pl-12 py-3 rounded-md font-extralight border border-black w-full"
+            type="text"
+            id="search-field"
+            placeholder="Pretražite prodavnicu (upišite ime ili šifru proizvoda)"
+            autocomplete="off"
+            bind:value={searchTerm}
+            on:input
+          />
+        </div>
       </li>
       <li aria-current={$page.url.pathname === "/shop" ? "page" : undefined}>
         <a href="/shop"> <img src={cartIcon} alt="cart" /></a>
@@ -84,16 +86,5 @@
     font-weight: 600;
     letter-spacing: 0.3em;
     line-height: 1.3em;
-  }
-
-  input {
-    width: 600px;
-    border-width: 1px;
-    border-color: black;
-  }
-  .input {
-    display: flex;
-    position: relative;
-    align-items: center;
   }
 </style>

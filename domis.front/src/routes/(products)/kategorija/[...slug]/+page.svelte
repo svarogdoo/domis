@@ -32,7 +32,7 @@
     <div class="px-3 py-1 border-gray-500 border rounded-full">Sortiraj</div>
   </div>
   <div
-    class="product-cards grid grid-cols-1 lg:grid-cols-3 gap-x-6 xl:gap-x-12 gap-y-6"
+    class="product-cards grid grid-cols-2 lg:grid-cols-3 gap-x-6 xl:gap-x-12 gap-y-6"
   >
     {#each products as product}
       <ProductCard {product} />

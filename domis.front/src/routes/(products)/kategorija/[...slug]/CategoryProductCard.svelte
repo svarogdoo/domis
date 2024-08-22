@@ -1,4 +1,5 @@
 <script lang="ts">
+  import backup from "$lib/assets/backup.jpg";
   export let product: CategoryProduct;
 </script>
 
@@ -10,30 +11,26 @@
     class="w-full h-60 object-cover rounded-lg mb-4"
     src={product.featuredImageUrl}
     alt={product.name}
+    on:error={() => {
+      product.featuredImageUrl = "$lib/assets/backup.jpg";
+      console.info("whaat");
+    }}
     loading="lazy"
   />
   <div class="flex flex-col mx-2">
     <div class="flex justify-between">
       <div class="flex flex-col gap-y-2 font-extralight">
-        <p class="text-2xl">{product?.name}</p>
+        <p class="text-lg lg:text-xl">{product?.name}</p>
         <div class="flex gap-x-1">
           <p>Retificirana</p>
           <p>|</p>
           <p>Anka</p>
         </div>
       </div>
-      <div
-        class="flex flex-col gap-y-2 text-sm font-thin text-end text-gray-500"
-      >
-        <div class="flex gap-x-1">
-          <p>PAK:162</p>
-          <p>|</p>
-          <p>PAL:84,24</p>
-        </div>
-        <p>{product?.stock} na zalihama</p>
-      </div>
     </div>
-    <div class="flex mt-6 mb-3 justify-between items-center">
+    <div
+      class="flex flex-col gap-y-2 lg:flex-row mt-6 mb-3 justify-between items-center"
+    >
       <div class="flex gap-x-1">
         <p class="text-xl">1272,00</p>
         <p class="text-lg text-gray-800 font-thin">RSD</p>
