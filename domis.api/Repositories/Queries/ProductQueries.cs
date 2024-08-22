@@ -66,4 +66,14 @@ public static class ProductQueries
                 active AS IsActive
             FROM domis.product
             WHERE id = @ProductId;";
+
+    public const string UpdateProductsByNivelacija = @"
+            UPDATE domis.product
+            SET price = CASE
+                WHEN sku = @Sku THEN @Price
+            END,
+            stock = CASE
+                WHEN sku = @Sku THEN @Stock
+            END
+            WHERE sku = @Sku";
 }

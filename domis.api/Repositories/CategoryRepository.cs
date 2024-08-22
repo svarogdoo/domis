@@ -19,11 +19,9 @@ public class CategoryRepository(IDbConnection connection) : ICategoryRepository
 {
     public async Task<IEnumerable<CategoryPreviewDto>?> GetAll()
     {
-        const string sql = CategoryQueries.GetAll;
-
         try
         {
-            var categories = (await connection.QueryAsync<CategoryPreviewDto>(sql)).ToList();
+            var categories = (await connection.QueryAsync<CategoryPreviewDto>(CategoryQueries.GetAll)).ToList();
 
             if (categories is null || categories.Count == 0)
             {

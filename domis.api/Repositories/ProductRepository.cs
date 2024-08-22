@@ -62,20 +62,14 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
 
     public async Task<ProductDetailDto?> GetByIdWithDetails(int productId)
     {
-        var productQuery = ProductQueries.GetById;
-
-        var imagesQuery = ImageQueries.GetProductImages;
-
-        var categoriesQuery = CategoryQueries.GetProductCategories;
-
         try
         {
-            var product = await connection.QuerySingleOrDefaultAsync<Product>(productQuery, new { ProductId = productId });
+            var product = await connection.QuerySingleOrDefaultAsync<Product>(ProductQueries.GetById, new { ProductId = productId });
             if (product == null)
                 return null;
 
-            var images = (await connection.QueryAsync<ImageDto>(imagesQuery, new { ProductId = productId })).ToList();
-            var categoryPaths = (await connection.QueryAsync<string>(categoriesQuery, new { ProductId = productId })).ToList();
+            var images = (await connection.QueryAsync<ImageDto>(ImageQueries.GetProductImages, new { ProductId = productId })).ToList();
+            var categoryPaths = (await connection.QueryAsync<string>(CategoryQueries.GetProductCategories, new { ProductId = productId })).ToList();
 
             var productDetail = mapper.Map<ProductDetailDto>(product);
             productDetail.Images = [.. images];
@@ -91,19 +85,9 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
 
     public async Task<bool> NivelacijaUpdateProductBatch(IEnumerable<NivelacijaRecord> records)
     {
-        const string sql = @"
-            UPDATE domis.product
-            SET price = CASE
-                WHEN sku = @Sku THEN @Price
-            END,
-            stock = CASE
-                WHEN sku = @Sku THEN @Stock
-            END
-            WHERE sku = @Sku";
-
         try
         {
-            var result = await connection.ExecuteAsync(sql, records);
+            var result = await connection.ExecuteAsync(ProductQueries.UpdateProductsByNivelacija, records);
             return result > 0;
         }
         catch (Exception ex)
