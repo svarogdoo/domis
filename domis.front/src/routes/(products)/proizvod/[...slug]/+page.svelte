@@ -33,12 +33,14 @@
 
 {#if product}
   <section class="w-full flex gap-x-12">
-    <img
-      class="w-4/5 h-auto object-cover rounded-lg"
-      src={featuredImage}
-      alt={product?.name}
-    />
-    <div class="w-full flex flex-col">
+    <div class="w-4/5">
+      <img
+        src={featuredImage}
+        alt={product?.name}
+        class="w-full h-auto aspect-square object-cover rounded-lg"
+      />
+    </div>
+    <div class="w-full flex flex-col justify-between">
       <div class="flex pb-2 justify-between border-b border-gray-400 items-end">
         <h2 class="text-2xl">{product.name}</h2>
         <p class="text-gray-400 font-thin">SKU:{product.sku}</p>
@@ -106,10 +108,10 @@
       <div class="flex mt-6 justify-between">
         <p class="tracking-wider font-semibold text-lg">Ukupan iznos</p>
         <div class="flex flex-col">
-          <p class="text-2xl">2544,00 RSD</p>
-          <p class="text-gray-500 font-extralight">
+          <p class="text-2xl">0.00 RSD</p>
+          <!-- <p class="text-gray-500 font-extralight">
             2 kutije pokrivaju 3.24 m²
-          </p>
+          </p> -->
         </div>
       </div>
       <button

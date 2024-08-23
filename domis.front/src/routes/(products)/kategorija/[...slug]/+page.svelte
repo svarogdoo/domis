@@ -66,7 +66,7 @@
       </div>
       {#if isOpen}
         <ul
-          class="absolute right-0 mt-12 w-40 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none"
+          class="absolute z-10 right-0 mt-12 w-40 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none"
         >
           <button
             on:click={() => setSortType("low-to-high")}

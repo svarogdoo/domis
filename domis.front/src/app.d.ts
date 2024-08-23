@@ -19,6 +19,7 @@ declare global {
     subcategories?: Array<Category>;
   }
   interface CategoryProduct {
+    id: string;
     name: string;
     sku: string;
     price: number;

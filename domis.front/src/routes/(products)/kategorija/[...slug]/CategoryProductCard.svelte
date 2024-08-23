@@ -11,12 +11,12 @@
 </script>
 
 <a
-  href="/proizvod/2103"
+  href="/proizvod/{product.id}"
   class="product-card flex flex-col h-full w-full p-4 transition ease-in-out duration-300"
 >
-  <div class="image-container">
+  <div class="w-full">
     <img
-      class="responsive-image rounded-lg"
+      class="w-full h-auto object-cover aspect-square rounded-lg"
       src={featuredImage}
       alt={product.name}
       loading="lazy"
@@ -51,19 +51,5 @@
 <style>
   .product-card:hover {
     box-shadow: 0px 0px 9.53711px 2.86113px rgba(140, 140, 140, 0.25);
-  }
-  .image-container {
-    position: relative;
-    width: 100%;
-    padding-top: 100%; /* This makes the container square */
-  }
-
-  .responsive-image {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover; /* Ensures the image covers the entire container */
   }
 </style>
