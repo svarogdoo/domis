@@ -5,6 +5,7 @@
   import { getCategoryProducts } from "../../../../services/category-service";
   import { getLastSlug } from "../../../../helpers/slugParsing";
 
+  let categoryDetails: CategoryDetails;
   let products: Array<CategoryProduct> = [];
   let slug;
   let isOpen = false;
@@ -12,19 +13,21 @@
 
   $: slug = $page.params.slug;
   $: if (slug) {
-    setCategoryProducts(slug);
+    setCategoryData(slug);
   }
   $: sortProducts(sortType);
 
-  async function setCategoryProducts(slug: string) {
+  async function setCategoryData(slug: string) {
     let lastSlug = getLastSlug(slug);
     if (lastSlug) {
-      products = await getCategoryProducts(Number.parseInt(lastSlug));
+      let categoryData = await getCategoryProducts(Number.parseInt(lastSlug));
+      products = categoryData.products;
+      categoryDetails = categoryData.category;
     }
   }
 
   onMount(async () => {
-    setCategoryProducts(slug);
+    setCategoryData(slug);
   });
 
   function toggleDropdown() {
@@ -51,7 +54,9 @@
 <section class="w-full flex flex-col justify-center">
   <div class="flex justify-between items-center mb-5">
     <!-- TODO: use actual category name -->
-    <h2 class="text-2xl">Keramika</h2>
+    <h2 class="text-2xl">
+      {categoryDetails?.name ? categoryDetails.name : ""}
+    </h2>
     <div class="relative flex">
       <div>
         <button

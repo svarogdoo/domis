@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from "svelte";
+  // import { categories } from "../stores/categories";
   import CategoryCard from "./CategoryCard.svelte";
 
   let categories = [
