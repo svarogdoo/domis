@@ -51,7 +51,10 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
             if (category is null)
                 return null;
 
-            var productParams = new { CategoryId = categoryId/*, Offset = offset, Limit = pageSize*/ }; //TO-DO: include when pagination is done on the FE
+            offset = 0;  //TO-DO: remove when pagination is done on the FE
+            pageSize = 300;
+
+            var productParams = new { CategoryId = categoryId, Offset = offset, Limit = pageSize };
             var products = await connection.QueryAsync<ProductPreviewDto>(ProductQueries.GetAllByCategory, productParams);
 
             var result = new CategoryProductsDto
