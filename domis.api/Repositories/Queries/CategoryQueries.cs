@@ -64,4 +64,9 @@ public static class CategoryQueries
             FROM RecursiveCategoryHierarchy
             WHERE ParentCategoryId IS NULL
             ORDER BY Path;";
+
+    public const string GetCategoryById = @"
+        SELECT id as Id, category_name as Name, category_description as Description 
+        FROM domis.category
+        WHERE id = @CategoryId;";
 }

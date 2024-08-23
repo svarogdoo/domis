@@ -16,7 +16,7 @@ public interface IProductRepository
 
     Task<ProductDetailDto?> GetByIdWithDetails(int id);
 
-    Task<IEnumerable<ProductPreviewDto>?> GetAllByCategory(int categoryId, int pageNumber, int pageSize);
+    Task<CategoryProductsDto?> GetAllByCategory(int categoryId, int pageNumber, int pageSize);
 
     Task<bool> NivelacijaUpdateProductBatch(IEnumerable<NivelacijaRecord> records);
 }
@@ -30,7 +30,6 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
         try
         {
             var products = await connection.QueryAsync<ProductPreviewDto>(ProductQueries.GetAll);
-            //var productsEF = await context.Products.ToListAsync();
 
             return products;
         }
@@ -40,16 +39,28 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
         }
     }
 
-    public async Task<IEnumerable<ProductPreviewDto>?> GetAllByCategory(int categoryId, int pageNumber, int pageSize)
+    public async Task<CategoryProductsDto?> GetAllByCategory(int categoryId, int pageNumber, int pageSize)
     {
         try
         {
             var offset = (pageNumber - 1) * pageSize;
 
-            var parameters = new { CategoryId = categoryId, Offset = offset, Limit = pageSize };
-            var products = await connection.QueryAsync<ProductPreviewDto>(ProductQueries.GetAllByCategory, parameters);
+            var categoryParams = new { CategoryId = categoryId };
+            var category = await connection.QuerySingleOrDefaultAsync<CategoryBasic>(CategoryQueries.GetCategoryById, categoryParams);
 
-            return products.ToList();
+            if (category is null)
+                return null;
+
+            var productParams = new { CategoryId = categoryId, Offset = offset, Limit = pageSize };
+            var products = await connection.QueryAsync<ProductPreviewDto>(ProductQueries.GetAllByCategory, productParams);
+
+            var result = new CategoryProductsDto
+            {
+                Category = category,
+                Products = products.ToList()
+            };
+
+            return result;
         }
         catch (Exception ex)
         {

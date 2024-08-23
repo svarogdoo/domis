@@ -10,7 +10,7 @@ public interface IProductService
 
     Task<ProductDetailDto?> GetByIdWithDetails(int id);
 
-    Task<IEnumerable<ProductPreviewDto>?> GetAllByCategory(int categoryId, int pageNumber, int pageSize);
+    Task<CategoryProductsDto?> GetAllByCategory(int categoryId, int pageNumber, int pageSize);
 }
 
 public class ProductService(IProductRepository repository) : IProductService
@@ -20,7 +20,7 @@ public class ProductService(IProductRepository repository) : IProductService
         return await repository.GetAll();
     }
 
-    public async Task<IEnumerable<ProductPreviewDto>?> GetAllByCategory(int categoryId, int pageNumber, int pageSize)
+    public async Task<CategoryProductsDto?> GetAllByCategory(int categoryId, int pageNumber, int pageSize)
     {
         return await repository.GetAllByCategory(categoryId, pageNumber, pageSize);
     }
