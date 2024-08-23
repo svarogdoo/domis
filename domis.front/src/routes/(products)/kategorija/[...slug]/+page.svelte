@@ -49,22 +49,24 @@
 </script>
 
 <section class="w-full flex flex-col justify-center">
-  <div class="flex justify-between items-center mb-3">
+  <div class="flex justify-between items-center mb-5">
     <!-- TODO: use actual category name -->
     <h2 class="text-2xl">Keramika</h2>
     <div class="relative flex">
       <div>
         <button
           on:click={toggleDropdown}
-          class="ring-1 rounded-lg ring-gray-500 px-4 py-2 font-light"
-          >Sortiraj prema: {sortType === "low-to-high"
-            ? "Cena rastuće"
-            : "Cena opadajuće"}</button
+          class="flex gap-x-2 font-light items-center"
+          >Sortiraj prema:
+
+          <p class="ring-1 rounded-lg ring-gray-500 px-4 py-2 font-light">
+            {sortType === "low-to-high" ? "Cena rastuće" : "Cena opadajuće"}
+          </p></button
         >
       </div>
       {#if isOpen}
         <ul
-          class="absolute right-0 mt-12 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none"
+          class="absolute right-0 mt-12 w-40 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none"
         >
           <button
             on:click={() => setSortType("low-to-high")}
