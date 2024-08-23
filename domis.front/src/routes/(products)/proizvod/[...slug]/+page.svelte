@@ -4,9 +4,10 @@
   import { getLastSlug } from "../../../../helpers/slugParsing";
   import { getProduct } from "../../../../services/product-service";
   import { formatPrice } from "../../../../helpers/numberFormatter";
+  import fallbackImage from "$lib/assets/backup.jpg";
 
   let product: Product;
-  let featureImage: string | undefined;
+  let featuredImage = fallbackImage;
   let slug;
 
   $: slug = $page.params.slug;
@@ -14,7 +15,8 @@
     setProduct(slug);
   }
   $: if (product?.images) {
-    featureImage = product?.images.find((x) => x.type === "Featured")?.url;
+    let imageUrl = product?.images.find((x) => x.type === "Featured")?.url;
+    if (imageUrl) featuredImage = imageUrl;
   }
 
   async function setProduct(slug: string) {
@@ -33,7 +35,7 @@
   <section class="w-full flex gap-x-12">
     <img
       class="w-4/5 h-auto object-cover rounded-lg"
-      src={product?.images.find((x) => x.type === "Featured")?.url}
+      src={featuredImage}
       alt={product?.name}
     />
     <div class="w-full flex flex-col">

@@ -1,6 +1,13 @@
 <script lang="ts">
   import backup from "$lib/assets/backup.jpg";
+  import { formatPrice } from "../../../../helpers/numberFormatter";
+
   export let product: CategoryProduct;
+  let featuredImage = backup;
+
+  $: if (product?.featuredImageUrl) {
+    featuredImage = product.featuredImageUrl;
+  }
 </script>
 
 <a
@@ -9,12 +16,8 @@
 >
   <img
     class="w-full h-60 object-cover rounded-lg mb-4"
-    src={product.featuredImageUrl}
+    src={featuredImage}
     alt={product.name}
-    on:error={() => {
-      product.featuredImageUrl = "$lib/assets/backup.jpg";
-      console.info("whaat");
-    }}
     loading="lazy"
   />
   <div class="flex flex-col mx-2">
@@ -32,7 +35,7 @@
       class="flex flex-col gap-y-2 lg:flex-row mt-6 mb-3 justify-between items-center"
     >
       <div class="flex gap-x-1">
-        <p class="text-xl">1272,00</p>
+        <p class="text-xl">{formatPrice(product.price)}</p>
         <p class="text-lg text-gray-800 font-thin">RSD</p>
         <p class="text-sm text-gray-400 pt-1 font-thin">po m²</p>
       </div>
