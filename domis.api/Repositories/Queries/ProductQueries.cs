@@ -4,6 +4,7 @@ public static class ProductQueries
 {
     public const string GetAll = @"
                     SELECT
+                        id AS Id,       
                         product_name AS Name,
                         sku AS Sku,
                         price AS Price,
@@ -37,6 +38,7 @@ public static class ProductQueries
             ProductsWithImages AS (
                 -- Combine products with their Featured images
                 SELECT
+                    p.Id as Id,
                     p.product_name AS Name,
                     p.sku AS Sku,
                     p.price AS Price,
