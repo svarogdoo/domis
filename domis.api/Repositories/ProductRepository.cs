@@ -26,11 +26,10 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
     public async Task<IEnumerable<ProductPreviewDto>> GetAll()
     {
         //TO-DO: check if we need this, and if we do, check if we want to include Featured image as well
-        const string sql = ProductQueries.GetAll;
 
         try
         {
-            var products = await connection.QueryAsync<ProductPreviewDto>(sql);
+            var products = await connection.QueryAsync<ProductPreviewDto>(ProductQueries.GetAll);
             //var productsEF = await context.Products.ToListAsync();
 
             return products;
@@ -43,14 +42,12 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
 
     public async Task<IEnumerable<ProductPreviewDto>?> GetAllByCategory(int categoryId, int pageNumber, int pageSize)
     {
-        const string sql = ProductQueries.GetAllByCategory;
-
         try
         {
             var offset = (pageNumber - 1) * pageSize;
 
             var parameters = new { CategoryId = categoryId, Offset = offset, Limit = pageSize };
-            var products = await connection.QueryAsync<ProductPreviewDto>(sql, parameters);
+            var products = await connection.QueryAsync<ProductPreviewDto>(ProductQueries.GetAllByCategory, parameters);
 
             return products.ToList();
         }
