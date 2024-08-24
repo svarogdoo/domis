@@ -13,7 +13,7 @@
       alt={category.name}
     />
     <p
-      class="absolute text-white tracking-widest text-xl text-center font-medium"
+      class="absolute text-white tracking-widest text-xl px-10 text-center font-medium"
     >
       {category.name}
     </p>
