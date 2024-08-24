@@ -24,25 +24,5 @@ public static class ProductEndpoints
             return product is null ? Results.NotFound() : Results.Ok(product);
         }).WithDescription("get product by id");
 
-
-        group.MapGet("/category/{categoryId:int}", async (int categoryId, int? page, int? size, IProductService productService) =>
-        {
-            var pageNumber = page.GetValueOrDefault(1);
-            var pageSize = size.GetValueOrDefault(20);
-
-            if (pageNumber <= 0)
-            {
-                return Results.BadRequest("Page number must be greater than 0.");
-            }
-
-            if (pageSize <= 0 || pageSize > 100)
-            {
-                return Results.BadRequest("Page size must be between 1 and 100.");
-            }
-
-            var products = await productService.GetAllByCategory(categoryId, pageNumber, pageSize);
-
-            return products is null ? Results.NoContent() : Results.Ok(products);
-        }).WithDescription("get products by category");
     }
 }

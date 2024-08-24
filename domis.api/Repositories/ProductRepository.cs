@@ -16,8 +16,6 @@ public interface IProductRepository
 
     Task<ProductDetailDto?> GetByIdWithDetails(int id);
 
-    Task<CategoryProductsDto?> GetAllByCategory(int categoryId, int pageNumber, int pageSize);
-
     Task<bool> NivelacijaUpdateProductBatch(IEnumerable<NivelacijaRecord> records);
 }
 
@@ -36,38 +34,6 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
         catch (Exception ex)
         {
             Log.Error(ex, "An error occurred while fetching products"); throw;
-        }
-    }
-
-    public async Task<CategoryProductsDto?> GetAllByCategory(int categoryId, int pageNumber, int pageSize)
-    {
-        try
-        {
-            var offset = (pageNumber - 1) * pageSize;
-
-            var categoryParams = new { CategoryId = categoryId };
-            var category = await connection.QuerySingleOrDefaultAsync<CategoryBasic>(CategoryQueries.GetCategoryById, categoryParams);
-
-            if (category is null)
-                return null;
-
-            offset = 0;  //TO-DO: remove when pagination is done on the FE
-            pageSize = 300;
-
-            var productParams = new { CategoryId = categoryId, Offset = offset, Limit = pageSize };
-            var products = await connection.QueryAsync<ProductPreviewDto>(ProductQueries.GetAllByCategory, productParams);
-
-            var result = new CategoryProductsDto
-            {
-                Category = category,
-                Products = products.ToList()
-            };
-
-            return result;
-        }
-        catch (Exception ex)
-        {
-            Log.Error(ex, "An error ocurred while getting products by category"); throw;
         }
     }
 

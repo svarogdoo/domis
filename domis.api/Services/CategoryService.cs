@@ -10,7 +10,7 @@ public interface ICategoryService
 
     //probably no need for this one
     Task<Category?> GetById(int id);
-    Task<CategoryProductsDto?> GetCategoryProducts(int categoryId, Pagination pag);
+    Task<CategoryProductsDto?> GetCategoryProducts(int categoryId, PageOptions options);
 }
 
 public class CategoryService(ICategoryRepository repository) : ICategoryService
@@ -26,8 +26,8 @@ public class CategoryService(ICategoryRepository repository) : ICategoryService
         return await repository.GetById(id);
     }
 
-    public async Task<CategoryProductsDto?> GetCategoryProducts(int categoryId, Pagination pag)
+    public async Task<CategoryProductsDto?> GetCategoryProducts(int categoryId, PageOptions options)
     {
-        return await repository.GetCategoryProducts(categoryId, pag);
+        return await repository.GetCategoryProducts(categoryId, options);
     }
 }
