@@ -1,3 +1,11 @@
 ﻿namespace domis.api.DTOs;
 
-public record ProductPreviewDto(int Id, string? Name, int? Sku, decimal? Price, decimal? Stock, string? FeaturedImageUrl);
+public class ProductPreviewDto
+{
+    public int Id { get; set; }
+    public string? Name { get; set; }
+    public int Sku { get; set; }
+    public decimal Price { get; set; }
+    public decimal Stock { get; set; }
+    public string? FeaturedImageUrl { get; set; }
+}
