@@ -13,6 +13,7 @@ public interface ICategoryRepository
 
     //probably no need for this one
     Task<Category?> GetById(int id);
+    Task<CategoryProductsDto?> GetCategoryProducts(int categoryId, Pagination pag);
 }
 
 public class CategoryRepository(IDbConnection connection) : ICategoryRepository
@@ -57,5 +58,36 @@ public class CategoryRepository(IDbConnection connection) : ICategoryRepository
         var product = await connection.QuerySingleOrDefaultAsync<Category>(sql, parameters);
 
         return product;
+    }
+
+    public async Task<CategoryProductsDto?> GetCategoryProducts(int categoryId, Pagination pag)
+    {
+        try
+        {
+            var offset = (pag.PageNumber - 1) * pag.PageSize;
+
+            var categoryParams = new { CategoryId = categoryId };
+            var category = await connection.QuerySingleOrDefaultAsync<CategoryBasic>(CategoryQueries.GetCategoryById, categoryParams);
+
+            if (category is null)
+                return null;
+
+            offset = 0;  //TO-DO: remove when pagination is done on the FE
+
+            var productParams = new { CategoryId = categoryId, Offset = offset, Limit = pag.PageSize };
+            var products = await connection.QueryAsync<ProductPreviewDto>(ProductQueries.GetAllByCategory, productParams);
+
+            var result = new CategoryProductsDto
+            {
+                Category = category,
+                Products = products.ToList()
+            };
+
+            return result;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "An error ocurred while getting products by category"); throw;
+        }
     }
 }
