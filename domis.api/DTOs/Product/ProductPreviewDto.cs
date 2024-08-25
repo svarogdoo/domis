@@ -8,4 +8,5 @@ public class ProductPreviewDto
     public decimal Price { get; set; }
     public decimal Stock { get; set; }
     public string? FeaturedImageUrl { get; set; }
+    public string? Description { get; set; }
 }

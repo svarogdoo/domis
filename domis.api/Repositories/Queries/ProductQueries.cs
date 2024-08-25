@@ -9,6 +9,7 @@ public static class ProductQueries
                         sku AS Sku,
                         price AS Price,
                         stock AS Stock
+                        description AS Description
                     FROM domis.product"
     ;
 
