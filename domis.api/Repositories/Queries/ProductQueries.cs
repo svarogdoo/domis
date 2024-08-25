@@ -8,8 +8,8 @@ public static class ProductQueries
                         product_name AS Name,
                         sku AS Sku,
                         price AS Price,
-                        stock AS Stock
-                        description AS Description
+                        stock AS Stock,
+                        product_description AS Description
                     FROM domis.product"
     ;
 
