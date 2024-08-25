@@ -1,4 +1,5 @@
-﻿using domis.api.Services;
+﻿using domis.api.DTOs.Product;
+using domis.api.Services;
 
 namespace domis.api.Endpoints;
 
@@ -24,5 +25,13 @@ public static class ProductEndpoints
             return product is null ? Results.NotFound() : Results.Ok(product);
         }).WithDescription("get product by id");
 
+
+        group.MapPut("/", async (ProductEditDto product, IProductService productService) =>
+        {
+            var response = await productService.Update(product);
+
+            return Results.NotFound();
+            //return response ? Results.Ok() : Results.NotFound();
+        }).WithDescription("update product");
     }
 }

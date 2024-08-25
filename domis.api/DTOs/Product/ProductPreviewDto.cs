@@ -1,4 +1,4 @@
-﻿namespace domis.api.DTOs;
+﻿namespace domis.api.DTOs.Product;
 
 public class ProductPreviewDto
 {

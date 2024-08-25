@@ -1,5 +1,6 @@
 ﻿using Dapper;
-using domis.api.DTOs;
+using domis.api.DTOs.Category;
+using domis.api.DTOs.Product;
 using domis.api.Models;
 using domis.api.Repositories.Helpers;
 using Serilog;

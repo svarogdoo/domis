@@ -1,6 +1,8 @@
-﻿namespace domis.api.DTOs;
+﻿using domis.api.DTOs.Image;
 
-public class ProductDetailDto
+namespace domis.api.DTOs.Product;
+
+public class ProductDetailsDto
 {
     public string? Name { get; set; }
     public string? Description { get; set; }
@@ -8,6 +10,6 @@ public class ProductDetailDto
     public decimal Price { get; set; }
     public decimal Stock { get; set; }
     public bool IsActive { get; set; }
-    public List<ImageDto> Images { get; set; } = [];
+    public List<ImageGetDto> Images { get; set; } = [];
     public string[] CategoryPaths { get; set; } = [];
 }

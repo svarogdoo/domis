@@ -1,4 +1,6 @@
-﻿namespace domis.api.DTOs;
+﻿using domis.api.DTOs.Product;
+
+namespace domis.api.DTOs.Category;
 
 public class CategoryProductsDto
 {

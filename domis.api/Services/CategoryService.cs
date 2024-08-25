@@ -1,4 +1,4 @@
-﻿using domis.api.DTOs;
+﻿using domis.api.DTOs.Category;
 using domis.api.Models;
 using domis.api.Repositories;
 

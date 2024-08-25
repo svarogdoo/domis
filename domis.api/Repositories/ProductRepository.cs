@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Dapper;
-using domis.api.DTOs;
+using domis.api.DTOs.Image;
+using domis.api.DTOs.Product;
 using domis.api.Models;
 using domis.api.Repositories.Helpers;
 using domis.api.Repositories.Queries;
@@ -13,9 +14,8 @@ namespace domis.api.Repositories;
 public interface IProductRepository
 {
     Task<IEnumerable<ProductPreviewDto>> GetAll();
-
-    Task<ProductDetailDto?> GetByIdWithDetails(int id);
-
+    Task<ProductDetailsDto?> GetByIdWithDetails(int id);
+    Task<ProductEditDto?> Update(ProductEditDto product);
     Task<bool> NivelacijaUpdateProductBatch(IEnumerable<NivelacijaRecord> records);
 }
 
@@ -37,7 +37,7 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
         }
     }
 
-    public async Task<ProductDetailDto?> GetByIdWithDetails(int productId)
+    public async Task<ProductDetailsDto?> GetByIdWithDetails(int productId)
     {
         try
         {
@@ -45,10 +45,10 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
             if (product == null)
                 return null;
 
-            var images = (await connection.QueryAsync<ImageDto>(ImageQueries.GetProductImages, new { ProductId = productId })).ToList();
+            var images = (await connection.QueryAsync<ImageGetDto>(ImageQueries.GetProductImages, new { ProductId = productId })).ToList();
             var categoryPaths = (await connection.QueryAsync<string>(CategoryQueries.GetProductCategories, new { ProductId = productId })).ToList();
 
-            var productDetail = mapper.Map<ProductDetailDto>(product);
+            var productDetail = mapper.Map<ProductDetailsDto>(product);
             productDetail.Images = [.. images];
             productDetail.CategoryPaths = [.. categoryPaths];
 
@@ -70,6 +70,25 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
         catch (Exception ex)
         {
             Log.Error(ex, "An error occurred while updating products"); throw;
+        }
+    }
+
+    public async Task<ProductEditDto?> Update(ProductEditDto product)
+    {
+        try
+        {
+            var exists = await connection.ExecuteScalarAsync<bool>(ProductQueries.CheckIfProductExists, new { ProductId = product.Id });
+            
+            if (!exists)
+                return null;
+
+
+
+            return null;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "An error occurred while updating the product with {ProductId}", product.Id); throw;
         }
     }
 }
