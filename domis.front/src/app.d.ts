@@ -37,13 +37,24 @@ declare global {
   }
 
   interface Product {
+    id: number;
     name: string;
-    description: string;
-    sku: string;
+    description?: string;
+    sku: number;
     price: number;
     stock: number;
-    images: Array<Image>;
-    categoryPaths: Array<string>;
+    featuredImageUrl: string;
+    images: Array<Image>; // ne slati za put
+    categoryPaths: Array<string>; // ne slati za put
+    title?: string;
+    width?: number;
+    height?: number;
+    depth?: number;
+    length?: number;
+    thickness?: number;
+    weight?: number;
+    isItemType?: boolean;
+    isSurfaceType?: boolean;
   }
 }
 
