@@ -9,7 +9,9 @@ public static class ProductQueries
                         sku AS Sku,
                         price AS Price,
                         stock AS Stock
-                    FROM domis.product";
+                        description AS Description
+                    FROM domis.product"
+    ;
 
     public const string GetAllByCategory = @"
             WITH RECURSIVE CategoryHierarchy AS (
@@ -54,8 +56,8 @@ public static class ProductQueries
             SELECT *
             FROM ProductsWithImages
             ORDER BY Name -- Ensure you have a column to order by
-            OFFSET @Offset LIMIT @Limit;
-        ";
+            OFFSET @Offset LIMIT @Limit;"
+    ;
 
     public const string GetById = @"
             SELECT
@@ -67,7 +69,8 @@ public static class ProductQueries
                 stock AS Stock,
                 active AS IsActive
             FROM domis.product
-            WHERE id = @ProductId;";
+            WHERE id = @ProductId;"
+    ;
 
     public const string UpdateProductsByNivelacija = @"
             UPDATE domis.product
@@ -77,5 +80,11 @@ public static class ProductQueries
             stock = CASE
                 WHEN sku = @Sku THEN @Stock
             END
-            WHERE sku = @Sku";
+            WHERE sku = @Sku"
+    ;
+
+    public const string CheckIfProductExists = @"
+        SELECT EXISTS 
+        (SELECT 1 FROM domis.product WHERE id = @ProductId);
+    ";
 }

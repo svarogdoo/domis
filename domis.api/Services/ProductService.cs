@@ -1,4 +1,4 @@
-﻿using domis.api.DTOs;
+﻿using domis.api.DTOs.Product;
 using domis.api.Models;
 using domis.api.Repositories;
 
@@ -8,9 +8,8 @@ public interface IProductService
 {
     Task<IEnumerable<ProductPreviewDto>> GetAll();
 
-    Task<ProductDetailDto?> GetByIdWithDetails(int id);
-
-    Task<CategoryProductsDto?> GetAllByCategory(int categoryId, int pageNumber, int pageSize);
+    Task<ProductDetailsDto?> GetByIdWithDetails(int id);
+    Task<ProductEditDto?> Update(ProductEditDto product);
 }
 
 public class ProductService(IProductRepository repository) : IProductService
@@ -20,14 +19,13 @@ public class ProductService(IProductRepository repository) : IProductService
         return await repository.GetAll();
     }
 
-    public async Task<CategoryProductsDto?> GetAllByCategory(int categoryId, int pageNumber, int pageSize)
-    {
-        return await repository.GetAllByCategory(categoryId, pageNumber, pageSize);
-    }
-
-    public async Task<ProductDetailDto?> GetByIdWithDetails(int id)
+    public async Task<ProductDetailsDto?> GetByIdWithDetails(int id)
     {
         return await repository.GetByIdWithDetails(id);
-        //return await repository.GetByIdWithCategoriesAndImages(id);
+    }
+
+    public async Task<ProductEditDto?> Update(ProductEditDto product)
+    {
+        return await repository.Update(product);
     }
 }

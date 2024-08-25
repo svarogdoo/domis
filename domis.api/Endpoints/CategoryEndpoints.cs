@@ -1,4 +1,6 @@
-﻿using domis.api.Services;
+﻿using domis.api.Models;
+using domis.api.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace domis.api.Endpoints;
 
@@ -14,6 +16,7 @@ public static class CategoryEndpoints
             var categories = await categoryService.GetAll();
 
             return categories is null ? Results.NotFound() : Results.Ok(categories);
+
         }).WithDescription("get all categories");
 
 
@@ -23,6 +26,31 @@ public static class CategoryEndpoints
             var product = await categoryService.GetById(id);
 
             return product is null ? Results.NotFound() : Results.Ok(product);
+
         }).WithDescription("get category by id | NOT IMPLEMENTED");
+
+        group.MapGet("/{categoryId}/products", async (int categoryId, int? pageNumber, int? pageSize, ICategoryService categoryService) =>
+        {
+            if (pageNumber <= 0)
+            {
+                return Results.BadRequest("Page number must be greater than 0.");
+            }
+
+            if (pageSize <= 0 || pageSize > 100)
+            {
+                return Results.BadRequest("Page size must be between 1 and 100.");
+            }
+
+            var pagination = new PageOptions 
+            { 
+                PageNumber = pageNumber ?? 1, 
+                PageSize = pageSize ?? 20 
+            };
+
+            var categories = await categoryService.GetCategoryProducts(categoryId, pagination);
+
+            return categories is null ? Results.NotFound() : Results.Ok(categories);
+
+        }).WithDescription("get products by category");
     }
 }

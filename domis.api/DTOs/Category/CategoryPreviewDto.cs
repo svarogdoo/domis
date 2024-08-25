@@ -1,6 +1,6 @@
 ﻿using domis.api.Models;
 
-namespace domis.api.DTOs;
+namespace domis.api.DTOs.Category;
 
 public class CategoryPreviewDto
 {

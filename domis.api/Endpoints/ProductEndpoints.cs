@@ -1,4 +1,5 @@
-﻿using domis.api.Services;
+﻿using domis.api.DTOs.Product;
+using domis.api.Services;
 
 namespace domis.api.Endpoints;
 
@@ -25,24 +26,12 @@ public static class ProductEndpoints
         }).WithDescription("get product by id");
 
 
-        group.MapGet("/category/{categoryId:int}", async (int categoryId, int? page, int? size, IProductService productService) =>
+        group.MapPut("/", async (ProductEditDto product, IProductService productService) =>
         {
-            var pageNumber = page.GetValueOrDefault(1);
-            var pageSize = size.GetValueOrDefault(20);
+            var response = await productService.Update(product);
 
-            if (pageNumber <= 0)
-            {
-                return Results.BadRequest("Page number must be greater than 0.");
-            }
-
-            if (pageSize <= 0 || pageSize > 100)
-            {
-                return Results.BadRequest("Page size must be between 1 and 100.");
-            }
-
-            var products = await productService.GetAllByCategory(categoryId, pageNumber, pageSize);
-
-            return products is null ? Results.NoContent() : Results.Ok(products);
-        }).WithDescription("get products by category");
+            return Results.NotFound();
+            //return response ? Results.Ok() : Results.NotFound();
+        }).WithDescription("update product");
     }
 }

@@ -1,6 +1,6 @@
-﻿namespace domis.api.DTOs;
+﻿namespace domis.api.DTOs.Image;
 
-public class ImageDto
+public class ImageGetDto
 {
     public string? Url { get; set; }
     public string? Type { get; set; }

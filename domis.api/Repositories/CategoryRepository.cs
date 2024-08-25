@@ -1,5 +1,6 @@
 ﻿using Dapper;
-using domis.api.DTOs;
+using domis.api.DTOs.Category;
+using domis.api.DTOs.Product;
 using domis.api.Models;
 using domis.api.Repositories.Helpers;
 using Serilog;
@@ -13,6 +14,7 @@ public interface ICategoryRepository
 
     //probably no need for this one
     Task<Category?> GetById(int id);
+    Task<CategoryProductsDto?> GetCategoryProducts(int categoryId, PageOptions options);
 }
 
 public class CategoryRepository(IDbConnection connection) : ICategoryRepository
@@ -57,5 +59,36 @@ public class CategoryRepository(IDbConnection connection) : ICategoryRepository
         var product = await connection.QuerySingleOrDefaultAsync<Category>(sql, parameters);
 
         return product;
+    }
+
+    public async Task<CategoryProductsDto?> GetCategoryProducts(int categoryId, PageOptions options)
+    {
+        try
+        {
+            var offset = (options.PageNumber - 1) * options.PageSize;
+
+            var categoryParams = new { CategoryId = categoryId };
+            var category = await connection.QuerySingleOrDefaultAsync<CategoryBasicInfoDto>(CategoryQueries.GetCategoryById, categoryParams);
+
+            if (category is null)
+                return null;
+
+            offset = 0;  //TO-DO: remove when pagination is done on the FE
+
+            var productParams = new { CategoryId = categoryId, Offset = offset, Limit = options.PageSize };
+            var products = await connection.QueryAsync<ProductPreviewDto>(ProductQueries.GetAllByCategory, productParams);
+
+            var result = new CategoryProductsDto
+            {
+                Category = category,
+                Products = products.ToList()
+            };
+
+            return result;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "An error ocurred while getting products by category"); throw;
+        }
     }
 }
