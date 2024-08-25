@@ -14,7 +14,7 @@ public class ProductEditDto
     public string? Description { get; set; }
 
     [JsonPropertyName("sku")]
-    public int Sku { get; set; }
+    public int? Sku { get; set; }
 
     [JsonPropertyName("price")]
     public decimal? Price { get; set; }
@@ -44,9 +44,9 @@ public class ProductEditDto
     [JsonPropertyName("thickness")]
     public decimal? Thickness { get; set; }
 
-    [JsonPropertyName("itemCount")]
-    public decimal? ItemCount { get; set; }
+    [JsonPropertyName("isItemType")]
+    public bool? IsItem { get; set; }
 
-    [JsonPropertyName("surfaceCount")]
-    public decimal? SurfaceCount { get; set; }
+    [JsonPropertyName("isSurfaceType")]
+    public bool? IsSurfaceType { get; set; }
 }
