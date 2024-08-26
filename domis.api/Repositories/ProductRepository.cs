@@ -82,9 +82,33 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
             if (!exists)
                 return null;
 
+            var affectedRows = await connection.ExecuteAsync(ProductQueries.UpdateProduct, new
+            {
+                product.Id,
+                product.Title,
+                product.Width,
+                product.Height,
+                product.Weight,
+                product.Depth,
+                product.Length,
+                product.Thickness,
+                product.IsItem,
+                product.IsSurfaceType,
+                product.Name,
+                product.Description,
+                product.Sku,
+                product.Price,
+                product.Stock
+            });
 
+            if (affectedRows == 0)
+            {
+                Log.Warning("Update failed. No rows were affected for ProductId {ProductId}", product.Id);
+                return null;
+            }
 
-            return null;
+            var updatedProduct = await connection.QuerySingleOrDefaultAsync<ProductEditDto>(ProductQueries.GetById, new { ProductId = product.Id });
+            return updatedProduct;
         }
         catch (Exception ex)
         {
