@@ -91,11 +91,11 @@ public static class ProductQueries
     public const string UpdateProduct = @"
         UPDATE domis.product
         SET
-            product_name = COALESCE(@Name, product_name),
+            --product_name = COALESCE(@Name, product_name),
             product_description = COALESCE(@Description, product_description),
             --sku = COALESCE(@Sku, sku),
-            price = COALESCE(@Price, price),
-            stock = COALESCE(@Stock, stock),
+            --price = COALESCE(@Price, price),
+            --stock = COALESCE(@Stock, stock),
             --active = COALESCE(@IsActive, active),
             title = COALESCE(@Title, title),
             width = COALESCE(@Width, width),

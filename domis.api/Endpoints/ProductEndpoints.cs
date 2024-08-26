@@ -22,7 +22,9 @@ public static class ProductEndpoints
         {
             var product = await productService.GetByIdWithDetails(id);
 
-            return product is null ? Results.NotFound() : Results.Ok(product);
+            return product is null 
+                ? Results.NotFound() 
+                : Results.Ok(product);
         }).WithDescription("get product by id");
 
 
@@ -30,8 +32,9 @@ public static class ProductEndpoints
         {
             var response = await productService.Update(product);
 
-            return Results.NotFound();
-            //return response ? Results.Ok() : Results.NotFound();
+            return response is null 
+                ? Results.NotFound(new { Message = $"Product with ID {product.Id} not found or update failed." })
+                : Results.Ok(response);
         }).WithDescription("update product");
     }
 }
