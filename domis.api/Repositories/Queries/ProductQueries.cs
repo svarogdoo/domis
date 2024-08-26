@@ -88,6 +88,7 @@ public static class ProductQueries
         (SELECT 1 FROM domis.product WHERE id = @ProductId);
     ";
 
+    //TO-DO: decide what needs to be updated
     public const string UpdateProduct = @"
         UPDATE domis.product
         SET
