@@ -14,6 +14,7 @@ var app = builder.Build();
 app.RegisterMiddlewares();
 
 app.RegisterProductEndpoints();
+app.RegisterCartEndpoints();
 app.RegisterCategoryEndpoints();
 app.RegisterSyncEndpoints();
 

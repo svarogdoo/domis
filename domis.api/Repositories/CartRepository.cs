@@ -9,7 +9,7 @@ using Serilog;
 
 namespace domis.api.Repositories;
 
-interface ICartRepository
+public interface ICartRepository
 {
     Task<IEnumerable<OrderStatusDto>?> GetAllOrderStatuses();
     Task<int> CreateCartAsync(int? userId);
@@ -151,8 +151,9 @@ public class CartRepository(IDbConnection connection) : ICartRepository
 
     public async Task<bool> DeleteCartAsync(int cartId)
     {
+        connection.Open();
         using var transaction = connection.BeginTransaction();
-        
+
         try
         {
             var parameters = new { CartId = cartId };
@@ -171,34 +172,44 @@ public class CartRepository(IDbConnection connection) : ICartRepository
             Log.Error(ex, $"An error occurred while deleting the cart: {ex.Message}");
             throw;
         }
+        finally
+        {
+            connection.Close();
+        }
     }
     
     public async Task<CartDto?> GetCartWithItemsAndProductDetailsAsync(int cartId)
     {
         try
         {
-            var cartDictionary = new Dictionary<int, CartDto?>();
+            var cartDictionary = new Dictionary<int, CartDto>();
 
-            var _ = await connection.QueryAsync<CartDto, CartItemDto, ProductDetailsDto, ImageGetDto, CartDto>(CartQueries.GetCart, 
-                (cart, item, product, imageUrl) =>
+            var result = await connection.QueryAsync<CartDto, CartItemDto, ProductCartDetailsDto, string, string, CartDto>(
+                CartQueries.GetCart,
+                (cart, item, product, image, status) =>
                 {
                     if (!cartDictionary.TryGetValue(cart.CartId, out var currentCart))
                     {
                         currentCart = cart;
+                        currentCart.Items = new List<CartItemDto>();
                         cartDictionary.Add(currentCart.CartId, currentCart);
                     }
 
-                    if (currentCart?.Items.Find(i => i.CartItemId == item.CartItemId) == null)
+                    if (item is not null 
+                        && currentCart.Items.Find(i => i.CartItemId == item.CartItemId) == null)
                     {
                         item.ProductDetails = product;
-                        item.ProductDetails.Images.Add(new ImageGetDto { Url = imageUrl.Url });
-                        currentCart?.Items.Add(item);
+                        item.ProductDetails.Image = image;
+                        currentCart.Items.Add(item);
                     }
 
+                    currentCart.Status = status; // Assign the status to the cart
+
                     return currentCart;
-                }, 
+                },
                 new { CartId = cartId },
-                splitOn: "CartItemId, Name, Url");
+                splitOn: "CartItemId, Name, Url, Status"
+            );
 
             return cartDictionary.Values.FirstOrDefault();
         }

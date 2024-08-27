@@ -5,7 +5,7 @@ public static class CartQueries
     public const string GetAllCartStatuses = @"
                SELECT id AS Id, 
                status_name AS StatusName 
-               FROM domis.order_status;";
+               FROM domis.cart_status;";
     
     public const string CreateCart = @"
                 INSERT INTO domis.cart (user_id, status_id, created_at)
@@ -52,22 +52,22 @@ public static class CartQueries
                 ci.created_at AS CartItemCreatedAt,
                 ci.modified_at AS CartItemModifiedAt,
                 p.product_name AS Name,
-                p.product_description AS Description,
-                p.sku AS Sku,
-                p.price AS Price,
-                p.stock AS Stock,
-                p.active AS IsActive,
-                i.blob_url AS Url
+                p.product_description AS Description,         
+                p.price AS Price,          
+                i.blob_url AS Url,
+				s.status_name as Status
             FROM 
                 domis.cart c
+			LEFT JOIN 
+                domis.cart_status s ON s.id = c.status_id
             LEFT JOIN 
                 domis.cart_item ci ON c.id = ci.cart_id
             LEFT JOIN
                 domis.product p ON ci.product_id = p.id
            LEFT JOIN
 	            domis.product_image pi ON p.id = pi.product_id
-           JOIN 
+           LEFT JOIN 
                 domis.image i ON pi.image_id = i.id
             WHERE 
-                pi.image_type_id = 1 AND c.id = @CartId;";
+                (pi.image_type_id is null or pi.image_type_id = 1) AND c.id = @CartId;";
 }
