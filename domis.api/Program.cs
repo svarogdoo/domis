@@ -17,6 +17,8 @@ app.RegisterProductEndpoints();
 app.RegisterCartEndpoints();
 app.RegisterCategoryEndpoints();
 app.RegisterSyncEndpoints();
+app.RegisterLocationEndpoints();
+app.RegisterOrderEndpoints();
 
 app.Run();
 
