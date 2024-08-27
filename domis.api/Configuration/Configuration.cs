@@ -55,6 +55,11 @@ public static class Configuration
         builder.Services.AddScoped<ICategoryService, CategoryService>();
         builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 
+        builder.Services.AddScoped<ICartService, CartService>();
+        builder.Services.AddScoped<ICartRepository, CartRepository>();
+        
+        builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+
         builder.Services.AddHttpClient<ISyncService, SyncService>();
         builder.Services.AddScoped<ISyncService, SyncService>();
     }
