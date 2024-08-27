@@ -1,4 +1,4 @@
-using System.ComponentModel;
+using domis.api.Models;
 using domis.api.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -68,26 +68,6 @@ public static class CartEndpoints
     }
 }
 
-public record CreateCartRequest
-{
-    [Description("Provide if user is logged in")]
-    public int UserId { get; set; }
-}
 
-public record CreateCartResponse(int cartId);
-
-public record UpdateCartRequest(int cartId, int statusId);
-public record UpdateCartResponse(bool updated);
-
-public record DeleteCartRequest(int cartId);
-public record DeleteCartResponse(bool updated);
-
-public record CreateCartItemRequest(int cartId, int productId, decimal quantity);
-public record CreateCartItemResponse(int cartItemId);
-public record UpdateCartItemRequest(int cartItemId, decimal quantity);
-public record UpdateCartItemResponse(bool updated);
-
-public record DeleteCartItemRequest(int cartItemId);
-public record DeleteCartItemResponse(bool updated);
 
 
