@@ -34,5 +34,6 @@ public class Product
     public decimal? Weight { get; set; }
     public bool? IsItemType { get; set; }
     public bool? IsSurfaceType { get; set; }
+    public string? FeaturedImageUrl { get; set; }
     //public List<string> ImageUrls { get; set; } = [];
 }
