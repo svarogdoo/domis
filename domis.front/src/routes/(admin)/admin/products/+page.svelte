@@ -1,19 +1,27 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { getProducts } from "../../../../services/product-service";
+  import {
+    getProduct,
+    getProducts,
+    putProduct,
+  } from "../../../../services/product-service";
   import Input from "./Input.svelte";
+  import Snackbar from "../../../../components/Snackbar.svelte";
+
+  let snackbarMessage: string;
+  let isSnackbarSuccess: boolean;
 
   let productsList: Array<Product>;
   let selectedProduct: Product;
   let title: string;
+  let description: string = "";
   let height: string;
   let width: string;
   let depth: string;
   let length: string;
   let thickness: string;
   let weight: string;
-  //TODO: DESCRIPTION
-  let isSurfaceType: boolean;
+  let isSurfaceType: boolean = false;
   const errors = {
     height: "",
     width: "",
@@ -23,9 +31,12 @@
     weight: "",
   };
 
-  function setSelectedProduct(value: Product) {
-    selectedProduct = value;
-    title = selectedProduct.title ? `${selectedProduct.title}` : "";
+  async function setSelectedProduct(value: Product) {
+    selectedProduct = await getProduct(value.id);
+    title = selectedProduct.title ? selectedProduct.title : "";
+    description = selectedProduct.description
+      ? selectedProduct.description
+      : "";
     height = selectedProduct.height ? `${selectedProduct.height}` : "";
     width = selectedProduct.width ? `${selectedProduct.width}` : "";
     depth = selectedProduct.depth ? `${selectedProduct.depth}` : "";
@@ -66,11 +77,43 @@
     } else errors.weight = "";
   }
 
-  function submit() {
-    // set surfacetype
+  function showSnackbar() {
+    var snackbar = document.getElementById("snackbar");
+    if (snackbar) {
+      snackbar.style.display = "flex";
+      setTimeout(function () {
+        if (snackbar) snackbar.style.display = "none";
+      }, 3000); // Close the Snackbar after 3 seconds (adjust as needed)
+    }
   }
 
-  function validateAndSubmit() {
+  async function submit() {
+    let res = await putProduct({
+      id: selectedProduct.id,
+      title: title,
+      description: description,
+      width: Number.parseInt(width),
+      height: Number.parseInt(height),
+      depth: Number.parseInt(depth),
+      length: Number.parseInt(length),
+      thickness: Number.parseInt(thickness),
+      isSurfaceType: isSurfaceType,
+      isItemType: !isSurfaceType,
+    });
+
+    if (res) {
+      snackbarMessage = "Uspešno sačuvan proizvod!";
+      isSnackbarSuccess = true;
+    } else {
+      snackbarMessage = "Greška pri čuvanju proizvoda!";
+      isSnackbarSuccess = false;
+    }
+    showSnackbar();
+  }
+
+  function validateAndSubmit(event: Event) {
+    event.preventDefault(); // prevent page from scrolling to top
+
     validate();
     if (
       errors.height ||
@@ -87,7 +130,7 @@
 
 <div class="flex w-full mx-4">
   {#if productsList}
-    <ul class="flex flex-col w-1/4 h-lvh overflow-y-scroll">
+    <ul class="flex flex-col w-1/4 h-lvh overflow-y-scroll border-r">
       {#each productsList as product}
         <button
           on:click={() => setSelectedProduct(product)}
@@ -99,36 +142,40 @@
       {/each}
     </ul>
   {/if}
-  <div class="w-3/4 flex flex-col ml-12">
-    <div>
-      <h2 class="mt-4 text-xl" placeholder="Postojeći naziv proizvoda">
-        {selectedProduct ? selectedProduct.name : "Odaberite proizvod iz liste"}
-      </h2>
+  <div class="relative w-3/4 flex flex-col ml-12">
+    <div class="flex justify-between gap-x-4">
+      <div class="flex flex-col">
+        <h2 class="mt-4 text-xl" placeholder="Postojeći naziv proizvoda">
+          {selectedProduct
+            ? selectedProduct.name
+            : "Odaberite proizvod iz liste"}
+        </h2>
+        <p class="mt-12 text-lg">Kako popuniti polja?</p>
+        <p class="text-md font-light mt-4">
+          <span class="font-semibold">Naslov:</span> Unesite naslov bez imena
+          kategorije. Primer -
+          <span class="italic"> Keramičke pločice Blend Graphite</span>
+          → Naslov:
+          <span class="italic"> Blend Graphite</span>
+        </p>
+        <p class="text-md font-light mt-2">
+          <span class="font-semibold">Dimenzije:</span> Unesite samo vrednosti koje
+          proizvod ima. Dimenzije su u centimetrima.
+        </p>
+        <p class="text-md font-light mt-2">
+          <span class="font-semibold">Težina:</span> Vrednost je izražena u gramima.
+        </p>
+      </div>
       {#if selectedProduct?.featuredImageUrl}
-        <img class="w-96 h-96" src={selectedProduct?.featuredImageUrl} alt="" />
-      {/if}
-      {#if selectedProduct?.description}
-        <textarea>{selectedProduct.description}</textarea>
+        <img
+          class="w-48 h-48 mr-12 rounded-md border"
+          src={selectedProduct?.featuredImageUrl}
+          alt=""
+        />
       {/if}
     </div>
 
-    <p class="mt-12 text-lg">Kako popuniti polja?</p>
-    <p class="text-md font-light mt-4">
-      <span class="font-semibold">Naslov:</span> Unesite naslov bez imena
-      kategorije. Primer -
-      <span class="italic"> Keramičke pločice Blend Graphite</span>
-      → Naslov:
-      <span class="italic"> Blend Graphite</span>
-    </p>
-    <p class="text-md font-light mt-2">
-      <span class="font-semibold">Dimenzije:</span> Unesite samo vrednosti koje proizvod
-      ima. Dimenzije su u centimetrima.
-    </p>
-    <p class="text-md font-light mt-2">
-      <span class="font-semibold">Težina:</span> Vrednost je izražena u gramima.
-    </p>
-
-    <form class="w-full mt-8">
+    <form id="product-form" class="w-full mt-8">
       <div class="flex flex-col gap-y-4">
         <Input
           value={title}
@@ -178,7 +225,7 @@
           <span class="mr-3 font-medium">Proizvod se prodaje po komadu</span>
           <input
             type="checkbox"
-            bind:value={isSurfaceType}
+            bind:checked={isSurfaceType}
             class="sr-only peer"
           />
           <div
@@ -186,6 +233,14 @@
           ></div>
           <span class="ms-3 font-medium">Proizvod se prodaje po površini</span>
         </label>
+        <textarea
+          name="textarea"
+          id="product-form"
+          rows={5}
+          value={description}
+          class="h-auto block w-2/3 rounded-md border-0 py-1.5 pl-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 text-md leading-6"
+          placeholder="Unesite opis proizvoda"
+        ></textarea>
 
         <button
           on:click={validateAndSubmit}
@@ -195,5 +250,6 @@
         >
       </div>
     </form>
+    <Snackbar message={snackbarMessage} isSuccess={isSnackbarSuccess} />
   </div>
 </div>
