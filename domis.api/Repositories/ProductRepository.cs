@@ -15,7 +15,7 @@ public interface IProductRepository
 {
     Task<IEnumerable<ProductPreviewDto>> GetAll();
     Task<ProductDetailsDto?> GetByIdWithDetails(int id);
-    Task<ProductEditDto?> Update(ProductEditDto product);
+    Task<ProductUpdateResponseDto?> Update(ProductEditDto product);
     Task<bool> NivelacijaUpdateProductBatch(IEnumerable<NivelacijaRecord> records);
 }
 
@@ -73,7 +73,7 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
         }
     }
 
-    public async Task<ProductEditDto?> Update(ProductEditDto product)
+    public async Task<ProductUpdateResponseDto?> Update(ProductEditDto product)
     {
         try
         {
@@ -107,7 +107,9 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
                 return null;
             }
 
-            var updatedProduct = await connection.QuerySingleOrDefaultAsync<ProductEditDto>(ProductQueries.GetById, new { ProductId = product.Id });
+            var updatedProduct = await connection.QuerySingleOrDefaultAsync<ProductUpdateResponseDto>(ProductQueries.GetSingleWithDetails, new { ProductId = product.Id });
+
+            //var updatedProduct = await connection.QuerySingleOrDefaultAsync<ProductEditDto>(ProductQueries.GetById, new { ProductId = product.Id });
             return updatedProduct;
         }
         catch (Exception ex)

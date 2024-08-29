@@ -2,6 +2,33 @@
 
 public static class ProductQueries
 {
+    public const string GetSingleWithDetails = @"
+            SELECT
+                p.id AS Id,
+                p.product_name AS Name,
+                p.product_description AS Description,
+                p.sku AS Sku,
+                p.price AS Price,
+                p.stock AS Stock,
+                p.active AS IsActive,
+                p.title AS Title,
+                p.width AS Width,
+                p.height AS Height,
+                p.depth AS Depth,
+                p.length AS Length,
+                p.thickness AS Thickness,
+                p.weight AS Weight,
+                p.isItemType AS IsItemType,
+                p.isSurfaceType AS IsSurfaceType,
+                p.active AS IsActive,
+                i.blob_url AS FeaturedImageUrl
+            FROM domis.product p
+            JOIN domis.product_image pi ON p.id = pi.product_id
+            JOIN domis.image i ON pi.image_id = i.id
+            JOIN domis.image_type it ON pi.image_type_id = it.id
+            WHERE p.id = @ProductId AND it.image_type_name = 'Featured';"
+    ;
+
     public const string GetAll = @"
                     SELECT
                         id AS Id,       

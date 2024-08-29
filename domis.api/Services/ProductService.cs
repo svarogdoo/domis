@@ -9,7 +9,7 @@ public interface IProductService
     Task<IEnumerable<ProductPreviewDto>> GetAll();
 
     Task<ProductDetailsDto?> GetByIdWithDetails(int id);
-    Task<ProductEditDto?> Update(ProductEditDto product);
+    Task<ProductUpdateResponseDto?> Update(ProductEditDto product);
 }
 
 public class ProductService(IProductRepository repository) : IProductService
@@ -24,7 +24,7 @@ public class ProductService(IProductRepository repository) : IProductService
         return await repository.GetByIdWithDetails(id);
     }
 
-    public async Task<ProductEditDto?> Update(ProductEditDto product)
+    public async Task<ProductUpdateResponseDto?> Update(ProductEditDto product)
     {
         return await repository.Update(product);
     }
