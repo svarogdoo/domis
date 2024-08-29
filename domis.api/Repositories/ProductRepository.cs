@@ -14,8 +14,8 @@ namespace domis.api.Repositories;
 public interface IProductRepository
 {
     Task<IEnumerable<ProductPreviewDto>> GetAll();
-    Task<ProductDetailsDto?> GetByIdWithDetails(int id);
-    Task<ProductUpdateResponseDto?> Update(ProductEditDto product);
+    Task<ProductCompleteDetailsDto?> GetByIdWithDetails(int id);
+    Task<ProductCompleteDetailsDto?> Update(ProductEditDto product);
     Task<bool> NivelacijaUpdateProductBatch(IEnumerable<NivelacijaRecord> records);
 }
 
@@ -37,18 +37,19 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
         }
     }
 
-    public async Task<ProductDetailsDto?> GetByIdWithDetails(int productId)
+    public async Task<ProductCompleteDetailsDto?> GetByIdWithDetails(int productId)
     {
         try
         {
-            var product = await connection.QuerySingleOrDefaultAsync<Product>(ProductQueries.GetById, new { ProductId = productId });
+            var product = await connection.QuerySingleOrDefaultAsync<Product>(ProductQueries.GetSingleWithDetails, new { ProductId = productId });
             if (product == null)
                 return null;
 
             var images = (await connection.QueryAsync<ImageGetDto>(ImageQueries.GetProductImages, new { ProductId = productId })).ToList();
             var categoryPaths = (await connection.QueryAsync<string>(CategoryQueries.GetProductCategories, new { ProductId = productId })).ToList();
 
-            var productDetail = mapper.Map<ProductDetailsDto>(product);
+            var productDetail = mapper.Map<ProductCompleteDetailsDto>(product);
+            //var productDetail = mapper.Map<ProductDetailsDto>(product);
             productDetail.Images = [.. images];
             productDetail.CategoryPaths = [.. categoryPaths];
 
@@ -73,7 +74,7 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
         }
     }
 
-    public async Task<ProductUpdateResponseDto?> Update(ProductEditDto product)
+    public async Task<ProductCompleteDetailsDto?> Update(ProductEditDto product)
     {
         try
         {
@@ -107,7 +108,7 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
                 return null;
             }
 
-            var updatedProduct = await connection.QuerySingleOrDefaultAsync<ProductUpdateResponseDto>(ProductQueries.GetSingleWithDetails, new { ProductId = product.Id });
+            var updatedProduct = await connection.QuerySingleOrDefaultAsync<ProductCompleteDetailsDto>(ProductQueries.GetSingleWithDetails, new { ProductId = product.Id });
 
             //var updatedProduct = await connection.QuerySingleOrDefaultAsync<ProductEditDto>(ProductQueries.GetById, new { ProductId = product.Id });
             return updatedProduct;

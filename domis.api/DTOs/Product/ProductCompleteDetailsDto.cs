@@ -1,6 +1,8 @@
-﻿namespace domis.api.DTOs.Product;
+﻿using domis.api.DTOs.Image;
 
-public class ProductUpdateResponseDto
+namespace domis.api.DTOs.Product;
+
+public class ProductCompleteDetailsDto
 {
     public required int Id { get; set; }
     public string? Name { get; set; }
@@ -19,4 +21,6 @@ public class ProductUpdateResponseDto
     public bool? IsItemType { get; set; }
     public bool? IsSurfaceType { get; set; }
     public string? FeaturedImageUrl { get; set; }
+    public List<ImageGetDto> Images { get; set; } = [];
+    public string[] CategoryPaths { get; set; } = [];
 }

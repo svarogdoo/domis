@@ -8,8 +8,8 @@ public interface IProductService
 {
     Task<IEnumerable<ProductPreviewDto>> GetAll();
 
-    Task<ProductDetailsDto?> GetByIdWithDetails(int id);
-    Task<ProductUpdateResponseDto?> Update(ProductEditDto product);
+    Task<ProductCompleteDetailsDto?> GetByIdWithDetails(int id);
+    Task<ProductCompleteDetailsDto?> Update(ProductEditDto product);
 }
 
 public class ProductService(IProductRepository repository) : IProductService
@@ -19,12 +19,12 @@ public class ProductService(IProductRepository repository) : IProductService
         return await repository.GetAll();
     }
 
-    public async Task<ProductDetailsDto?> GetByIdWithDetails(int id)
+    public async Task<ProductCompleteDetailsDto?> GetByIdWithDetails(int id)
     {
         return await repository.GetByIdWithDetails(id);
     }
 
-    public async Task<ProductUpdateResponseDto?> Update(ProductEditDto product)
+    public async Task<ProductCompleteDetailsDto?> Update(ProductEditDto product)
     {
         return await repository.Update(product);
     }

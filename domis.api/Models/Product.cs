@@ -25,5 +25,14 @@ public class Product
     [Column("active")]
     public bool? IsActive { get; set; }
 
+    public string? Title { get; set; }
+    public decimal? Width { get; set; }
+    public decimal? Height { get; set; }
+    public decimal? Depth { get; set; }
+    public decimal? Length { get; set; }
+    public decimal? Thickness { get; set; }
+    public decimal? Weight { get; set; }
+    public bool? IsItemType { get; set; }
+    public bool? IsSurfaceType { get; set; }
     //public List<string> ImageUrls { get; set; } = [];
 }
