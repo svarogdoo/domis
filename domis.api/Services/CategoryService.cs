@@ -6,16 +6,16 @@ namespace domis.api.Services;
 
 public interface ICategoryService
 {
-    Task<IEnumerable<CategoryPreviewDto>?> GetAll();
+    Task<IEnumerable<CategoryMenuDto>?> GetAll();
 
     //probably no need for this one
     Task<Category?> GetById(int id);
-    Task<CategoryProductsDto?> GetCategoryProducts(int categoryId, PageOptions options);
+    Task<CategoryWithProductsDto?> GetCategoryProducts(int categoryId, PageOptions options);
 }
 
 public class CategoryService(ICategoryRepository repository) : ICategoryService
 {
-    public async Task<IEnumerable<CategoryPreviewDto>?> GetAll()
+    public async Task<IEnumerable<CategoryMenuDto>?> GetAll()
     {
         return await repository.GetAll();
     }
@@ -26,7 +26,7 @@ public class CategoryService(ICategoryRepository repository) : ICategoryService
         return await repository.GetById(id);
     }
 
-    public async Task<CategoryProductsDto?> GetCategoryProducts(int categoryId, PageOptions options)
+    public async Task<CategoryWithProductsDto?> GetCategoryProducts(int categoryId, PageOptions options)
     {
         return await repository.GetCategoryProducts(categoryId, options);
     }

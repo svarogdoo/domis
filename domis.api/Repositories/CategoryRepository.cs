@@ -10,20 +10,20 @@ namespace domis.api.Repositories;
 
 public interface ICategoryRepository
 {
-    Task<IEnumerable<CategoryPreviewDto>?> GetAll();
+    Task<IEnumerable<CategoryMenuDto>?> GetAll();
 
     //probably no need for this one
     Task<Category?> GetById(int id);
-    Task<CategoryProductsDto?> GetCategoryProducts(int categoryId, PageOptions options);
+    Task<CategoryWithProductsDto?> GetCategoryProducts(int categoryId, PageOptions options);
 }
 
 public class CategoryRepository(IDbConnection connection) : ICategoryRepository
 {
-    public async Task<IEnumerable<CategoryPreviewDto>?> GetAll()
+    public async Task<IEnumerable<CategoryMenuDto>?> GetAll()
     {
         try
         {
-            var categories = (await connection.QueryAsync<CategoryPreviewDto>(CategoryQueries.GetAll)).ToList();
+            var categories = (await connection.QueryAsync<CategoryMenuDto>(CategoryQueries.GetAll)).ToList();
 
             if (categories is null || categories.Count == 0)
             {
@@ -61,7 +61,7 @@ public class CategoryRepository(IDbConnection connection) : ICategoryRepository
         return product;
     }
 
-    public async Task<CategoryProductsDto?> GetCategoryProducts(int categoryId, PageOptions options)
+    public async Task<CategoryWithProductsDto?> GetCategoryProducts(int categoryId, PageOptions options)
     {
         try
         {
@@ -76,9 +76,9 @@ public class CategoryRepository(IDbConnection connection) : ICategoryRepository
             offset = 0;  //TO-DO: remove when pagination is done on the FE
 
             var productParams = new { CategoryId = categoryId, Offset = offset, Limit = options.PageSize };
-            var products = await connection.QueryAsync<ProductPreviewDto>(ProductQueries.GetAllByCategory, productParams);
+            var products = await connection.QueryAsync<ProductPreviewDto>(ProductQueries.GetAllByCategoryWithPagination, productParams);
 
-            var result = new CategoryProductsDto
+            var result = new CategoryWithProductsDto
             {
                 Category = category,
                 Products = products.ToList()

@@ -2,7 +2,7 @@
 
 namespace domis.api.DTOs.Category;
 
-public class CategoryProductsDto
+public class CategoryWithProductsDto
 {
     public CategoryBasicInfoDto? Category { get; set; }
     public List<ProductPreviewDto>? Products { get; set; }
