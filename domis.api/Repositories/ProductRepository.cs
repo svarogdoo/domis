@@ -17,6 +17,7 @@ public interface IProductRepository
     Task<ProductCompleteDetailsDto?> GetByIdWithDetails(int id);
     Task<ProductCompleteDetailsDto?> Update(ProductEditDto product);
     Task<bool> NivelacijaUpdateProductBatch(IEnumerable<NivelacijaRecord> records);
+    Task<IEnumerable<ProductBasicInfoDto>> GetProductsBasicInfoByCategory(int categoryId);
 }
 
 public class ProductRepository(IDbConnection connection, IMapper mapper) : IProductRepository
@@ -58,6 +59,19 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
         catch (Exception ex)
         {
             Log.Error(ex, "An error occurred while fetching product details"); throw;
+        }
+    }
+
+    public async Task<IEnumerable<ProductBasicInfoDto>> GetProductsBasicInfoByCategory(int categoryId)
+    {
+        try
+        {
+            var products = await connection.QueryAsync<ProductBasicInfoDto>(ProductQueries.GetAllByCategory, new { CategoryId = categoryId });
+            return products;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "An error occurred while fetching product of a category"); throw;
         }
     }
 

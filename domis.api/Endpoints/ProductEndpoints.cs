@@ -1,5 +1,6 @@
 ﻿using domis.api.DTOs.Product;
 using domis.api.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace domis.api.Endpoints;
 
@@ -36,5 +37,13 @@ public static class ProductEndpoints
                 ? Results.NotFound(new { Message = $"Product with ID {product.Id} not found or update failed." })
                 : Results.Ok(response);
         }).WithDescription("update product");
+
+        group.MapGet("/basic-info", async ([FromQuery]int categoryId, IProductService productService) =>
+        {
+            var products = await productService.GetProductsBasicInfoByCategory(categoryId);
+
+            return products is null ? Results.NotFound() : Results.Ok(products);
+
+        }).WithDescription("get products basic info by category");
     }
 }

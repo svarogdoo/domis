@@ -8,9 +8,9 @@ public class MappingProfile : Profile
 {
     public MappingProfile()
     {
-        CreateMap<Product, ProductDetailsDto>()
-            .ForMember(dest => dest.Images, opt => opt.Ignore())
-            .ForMember(dest => dest.CategoryPaths, opt => opt.Ignore());
+        //CreateMap<Product, ProductDetailsDto>()
+        //    .ForMember(dest => dest.Images, opt => opt.Ignore())
+        //    .ForMember(dest => dest.CategoryPaths, opt => opt.Ignore());
 
         CreateMap<Product, ProductCompleteDetailsDto>()
             .ForMember(dest => dest.Images, opt => opt.Ignore())
