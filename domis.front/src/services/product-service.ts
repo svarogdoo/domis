@@ -28,3 +28,9 @@ export async function putProduct(product: any) {
     throw error;
   }
 }
+
+export async function getCategoryProductsBasicInfo(categoryId: string) {
+  return fetchData<Array<Product>>(
+    `https://domis.onrender.com/api/products/basic-info?categoryId=${categoryId}`
+  );
+}

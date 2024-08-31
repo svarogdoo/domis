@@ -1,12 +1,16 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import {
+    getCategoryProductsBasicInfo,
     getProduct,
     getProducts,
     putProduct,
   } from "../../../../services/product-service";
   import Input from "./Input.svelte";
   import Snackbar from "../../../../components/Snackbar.svelte";
+  import AdminCategoryList from "./AdminCategoryList.svelte";
+
+  let selectedCategoryId: string;
 
   let snackbarMessage: string;
   let isSnackbarSuccess: boolean;
@@ -31,6 +35,10 @@
     weight: "",
   };
 
+  $: if (selectedCategoryId) {
+    setProducts();
+  }
+
   async function setSelectedProduct(value: Product) {
     selectedProduct = await getProduct(value.id);
     title = selectedProduct.title ? selectedProduct.title : "";
@@ -45,11 +53,8 @@
     weight = selectedProduct.weight ? `${selectedProduct.weight}` : "";
   }
   async function setProducts() {
-    productsList = await getProducts();
+    productsList = await getCategoryProductsBasicInfo(selectedCategoryId);
   }
-  onMount(() => {
-    setProducts();
-  });
 
   function validate() {
     if (height && isNaN(Number(height))) {
@@ -83,7 +88,7 @@
       snackbar.style.display = "flex";
       setTimeout(function () {
         if (snackbar) snackbar.style.display = "none";
-      }, 3000); // Close the Snackbar after 3 seconds (adjust as needed)
+      }, 3000); // Close the
     }
   }
 
@@ -129,8 +134,15 @@
 </script>
 
 <div class="flex w-full mx-4">
+  <div class="flex flex-col w-1/5 broder-r border-r">
+    <ul>
+      <AdminCategoryList bind:selectedCategoryId />
+    </ul>
+  </div>
   {#if productsList}
-    <ul class="flex flex-col w-1/4 h-lvh overflow-y-scroll border-r">
+    <ul
+      class="flex flex-col w-1/5 border-r overflow-y-scroll h-screen font-light gap-y-2"
+    >
       {#each productsList as product}
         <button
           on:click={() => setSelectedProduct(product)}
@@ -142,114 +154,119 @@
       {/each}
     </ul>
   {/if}
-  <div class="relative w-3/4 flex flex-col ml-12">
-    <div class="flex justify-between gap-x-4">
-      <div class="flex flex-col">
-        <h2 class="mt-4 text-xl" placeholder="Postojeći naziv proizvoda">
-          {selectedProduct
-            ? selectedProduct.name
-            : "Odaberite proizvod iz liste"}
-        </h2>
-        <p class="mt-12 text-lg">Kako popuniti polja?</p>
-        <p class="text-md font-light mt-4">
-          <span class="font-semibold">Naslov:</span> Unesite naslov bez imena
-          kategorije. Primer -
-          <span class="italic"> Keramičke pločice Blend Graphite</span>
-          → Naslov:
-          <span class="italic"> Blend Graphite</span>
-        </p>
-        <p class="text-md font-light mt-2">
-          <span class="font-semibold">Dimenzije:</span> Unesite samo vrednosti koje
-          proizvod ima. Dimenzije su u centimetrima.
-        </p>
-        <p class="text-md font-light mt-2">
-          <span class="font-semibold">Težina:</span> Vrednost je izražena u gramima.
-        </p>
-      </div>
-      {#if selectedProduct?.featuredImageUrl}
-        <img
-          class="w-48 h-48 mr-12 rounded-md border"
-          src={selectedProduct?.featuredImageUrl}
-          alt=""
-        />
-      {/if}
-    </div>
-
-    <form id="product-form" class="w-full mt-8">
-      <div class="flex flex-col gap-y-4">
-        <Input
-          value={title}
-          title="Naslov"
-          placeholder="Unesite naziv proizvoda u što manje reči"
-          error=""
-        />
-
-        <Input
-          bind:value={height}
-          title="Visina"
-          placeholder="0.00"
-          error={errors?.height}
-        />
-        <Input
-          bind:value={width}
-          title="Širina"
-          placeholder="0.00"
-          error={errors?.width}
-        />
-        <Input
-          bind:value={depth}
-          title="Dubina"
-          placeholder="0.00"
-          error={errors?.depth}
-        />
-        <Input
-          bind:value={length}
-          title="Dužina"
-          placeholder="0.00"
-          error={errors?.length}
-        />
-        <Input
-          bind:value={thickness}
-          title="Debljina"
-          placeholder="0.00"
-          error={errors?.thickness}
-        />
-        <Input
-          bind:value={weight}
-          title="Težina"
-          placeholder="0.00"
-          error={errors?.weight}
-        />
-
-        <label class="inline-flex items-center cursor-pointer mt-2">
-          <span class="mr-3 font-medium">Proizvod se prodaje po komadu</span>
-          <input
-            type="checkbox"
-            bind:checked={isSurfaceType}
-            class="sr-only peer"
+  {#if !selectedProduct}
+    <h2 class="mt-4 text-xl ml-12 font-light">
+      Odaberite kategoriju a potom proizvod iz liste s leve strane
+    </h2>
+  {:else}
+    <div class="relative w-3/5 flex flex-col ml-12">
+      <div class="flex justify-between gap-x-4">
+        <div class="flex flex-col">
+          <h2 class="mt-4 text-xl" placeholder="Postojeći naziv proizvoda">
+            {selectedProduct.name}
+          </h2>
+          <p class="mt-12 text-lg">Kako popuniti polja?</p>
+          <p class="text-md font-light mt-4">
+            <span class="font-semibold">Naslov:</span> Unesite naslov bez imena
+            kategorije. Primer -
+            <span class="italic"> Keramičke pločice Blend Graphite</span>
+            → Naslov:
+            <span class="italic"> Blend Graphite</span>
+          </p>
+          <p class="text-md font-light mt-2">
+            <span class="font-semibold">Dimenzije:</span> Unesite samo vrednosti
+            koje proizvod ima. Dimenzije su u centimetrima.
+          </p>
+          <p class="text-md font-light mt-2">
+            <span class="font-semibold">Težina:</span> Vrednost je izražena u gramima.
+          </p>
+        </div>
+        {#if selectedProduct?.featuredImageUrl}
+          <img
+            class="w-48 h-48 mr-12 rounded-md border"
+            src={selectedProduct?.featuredImageUrl}
+            alt=""
           />
-          <div
-            class="relative w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"
-          ></div>
-          <span class="ms-3 font-medium">Proizvod se prodaje po površini</span>
-        </label>
-        <textarea
-          name="textarea"
-          id="product-form"
-          rows={5}
-          value={description}
-          class="h-auto block w-2/3 rounded-md border-0 py-1.5 pl-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 text-md leading-6"
-          placeholder="Unesite opis proizvoda"
-        ></textarea>
-
-        <button
-          on:click={validateAndSubmit}
-          type="submit"
-          class="mt-4 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-96 px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-          >Sačuvaj</button
-        >
+        {/if}
       </div>
-    </form>
-    <Snackbar message={snackbarMessage} isSuccess={isSnackbarSuccess} />
-  </div>
+
+      <form id="product-form" class="w-full mt-8">
+        <div class="flex flex-col gap-y-4">
+          <Input
+            value={title}
+            title="Naslov"
+            placeholder="Unesite naziv proizvoda u što manje reči"
+            error=""
+          />
+
+          <Input
+            bind:value={width}
+            title="Širina"
+            placeholder="0.00"
+            error={errors?.width}
+          />
+          <Input
+            bind:value={height}
+            title="Visina"
+            placeholder="0.00"
+            error={errors?.height}
+          />
+          <Input
+            bind:value={depth}
+            title="Dubina"
+            placeholder="0.00"
+            error={errors?.depth}
+          />
+          <Input
+            bind:value={length}
+            title="Dužina"
+            placeholder="0.00"
+            error={errors?.length}
+          />
+          <Input
+            bind:value={thickness}
+            title="Debljina"
+            placeholder="0.00"
+            error={errors?.thickness}
+          />
+          <Input
+            bind:value={weight}
+            title="Težina"
+            placeholder="0.00"
+            error={errors?.weight}
+          />
+
+          <label class="inline-flex items-center cursor-pointer mt-2">
+            <span class="mr-3 font-medium">Proizvod se prodaje po komadu</span>
+            <input
+              type="checkbox"
+              bind:checked={isSurfaceType}
+              class="sr-only peer"
+            />
+            <div
+              class="relative w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"
+            ></div>
+            <span class="ms-3 font-medium">Proizvod se prodaje po površini</span
+            >
+          </label>
+          <textarea
+            name="textarea"
+            id="product-form"
+            rows={5}
+            value={description}
+            class="h-auto block w-2/3 rounded-md border-0 py-1.5 pl-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 text-md leading-6"
+            placeholder="Unesite opis proizvoda"
+          ></textarea>
+
+          <button
+            on:click={validateAndSubmit}
+            type="submit"
+            class="mt-4 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-96 px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+            >Sačuvaj</button
+          >
+        </div>
+      </form>
+      <Snackbar message={snackbarMessage} isSuccess={isSnackbarSuccess} />
+    </div>
+  {/if}
 </div>
