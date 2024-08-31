@@ -141,7 +141,7 @@
   </div>
   {#if productsList}
     <ul
-      class="flex flex-col w-1/5 border-r overflow-y-scroll h-screen font-light gap-y-2"
+      class="flex flex-col w-1/5 border-r overflow-y-scroll max-h-fit font-light gap-y-2"
     >
       {#each productsList as product}
         <button
