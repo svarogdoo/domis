@@ -31,7 +31,7 @@
         </div>
       </li>
       <li aria-current={$page.url.pathname === "/shop" ? "page" : undefined}>
-        <a href="/shop"> <img src={cartIcon} alt="cart" /></a>
+        <a href="/korpa"> <img src={cartIcon} alt="cart" /></a>
       </li>
     </ul>
   </nav>

@@ -89,7 +89,7 @@
       {/if}
     </div>
   </div>
-  <div class="w-full grid grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-6">
+  <div class="w-full grid grid-cols-2 lg:grid-cols-3 gap-x-2 gap-y-6">
     {#each products as product}
       <ProductCard {product} />
     {/each}
