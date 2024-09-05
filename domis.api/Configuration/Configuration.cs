@@ -3,6 +3,7 @@ using domis.api.Extensions;
 using domis.api.Models;
 using domis.api.Repositories;
 using domis.api.Services;
+using MailKit.Net.Smtp;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using Serilog;
@@ -66,6 +67,16 @@ public static class Configuration
 
         builder.Services.AddHttpClient<ISyncService, SyncService>();
         builder.Services.AddScoped<ISyncService, SyncService>();
+
+        builder.Services.AddSingleton<SmtpClient>(serviceProvider =>
+        {
+            var client = new SmtpClient();
+            // Configure the client as needed, if not already configured
+            // e.g., client.Connect("smtp.ethereal.email", 587, SecureSocketOptions.StartTls);
+            return client;
+        });
+
+        builder.Services.AddTransient<IEmailService, EmailService>();
     }
 
     public static void RegisterMiddlewares(this WebApplication app)
