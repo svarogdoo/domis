@@ -55,6 +55,7 @@ declare global {
     weight?: number;
     isItemType?: boolean;
     isSurfaceType?: boolean;
+    isActive?: boolean;
   }
 }
 

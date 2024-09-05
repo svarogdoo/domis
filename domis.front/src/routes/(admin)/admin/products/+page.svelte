@@ -1,9 +1,7 @@
 <script lang="ts">
-  import { onMount } from "svelte";
   import {
     getCategoryProductsBasicInfo,
     getProduct,
-    getProducts,
     putProduct,
   } from "../../../../services/product-service";
   import Input from "./Input.svelte";
@@ -26,6 +24,7 @@
   let thickness: string;
   let weight: string;
   let isSurfaceType: boolean = false;
+  let isActive: boolean = true;
   const errors = {
     height: "",
     width: "",
@@ -51,6 +50,12 @@
     length = selectedProduct.length ? `${selectedProduct.length}` : "";
     thickness = selectedProduct.thickness ? `${selectedProduct.thickness}` : "";
     weight = selectedProduct.weight ? `${selectedProduct.weight}` : "";
+    isSurfaceType =
+      selectedProduct.isSurfaceType !== undefined
+        ? selectedProduct.isSurfaceType
+        : false;
+    isActive =
+      selectedProduct.isActive !== undefined ? selectedProduct.isActive : true;
   }
   async function setProducts() {
     productsList = await getCategoryProductsBasicInfo(selectedCategoryId);
@@ -88,7 +93,7 @@
       snackbar.style.display = "flex";
       setTimeout(function () {
         if (snackbar) snackbar.style.display = "none";
-      }, 3000); // Close the
+      }, 3000); // Close after 3s
     }
   }
 
@@ -104,6 +109,7 @@
       thickness: Number.parseInt(thickness),
       isSurfaceType: isSurfaceType,
       isItemType: !isSurfaceType,
+      isActive: isActive,
     });
 
     if (res) {
@@ -180,6 +186,10 @@
           <p class="text-md font-light mt-2">
             <span class="font-semibold">Težina:</span> Vrednost je izražena u gramima.
           </p>
+          <p class="text-md font-light mt-2">
+            <span class="font-semibold">Neaktivni proizvodi:</span> Ukoliko je proizvod
+            označen kao neaktivan on neće biti prikazan na sajtu.
+          </p>
         </div>
         {#if selectedProduct?.featuredImageUrl}
           <img
@@ -189,6 +199,18 @@
           />
         {/if}
       </div>
+
+      <label class="inline-flex items-center cursor-pointer mt-8">
+        <input type="checkbox" bind:checked={isActive} class="sr-only peer" />
+        <div
+          class="relative w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"
+        ></div>
+        {#if isActive}
+          <span class="ms-3 font-medium">Proizvod je aktivan</span>
+        {:else}
+          <span class="ms-3 font-medium">Proizvod nije aktivan</span>
+        {/if}
+      </label>
 
       <form id="product-form" class="w-full mt-8">
         <div class="flex flex-col gap-y-4">

@@ -13,7 +13,8 @@ async function handleResponse(res: Response) {
     return res.json();
   }
 
-  throw new Error(`Fetch fail: ${res.status}`);
+  console.info(`Fetch fail: ${res.status}`);
+  // throw new Error(`Fetch fail: ${res.status}`);
 }
 
 export async function fetchData<T>(url: string, method?: string): Promise<T> {

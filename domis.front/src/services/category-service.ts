@@ -15,7 +15,7 @@ export function getCategoryProducts(id: number) {
 
 export async function setCategories() {
   categories.subscribe(async (value) => {
-    if (value.length === 0) {
+    if (value?.length === 0) {
       categories.set(await getCategories());
     }
   });
