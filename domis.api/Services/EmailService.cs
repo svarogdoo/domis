@@ -11,15 +11,31 @@ public interface IEmailService
     public Task SendEmail(string to, string subject, string body);
 }
 
-public class EmailService(SmtpClient smtp) : IEmailService
+public class EmailService : IEmailService
 {
-    private readonly string _host = "smtp.gmail.com";
-    private readonly string _username = "rluka996@gmail.com";
-    private readonly string _password = "...";
-    private readonly int _port = 587; // Port commonly used for TLS
+    private readonly SmtpClient _smtp;
+    private readonly IConfiguration _configuration;
+
+    private readonly string _host;
+    private readonly int _port;
+    private readonly string _username;
+    private readonly string _password;
+
+    public EmailService(SmtpClient smtp, IConfiguration configuration)
+    {
+        _smtp = smtp;
+        _configuration = configuration;
+
+        // Load SMTP settings from configuration
+        _host = _configuration["SmtpSettings:Host"] ?? "";
+        _port = int.Parse(_configuration["SmtpSettings:Port"] ?? "0");
+        _username = _configuration["SmtpSettings:Username"] ?? "";
+        _password = _configuration["SmtpSettings:Password"] ?? "";
+    }
 
     public async Task SendEmail(string to, string subject, string body)
     {
+
         var email = new MimeMessage
         {
             From = { new MailboxAddress("Domis Enterijeri MailKit", _username) },
@@ -33,17 +49,17 @@ public class EmailService(SmtpClient smtp) : IEmailService
 
         try
         {
-            if (!smtp.IsConnected)
+            if (!_smtp.IsConnected)
             {
-                await smtp.ConnectAsync(_host, _port, SecureSocketOptions.StartTls);
+                await _smtp.ConnectAsync(_host, _port, SecureSocketOptions.StartTls);
             }
 
-            if (!smtp.IsAuthenticated)
+            if (!_smtp.IsAuthenticated)
             {
-                await smtp.AuthenticateAsync(_username, _password);
+                await _smtp.AuthenticateAsync(_username, _password);
             }
 
-            string response = await smtp.SendAsync(email);
+            string response = await _smtp.SendAsync(email);
         }
         catch (Exception ex)
         {
@@ -51,7 +67,7 @@ public class EmailService(SmtpClient smtp) : IEmailService
         }
         finally
         {
-            await smtp.DisconnectAsync(true);
+            await _smtp.DisconnectAsync(true);
         }
     }
 }
