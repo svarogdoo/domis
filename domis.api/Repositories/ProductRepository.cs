@@ -101,6 +101,7 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
             {
                 product.Id,
                 product.Title,
+                product.IsActive,
                 product.Width,
                 product.Height,
                 product.Weight,
