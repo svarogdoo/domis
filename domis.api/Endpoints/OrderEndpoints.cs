@@ -86,6 +86,15 @@ public static class OrderEndpoints
 
             return Results.Ok(response);
         }).WithDescription("Get order with details");
+
+
+        //TODO: remove this endpoint
+        group.MapGet("/send-email", async (IEmailService emailService) =>
+        {
+            await emailService.SendEmail("rluka996@gmail.com", "Potvrda porudzbine - TEST", "Tekst...");
+
+            return Results.Ok();
+        }).WithDescription("Send email TEST");
     }
 
 }
