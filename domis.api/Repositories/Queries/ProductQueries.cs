@@ -146,7 +146,7 @@ public static class ProductQueries
         (SELECT 1 FROM domis.product WHERE id = @ProductId);
     ";
 
-    //TO-DO: decide what needs to be updated
+    //TODO: decide what needs to be updated
     public const string UpdateProduct = @"
         UPDATE domis.product
         SET
@@ -155,7 +155,7 @@ public static class ProductQueries
             --sku = COALESCE(@Sku, sku),
             --price = COALESCE(@Price, price),
             --stock = COALESCE(@Stock, stock),
-            --active = COALESCE(@IsActive, active),
+            active = COALESCE(@IsActive, active),
             title = COALESCE(@Title, title),
             width = COALESCE(@Width, width),
             height = COALESCE(@Height, height),
