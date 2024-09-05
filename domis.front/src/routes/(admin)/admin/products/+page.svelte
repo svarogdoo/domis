@@ -139,7 +139,7 @@
   }
 </script>
 
-<div class="flex w-full mx-4">
+<div class="flex w-full px-12">
   <div class="flex flex-col w-1/5 broder-r border-r">
     <ul>
       <AdminCategoryList bind:selectedCategoryId />

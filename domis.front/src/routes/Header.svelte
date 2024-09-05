@@ -35,11 +35,11 @@
       </li>
     </ul>
   </nav>
-  <div class="category py-4 gap-x-12 pl-4">
-    <p>Keramika</p>
+  <div class="category h-1 gap-x-12 pl-4">
+    <!-- <p>Keramika</p>
     <p>Lajsne</p>
     <p>Kamen</p>
-    <p>Leksan</p>
+    <p>Leksan</p> -->
   </div>
 </header>
 
@@ -57,8 +57,6 @@
     width: 95%;
     border-bottom-width: 1px;
     border-bottom-color: #787878;
-    border-top-width: 1px;
-    border-top-color: #787878;
   }
 
   nav {
