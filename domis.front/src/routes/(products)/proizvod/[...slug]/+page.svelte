@@ -37,7 +37,7 @@
       product = await getProduct(Number.parseInt(lastSlug));
       productPrice.perMeterSquared = product.price;
       productPrice.perBox = product.price * productSize.box;
-      productPrice.perMeterSquared = product.price * productSize.pallet * 0.9;
+      productPrice.perPallet = product.price * productSize.pallet * 0.9;
     }
   }
 
@@ -76,18 +76,18 @@
       >
         <p class="text-sm">
           RSD <span class="font-light text-black text-lg px-2"
-            >{formatPrice(product?.price)}</span
+            >{formatPrice(productPrice?.perMeterSquared)}</span
           > po m²
         </p>
         <p class="text-sm">
           RSD <span class="font-light text-black text-lg px-2"
-            >{formatPrice(product?.price)}</span
+            >{formatPrice(productPrice?.perBox)}</span
           >
           po pakovanju ({productSize?.box} m²)
         </p>
         <p class="text-sm">
           RSD <span class="font-light text-black text-lg px-2"
-            >{formatPrice(product?.price)}</span
+            >{formatPrice(productPrice?.perPallet)}</span
           >
           po paleti ({productSize?.pallet} m² | {formatToTwoDecimals(
             productSize?.pallet / productSize?.box
