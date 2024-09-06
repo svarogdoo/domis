@@ -10,6 +10,13 @@
 
   let boxInput: number = 0;
   let meterSqInput: number = 0;
+  let totalPrice: number = 0;
+  let wordEnding: string;
+
+  $: if (boxInput) {
+    setTotalPrice();
+    getCorrectWordEnding();
+  }
 
   function handleMeterSqInputChanged() {
     if (isExtraChecked)
@@ -30,6 +37,23 @@
   function selectText(event: Event) {
     const input = event.target as HTMLInputElement;
     input.select();
+  }
+  function getCorrectWordEnding() {
+    if ([2, 3, 4].includes(boxInput % 10) && Math.floor(boxInput / 10) !== 1)
+      wordEnding = "e";
+    else wordEnding = "a";
+  }
+
+  function setTotalPrice() {
+    const boxesPerPallet = productSize.pallet / productSize.box;
+    const palletNumber = Math.floor(boxInput / boxesPerPallet);
+    const remainingBoxes = boxInput % boxesPerPallet;
+
+    totalPrice =
+      palletNumber > 0
+        ? palletNumber * productPrice.perPallet +
+          remainingBoxes * productPrice.perBox
+        : boxInput * productPrice.perBox;
   }
 </script>
 
@@ -89,11 +113,11 @@
     <p class="tracking-wider font-semibold text-lg">Ukupan iznos</p>
     <div class="flex flex-col">
       <p class="text-2xl">
-        {formatPrice(boxInput * productPrice.perBox)} RSD
+        {formatPrice(totalPrice)} RSD
       </p>
       {#if boxInput > 0}
         <p class="text-gray-500 font-extralight">
-          {boxInput} kutije pokrivaju {formatToTwoDecimals(
+          {boxInput} kutij{wordEnding} pokrivaju {formatToTwoDecimals(
             boxInput * productSize.box
           )} m²
         </p>
