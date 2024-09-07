@@ -52,19 +52,20 @@
 </script>
 
 <section class="w-full flex flex-col justify-center">
-  <div class="flex justify-between items-center mb-5">
-    <!-- TODO: use actual category name -->
-    <h2 class="text-2xl">
+  <div class="flex justify-between items-center px-4 mb-4">
+    <h2 class="text-lg lg:text-2xl">
       {categoryDetails?.name ? categoryDetails.name : ""}
     </h2>
     <div class="relative flex">
-      <div>
+      <div class="text-sm lg:text-normal">
         <button
           on:click={toggleDropdown}
           class="flex gap-x-2 font-light items-center"
           >Sortiraj prema:
 
-          <p class="ring-1 rounded-lg ring-gray-500 px-4 py-2 font-light">
+          <p
+            class="ring-1 rounded-lg ring-gray-500 px-2 lg:px-4 py-1 lg:py-2 font-light"
+          >
             {sortType === "low-to-high" ? "Cena rastuće" : "Cena opadajuće"}
           </p></button
         >
@@ -89,7 +90,7 @@
       {/if}
     </div>
   </div>
-  <div class="w-full grid grid-cols-2 lg:grid-cols-3 gap-x-2 gap-y-6">
+  <div class="w-full grid grid-cols-2 lg:grid-cols-3 gap-x-2 gap-y-4">
     {#each products as product}
       <ProductCard {product} />
     {/each}
