@@ -7,7 +7,7 @@
   <input type="checkbox" id={category.id} class="peer hidden" />
   <label for={category.id} class="w-full cursor-pointer">
     <img
-      class="w-auto h-2 absolute top-1 right-0 transform transition-transform duration-200 ease-in-out"
+      class="w-auto h-2 absolute top-2 right-0 transform transition-transform duration-200 ease-in-out"
       src={dropdownIcon}
       alt="icon"
     />
@@ -19,7 +19,7 @@
     {#if category.subcategories}
       {#each category?.subcategories as subcategory}
         <li
-          class="relative text-wrap pr-4 hover:scale-105 transition ease-in-out"
+          class="relative text-wrap pr-4 py-1 hover:scale-105 transition ease-in-out"
         >
           <a href="/kategorija/{subcategory.id}">{subcategory.name}</a>
           {#if subcategory.subcategories?.length && subcategory.subcategories.length > 0}

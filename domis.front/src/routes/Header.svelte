@@ -2,13 +2,16 @@
   import { page } from "$app/stores";
   import searchIcon from "$lib/icons/search.svg";
   import cartIcon from "$lib/icons/cart.svg";
+  import Hamburger from "./Hamburger.svelte";
 
+  export let sidebar = false;
   let searchTerm: string;
 </script>
 
 <header class="mb-4">
   <nav>
     <ul class="my-4 px-8">
+      <Hamburger bind:open={sidebar} />
       <li
         class="header-title pl-4"
         aria-current={$page.url.pathname === "/" ? "page" : undefined}
