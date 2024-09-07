@@ -2,7 +2,7 @@
   import { page } from "$app/stores";
   import searchIcon from "$lib/icons/search.svg";
   import cartIcon from "$lib/icons/cart.svg";
-  import Hamburger from "./Hamburger.svelte";
+  import Hamburger from "../components/Hamburger.svelte";
 
   export let sidebar = false;
   let searchTerm: string;
