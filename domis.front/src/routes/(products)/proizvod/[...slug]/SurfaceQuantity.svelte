@@ -11,7 +11,7 @@
   let boxInput: number = 0;
   let meterSqInput: number = 0;
   let totalPrice: number = 0;
-  let wordEnding: string;
+  let wordEnding234: boolean;
 
   $: if (boxInput) {
     setTotalPrice();
@@ -40,8 +40,8 @@
   }
   function getCorrectWordEnding() {
     if ([2, 3, 4].includes(boxInput % 10) && Math.floor(boxInput / 10) !== 1)
-      wordEnding = "e";
-    else wordEnding = "a";
+      wordEnding234 = true;
+    else wordEnding234 = false;
   }
 
   function setTotalPrice() {
@@ -110,16 +110,15 @@
 
   <!-- Payment -->
   <div class="flex mt-6 justify-between">
-    <p class="tracking-wider font-semibold text-lg">Ukupan iznos</p>
+    <p class="tracking-wider font-semibold text-md lg:text-lg">Ukupan iznos</p>
     <div class="flex flex-col">
-      <p class="text-2xl">
+      <p class="text-right text-lg lg:text-2xl">
         {formatPrice(totalPrice)} RSD
       </p>
       {#if boxInput > 0}
-        <p class="text-gray-500 font-extralight">
-          {boxInput} kutij{wordEnding} pokrivaju {formatToTwoDecimals(
-            boxInput * productSize.box
-          )} m²
+        <p class="text-gray-500 text-sm lg:text-normal font-extralight">
+          {boxInput} kutij{wordEnding234 ? "e" : "a"} pokriva
+          {formatToTwoDecimals(boxInput * productSize.box)} m²
         </p>
       {/if}
     </div>

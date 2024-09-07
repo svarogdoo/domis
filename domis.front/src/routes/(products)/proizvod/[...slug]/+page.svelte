@@ -47,7 +47,9 @@
 </script>
 
 {#if product}
-  <section class="w-full flex gap-x-12">
+  <section
+    class="w-full flex flex-col lg:flex-row items-center lg:items-start gap-x-12 gap-y-4"
+  >
     <div class="w-4/5">
       <img
         src={featuredImage}
@@ -55,12 +57,16 @@
         class="w-full h-auto aspect-square object-cover rounded-lg"
       />
     </div>
-    <div class="w-full flex flex-col justify-between">
+    <div class="w-full flex flex-col justify-start">
       <!-- Title -->
-      <div class="flex pb-2 justify-between border-b border-gray-400 items-end">
-        <div class="flex flex-col gap-y-1">
-          <h2 class="text-2xl">{product.name}</h2>
-          <div class="flex gap-x-2 font-extralight tracking-wide text-lg">
+      <div
+        class="flex pb-2 justify-between border-b border-gray-400 items-end px-2"
+      >
+        <div class="flex flex-col gap-y-2">
+          <h2 class="text-lg lg:text-2xl">{product.name}</h2>
+          <div
+            class="flex gap-x-2 font-extralight tracking-wide text-sm lg:text-lg"
+          >
             <p>Retificirana</p>
             <p>|</p>
             <p>Anka</p>
@@ -72,21 +78,21 @@
       </div>
       <!-- Pricing -->
       <div
-        class="flex flex-col py-3 gap-y-2 tracking-wide font-extralight border-b border-gray-400"
+        class="flex flex-col px-3 py-3 gap-y-2 tracking-wide font-extralight border-b border-gray-400"
       >
-        <p class="text-sm">
-          RSD <span class="font-light text-black text-lg px-2"
+        <p class="text-xs lg:text-sm">
+          RSD <span class="font-light text-black text-sm lg:text-lg px-2"
             >{formatPrice(productPrice?.perMeterSquared)}</span
           > po m²
         </p>
-        <p class="text-sm">
-          RSD <span class="font-light text-black text-lg px-2"
+        <p class="text-xs lg:text-sm">
+          RSD <span class="font-light text-black text-sm lg:text-lg px-2"
             >{formatPrice(productPrice?.perBox)}</span
           >
           po pakovanju ({productSize?.box} m²)
         </p>
-        <p class="text-sm">
-          RSD <span class="font-light text-black text-lg px-2"
+        <p class="text-xs lg:text-sm">
+          RSD <span class="font-light text-black text-sm lg:text-lg px-2"
             >{formatPrice(productPrice?.perPallet)}</span
           >
           po paleti ({productSize?.pallet} m² | {formatToTwoDecimals(

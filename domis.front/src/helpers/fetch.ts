@@ -1,5 +1,28 @@
 let headers = {};
 
+export async function fetchData<T>(url: string, method?: string): Promise<T> {
+  return fetch(url, {
+    method,
+    headers,
+  }).then(handleResponse);
+}
+
+export async function putDataWithJsonBody(url: string, json: string) {
+  return fetch(url, {
+    method: "put",
+    body: json,
+    headers,
+  }).then(handleResponse);
+}
+
+export async function fetchDataWithJsonBody<T>(
+  url: string,
+  method: string,
+  json: string
+): Promise<T> {
+  return fetch(url, { method, body: json, headers }).then(handleResponse);
+}
+
 async function handleResponse(res: Response) {
   if (res.ok) {
     if (res.status === 204) return null;
@@ -15,11 +38,4 @@ async function handleResponse(res: Response) {
 
   console.info(`Fetch fail: ${res.status}`);
   // throw new Error(`Fetch fail: ${res.status}`);
-}
-
-export async function fetchData<T>(url: string, method?: string): Promise<T> {
-  return fetch(url, {
-    method,
-    headers,
-  }).then(handleResponse);
 }

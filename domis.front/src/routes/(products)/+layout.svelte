@@ -13,7 +13,7 @@
     <div class="product-sidebar hidden lg:flex">
       <Sidebar />
     </div>
-    <div class="products mt-6">
+    <div class="products lg:pt-10">
       <slot />
     </div>
   </div>
