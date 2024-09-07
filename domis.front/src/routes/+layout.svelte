@@ -26,7 +26,7 @@
   <HeaderSidebar bind:open />
   <Header bind:sidebar={open} />
 
-  <main class="w-full h-full flex flex-col pb-8">
+  <main class="w-full flex flex-col flex-grow pb-8">
     <slot />
   </main>
 
