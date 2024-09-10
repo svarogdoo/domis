@@ -56,11 +56,12 @@ declare global {
     isItemType?: boolean;
     isSurfaceType?: boolean;
     isActive?: boolean;
+    type?: QuantityType;
   }
   interface ProductPricing {
-    perMeterSquared: number;
-    perBox: number;
-    perPallet: number;
+    perUnit?: number;
+    perBox?: number;
+    perPallet?: number;
   }
   interface ProductSizing {
     box: number;

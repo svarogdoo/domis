@@ -9,14 +9,17 @@
   } from "../../../../helpers/numberFormatter";
   import fallbackImage from "$lib/assets/backup.jpg";
   import SurfaceQuantity from "./SurfaceQuantity.svelte";
+  import { mapQuantityTypeToString, QuantityType } from "../../../../enums";
 
   let product: Product;
+  let quantityType: QuantityType = QuantityType.Piece;
+  let quantityTypeString = mapQuantityTypeToString(quantityType);
   let featuredImage = fallbackImage;
   let slug;
 
   let isExtraChecked = false;
   let productPrice: ProductPricing = {
-    perMeterSquared: 123,
+    perUnit: 123,
     perBox: 234,
     perPallet: 2234,
   };
@@ -35,7 +38,7 @@
     let lastSlug = getLastSlug(slug);
     if (lastSlug) {
       product = await getProduct(Number.parseInt(lastSlug));
-      productPrice.perMeterSquared = product.price;
+      productPrice.perUnit = product.price;
       productPrice.perBox = product.price * productSize.box;
       productPrice.perPallet = product.price * productSize.pallet * 0.9;
     }
@@ -80,29 +83,42 @@
       <div
         class="flex flex-col px-3 py-3 gap-y-2 tracking-wide font-extralight border-b border-gray-400"
       >
-        <p class="text-xs lg:text-sm">
-          RSD <span class="font-light text-black text-sm lg:text-lg px-2"
-            >{formatPrice(productPrice?.perMeterSquared)}</span
-          > po m²
-        </p>
-        <p class="text-xs lg:text-sm">
-          RSD <span class="font-light text-black text-sm lg:text-lg px-2"
-            >{formatPrice(productPrice?.perBox)}</span
-          >
-          po pakovanju ({productSize?.box} m²)
-        </p>
-        <p class="text-xs lg:text-sm">
-          RSD <span class="font-light text-black text-sm lg:text-lg px-2"
-            >{formatPrice(productPrice?.perPallet)}</span
-          >
-          po paleti ({productSize?.pallet} m² | {formatToTwoDecimals(
-            productSize?.pallet / productSize?.box
-          )} pakovanja)
-        </p>
+        {#if productPrice?.perUnit}
+          <p class="text-xs lg:text-sm">
+            RSD <span class="font-light text-black text-sm lg:text-lg px-2"
+              >{formatPrice(productPrice.perUnit)}</span
+            >
+            po {quantityTypeString}
+          </p>
+        {/if}
+        {#if productPrice?.perBox && productSize?.box}
+          <p class="text-xs lg:text-sm">
+            RSD <span class="font-light text-black text-sm lg:text-lg px-2"
+              >{formatPrice(productPrice.perBox)}</span
+            >
+            po pakovanju ({productSize.box}
+            {quantityTypeString})
+          </p>
+        {/if}
+        {#if productPrice?.perPallet && productSize?.pallet}
+          <p class="text-xs lg:text-sm">
+            RSD <span class="font-light text-black text-sm lg:text-lg px-2"
+              >{formatPrice(productPrice.perPallet)}</span
+            >
+            po paleti ({productSize.pallet}
+            {quantityTypeString} | {formatToTwoDecimals(
+              productSize?.pallet / productSize?.box
+            )} pakovanja)
+          </p>
+        {/if}
       </div>
 
-      <SurfaceQuantity bind:isExtraChecked {productPrice} {productSize} />
-
+      <SurfaceQuantity
+        bind:isExtraChecked
+        {productPrice}
+        {productSize}
+        {quantityType}
+      />
       <button
         class="bg-black mt-2 text-white py-3 uppercase tracking-widest hover:bg-gray-700"
         >Dodaj u korpu</button
