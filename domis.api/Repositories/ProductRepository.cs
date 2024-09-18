@@ -6,6 +6,7 @@ using domis.api.Models;
 using domis.api.Repositories.Helpers;
 using domis.api.Repositories.Queries;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using Serilog;
 using System.Data;
 
@@ -18,6 +19,7 @@ public interface IProductRepository
     Task<ProductCompleteDetailsDto?> Update(ProductEditDto product);
     Task<bool> NivelacijaUpdateProductBatch(IEnumerable<NivelacijaRecord> records);
     Task<IEnumerable<ProductBasicInfoDto>> GetProductsBasicInfoByCategory(int categoryId);
+    Task<IEnumerable<ProductQuantityTypeDto>> GetAllQuantityTypes();
 }
 
 public class ProductRepository(IDbConnection connection, IMapper mapper) : IProductRepository
@@ -114,7 +116,8 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
                 product.Description,
                 product.Sku,
                 product.Price,
-                product.Stock
+                product.Stock,
+                product.QuantityTypeId
             });
 
             if (affectedRows == 0)
@@ -128,9 +131,27 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
             //var updatedProduct = await connection.QuerySingleOrDefaultAsync<ProductEditDto>(ProductQueries.GetById, new { ProductId = product.Id });
             return updatedProduct;
         }
+        catch (PostgresException ex) when (ex.SqlState == "23503") // Foreign Key Violation 
+        {
+            Log.Error(ex, "An error occurred while updating the product with {ProductId}", product.Id); throw;
+
+        }
         catch (Exception ex)
         {
             Log.Error(ex, "An error occurred while updating the product with {ProductId}", product.Id); throw;
+        }
+    }
+
+    public async Task<IEnumerable<ProductQuantityTypeDto>> GetAllQuantityTypes()
+    {
+        try
+        {
+            var quantityTypes = await connection.QueryAsync<ProductQuantityTypeDto>(ProductQueries.GetAllQuantityTypes);
+            return quantityTypes;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "An error occurred while fetching quantity types"); throw;
         }
     }
 }

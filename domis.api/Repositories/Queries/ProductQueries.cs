@@ -20,7 +20,8 @@ public static class ProductQueries
                 p.weight AS Weight,
                 p.isItemType AS IsItemType,
                 p.isSurfaceType AS IsSurfaceType,
-                p.quantity_type AS QuantityType,
+                --p.quantity_type AS QuantityType,
+                p.quantity_type_id AS QuantityTypeId,
                 i.blob_url AS FeaturedImageUrl
             FROM domis.product p
             JOIN domis.product_image pi ON p.id = pi.product_id
@@ -143,8 +144,10 @@ public static class ProductQueries
 
     public const string CheckIfProductExists = @"
         SELECT EXISTS 
-        (SELECT 1 FROM domis.product WHERE id = @ProductId);
-    ";
+        (SELECT 1 FROM domis.product WHERE id = @ProductId);"
+    ;
+
+
 
     //TODO: decide what needs to be updated
     public const string UpdateProduct = @"
@@ -164,7 +167,15 @@ public static class ProductQueries
             thickness = COALESCE(@Thickness, thickness),
             weight = COALESCE(@Weight, weight),
             isItemType = COALESCE(@IsItem, isItemType),
-            isSurfaceType = COALESCE(@IsSurfaceType, isSurfaceType)
+            isSurfaceType = COALESCE(@IsSurfaceType, isSurfaceType),
+            quantity_type_id = COALESCE(@QuantityTypeId, quantity_type_id)
         WHERE id = @Id;"
+    ;
+
+    public const string GetAllQuantityTypes = @"
+        SELECT
+            id AS Id,
+            name AS Name
+        FROM domis.product_quantity_type;"
     ;
 }

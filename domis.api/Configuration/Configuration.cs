@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using Serilog;
 using System.Data;
+using System.Text.Json.Serialization;
 
 namespace domis.api.BaseExtensions;
 
@@ -21,7 +22,11 @@ public static class Configuration
 
         builder.Host.UseSerilog();
 
-        //services.AddControllers();
+        builder.Services.AddControllers()
+            .AddJsonOptions(opts =>
+            {
+                opts.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); // Ensure enums are properly serialized
+            }); 
         builder.Services.AddEndpointsApiExplorer();
 
         builder.Services.AddAuthenticationAndAuthorization();

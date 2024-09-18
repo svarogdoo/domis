@@ -51,4 +51,6 @@ public class ProductEditDto
 
     [JsonPropertyName("isSurfaceType")]
     public bool? IsSurfaceType { get; set; }
+    [JsonPropertyName("quantityTypeId")]
+    public int? QuantityTypeId { get; set; }
 }

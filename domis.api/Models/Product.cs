@@ -37,5 +37,7 @@ public class Product
     public bool? IsSurfaceType { get; set; }
     public string? FeaturedImageUrl { get; set; }
     //public List<string> ImageUrls { get; set; } = [];
-    public ProductQuantityType? QuantityType { get; set; }
+    //public ProductQuantityType? QuantityType { get; set; }
+    public int QuantityTypeId { get; set; } // Use this property to store the quantity type ID
+
 }

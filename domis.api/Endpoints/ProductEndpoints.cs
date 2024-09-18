@@ -2,6 +2,7 @@
 using domis.api.Models.Enums;
 using domis.api.Services;
 using Microsoft.AspNetCore.Mvc;
+using Npgsql;
 
 namespace domis.api.Endpoints;
 
@@ -32,11 +33,24 @@ public static class ProductEndpoints
 
         group.MapPut("/", async (ProductEditDto product, IProductService productService) =>
         {
-            var response = await productService.Update(product);
+            try
+            {
+                var response = await productService.Update(product);
 
-            return response is null 
-                ? Results.NotFound(new { Message = $"Product with ID {product.Id} not found or update failed." })
-                : Results.Ok(response);
+                return response is null
+                    ? Results.NotFound(new { Message = $"Product with ID {product.Id} not found or update failed." })
+                    : Results.Ok(response);
+            }
+            catch (PostgresException ex) when (ex.SqlState == "23503") // Foreign key violation
+            {
+                return Results.BadRequest(new { Message = "Invalid quantity type ID provided. Please check and try again." });
+            }
+            //TODO: whats this .Problem?
+            catch (Exception ex)
+            {
+                return Results.Problem(ex.Message);
+            }
+            
         }).WithDescription("update product");
 
         group.MapGet("/basic-info", async ([FromQuery]int categoryId, IProductService productService) =>
@@ -47,14 +61,11 @@ public static class ProductEndpoints
 
         }).WithDescription("get products basic info by category");
 
-        group.MapGet("/quantity-types", () =>
+        group.MapGet("/quantity-types", async (IProductService productService) =>
         {
-            var quantityTypes = Enum.GetValues(typeof(ProductQuantityType))
-                                    .Cast<ProductQuantityType>()
-                                    .Select(e => new { Value = e.ToString(), DisplayName = e.ToString() })
-                                    .ToList();
-
+            var quantityTypes = await productService.GetAllQuantityTypes();
             return Results.Ok(quantityTypes);
-        }).WithDescription("get all quantity types");
+        }).WithDescription("Get all quantity types");
+
     }
 }

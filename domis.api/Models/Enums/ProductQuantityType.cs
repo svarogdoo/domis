@@ -5,11 +5,12 @@ namespace domis.api.Models.Enums;
 public enum ProductQuantityType
 {
     [EnumMember(Value = "None")]
-    None,
+    None = 1,
     [EnumMember(Value = "MeterSquared")]
-    MeterSquared,
+    MeterSquared = 2,
     [EnumMember(Value = "Meter")]
-    Meter,
+    Meter = 3,
     [EnumMember(Value = "Piece")]
-    Piece
+    Piece = 4
+
 }
