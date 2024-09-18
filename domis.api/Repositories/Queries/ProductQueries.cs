@@ -20,7 +20,7 @@ public static class ProductQueries
                 p.weight AS Weight,
                 p.isItemType AS IsItemType,
                 p.isSurfaceType AS IsSurfaceType,
-                p.active AS IsActive,
+                p.quantity_type AS QuantityType,
                 i.blob_url AS FeaturedImageUrl
             FROM domis.product p
             JOIN domis.product_image pi ON p.id = pi.product_id

@@ -1,4 +1,5 @@
 ﻿using domis.api.DTOs.Image;
+using domis.api.Models.Enums;
 
 namespace domis.api.DTOs.Product;
 
@@ -23,4 +24,5 @@ public class ProductCompleteDetailsDto
     public string? FeaturedImageUrl { get; set; }
     public List<ImageGetDto> Images { get; set; } = [];
     public string[] CategoryPaths { get; set; } = [];
+    public ProductQuantityType? QuantityType { get; set; }
 }

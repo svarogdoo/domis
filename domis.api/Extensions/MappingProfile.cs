@@ -14,6 +14,8 @@ public class MappingProfile : Profile
 
         CreateMap<Product, ProductCompleteDetailsDto>()
             .ForMember(dest => dest.Images, opt => opt.Ignore())
-            .ForMember(dest => dest.CategoryPaths, opt => opt.Ignore());
+            .ForMember(dest => dest.CategoryPaths, opt => opt.Ignore())
+            .ForMember(dest => dest.QuantityType, opt => opt.MapFrom(src => src.QuantityType));
+
     }
 }

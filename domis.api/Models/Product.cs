@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using domis.api.Models.Enums;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace domis.api.Models;
 
@@ -36,4 +37,5 @@ public class Product
     public bool? IsSurfaceType { get; set; }
     public string? FeaturedImageUrl { get; set; }
     //public List<string> ImageUrls { get; set; } = [];
+    public ProductQuantityType? QuantityType { get; set; }
 }

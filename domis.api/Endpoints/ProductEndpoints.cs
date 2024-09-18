@@ -1,4 +1,5 @@
 ﻿using domis.api.DTOs.Product;
+using domis.api.Models.Enums;
 using domis.api.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -45,5 +46,15 @@ public static class ProductEndpoints
             return products is null ? Results.NotFound() : Results.Ok(products);
 
         }).WithDescription("get products basic info by category");
+
+        group.MapGet("/quantity-types", () =>
+        {
+            var quantityTypes = Enum.GetValues(typeof(ProductQuantityType))
+                                    .Cast<ProductQuantityType>()
+                                    .Select(e => new { Value = e.ToString(), DisplayName = e.ToString() })
+                                    .ToList();
+
+            return Results.Ok(quantityTypes);
+        }).WithDescription("get all quantity types");
     }
 }
