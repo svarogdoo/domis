@@ -1,7 +1,6 @@
 ﻿using domis.api.Models;
 using domis.api.Repositories;
 using Serilog;
-using System.ComponentModel;
 using System.Globalization;
 using System.Text;
 using System.Xml;
@@ -16,23 +15,33 @@ public interface ISyncService
 
 public class SyncService : ISyncService
 {
-    private readonly string _nbsUsername = "Zoran-Domis";
-    private readonly string _nbsPassword = "stasa2005";
-    private readonly string _nbsLicenseId = "43f4f6bd-e10f-488b-90ea-8f8577ee06f7";
-    private readonly int _nbsExchangeRateListTypeId = 3;
-    private readonly string _nbsUrl = "https://webservices.nbs.rs/CommunicationOfficeService1_0/CurrentExchangeRateXmlService.asmx";
+    private readonly string _nbsUsername;
+    private readonly string _nbsPassword;
+    private readonly string _nbsLicenseId;
+    private readonly int _nbsExchangeRateListTypeId;
+    private readonly string _nbsUrl;
 
     private readonly string _nivelacijaUrl = "https://domisenterijeri.com/domis/NIVELACIJA.csv";
 
     private readonly IProductRepository _productRepository;
     private readonly IExchangeRateRepository _exchangeRateRepository;
     private readonly HttpClient _httpClient;
+    private readonly IConfiguration _configuration;
 
-    public SyncService(IProductRepository productRepo, IExchangeRateRepository exchangeRateRepo, HttpClient httpClient)
+    public SyncService(IProductRepository productRepo, IExchangeRateRepository exchangeRateRepo, IConfiguration configuration, HttpClient httpClient)
     {
         _productRepository = productRepo;
         _exchangeRateRepository = exchangeRateRepo;
         _httpClient = httpClient;
+        _configuration = configuration;
+
+        _nbsUsername = _configuration["NBSSettings:Username"] ?? string.Empty;
+        _nbsPassword = _configuration["NBSSettings:Password"] ?? string.Empty;
+        _nbsLicenseId = _configuration["NBSSettings:LicenseId"] ?? string.Empty;
+        _nbsExchangeRateListTypeId = int.TryParse(_configuration["NBSSettings:ExchangeRateListTypeId"], out var exchangeRateListTypeId)
+            ? exchangeRateListTypeId
+            : 3; 
+        _nbsUrl = _configuration["NBSSettings:Url"] ?? "";
     }
 
 
@@ -84,9 +93,8 @@ public class SyncService : ISyncService
                 {
                     var middleRate = middleRateNode.InnerText;
                     var result = decimal.Parse(middleRate, CultureInfo.InvariantCulture);
-                    Console.WriteLine($"Srednji kurs na dan {DateTime.Today:dd.MM.yyyy}: {middleRate}");
 
-                    return await _exchangeRateRepository.UpdateExchangeRate(DateTime.Today, result);
+                    return await _exchangeRateRepository.UpdateExchangeRate(GetBelgradeCurrentTime(), result);
                 }
                 else
                 {
@@ -149,5 +157,13 @@ public class SyncService : ISyncService
             Log.Error("Error while updating products with nivelacija values: {Message}", ex.Message);
             return false;
         }
+    }
+
+    private static DateTime GetBelgradeCurrentTime()
+    {
+        var belgradeTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time");
+        var belgradeDateTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, belgradeTimeZone);
+        var dateToUse = belgradeDateTime.Date;
+        return dateToUse;
     }
 }
