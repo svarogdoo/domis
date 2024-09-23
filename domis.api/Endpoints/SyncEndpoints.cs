@@ -14,5 +14,11 @@ public static class SyncEndpoints
             var response = await syncService.NivelacijaUpdateBatch();
             return Results.Ok(response);
         }).WithDescription("update all products with values from nivelacija file");
+
+        group.MapPut("/exchange-rate-update", async (ISyncService syncService) =>
+        {
+            var response = await syncService.UpdateExchangeRate();
+            return Results.Ok(response);
+        }).WithDescription("update exchange rates");
     }
 }
