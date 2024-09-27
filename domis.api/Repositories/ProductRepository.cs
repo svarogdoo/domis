@@ -110,14 +110,12 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
                 product.Depth,
                 product.Length,
                 product.Thickness,
-                product.IsItem,
-                product.IsSurfaceType,
                 product.Name,
                 product.Description,
                 product.Sku,
                 product.Price,
                 product.Stock,
-                product.QuantityTypeId
+                product.QuantityType
             });
 
             if (affectedRows == 0)
@@ -126,7 +124,9 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
                 return null;
             }
 
-            var updatedProduct = await connection.QuerySingleOrDefaultAsync<ProductCompleteDetailsDto>(ProductQueries.GetSingleWithDetails, new { ProductId = product.Id });
+            //var updatedProduct = await connection.QuerySingleOrDefaultAsync<ProductCompleteDetailsDto>(ProductQueries.GetSingleWithDetails, new { ProductId = product.Id });
+
+            var updatedProduct = await GetByIdWithDetails(product.Id);
 
             //var updatedProduct = await connection.QuerySingleOrDefaultAsync<ProductEditDto>(ProductQueries.GetById, new { ProductId = product.Id });
             return updatedProduct;
