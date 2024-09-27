@@ -33,6 +33,7 @@ declare global {
     sku: string;
     price: number;
     stock: number;
+    quantityType?: QuantityType;
     featuredImageUrl?: string;
   }
 

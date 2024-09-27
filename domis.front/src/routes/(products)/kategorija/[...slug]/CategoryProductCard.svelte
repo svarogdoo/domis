@@ -1,12 +1,18 @@
 <script lang="ts">
   import backup from "$lib/assets/backup.jpg";
+  import { mapQuantityTypeToString } from "../../../../enums";
   import { formatPrice } from "../../../../helpers/numberFormatter";
 
   export let product: CategoryProduct;
   let featuredImage = backup;
+  let quantityTypeString: string;
 
   $: if (product?.featuredImageUrl) {
     featuredImage = product.featuredImageUrl;
+  }
+
+  $: if (product?.quantityType) {
+    quantityTypeString = mapQuantityTypeToString(product.quantityType);
   }
 </script>
 
@@ -37,7 +43,11 @@
       <div class="flex items-center gap-x-1">
         <p class="lg:text-xl">{formatPrice(product.price)}</p>
         <p class="text-xs lg:text-sm text-gray-800 font-thin">RSD</p>
-        <p class="text-xs lg:text-sm text-gray-400 font-thin">po m²</p>
+        {#if quantityTypeString}
+          <p class="text-xs lg:text-sm text-gray-400 font-thin">
+            po {quantityTypeString}
+          </p>
+        {/if}
       </div>
       <a
         href="/category/product/product"

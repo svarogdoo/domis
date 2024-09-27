@@ -38,6 +38,8 @@
     let lastSlug = getLastSlug(slug);
     if (lastSlug) {
       product = await getProduct(Number.parseInt(lastSlug));
+      quantityType = product.quantityType;
+      quantityTypeString = mapQuantityTypeToString(quantityType);
       productPrice.perUnit = product.price;
       productPrice.perBox = product.price * productSize.box;
       productPrice.perPallet = product.price * productSize.pallet * 0.9;
