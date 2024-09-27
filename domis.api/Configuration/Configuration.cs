@@ -82,6 +82,9 @@ public static class Configuration
         });
 
         builder.Services.AddTransient<IEmailService, EmailService>();
+
+        builder.Services.AddScoped<IExchangeRateRepository, ExchangeRateRepository>();
+
     }
 
     public static void RegisterMiddlewares(this WebApplication app)
