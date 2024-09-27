@@ -7,6 +7,8 @@
   import Input from "./Input.svelte";
   import Snackbar from "../../../../components/Snackbar.svelte";
   import AdminCategoryList from "./AdminCategoryList.svelte";
+  import RadioButton from "../../../../components/RadioButton.svelte";
+  import { QuantityType, quantityTypeOptions } from "../../../../enums";
 
   let selectedCategoryId: string;
 
@@ -23,8 +25,9 @@
   let length: string;
   let thickness: string;
   let weight: string;
-  let isSurfaceType: boolean = false;
+  let quanitityType: QuantityType;
   let isActive: boolean = true;
+
   const errors = {
     height: "",
     width: "",
@@ -36,6 +39,10 @@
 
   $: if (selectedCategoryId) {
     setProducts();
+  }
+
+  $: if (quanitityType) {
+    console.info(quanitityType);
   }
 
   async function setSelectedProduct(value: Product) {
@@ -50,10 +57,11 @@
     length = selectedProduct.length ? `${selectedProduct.length}` : "";
     thickness = selectedProduct.thickness ? `${selectedProduct.thickness}` : "";
     weight = selectedProduct.weight ? `${selectedProduct.weight}` : "";
-    isSurfaceType =
-      selectedProduct.isSurfaceType !== undefined
-        ? selectedProduct.isSurfaceType
-        : false;
+    quanitityType =
+      selectedProduct.quantityType === undefined ||
+      selectedProduct.quantityType === QuantityType.None
+        ? QuantityType.Piece
+        : selectedProduct.quantityType;
     isActive =
       selectedProduct.isActive !== undefined ? selectedProduct.isActive : true;
   }
@@ -107,9 +115,8 @@
       depth: Number.parseInt(depth),
       length: Number.parseInt(length),
       thickness: Number.parseInt(thickness),
-      isSurfaceType: isSurfaceType,
-      isItemType: !isSurfaceType,
       isActive: isActive,
+      quanitityType: quanitityType,
     });
 
     if (res) {
@@ -203,7 +210,7 @@
       <label class="inline-flex items-center cursor-pointer mt-8">
         <input type="checkbox" bind:checked={isActive} class="sr-only peer" />
         <div
-          class="relative w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"
+          class="relative w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"
         ></div>
         {#if isActive}
           <span class="ms-3 font-medium">Proizvod je aktivan</span>
@@ -258,19 +265,12 @@
             error={errors?.weight}
           />
 
-          <label class="inline-flex items-center cursor-pointer mt-2">
-            <span class="mr-3 font-medium">Proizvod se prodaje po komadu</span>
-            <input
-              type="checkbox"
-              bind:checked={isSurfaceType}
-              class="sr-only peer"
-            />
-            <div
-              class="relative w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"
-            ></div>
-            <span class="ms-3 font-medium">Proizvod se prodaje po površini</span
-            >
-          </label>
+          <RadioButton
+            options={quantityTypeOptions}
+            legend="Odaberite tip proizvoda:"
+            bind:userSelected={quanitityType}
+          />
+
           <textarea
             name="textarea"
             id="product-form"

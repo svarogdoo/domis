@@ -56,7 +56,7 @@ declare global {
     isItemType?: boolean;
     isSurfaceType?: boolean;
     isActive?: boolean;
-    type?: QuantityType;
+    quantityType?: QuantityType;
   }
   interface ProductPricing {
     perUnit?: number;
