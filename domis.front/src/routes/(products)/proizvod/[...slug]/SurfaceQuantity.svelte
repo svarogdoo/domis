@@ -4,7 +4,9 @@
     formatPrice,
     formatToTwoDecimals,
   } from "../../../../helpers/numberFormatter";
+  import { cart } from "../../../../stores/cart";
 
+  export let product: Product;
   export let isExtraChecked: boolean;
   export let productPrice: ProductPricing;
   export let productSize: ProductSizing;
@@ -69,6 +71,23 @@
         totalPrice = boxInput * productPrice.perBox;
       }
     if (productPrice.perUnit) totalPrice = amountInput * productPrice.perUnit;
+  }
+
+  function addItemToCart() {
+    if (amountInput === 0) return;
+
+    let cartProduct: CartProduct = {
+      id: product.id,
+      name: product.name,
+      sku: product.sku,
+      featuredImageUrl: product.featuredImageUrl,
+      price: product.price,
+      quantity: quantityType === QuantityType.Piece ? amountInput : boxInput,
+      quantityType: quantityType,
+      totalPrice: totalPrice,
+    };
+
+    cart.add(cartProduct);
   }
 </script>
 
@@ -143,4 +162,9 @@
       {/if}
     </div>
   </div>
+  <button
+    on:click={addItemToCart}
+    class="bg-black mt-2 text-white py-3 uppercase tracking-widest hover:bg-gray-700"
+    >Dodaj u korpu</button
+  >
 </div>

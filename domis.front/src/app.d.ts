@@ -1,4 +1,7 @@
 // See https://kit.svelte.dev/docs/types#app
+
+import type { QuantityType } from "./enums";
+
 // for information about these interfaces
 declare global {
   namespace App {
@@ -67,6 +70,17 @@ declare global {
   interface ProductSizing {
     box: number;
     pallet: number;
+  }
+
+  interface CartProduct {
+    id: number;
+    sku: number;
+    name: string;
+    featuredImageUrl: string;
+    price: number;
+    quantity: number;
+    quantityType: QuantityType;
+    totalPrice: number;
   }
 }
 

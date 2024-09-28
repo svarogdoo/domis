@@ -117,14 +117,11 @@
 
       <SurfaceQuantity
         bind:isExtraChecked
+        {product}
         {productPrice}
         {productSize}
         {quantityType}
       />
-      <button
-        class="bg-black mt-2 text-white py-3 uppercase tracking-widest hover:bg-gray-700"
-        >Dodaj u korpu</button
-      >
     </div>
   </section>
 {/if}

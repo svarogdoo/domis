@@ -3,6 +3,7 @@
   import searchIcon from "$lib/icons/search.svg";
   import cartIcon from "$lib/icons/cart.svg";
   import Hamburger from "../components/Hamburger.svelte";
+  import { cart } from "../stores/cart";
 
   export let sidebar = false;
   let searchTerm: string;
@@ -33,8 +34,18 @@
           />
         </div>
       </li>
-      <li aria-current={$page.url.pathname === "/shop" ? "page" : undefined}>
+      <li
+        class="relative"
+        aria-current={$page.url.pathname === "/shop" ? "page" : undefined}
+      >
         <a href="/korpa"> <img src={cartIcon} alt="cart" /></a>
+        {#if $cart.length > 0}
+          <div
+            class="absolute top-0 right-0 text-center text-white text-md rounded-full h-5 w-5 bg-red-500"
+          >
+            {$cart.length}
+          </div>
+        {/if}
       </li>
     </ul>
   </nav>

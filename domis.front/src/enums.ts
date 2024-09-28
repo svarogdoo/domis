@@ -8,10 +8,22 @@ export function mapQuantityTypeToString(quantityType: QuantityType): string {
   switch (quantityType) {
     case QuantityType.MeterSquared:
       return "m²";
-    case QuantityType.MeterSquared:
-      return "m²";
     case QuantityType.Meter:
       return "m";
+    case QuantityType.Piece:
+      return "kom";
+    default:
+      return "kom";
+  }
+}
+
+export function mapQuantityTypeToCartString(
+  quantityType: QuantityType
+): string {
+  switch (quantityType) {
+    case QuantityType.MeterSquared:
+    case QuantityType.Meter:
+      return "kutija";
     case QuantityType.Piece:
       return "kom";
     default:
