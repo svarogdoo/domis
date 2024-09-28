@@ -105,11 +105,13 @@ public static class ProductQueries
                     p.price AS Price,
                     p.stock AS Stock,
                     p.active AS IsActive,
-                    pi.FeaturedImageUrl
+                    pi.FeaturedImageUrl,
+                    pqt.id AS QuantityType
                 FROM domis.product p
                 INNER JOIN domis.product_category pc ON p.id = pc.product_id
                 INNER JOIN CategoryHierarchy ch ON pc.category_id = ch.id
                 LEFT JOIN ProductImages pi ON p.id = pi.ProductId
+                LEFT JOIN domis.product_quantity_type pqt ON p.quantity_type_id = pqt.id
                 WHERE p.active = true -- filter to include only active products
             )
             SELECT *
