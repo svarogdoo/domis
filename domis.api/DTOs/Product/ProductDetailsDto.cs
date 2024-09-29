@@ -18,7 +18,7 @@ public class ProductDetailsDto
     public List<ImageGetDto> Images { get; set; } = [];
     public string[] CategoryPaths { get; set; } = [];
     // ---------------------------------
-    public ProductQuantityType? QuantityType { get; set; }
+    public int? QuantityType { get; set; }
     public string? Title { get; set; }
     public decimal? Width { get; set; }
     public decimal? Height { get; set; }

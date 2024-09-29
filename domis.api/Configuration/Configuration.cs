@@ -1,8 +1,11 @@
-﻿using domis.api.Database;
+﻿using domis.api.Common;
+using domis.api.Database;
 using domis.api.Extensions;
 using domis.api.Models;
 using domis.api.Repositories;
 using domis.api.Services;
+using FluentValidation.AspNetCore;
+using FluentValidation;
 using MailKit.Net.Smtp;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
@@ -54,6 +57,11 @@ public static class Configuration
         });
 
         builder.Services.AddAutoMapper(typeof(MappingProfile));
+
+        builder.Services.AddFluentValidationAutoValidation();
+        builder.Services.AddScoped<IValidator<CreateCartItemRequest>, CreateCartItemRequestValidator>();
+        //builder.Services.AddValidatorsFromAssemblyContaining<CreateCartItemRequestValidator>();
+
 
         builder.Services.AddScoped<IProductService, ProductService>();
         builder.Services.AddScoped<IProductRepository, ProductRepository>();
