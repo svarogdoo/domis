@@ -5,6 +5,7 @@
   import Hamburger from "../components/Hamburger.svelte";
   import { cart } from "../stores/cart";
   import { onDestroy } from "svelte";
+  import UserDropdown from "./UserDropdown.svelte";
 
   export let sidebar = false;
   let searchTerm: string;
@@ -46,14 +47,17 @@
         class="relative"
         aria-current={$page.url.pathname === "/shop" ? "page" : undefined}
       >
-        <a href="/korpa"> <img src={cartIcon} alt="cart" /></a>
+        <a href="/korpa"> <img src={cartIcon} alt="cart" class="h-10" /></a>
         {#if cartProducts?.length > 0}
           <div
-            class="absolute top-0 right-0 text-center text-white text-md rounded-full h-5 w-5 bg-red-500"
+            class="absolute top-0 right-0 text-center text-white text-sm rounded-full h-4 w-4 bg-red-500"
           >
             {cartProducts.length}
           </div>
         {/if}
+      </li>
+      <li>
+        <UserDropdown />
       </li>
     </ul>
   </nav>
