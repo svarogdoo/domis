@@ -52,8 +52,9 @@ public static class CartQueries
                 ci.created_at AS CartItemCreatedAt,
                 ci.modified_at AS CartItemModifiedAt,
                 p.product_name AS Name,
-                p.product_description AS Description,         
-                p.price AS Price,          
+                p.sku AS Sku,
+                p.price AS Price,  
+                p.quantity_type_id AS QuantityType,
                 i.blob_url AS Url,
 				s.status_name as Status
             FROM 
@@ -64,9 +65,9 @@ public static class CartQueries
                 domis.cart_item ci ON c.id = ci.cart_id
             LEFT JOIN
                 domis.product p ON ci.product_id = p.id
-           LEFT JOIN
+            LEFT JOIN
 	            domis.product_image pi ON p.id = pi.product_id
-           LEFT JOIN 
+            LEFT JOIN 
                 domis.image i ON pi.image_id = i.id
             WHERE 
                 (pi.image_type_id is null or pi.image_type_id = 1) AND c.id = @CartId;";

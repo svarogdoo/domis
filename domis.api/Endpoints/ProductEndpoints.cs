@@ -31,7 +31,7 @@ public static class ProductEndpoints
         }).WithDescription("get product by id");
 
 
-        group.MapPut("/", async (ProductEditDto product, IProductService productService) =>
+        group.MapPut("/", async (ProductUpdateDto product, IProductService productService) =>
         {
             try
             {

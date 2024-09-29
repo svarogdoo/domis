@@ -2,7 +2,7 @@
 
 namespace domis.api.DTOs.Product;
 
-public class ProductEditDto
+public class ProductUpdateDto
 {
     [JsonPropertyName("id")]
     public required int Id { get; set; }

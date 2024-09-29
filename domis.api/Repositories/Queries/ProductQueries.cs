@@ -20,8 +20,7 @@ public static class ProductQueries
                 p.weight AS Weight,
                 p.isItemType AS IsItemType,
                 p.isSurfaceType AS IsSurfaceType,
-                --p.quantity_type AS QuantityType,
-                p.quantity_type_id AS QuantityTypeId,
+                p.quantity_type_id AS QuantityType,
                 i.blob_url AS FeaturedImageUrl
             FROM domis.product p
             JOIN domis.product_image pi ON p.id = pi.product_id
@@ -179,7 +178,7 @@ public static class ProductQueries
         FROM domis.product_quantity_type;"
     ;
 
-    public const string GetProductSize = @"
+    public const string GetProductSizing = @"
         SELECT 
             pak,
             pal
@@ -188,5 +187,4 @@ public static class ProductQueries
         WHERE 
             product_id = @ProductId;"
     ;
-
 }

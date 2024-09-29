@@ -191,7 +191,7 @@ public class CartRepository(IDbConnection connection) : ICartRepository
                     if (!cartDictionary.TryGetValue(cart.CartId, out var currentCart))
                     {
                         currentCart = cart;
-                        currentCart.Items = new List<CartItemDto>();
+                        currentCart.Items = [];
                         cartDictionary.Add(currentCart.CartId, currentCart);
                     }
 
@@ -200,6 +200,7 @@ public class CartRepository(IDbConnection connection) : ICartRepository
                     {
                         item.ProductDetails = product;
                         item.ProductDetails.Image = image;
+
                         currentCart.Items.Add(item);
                     }
 

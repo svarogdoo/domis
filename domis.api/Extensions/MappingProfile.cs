@@ -19,7 +19,7 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.Price, opt => opt.Ignore())
             .ForMember(dest => dest.Size, opt => opt.Ignore())
             .ForMember(dest => dest.QuantityType, opt => opt.MapFrom(src =>
-                (ProductQuantityType)Enum.ToObject(typeof(ProductQuantityType), src.QuantityTypeId)));
+                (ProductQuantityType)Enum.ToObject(typeof(ProductQuantityType), src.QuantityType)));
 
     }
 }

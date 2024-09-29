@@ -16,7 +16,7 @@ public interface IProductRepository
 {
     Task<IEnumerable<ProductPreviewDto>> GetAll();
     Task<ProductDetailsDto?> GetByIdWithDetails(int id);
-    Task<ProductDetailsDto?> Update(ProductEditDto product);
+    Task<ProductDetailsDto?> Update(ProductUpdateDto product);
     Task<bool> NivelacijaUpdateProductBatch(IEnumerable<NivelacijaRecord> records);
     Task<IEnumerable<ProductBasicInfoDto>> GetProductsBasicInfoByCategory(int categoryId);
     Task<IEnumerable<ProductQuantityTypeDto>> GetAllQuantityTypes();
@@ -48,7 +48,7 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
             if (product == null)
                 return null;
 
-            var size = await connection.QuerySingleOrDefaultAsync<Size>(ProductQueries.GetProductSize, new { ProductId = productId });
+            var size = await connection.QuerySingleOrDefaultAsync<Size>(ProductQueries.GetProductSizing, new { ProductId = productId });
             var images = (await connection.QueryAsync<ImageGetDto>(ImageQueries.GetProductImages, new { ProductId = productId })).ToList();
             var categoryPaths = (await connection.QueryAsync<string>(CategoryQueries.GetProductCategories, new { ProductId = productId })).ToList();
 
@@ -95,7 +95,7 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
         }
     }
 
-    public async Task<ProductDetailsDto?> Update(ProductEditDto product)
+    public async Task<ProductDetailsDto?> Update(ProductUpdateDto product)
     {
         try
         {
