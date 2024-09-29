@@ -9,7 +9,7 @@
     const user = { isLoggedIn: true, name: "John Doe" };
 
     if (user.isLoggedIn) {
-      loggedIn = true;
+      loggedIn = false;
       initials = user.name
         .split(" ")
         .map((n) => n[0])
@@ -43,7 +43,7 @@
     {/if}
 
     <div
-      class="absolute right-0 w-48 bg-white text-black rounded-lg shadow-lg p-2 hidden group-hover:block group-hover:pointer-events-auto"
+      class="z-10 absolute right-0 w-48 bg-white text-black rounded-lg shadow-lg p-2 hidden group-hover:block group-hover:pointer-events-auto"
     >
       {#if loggedIn}
         <ul>
