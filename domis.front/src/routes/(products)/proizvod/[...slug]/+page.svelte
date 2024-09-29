@@ -16,17 +16,7 @@
   let quantityTypeString = mapQuantityTypeToString(quantityType);
   let featuredImage = fallbackImage;
   let slug;
-
   let isExtraChecked = false;
-  let productPrice: ProductPricing = {
-    perUnit: 123,
-    perBox: 234,
-    perPallet: 2234,
-  };
-  let productSize: ProductSizing = {
-    box: 1.2,
-    pallet: 60,
-  };
 
   $: slug = $page.params.slug;
   $: if (product?.images) {
@@ -38,11 +28,8 @@
     let lastSlug = getLastSlug(slug);
     if (lastSlug) {
       product = await getProduct(Number.parseInt(lastSlug));
-      quantityType = product.quantityType;
+      quantityType = product.quantityType ?? QuantityType.Piece;
       quantityTypeString = mapQuantityTypeToString(quantityType);
-      productPrice.perUnit = product.price;
-      productPrice.perBox = product.price * productSize.box;
-      productPrice.perPallet = product.price * productSize.pallet * 0.9;
     }
   }
 
@@ -85,43 +72,37 @@
       <div
         class="flex flex-col px-3 py-3 gap-y-2 tracking-wide font-extralight border-b border-gray-400"
       >
-        {#if productPrice?.perUnit}
+        {#if product?.price?.perUnit}
           <p class="text-xs lg:text-sm">
             RSD <span class="font-light text-black text-sm lg:text-lg px-2"
-              >{formatPrice(productPrice.perUnit)}</span
+              >{formatPrice(product?.price.perUnit)}</span
             >
             po {quantityTypeString}
           </p>
         {/if}
-        {#if productPrice?.perBox && productSize?.box}
+        {#if product?.price?.perBox && product?.size?.box}
           <p class="text-xs lg:text-sm">
             RSD <span class="font-light text-black text-sm lg:text-lg px-2"
-              >{formatPrice(productPrice.perBox)}</span
+              >{formatPrice(product?.price.perBox)}</span
             >
-            po pakovanju ({productSize.box}
+            po pakovanju ({product?.size.box}
             {quantityTypeString})
           </p>
         {/if}
-        {#if productPrice?.perPallet && productSize?.pallet}
+        {#if product?.price?.perPallet && product?.size?.pallet}
           <p class="text-xs lg:text-sm">
             RSD <span class="font-light text-black text-sm lg:text-lg px-2"
-              >{formatPrice(productPrice.perPallet)}</span
+              >{formatPrice(product?.price.perPallet)}</span
             >
-            po paleti ({productSize.pallet}
+            po paleti ({product?.size.pallet}
             {quantityTypeString} | {formatToTwoDecimals(
-              productSize?.pallet / productSize?.box
+              product?.size?.pallet / product?.size?.box
             )} pakovanja)
           </p>
         {/if}
       </div>
 
-      <SurfaceQuantity
-        bind:isExtraChecked
-        {product}
-        {productPrice}
-        {productSize}
-        {quantityType}
-      />
+      <SurfaceQuantity bind:isExtraChecked {product} {quantityType} />
     </div>
   </section>
 {/if}

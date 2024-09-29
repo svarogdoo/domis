@@ -46,7 +46,8 @@ declare global {
     name: string;
     description?: string;
     sku: number;
-    price: number;
+    price: ProductPricing;
+    size: ProductSizing;
     stock: number;
     featuredImageUrl: string;
     images: Array<Image>; // ne slati za put

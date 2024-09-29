@@ -25,7 +25,7 @@
   let length: string;
   let thickness: string;
   let weight: string;
-  let quanitityType: QuantityType;
+  let quantityType: QuantityType;
   let isActive: boolean = true;
 
   const errors = {
@@ -41,8 +41,8 @@
     setProducts();
   }
 
-  $: if (quanitityType) {
-    console.info(quanitityType);
+  $: if (quantityType) {
+    console.info(quantityType);
   }
 
   async function setSelectedProduct(value: Product) {
@@ -57,7 +57,7 @@
     length = selectedProduct.length ? `${selectedProduct.length}` : "";
     thickness = selectedProduct.thickness ? `${selectedProduct.thickness}` : "";
     weight = selectedProduct.weight ? `${selectedProduct.weight}` : "";
-    quanitityType =
+    quantityType =
       selectedProduct.quantityType === undefined ||
       selectedProduct.quantityType === QuantityType.None
         ? QuantityType.Piece
@@ -116,7 +116,7 @@
       length: Number.parseInt(length),
       thickness: Number.parseInt(thickness),
       isActive: isActive,
-      quanitityType: quanitityType,
+      quantityType: quantityType,
     });
 
     if (res) {
@@ -268,7 +268,7 @@
           <RadioButton
             options={quantityTypeOptions}
             legend="Odaberite tip proizvoda:"
-            bind:userSelected={quanitityType}
+            bind:userSelected={quantityType}
           />
 
           <textarea
