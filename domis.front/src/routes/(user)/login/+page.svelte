@@ -6,25 +6,7 @@
   let password = "";
   let errorMessage = "";
 
-  const handleLogin = async () => {
-    //     errorMessage = ""; // Reset the error message
-    //     try {
-    //       const response = await fetch("https://example.com/api/login", {
-    //         method: "POST",
-    //         headers: { "Content-Type": "application/json" },
-    //         body: JSON.stringify({ userName, password }),
-    //       });
-    //       if (response.ok) {
-    //         const userData = await response.json();
-    //         userStore.loginUser(userData);
-    //       } else {
-    //         errorMessage = "Invalid username or password";
-    //       }
-    //     } catch (error) {
-    //       errorMessage = "An error occurred during login";
-    //       console.error(error);
-    //     }
-  };
+  const handleLogin = async () => {};
 </script>
 
 <div class="flex justify-center items-center h-full w-full">
@@ -73,9 +55,16 @@
     </form>
 
     <p class="mt-4 text-sm text-center">
-      Don't have an account?
-      <a href="/register" class="text-blue-600 hover:underline">Register here</a
+      Nemate nalog?
+      <a href="/register" class="text-blue-600 hover:underline"
+        >Registrujte se ovde</a
       >
+    </p>
+    <p class="mt-2 text-sm text-center">
+      Zaboravili ste šifru?
+      <a href="/zahtev-promena-sifre" class="text-blue-600 hover:underline">
+        Promenite je ovde
+      </a>
     </p>
   </div>
 </div>
