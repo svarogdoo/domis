@@ -7,7 +7,7 @@ namespace domis.api.Services;
 public interface ICartService
 {
     Task<IEnumerable<OrderStatusDto>?> GetAllOrderStatuses();
-    Task<int> CreateCart(int? userId);
+    Task<int> CreateCart(string? userId);
     Task<bool> UpdateCartStatus(int cartId, int statusId);
     Task<int?> CreateCartItem(int cartId, int productId, decimal quantity);
     Task<bool> UpdateCartItemQuantity(int cartItemId, decimal quantity);
@@ -21,7 +21,7 @@ public class CartService(ICartRepository cartRepository) : ICartService
     public async Task<IEnumerable<OrderStatusDto>?> GetAllOrderStatuses() => 
         await cartRepository.GetAllOrderStatuses();
 
-    public async Task<int> CreateCart(int? userId) =>
+    public async Task<int> CreateCart(string? userId) =>
         await cartRepository.CreateCartAsync(userId);
 
     public async Task<bool> UpdateCartStatus(int cartId, int statusId) => 

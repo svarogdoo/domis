@@ -13,7 +13,7 @@ namespace domis.api.Repositories;
 public interface ICartRepository
 {
     Task<IEnumerable<OrderStatusDto>?> GetAllOrderStatuses();
-    Task<int> CreateCartAsync(int? userId);
+    Task<int> CreateCartAsync(string? userId);
     Task<bool> UpdateCartStatusAsync(int cartId, int statusId);
     Task<int?> CreateCartItemAsync(int cartId, int productId, decimal quantity);
     Task<bool> UpdateCartItemQuantityAsync(int cartItemId, decimal quantity);
@@ -41,7 +41,7 @@ public class CartRepository(IDbConnection connection) : ICartRepository
         }
     }
     
-    public async Task<int> CreateCartAsync(int? userId)
+    public async Task<int> CreateCartAsync(string? userId)
     {
         try
         {

@@ -6,7 +6,7 @@ namespace domis.api.DTOs.Cart;
 public class CartDto
 {
     public int CartId { get; set; }
-    public int? UserId { get; set; }
+    public string? UserId { get; set; }
     public int StatusId { get; set; }
     public string Status { get; set; }
     public DateTime CreatedAt { get; set; }

@@ -3,7 +3,7 @@ using domis.api.DTOs.Order;
 public class OrderDetailsDto
 {
     public int OrderId { get; set; }
-    public int? UserId { get; set; }
+    public string? UserId { get; set; }
     public decimal Amount { get; set; }
     public string? Comment { get; set; }
     public DateTime OrderCreatedAt { get; set; }

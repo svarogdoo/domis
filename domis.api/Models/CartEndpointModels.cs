@@ -6,7 +6,7 @@ namespace domis.api.Models;
 public record CreateCartRequest
 {
     [Description("Provide if user is logged in")]
-    public int UserId { get; set; }
+    public string? UserId { get; set; }
 }
 
 public record CreateCartResponse(int cartId);
