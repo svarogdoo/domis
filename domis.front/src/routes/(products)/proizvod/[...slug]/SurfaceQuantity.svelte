@@ -4,6 +4,7 @@
     formatPrice,
     formatToTwoDecimals,
   } from "../../../../helpers/numberFormatter";
+  import { getKutijaString } from "../../../../helpers/stringFormatter";
   import { cart } from "../../../../stores/cart";
 
   export let product: Product;
@@ -13,7 +14,6 @@
   let boxInput: number = 0;
   let amountInput: number = 0;
   let totalPrice: number = 0;
-  let wordEnding234: boolean;
   let quantityTypeString: string;
 
   $: if (quantityType) {
@@ -22,7 +22,6 @@
 
   $: if (boxInput) {
     setTotalPrice();
-    getCorrectWordEnding();
   }
 
   function handleAmountInputChanged() {
@@ -46,11 +45,6 @@
   function selectText(event: Event) {
     const input = event.target as HTMLInputElement;
     input.select();
-  }
-  function getCorrectWordEnding() {
-    if ([2, 3, 4].includes(boxInput % 10) && Math.floor(boxInput / 10) !== 1)
-      wordEnding234 = true;
-    else wordEnding234 = false;
   }
 
   function setTotalPrice() {
@@ -147,7 +141,8 @@
       </p>
       {#if boxInput > 0 && quantityType !== QuantityType.Piece}
         <p class="text-gray-500 text-sm lg:text-normal font-extralight">
-          {boxInput} kutij{wordEnding234 ? "e" : "a"} pokriva
+          {boxInput}
+          {getKutijaString(boxInput)} pokriva
           {formatToTwoDecimals(boxInput * product.size.box)}
           {quantityTypeString}
         </p>

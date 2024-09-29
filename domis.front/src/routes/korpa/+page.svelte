@@ -29,7 +29,7 @@
           <th></th>
         </thead>
         <tbody class="divide-y divide-gray-200">
-          {#each cartProducts as item}
+          {#each cartProducts as item (item.cartItemId)}
             <CartItem bind:item />
           {/each}
         </tbody>

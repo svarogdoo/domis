@@ -52,7 +52,10 @@
         on:input={handleQuantityChange}
       />
       <p>
-        {mapQuantityTypeToCartString(quantity)}
+        {mapQuantityTypeToCartString(
+          item.productDetails.quantityType,
+          quantity
+        )}
       </p>
     </div>
   </td>

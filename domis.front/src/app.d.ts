@@ -12,6 +12,16 @@ declare global {
     // interface PageState {}
     // interface Platform {}
   }
+
+  interface User {
+    userId: number;
+    userName: string;
+    tokenType: string;
+    accessToken: string;
+    expiresIn: number;
+    refreshToken: string;
+  }
+
   interface Image {
     url: string;
     type: string;
