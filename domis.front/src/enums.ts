@@ -1,3 +1,5 @@
+import { getKutijaString } from "./helpers/stringFormatter";
+
 export enum QuantityType {
   None = 1,
   MeterSquared = 2,
@@ -18,12 +20,14 @@ export function mapQuantityTypeToString(quantityType: QuantityType): string {
 }
 
 export function mapQuantityTypeToCartString(
-  quantityType: QuantityType
+  quantityType: QuantityType,
+  intValue?: number
 ): string {
   switch (quantityType) {
     case QuantityType.MeterSquared:
     case QuantityType.Meter:
-      return "kutija";
+      if (intValue) return getKutijaString(intValue);
+      else return "kutija";
     case QuantityType.Piece:
       return "kom";
     default:

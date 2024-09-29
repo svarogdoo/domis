@@ -7,7 +7,7 @@ import {
 } from "../services/cart-service";
 
 function createCart() {
-  const { subscribe, set, update } = writable<Cart>();
+  const { subscribe, set } = writable<Cart>();
   return {
     subscribe,
     initialize: async () => {
