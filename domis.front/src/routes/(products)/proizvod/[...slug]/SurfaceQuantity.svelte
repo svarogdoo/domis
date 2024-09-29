@@ -4,10 +4,10 @@
     formatPrice,
     formatToTwoDecimals,
   } from "../../../../helpers/numberFormatter";
+  import { cart } from "../../../../stores/cart";
 
+  export let product: Product;
   export let isExtraChecked: boolean;
-  export let productPrice: ProductPricing;
-  export let productSize: ProductSizing;
   export let quantityType: QuantityType;
 
   let boxInput: number = 0;
@@ -29,14 +29,14 @@
     if (quantityType === QuantityType.Piece)
       amountInput = Math.round(amountInput);
     else if (isExtraChecked)
-      boxInput = Math.ceil((1.1 * amountInput) / productSize.box);
-    else boxInput = Math.ceil(amountInput / productSize.box);
+      boxInput = Math.ceil((1.1 * amountInput) / product.size.box);
+    else boxInput = Math.ceil(amountInput / product.size.box);
   }
   function handleBoxInputChanged() {
     boxInput = Math.round(boxInput);
     if (isExtraChecked)
-      amountInput = formatToTwoDecimals((boxInput * productSize.box) / 1.1);
-    else amountInput = formatToTwoDecimals(boxInput * productSize.box);
+      amountInput = formatToTwoDecimals((boxInput * product.size.box) / 1.1);
+    else amountInput = formatToTwoDecimals(boxInput * product.size.box);
   }
   function handleExtraClicked() {
     isExtraChecked = !isExtraChecked;
@@ -54,21 +54,32 @@
   }
 
   function setTotalPrice() {
-    if (productPrice.perBox)
-      if (productSize.pallet && productPrice.perPallet) {
-        const boxesPerPallet = productSize.pallet / productSize.box;
+    if (product.price.perBox)
+      if (product.size.pallet && product.price.perPallet) {
+        const boxesPerPallet = product.size.pallet / product.size.box;
         const palletNumber = Math.floor(boxInput / boxesPerPallet);
         const remainingBoxes = boxInput % boxesPerPallet;
 
         totalPrice =
           palletNumber > 0
-            ? palletNumber * productPrice.perPallet +
-              remainingBoxes * productPrice.perBox
-            : boxInput * productPrice.perBox;
+            ? palletNumber * product.price.perPallet +
+              remainingBoxes * product.price.perBox
+            : boxInput * product.price.perBox;
       } else {
-        totalPrice = boxInput * productPrice.perBox;
+        totalPrice = boxInput * product.price.perBox;
       }
-    if (productPrice.perUnit) totalPrice = amountInput * productPrice.perUnit;
+    if (product.price.perUnit) totalPrice = amountInput * product.price.perUnit;
+  }
+
+  function addItemToCart() {
+    if (amountInput === 0) return;
+
+    let cartProduct: CartProductDto = {
+      productId: product.id,
+      quantity: quantityType === QuantityType.Piece ? amountInput : boxInput,
+    };
+
+    cart.add(cartProduct);
   }
 </script>
 
@@ -137,10 +148,15 @@
       {#if boxInput > 0 && quantityType !== QuantityType.Piece}
         <p class="text-gray-500 text-sm lg:text-normal font-extralight">
           {boxInput} kutij{wordEnding234 ? "e" : "a"} pokriva
-          {formatToTwoDecimals(boxInput * productSize.box)}
+          {formatToTwoDecimals(boxInput * product.size.box)}
           {quantityTypeString}
         </p>
       {/if}
     </div>
   </div>
+  <button
+    on:click={addItemToCart}
+    class="bg-black mt-2 text-white py-3 uppercase tracking-widest hover:bg-gray-700"
+    >Dodaj u korpu</button
+  >
 </div>

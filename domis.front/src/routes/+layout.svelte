@@ -5,6 +5,8 @@
   import Footer from "./Footer.svelte";
   import HeaderSidebar from "./HeaderSidebar.svelte";
   import { page } from "$app/stores";
+  import { onMount } from "svelte";
+  import { cart } from "../stores/cart";
 
   let open = false;
   let previousSlug: string;
@@ -18,6 +20,8 @@
     // Update the previous slug
     previousSlug = $page.url.pathname;
   }
+
+  onMount(() => cart.initialize());
 </script>
 
 <div
