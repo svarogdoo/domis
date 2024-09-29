@@ -75,4 +75,13 @@ public static class CartQueries
                 domis.image i ON pi.image_id = i.id
             WHERE 
                 (pi.image_type_id is null or pi.image_type_id = 1) AND c.id = @CartId;";
+    
+    public const string CheckIfProductExistsInCart = @"SELECT COUNT(1) 
+    FROM domis.cart_item 
+    WHERE cart_id = @CartId AND product_id = @ProductId;";
+
+    public const string UpdateQuantityBasedOnCartAndProduct = @"UPDATE domis.cart_item 
+    SET quantity = @Quantity, modified_at = @ModifiedAt
+    WHERE cart_id = @CartId AND product_id = @ProductId
+    RETURNING Id;";
 }

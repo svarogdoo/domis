@@ -100,6 +100,25 @@ public class CartRepository(IDbConnection connection) : ICartRepository
             //    throw new NotFoundException($"Product with ID {productId} does not exist.");
             //}
 
+            // Check if the product exists in the cart
+            var cartItemExists = await connection.ExecuteScalarAsync<bool>(CartQueries.CheckIfProductExistsInCart, new { CartId = cartId, ProductId = productId });
+
+            if (cartItemExists)
+            {
+                // Update the quantity of the existing cart item
+                var updateParameters = new
+                {
+                    CartId = cartId,
+                    ProductId = productId,
+                    Quantity = quantity,
+                    ModifiedAt = DateTime.UtcNow
+                };
+
+                var updatedCartItemId = await connection.ExecuteScalarAsync<int>(CartQueries.UpdateQuantityBasedOnCartAndProduct, updateParameters);
+                return updatedCartItemId;
+            }
+
+            // Insert a new cart item
             var parameters = new
             {
                 CartId = cartId,
@@ -109,9 +128,7 @@ public class CartRepository(IDbConnection connection) : ICartRepository
                 ModifiedAt = DateTime.UtcNow
             };
 
-
             var newCartItemId = await connection.ExecuteScalarAsync<int>(CartQueries.CreateCartItem, parameters);
-
             return newCartItemId;
         }
         catch (Exception ex)
