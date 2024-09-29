@@ -1,6 +1,7 @@
 // See https://kit.svelte.dev/docs/types#app
 
 import type { QuantityType } from "./enums";
+import type CartItem from "./routes/korpa/CartItem.svelte";
 
 // for information about these interfaces
 declare global {
@@ -72,15 +73,40 @@ declare global {
     pallet: number;
   }
 
+  interface Cart {
+    cartId: number;
+    userId: number;
+    statusId: number;
+    status: string;
+    createdAt: Date;
+    items: Array<CartProduct>;
+    totalCartPrice: number;
+  }
+  interface CartUser {
+    userId: number;
+  }
   interface CartProduct {
-    id: number;
+    cartItemId: number;
+    productId: number;
+    quantity: number;
+    cartItemPrice: number;
+    productDetails: CartProductDetails;
+  }
+  interface CartProductDetails {
     sku: number;
     name: string;
-    featuredImageUrl: string;
+    image: string;
     price: number;
-    quantity: number;
     quantityType: QuantityType;
-    totalPrice: number;
+  }
+  interface CartProductDto {
+    cartId?: number;
+    productId: number;
+    quantity: number;
+  }
+  interface CartItemQuantityUpdateDto {
+    cartItemId: number;
+    quantity: number;
   }
 }
 

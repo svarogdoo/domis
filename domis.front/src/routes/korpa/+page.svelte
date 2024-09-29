@@ -1,18 +1,16 @@
 <script lang="ts">
-  import { onDestroy } from "svelte";
+  import { onDestroy, onMount } from "svelte";
   import { cart } from "../../stores/cart";
   import CartItem from "./CartItem.svelte";
+  import { formatPrice } from "../../helpers/numberFormatter";
 
   let cartProducts: Array<CartProduct> = [];
+  let totalCartPrice: number;
 
   const unsubscribe = cart.subscribe((value) => {
-    cartProducts = value;
+    if (value && value.items) cartProducts = value.items;
+    if (value && value.totalCartPrice) totalCartPrice = value.totalCartPrice;
   });
-
-  const finalCart = {
-    subtotal: 1150,
-    total: 1150,
-  };
 
   onDestroy(() => unsubscribe());
 </script>
@@ -25,9 +23,10 @@
         <thead class="w-full bg-black text-white">
           <th></th>
           <th class="text-start">Opis</th>
-          <th class="text-start">Cena</th>
-          <th class="text-start">Količina</th>
-          <th class="text-start">Ukupno</th>
+          <th class="text-center">Cena</th>
+          <th class="text-center">Količina</th>
+          <th class="text-center">Ukupno</th>
+          <th></th>
         </thead>
         <tbody class="divide-y divide-gray-200">
           {#each cartProducts as item}
@@ -43,12 +42,12 @@
         </h2>
         <div class="flex justify-between mt-16 font-light gap-x-8">
           <p>Ukupno</p>
-          <p>{finalCart.subtotal}RSD</p>
+          <p>{formatPrice(totalCartPrice)} RSD</p>
         </div>
         <div class="w-full h-0.5 bg-black my-4"></div>
         <div class="flex justify-between text-lg gap-x-8">
           <p>Ukupno</p>
-          <p>{finalCart.total}RSD</p>
+          <p>{formatPrice(totalCartPrice)} RSD</p>
         </div>
         <button
           class="text-light bg-black text-white mt-16 py-2 px-4 rounded-lg"

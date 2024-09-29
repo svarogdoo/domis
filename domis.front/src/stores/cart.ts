@@ -1,26 +1,30 @@
-import { writable, type Writable } from "svelte/store";
+import { writable } from "svelte/store";
+import {
+  addCartItem,
+  getCart,
+  removeCartItem,
+  updateCartItem,
+} from "../services/cart-service";
 
 function createCart() {
-  const { subscribe, set, update } = writable<CartProduct[]>([]);
+  const { subscribe, set, update } = writable<Cart>();
   return {
     subscribe,
-    add: (product: CartProduct) =>
-      update((currentCart) => {
-        const existingProductIndex = currentCart.findIndex(
-          (p) => p.id === product.id
-        );
-
-        if (existingProductIndex !== -1)
-          currentCart[existingProductIndex].quantity += product.quantity;
-        else currentCart.push(product);
-
-        return currentCart;
-      }),
-    remove: (productId: number) =>
-      update((currentCart) => {
-        return currentCart.filter((product) => product.id !== productId);
-      }),
-    empty: () => set([]),
+    initialize: async () => {
+      set(await getCart());
+    },
+    add: async (product: CartProductDto) => {
+      await addCartItem(product);
+      set(await getCart());
+    },
+    remove: async (cartItemId: number) => {
+      await removeCartItem(cartItemId);
+      set(await getCart());
+    },
+    update: async (cartItemId: number, quantity: number) => {
+      await updateCartItem({ cartItemId: cartItemId, quantity: quantity });
+      set(await getCart());
+    },
   };
 }
 

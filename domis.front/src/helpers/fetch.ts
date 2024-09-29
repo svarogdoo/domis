@@ -11,6 +11,16 @@ export async function putDataWithJsonBody(url: string, json: string) {
   return fetch(url, {
     method: "put",
     body: json,
+    headers: {
+      "Content-Type": "application/json",
+      ...headers,
+    },
+  }).then(handleResponse);
+}
+
+export async function deleteData(url: string) {
+  return fetch(url, {
+    method: "delete",
     headers,
   }).then(handleResponse);
 }
@@ -20,7 +30,14 @@ export async function fetchDataWithJsonBody<T>(
   method: string,
   json: string
 ): Promise<T> {
-  return fetch(url, { method, body: json, headers }).then(handleResponse);
+  return fetch(url, {
+    method,
+    body: json,
+    headers: {
+      "Content-Type": "application/json",
+      ...headers,
+    },
+  }).then(handleResponse);
 }
 
 async function handleResponse(res: Response) {

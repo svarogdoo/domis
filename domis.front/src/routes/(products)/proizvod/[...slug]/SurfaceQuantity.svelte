@@ -76,15 +76,9 @@
   function addItemToCart() {
     if (amountInput === 0) return;
 
-    let cartProduct: CartProduct = {
-      id: product.id,
-      name: product.name,
-      sku: product.sku,
-      featuredImageUrl: product.featuredImageUrl,
-      price: product.price,
+    let cartProduct: CartProductDto = {
+      productId: product.id,
       quantity: quantityType === QuantityType.Piece ? amountInput : boxInput,
-      quantityType: quantityType,
-      totalPrice: totalPrice,
     };
 
     cart.add(cartProduct);

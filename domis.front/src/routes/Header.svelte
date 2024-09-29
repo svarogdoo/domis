@@ -4,9 +4,17 @@
   import cartIcon from "$lib/icons/cart.svg";
   import Hamburger from "../components/Hamburger.svelte";
   import { cart } from "../stores/cart";
+  import { onDestroy } from "svelte";
 
   export let sidebar = false;
   let searchTerm: string;
+  let cartProducts: Array<CartProduct>;
+
+  const unsubscribe = cart.subscribe((value) => {
+    if (value && value.items) cartProducts = value.items;
+  });
+
+  onDestroy(() => unsubscribe());
 </script>
 
 <header class="mb-4">
@@ -39,11 +47,11 @@
         aria-current={$page.url.pathname === "/shop" ? "page" : undefined}
       >
         <a href="/korpa"> <img src={cartIcon} alt="cart" /></a>
-        {#if $cart.length > 0}
+        {#if cartProducts?.length > 0}
           <div
             class="absolute top-0 right-0 text-center text-white text-md rounded-full h-5 w-5 bg-red-500"
           >
-            {$cart.length}
+            {cartProducts.length}
           </div>
         {/if}
       </li>
