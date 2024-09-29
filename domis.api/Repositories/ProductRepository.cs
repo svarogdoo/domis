@@ -15,8 +15,8 @@ namespace domis.api.Repositories;
 public interface IProductRepository
 {
     Task<IEnumerable<ProductPreviewDto>> GetAll();
-    Task<ProductCompleteDetailsDto?> GetByIdWithDetails(int id);
-    Task<ProductCompleteDetailsDto?> Update(ProductEditDto product);
+    Task<ProductDetailsDto?> GetByIdWithDetails(int id);
+    Task<ProductDetailsDto?> Update(ProductUpdateDto product);
     Task<bool> NivelacijaUpdateProductBatch(IEnumerable<NivelacijaRecord> records);
     Task<IEnumerable<ProductBasicInfoDto>> GetProductsBasicInfoByCategory(int categoryId);
     Task<IEnumerable<ProductQuantityTypeDto>> GetAllQuantityTypes();
@@ -40,7 +40,7 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
         }
     }
 
-    public async Task<ProductCompleteDetailsDto?> GetByIdWithDetails(int productId)
+    public async Task<ProductDetailsDto?> GetByIdWithDetails(int productId)
     {
         try
         {
@@ -48,13 +48,18 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
             if (product == null)
                 return null;
 
+            var size = await connection.QuerySingleOrDefaultAsync<Size>(ProductQueries.GetProductSizing, new { ProductId = productId });
             var images = (await connection.QueryAsync<ImageGetDto>(ImageQueries.GetProductImages, new { ProductId = productId })).ToList();
             var categoryPaths = (await connection.QueryAsync<string>(CategoryQueries.GetProductCategories, new { ProductId = productId })).ToList();
 
-            var productDetail = mapper.Map<ProductCompleteDetailsDto>(product);
-            //var productDetail = mapper.Map<ProductDetailsDto>(product);
+            var productDetail = mapper.Map<ProductDetailsDto>(product);
+            
+            productDetail.Size = size;
             productDetail.Images = [.. images];
             productDetail.CategoryPaths = [.. categoryPaths];
+            productDetail.Price = product.Price != null 
+                ? CalculatePrices(product.Price.Value, size) 
+                : null;
 
             return productDetail;
         }
@@ -90,7 +95,7 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
         }
     }
 
-    public async Task<ProductCompleteDetailsDto?> Update(ProductEditDto product)
+    public async Task<ProductDetailsDto?> Update(ProductUpdateDto product)
     {
         try
         {
@@ -110,14 +115,12 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
                 product.Depth,
                 product.Length,
                 product.Thickness,
-                product.IsItem,
-                product.IsSurfaceType,
                 product.Name,
                 product.Description,
                 product.Sku,
                 product.Price,
                 product.Stock,
-                product.QuantityTypeId
+                product.QuantityType
             });
 
             if (affectedRows == 0)
@@ -126,7 +129,9 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
                 return null;
             }
 
-            var updatedProduct = await connection.QuerySingleOrDefaultAsync<ProductCompleteDetailsDto>(ProductQueries.GetSingleWithDetails, new { ProductId = product.Id });
+            //var updatedProduct = await connection.QuerySingleOrDefaultAsync<ProductCompleteDetailsDto>(ProductQueries.GetSingleWithDetails, new { ProductId = product.Id });
+
+            var updatedProduct = await GetByIdWithDetails(product.Id);
 
             //var updatedProduct = await connection.QuerySingleOrDefaultAsync<ProductEditDto>(ProductQueries.GetById, new { ProductId = product.Id });
             return updatedProduct;
@@ -154,4 +159,30 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
             Log.Error(ex, "An error occurred while fetching quantity types"); throw;
         }
     }
+
+
+    #region ExtensionsMethods
+    private static Price CalculatePrices(decimal unitPrice, Size? productSize)
+    {
+        decimal? pakPrice = null;
+        decimal? palPrice = null;
+
+        if (!string.IsNullOrEmpty(productSize?.Pak) && decimal.TryParse(productSize.Pak, out var pakValue))
+        {
+            pakPrice = unitPrice * pakValue;
+        }
+
+        if (!string.IsNullOrEmpty(productSize?.Pal) && decimal.TryParse(productSize.Pal, out var palValue))
+        {
+            palPrice = unitPrice * palValue;
+        }
+
+        return new Price
+        {
+            Unit = unitPrice,
+            Pak = pakPrice,
+            Pal = palPrice
+        };
+    }
+    #endregion ExtensionMethods
 }

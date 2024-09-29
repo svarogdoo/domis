@@ -13,11 +13,13 @@ public class MappingProfile : Profile
         //    .ForMember(dest => dest.Images, opt => opt.Ignore())
         //    .ForMember(dest => dest.CategoryPaths, opt => opt.Ignore());
 
-        CreateMap<Product, ProductCompleteDetailsDto>()
+        CreateMap<Product, ProductDetailsDto>()
             .ForMember(dest => dest.Images, opt => opt.Ignore())
             .ForMember(dest => dest.CategoryPaths, opt => opt.Ignore())
+            .ForMember(dest => dest.Price, opt => opt.Ignore())
+            .ForMember(dest => dest.Size, opt => opt.Ignore())
             .ForMember(dest => dest.QuantityType, opt => opt.MapFrom(src =>
-                (ProductQuantityType)Enum.ToObject(typeof(ProductQuantityType), src.QuantityTypeId)));
+                (ProductQuantityType)Enum.ToObject(typeof(ProductQuantityType), src.QuantityType)));
 
     }
 }

@@ -1,4 +1,5 @@
 using domis.api.DTOs.Product;
+using domis.api.Models.Enums;
 
 namespace domis.api.DTOs.Cart;
 
@@ -28,7 +29,9 @@ public class CartItemDto
 public class ProductCartDetailsDto
 {
     public string? Name { get; set; }
-    public string? Description { get; set; }
+    //public string? Description { get; set; }
     public decimal Price { get; set; }
     public string? Image { get; set; }
+    public int? Sku { get; set; }
+    public int? QuantityType { get; set; }
 }

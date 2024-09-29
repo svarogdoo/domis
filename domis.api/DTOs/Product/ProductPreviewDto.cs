@@ -1,5 +1,8 @@
-﻿namespace domis.api.DTOs.Product;
+﻿using domis.api.Models.Enums;
 
+namespace domis.api.DTOs.Product;
+
+//za prikaz proizvoda u listi proizvoda
 public class ProductPreviewDto
 {
     public int Id { get; set; }
@@ -9,4 +12,5 @@ public class ProductPreviewDto
     public decimal Stock { get; set; }
     public string? FeaturedImageUrl { get; set; }
     public string? Description { get; set; }
+    public ProductQuantityType? QuantityType{ get; set; }
 }

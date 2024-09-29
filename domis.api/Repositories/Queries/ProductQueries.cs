@@ -20,8 +20,7 @@ public static class ProductQueries
                 p.weight AS Weight,
                 p.isItemType AS IsItemType,
                 p.isSurfaceType AS IsSurfaceType,
-                --p.quantity_type AS QuantityType,
-                p.quantity_type_id AS QuantityTypeId,
+                p.quantity_type_id AS QuantityType,
                 i.blob_url AS FeaturedImageUrl
             FROM domis.product p
             JOIN domis.product_image pi ON p.id = pi.product_id
@@ -105,11 +104,13 @@ public static class ProductQueries
                     p.price AS Price,
                     p.stock AS Stock,
                     p.active AS IsActive,
-                    pi.FeaturedImageUrl
+                    pi.FeaturedImageUrl,
+                    pqt.id AS QuantityType
                 FROM domis.product p
                 INNER JOIN domis.product_category pc ON p.id = pc.product_id
                 INNER JOIN CategoryHierarchy ch ON pc.category_id = ch.id
                 LEFT JOIN ProductImages pi ON p.id = pi.ProductId
+                LEFT JOIN domis.product_quantity_type pqt ON p.quantity_type_id = pqt.id
                 WHERE p.active = true -- filter to include only active products
             )
             SELECT *
@@ -147,8 +148,6 @@ public static class ProductQueries
         (SELECT 1 FROM domis.product WHERE id = @ProductId);"
     ;
 
-
-
     //TODO: decide what needs to be updated
     public const string UpdateProduct = @"
         UPDATE domis.product
@@ -166,9 +165,9 @@ public static class ProductQueries
             length = COALESCE(@Length, length),
             thickness = COALESCE(@Thickness, thickness),
             weight = COALESCE(@Weight, weight),
-            isItemType = COALESCE(@IsItem, isItemType),
-            isSurfaceType = COALESCE(@IsSurfaceType, isSurfaceType),
-            quantity_type_id = COALESCE(@QuantityTypeId, quantity_type_id)
+            --isItemType = COALESCE(@IsItem, isItemType),
+            --isSurfaceType = COALESCE(@IsSurfaceType, isSurfaceType),
+            quantity_type_id = COALESCE(@QuantityType, quantity_type_id)
         WHERE id = @Id;"
     ;
 
@@ -177,5 +176,15 @@ public static class ProductQueries
             id AS Id,
             name AS Name
         FROM domis.product_quantity_type;"
+    ;
+
+    public const string GetProductSizing = @"
+        SELECT 
+            pak,
+            pal
+        FROM 
+            domis.product_packaging
+        WHERE 
+            product_id = @ProductId;"
     ;
 }

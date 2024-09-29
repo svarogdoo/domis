@@ -1,5 +1,4 @@
 ﻿using domis.api.DTOs.Product;
-using domis.api.Models;
 using domis.api.Repositories;
 
 namespace domis.api.Services;
@@ -7,12 +6,10 @@ namespace domis.api.Services;
 public interface IProductService
 {
     Task<IEnumerable<ProductPreviewDto>> GetAll();
-
-    Task<ProductCompleteDetailsDto?> GetByIdWithDetails(int id);
-    Task<ProductCompleteDetailsDto?> Update(ProductEditDto product);
+    Task<ProductDetailsDto?> GetByIdWithDetails(int id);
+    Task<ProductDetailsDto?> Update(ProductUpdateDto product);
     Task<IEnumerable<ProductBasicInfoDto>> GetProductsBasicInfoByCategory(int categoryId);
     Task<IEnumerable<ProductQuantityTypeDto>> GetAllQuantityTypes();
-
 }
 
 public class ProductService(IProductRepository repository) : IProductService
@@ -23,12 +20,12 @@ public class ProductService(IProductRepository repository) : IProductService
     public async Task<IEnumerable<ProductQuantityTypeDto>> GetAllQuantityTypes()
         => await repository.GetAllQuantityTypes();
 
-    public async Task<ProductCompleteDetailsDto?> GetByIdWithDetails(int id)
+    public async Task<ProductDetailsDto?> GetByIdWithDetails(int id)
         => await repository.GetByIdWithDetails(id);
 
     public async Task<IEnumerable<ProductBasicInfoDto>> GetProductsBasicInfoByCategory(int categoryId)
         => await repository.GetProductsBasicInfoByCategory(categoryId);
 
-    public async Task<ProductCompleteDetailsDto?> Update(ProductEditDto product)
+    public async Task<ProductDetailsDto?> Update(ProductUpdateDto product)
         => await repository.Update(product);
 }
