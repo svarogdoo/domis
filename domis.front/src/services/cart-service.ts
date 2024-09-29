@@ -43,7 +43,6 @@ export function removeCartItem(cartItemId: number) {
 }
 
 export function updateCartItem(cartItemQuantity: CartItemQuantityUpdateDto) {
-  console.info(cartItemQuantity);
   return putDataWithJsonBody(
     "https://domis.onrender.com/api/cart/cart-item-quantity",
     JSON.stringify(cartItemQuantity)

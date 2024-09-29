@@ -41,10 +41,6 @@
     setProducts();
   }
 
-  $: if (quantityType) {
-    console.info(quantityType);
-  }
-
   async function setSelectedProduct(value: Product) {
     selectedProduct = await getProduct(value.id);
     title = selectedProduct.title ? selectedProduct.title : "";

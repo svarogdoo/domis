@@ -13,10 +13,7 @@
       alt="icon"
     />
   </label>
-  <ul
-    class="hidden peer-checked:block py-2 ml-4"
-    aria-labelledby="dropdownButton"
-  >
+  <ul class="hidden peer-checked:block py-2 ml-4" aria-labelledby={category.id}>
     {#if category.subcategories}
       {#each category?.subcategories as subcategory}
         <li class="relative text-wrap pr-4 transition ease-in-out">

@@ -1,11 +1,18 @@
 <script lang="ts">
   import dropdownIcon from "$lib/icons/dropdown.svg";
   export let category: Category;
+  export let isHamburger: boolean;
+
+  let random = Math.random();
+
+  function getUniqueId() {
+    return `${category.id}${isHamburger ? "h" : "n"}${random}`;
+  }
 </script>
 
 <div>
-  <input type="checkbox" id={category.id} class="peer hidden" />
-  <label for={category.id} class="w-full cursor-pointer">
+  <input type="checkbox" id={getUniqueId()} class="peer hidden" />
+  <label for={getUniqueId()} class="w-full cursor-pointer">
     <img
       class="w-auto h-2 absolute top-2 right-0 transform transition-transform duration-200 ease-in-out"
       src={dropdownIcon}
@@ -14,7 +21,7 @@
   </label>
   <ul
     class="hidden peer-checked:block py-2 ml-4"
-    aria-labelledby="dropdownButton"
+    aria-labelledby={getUniqueId()}
   >
     {#if category.subcategories}
       {#each category?.subcategories as subcategory}

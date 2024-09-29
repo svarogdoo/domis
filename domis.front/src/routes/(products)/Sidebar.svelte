@@ -30,7 +30,7 @@
             class="hover:scale-105 transition ease-in-out">{category.name}</a
           >
           {#if category.subcategories?.length && category.subcategories.length > 0}
-            <SidebarCategory {category} />
+            <SidebarCategory {category} isHamburger={hamburgerStyle} />
           {/if}
         </li>
       {/each}
