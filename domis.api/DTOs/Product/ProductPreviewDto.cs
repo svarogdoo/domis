@@ -2,6 +2,7 @@
 
 namespace domis.api.DTOs.Product;
 
+//za prikaz proizvoda u listi proizvoda
 public class ProductPreviewDto
 {
     public int Id { get; set; }
