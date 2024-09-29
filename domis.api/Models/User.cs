@@ -11,3 +11,9 @@ public class User : IdentityUser
     public string? ZipCode { get; set; }
     public string? Country { get; set; }
 }
+
+public class UserWithRoles
+{
+    public User User { get; set; }
+    public List<string> Roles { get; set; }
+}

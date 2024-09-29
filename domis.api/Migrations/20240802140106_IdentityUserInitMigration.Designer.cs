@@ -26,7 +26,7 @@ namespace domis.api.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
+            modelBuilder.Entity("domis.api.Models.Role", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -42,6 +42,9 @@ namespace domis.api.Migrations
                     b.Property<string>("NormalizedName")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
+                    
+                    b.Property<string>("Discount")
+                        .HasColumnType("numeric");
 
                     b.HasKey("Id");
 

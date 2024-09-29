@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 namespace domis.api.Database;
 
 public class IdentityDataContext(DbContextOptions<IdentityDataContext> options) :
-        IdentityDbContext<User>(options)
+        IdentityDbContext<User, Role, string>(options)
 {
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -16,3 +16,4 @@ public class IdentityDataContext(DbContextOptions<IdentityDataContext> options) 
         builder.HasDefaultSchema("identity");
     }
 }
+

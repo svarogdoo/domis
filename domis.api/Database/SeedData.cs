@@ -7,7 +7,7 @@ public static class SeedData
 {
     public static async Task SeedAsync(IServiceProvider serviceProvider)
     {
-        var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+        var roleManager = serviceProvider.GetRequiredService<RoleManager<Role>>();
         var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
 
         await SeedRolesAsync(roleManager);
@@ -15,7 +15,7 @@ public static class SeedData
         await SeedAdminUserAsync(userManager, roleManager);
     }
 
-    private static async Task SeedRolesAsync(RoleManager<IdentityRole> roleManager)
+    private static async Task SeedRolesAsync(RoleManager<Role> roleManager)
     {
         string[] roles = Enum.GetValues(typeof(Roles)).Cast<Roles>().Select(r => r.GetRoleName()).ToArray();
 
@@ -23,12 +23,12 @@ public static class SeedData
         {
             if (!await roleManager.RoleExistsAsync(role))
             {
-                await roleManager.CreateAsync(new IdentityRole(role));
+                await roleManager.CreateAsync(new Role(role));
             }
         }
     }
 
-    private static async Task SeedAdminUserAsync(UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
+    private static async Task SeedAdminUserAsync(UserManager<User> userManager, RoleManager<Role> roleManager)
     {
         var adminEmail = "admin@mail.com";
         var adminPassword = "sifra";

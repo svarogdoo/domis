@@ -10,9 +10,9 @@ public static class AuthConfiguration
     public static void AddAuthenticationAndAuthorization(this IServiceCollection services/*, IConfiguration configuration*/)
     {
         services.AddIdentityCore<User>()
-                .AddRoles<IdentityRole>()
+                .AddRoles<Role>()
                 .AddUserManager<CustomUserManager<User>>()
-                .AddRoleManager<RoleManager<IdentityRole>>()
+                .AddRoleManager<RoleManager<Role>>()
                 .AddEntityFrameworkStores<IdentityDataContext>()
                 .AddApiEndpoints();
 

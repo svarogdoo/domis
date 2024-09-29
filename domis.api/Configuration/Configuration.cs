@@ -110,6 +110,7 @@ public static class Configuration
         app.UseCors();
 
         app.MapIdentityApi<User>();
+        app.MapControllers();
 
         //app.UseExceptionHandler();
     }
