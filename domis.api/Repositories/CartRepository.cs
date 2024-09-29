@@ -4,6 +4,7 @@ using domis.api.DTOs.Cart;
 using domis.api.DTOs.Image;
 using domis.api.DTOs.Order;
 using domis.api.DTOs.Product;
+using domis.api.Repositories.Helpers;
 using domis.api.Repositories.Queries;
 using Serilog;
 
@@ -14,7 +15,7 @@ public interface ICartRepository
     Task<IEnumerable<OrderStatusDto>?> GetAllOrderStatuses();
     Task<int> CreateCartAsync(int? userId);
     Task<bool> UpdateCartStatusAsync(int cartId, int statusId);
-    Task<int> CreateCartItemAsync(int cartId, int productId, decimal quantity);
+    Task<int?> CreateCartItemAsync(int cartId, int productId, decimal quantity);
     Task<bool> UpdateCartItemQuantityAsync(int cartItemId, decimal quantity);
     Task<bool> DeleteCartItemAsync(int cartItemId);
     Task<bool> DeleteCartAsync(int cartId);
@@ -83,10 +84,22 @@ public class CartRepository(IDbConnection connection) : ICartRepository
         }
     }
     
-    public async Task<int> CreateCartItemAsync(int cartId, int productId, decimal quantity)
+    public async Task<int?> CreateCartItemAsync(int cartId, int productId, decimal quantity)
     {
         try
         {
+            var cartExists = await connection.ExecuteScalarAsync<bool>(CartQueries.CheckIfCartExists, new { CartId = cartId });
+            if (!cartExists) return null;
+            //{
+            //    throw new NotFoundException($"Cart with ID {cartId} does not exist.");
+            //}
+
+            var productExists = await connection.ExecuteScalarAsync<bool>(ProductQueries.CheckIfProductExists, new { ProductId = productId });
+            if (!productExists) return null;
+            //{
+            //    throw new NotFoundException($"Product with ID {productId} does not exist.");
+            //}
+
             var parameters = new
             {
                 CartId = cartId,
@@ -95,6 +108,7 @@ public class CartRepository(IDbConnection connection) : ICartRepository
                 CreatedAt = DateTime.UtcNow,
                 ModifiedAt = DateTime.UtcNow
             };
+
 
             var newCartItemId = await connection.ExecuteScalarAsync<int>(CartQueries.CreateCartItem, parameters);
 

@@ -1,6 +1,10 @@
+using domis.api.Common;
 using domis.api.Models;
 using domis.api.Services;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
+using Serilog;
+using System.ComponentModel.DataAnnotations;
 
 namespace domis.api.Endpoints;
 
@@ -38,11 +42,35 @@ public static class CartEndpoints
             return Results.Ok(new DeleteCartResponse(response));
         }).WithDescription("Delete cart");
         
-        group.MapPost("/cart-item", async ([FromBody]CreateCartItemRequest request ,ICartService cartService) =>
+        group.MapPost("/cart-item", async ([FromBody]CreateCartItemRequest request, IValidator<CreateCartItemRequest> validator, ICartService cartService) =>
         {
-            var response = await cartService.CreateCartItem(request.cartId, request.productId, request.quantity);
+            //var validationResults = new List<ValidationResult>();
+            //var validationContext = new ValidationContext(request);
+            //if (!Validator.TryValidateObject(request, validationContext, validationResults, true))
+            //{
+            //    return Results.BadRequest(validationResults.Select(v => v.ErrorMessage));
+            //}
 
-            return Results.Ok(new CreateCartItemResponse(response));
+            var validationResult = await validator.ValidateAsync(request);
+
+            if (!validationResult.IsValid)
+            {
+                return Results.BadRequest(validationResult.Errors.Select(e => e.ErrorMessage));
+            }
+
+            try
+            {
+                var response = await cartService.CreateCartItem(request!.CartId, request!.ProductId, request!.Quantity);
+                return response == null
+                    ? Results.BadRequest("Cart or Product does not exist.")
+                    : Results.Ok(new CreateCartItemResponse(response.Value));
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, $"An unexpected error occurred: {ex.Message}");
+                return Results.StatusCode(500);
+            }
+
         }).WithDescription("Create new cart item");
         
         group.MapPut("/cart-item-quantity", async ([FromBody]UpdateCartItemRequest request ,ICartService cartService) =>

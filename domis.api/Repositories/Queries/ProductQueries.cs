@@ -165,8 +165,6 @@ public static class ProductQueries
             length = COALESCE(@Length, length),
             thickness = COALESCE(@Thickness, thickness),
             weight = COALESCE(@Weight, weight),
-            --isItemType = COALESCE(@IsItem, isItemType),
-            --isSurfaceType = COALESCE(@IsSurfaceType, isSurfaceType),
             quantity_type_id = COALESCE(@QuantityType, quantity_type_id)
         WHERE id = @Id;"
     ;
