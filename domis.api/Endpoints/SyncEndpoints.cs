@@ -8,12 +8,11 @@ public static class SyncEndpoints
     {
         var group = routes.MapGroup("/api/sync").WithTags("Sync");
 
-
         group.MapPut("/nivelacija-product-update", async (ISyncService syncService) =>
         {
             var response = await syncService.NivelacijaUpdateBatch();
             return Results.Ok(response);
-        }).WithDescription("update all products with values from nivelacija file");
+        }).WithDescription("update all products with values from NIVELACIJA.csv file");
 
         group.MapPut("/exchange-rate-update", async (ISyncService syncService) =>
         {

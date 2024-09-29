@@ -149,8 +149,6 @@ public static class ProductQueries
         (SELECT 1 FROM domis.product WHERE id = @ProductId);"
     ;
 
-
-
     //TODO: decide what needs to be updated
     public const string UpdateProduct = @"
         UPDATE domis.product
@@ -180,4 +178,15 @@ public static class ProductQueries
             name AS Name
         FROM domis.product_quantity_type;"
     ;
+
+    public const string GetProductSize = @"
+        SELECT 
+            pak,
+            pal
+        FROM 
+            domis.product_packaging
+        WHERE 
+            product_id = @ProductId;"
+    ;
+
 }

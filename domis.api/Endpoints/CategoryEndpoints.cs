@@ -20,7 +20,7 @@ public static class CategoryEndpoints
         }).WithDescription("get all categories");
 
 
-        //probably no need for this one
+        //maybe no need for this one ?
         group.MapGet("/{id:int}", async (int id, ICategoryService categoryService) =>
         {
             var product = await categoryService.GetById(id);

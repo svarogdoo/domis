@@ -12,5 +12,4 @@ public enum ProductQuantityType
     Meter = 3,
     [EnumMember(Value = "Piece")]
     Piece = 4
-
 }
