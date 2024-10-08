@@ -1,12 +1,26 @@
 <!-- src/routes/Login.svelte -->
 <script lang="ts">
-  //   import { userStore } from "../stores/userStore";
-
+  import { loginUser } from "../../../stores/user";
   let userName = "";
   let password = "";
   let errorMessage = "";
 
-  const handleLogin = async () => {};
+  const handleLogin = async () => {
+    errorMessage = "";
+
+    try {
+      const loginResponse = await loginUser(userName, password); //store
+      console.log('Login successful:', loginResponse);
+
+      //probably redirect?
+    } catch (error: any) {
+      if (error.status === 401) {
+        errorMessage = 'Invalid credentials. Please try again.';
+      } else {
+        errorMessage = error.message || 'An unknown error occurred.';
+      }
+    }
+  };
 </script>
 
 <div class="flex justify-center items-center h-full w-full">

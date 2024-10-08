@@ -14,12 +14,23 @@ declare global {
   }
 
   interface User {
-    userId: number;
+    userId?: number;
     userName: string;
     tokenType: string;
     accessToken: string;
     expiresIn: number;
     refreshToken: string;
+  }
+  interface UserLoginResponse {
+    tokenType: string;
+    accessToken: string;
+    expiresIn: number;
+    refreshToken: string;
+  }
+  interface UserState {
+    isAuthenticated: boolean;
+    user: User | null;
+    token: string | null;
   }
 
   interface Image {

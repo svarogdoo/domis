@@ -53,6 +53,7 @@ async function handleResponse(res: Response) {
     return res.json();
   }
 
-  console.info(`Fetch fail: ${res.status}`);
-  // throw new Error(`Fetch fail: ${res.status}`);
+  const error = new Error(res.statusText) as any;
+  error.status = res.status;
+  throw error;
 }

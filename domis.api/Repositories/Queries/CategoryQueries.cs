@@ -32,7 +32,7 @@ public static class CategoryQueries
             ParentCategoryId,
             Name
         FROM CategoryHierarchy
-        ORDER BY SortNumber ASC NULLS LAST, Id; --sort by sortNumber
+        ORDER BY SortNumber ASC NULLS LAST, Name ASC; --sort by sort number, then by category name
     ";
 
 
