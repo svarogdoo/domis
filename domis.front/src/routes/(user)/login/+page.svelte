@@ -1,6 +1,6 @@
 <!-- src/routes/Login.svelte -->
 <script lang="ts">
-  import { loginUser } from "../../../stores/user";
+  import { userStore } from "../../../stores/user";
   let userName = "";
   let password = "";
   let errorMessage = "";
@@ -9,7 +9,7 @@
     errorMessage = "";
 
     try {
-      const loginResponse = await loginUser(userName, password); //store
+      const loginResponse = await userStore.loginUser(userName, password);
       console.log('Login successful:', loginResponse);
 
       //probably redirect?
