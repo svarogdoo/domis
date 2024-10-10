@@ -13,23 +13,11 @@ public static class UserEndpoints
         {
             var userId = http.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            if (userId is null)
-            {
-                return Results.Unauthorized();
-            }
+            if (userId is null) return Results.Unauthorized();
 
-            var user = await userService.GetUserByIdAsync(userId);
+            var userProfile = await userService.GetUserByIdAsync(userId);
 
-            if (user is null)
-            {
-                return Results.NotFound();
-            }
-
-            var userProfile = new
-            {
-                user.UserName,
-                user.Email,
-            };
+            if (userProfile is null) return Results.NotFound();
 
             return Results.Ok(userProfile);
         })
