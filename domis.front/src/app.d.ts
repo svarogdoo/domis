@@ -27,11 +27,6 @@ declare global {
     expiresIn: number;
     refreshToken: string;
   }
-  interface UserState {
-    isAuthenticated: boolean;
-    user: User | null;
-    token: string | null;
-  }
 
   interface Image {
     url: string;

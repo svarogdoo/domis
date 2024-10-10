@@ -81,6 +81,9 @@ public static class Configuration
         builder.Services.AddHttpClient<ISyncService, SyncService>();
         builder.Services.AddScoped<ISyncService, SyncService>();
 
+        builder.Services.AddScoped<IUserService, UserService>();
+        builder.Services.AddScoped<IUserRepository, UserRepository>();
+
         builder.Services.AddSingleton<SmtpClient>(serviceProvider =>
         {
             var client = new SmtpClient();

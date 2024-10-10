@@ -16,6 +16,7 @@ app.RegisterCategoryEndpoints();
 app.RegisterSyncEndpoints();
 app.RegisterLocationEndpoints();
 app.RegisterOrderEndpoints();
+app.RegisterUserEndpoints();
 
 app.Run();
 

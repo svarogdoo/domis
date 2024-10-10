@@ -1,4 +1,14 @@
-let headers = {};
+let headers: { [key: string]: string } = {
+  "Content-Type": "application/json",
+};
+
+export const setAuthToken = (token: string | null) => {
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  } else {
+    delete headers["Authorization"]; // Remove the header if no token is provided
+  }
+};
 
 export async function fetchData<T>(url: string, method?: string): Promise<T> {
   return fetch(url, {
@@ -11,10 +21,11 @@ export async function putDataWithJsonBody(url: string, json: string) {
   return fetch(url, {
     method: "put",
     body: json,
-    headers: {
-      "Content-Type": "application/json",
-      ...headers,
-    },
+    headers
+    // headers: {
+    //   "Content-Type": "application/json",
+    //   ...headers,
+    // },
   }).then(handleResponse);
 }
 
@@ -33,10 +44,11 @@ export async function fetchDataWithJsonBody<T>(
   return fetch(url, {
     method,
     body: json,
-    headers: {
-      "Content-Type": "application/json",
-      ...headers,
-    },
+    headers
+    // headers: {
+    //   "Content-Type": "application/json",
+    //   ...headers,
+    // },
   }).then(handleResponse);
 }
 
