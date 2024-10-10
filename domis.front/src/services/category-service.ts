@@ -1,15 +1,15 @@
 import { fetchData } from "../helpers/fetch";
 import { categories } from "../stores/categories";
-
+import { API_URL } from "../config";
 export function getCategories() {
   return fetchData<Array<Category>>(
-    "https://domis.onrender.com/api/categories"
+    `${API_URL}/api/categories`
   );
 }
 
 export function getCategoryProducts(id: number) {
   return fetchData<CategoryData>(
-    `https://domis.onrender.com/api/categories/${id}/products`
+    `${API_URL}/api/categories/${id}/products`
   );
 }
 

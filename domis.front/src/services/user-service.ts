@@ -1,8 +1,9 @@
 import { fetchDataWithJsonBody, setAuthToken } from "../helpers/fetch";
+import { API_URL } from "../config";
 
 async function login(email: string, password: string): Promise<UserLoginResponse> {
     const loginResponse = await fetchDataWithJsonBody<UserLoginResponse>(
-        'https://domis.onrender.com/login',
+        `${API_URL}/login`,
         'POST',
         JSON.stringify({ email, password })
         );
@@ -14,7 +15,7 @@ async function login(email: string, password: string): Promise<UserLoginResponse
 
 async function register(email: string, password: string): Promise<void> {
     await fetchDataWithJsonBody<void>(
-        'https://domis.onrender.com/register',
+        `${API_URL}/register`,
         'POST',
         JSON.stringify({ email, password })
     );
