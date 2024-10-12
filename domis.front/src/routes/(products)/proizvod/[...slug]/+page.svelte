@@ -10,6 +10,7 @@
   import fallbackImage from "$lib/assets/backup.jpg";
   import SurfaceQuantity from "./SurfaceQuantity.svelte";
   import { mapQuantityTypeToString, QuantityType } from "../../../../enums";
+  import { handleImageError } from "../../../../helpers/imageFallback";
 
   let product: Product;
   let quantityType: QuantityType = QuantityType.Piece;
@@ -46,6 +47,7 @@
       <img
         src={featuredImage}
         alt={product?.name}
+        on:error={handleImageError}
         class="w-full h-auto aspect-square object-cover rounded-lg"
       />
     </div>

@@ -1,8 +1,9 @@
 <script lang="ts">
-  import { mapQuantityTypeToCartString } from "../../enums";
+  import { mapQuantityTypeToCartString } from "../../../enums";
   import bin from "$lib/icons/bin.svg";
-  import { formatPrice } from "../../helpers/numberFormatter";
-  import { cart } from "../../stores/cart";
+  import { formatPrice } from "../../../helpers/numberFormatter";
+  import { cart } from "../../../stores/cart";
+  import { handleImageError } from "../../../helpers/imageFallback";
 
   export let item: CartProduct;
 
@@ -32,6 +33,7 @@
     <img
       src={item.productDetails.image}
       alt="proizvod"
+      on:error={handleImageError}
       class="p-3 h-32 w-32 object-cover"
     />
   </td>
@@ -68,5 +70,4 @@
       <img class="w-8 hover:scale-125 transition" src={bin} alt="bin" />
     </button>
   </td>
-  <!-- TODO: Add remove from list button -->
 </tr>

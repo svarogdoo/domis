@@ -9,6 +9,7 @@
   import AdminCategoryList from "./AdminCategoryList.svelte";
   import RadioButton from "../../../../components/RadioButton.svelte";
   import { QuantityType, quantityTypeOptions } from "../../../../enums";
+  import { handleImageError } from "../../../../helpers/imageFallback";
 
   let selectedCategoryId: string;
 
@@ -199,6 +200,7 @@
             class="w-48 h-48 mr-12 rounded-md border"
             src={selectedProduct?.featuredImageUrl}
             alt=""
+            on:error={handleImageError}
           />
         {/if}
       </div>
