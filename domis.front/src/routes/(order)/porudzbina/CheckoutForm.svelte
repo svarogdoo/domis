@@ -6,7 +6,7 @@
   let name = "";
   let lastName = "";
   let companyName = "";
-  let country = "Srbija"; // Readonly field
+  const country = "Srbija"; // Readonly field
   let streetAndNumber = "";
   let municipality = "";
   let zipCode = "";
