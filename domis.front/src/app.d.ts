@@ -27,6 +27,10 @@ declare global {
     expiresIn: number;
     refreshToken: string;
   }
+  interface UserProfile {
+    username: string;
+    email: string;
+  }
 
   interface Image {
     url: string;

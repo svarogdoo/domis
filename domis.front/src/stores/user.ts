@@ -56,12 +56,16 @@ const createUserStore = () => {
       return this.loginUser(email, password);
     },
 
-    logoutUser() {
+    async logoutUser() {
       set({
         isAuthenticated: false,
         user: null,
         token: null
       });
+    },
+
+    async profile(){
+      return await userService.profile();
     },
 
     async requestPasswordReset(email: string) {

@@ -13,6 +13,8 @@
       console.log('Login successful:', loginResponse);
 
       //probably redirect?
+      const userProfile = await userStore.profile();
+      console.info(userProfile);
     } catch (error: any) {
       if (error.status === 401) {
         errorMessage = 'Invalid credentials. Please try again.';

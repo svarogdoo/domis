@@ -1,6 +1,4 @@
-let headers: { [key: string]: string } = {
-  "Content-Type": "application/json",
-};
+let headers: { [key: string]: string } = {}
 
 export const setAuthToken = (token: string | null) => {
   if (token) {
@@ -21,11 +19,10 @@ export async function putDataWithJsonBody(url: string, json: string) {
   return fetch(url, {
     method: "put",
     body: json,
-    headers
-    // headers: {
-    //   "Content-Type": "application/json",
-    //   ...headers,
-    // },
+    headers: {
+      "Content-Type": "application/json",
+      ...headers,
+    },
   }).then(handleResponse);
 }
 
@@ -44,11 +41,10 @@ export async function fetchDataWithJsonBody<T>(
   return fetch(url, {
     method,
     body: json,
-    headers
-    // headers: {
-    //   "Content-Type": "application/json",
-    //   ...headers,
-    // },
+    headers: {
+      "Content-Type": "application/json",
+      ...headers,
+    },
   }).then(handleResponse);
 }
 
