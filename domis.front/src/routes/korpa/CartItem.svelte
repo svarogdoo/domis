@@ -70,5 +70,4 @@
       <img class="w-8 hover:scale-125 transition" src={bin} alt="bin" />
     </button>
   </td>
-  <!-- TODO: Add remove from list button -->
 </tr>

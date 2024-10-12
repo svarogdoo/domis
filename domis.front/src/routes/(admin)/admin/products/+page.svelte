@@ -9,6 +9,7 @@
   import AdminCategoryList from "./AdminCategoryList.svelte";
   import RadioButton from "../../../../components/RadioButton.svelte";
   import { QuantityType, quantityTypeOptions } from "../../../../enums";
+  import { handleImageError } from "../../../../helpers/imageFallback";
 
   let selectedCategoryId: string;
 
