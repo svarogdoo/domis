@@ -1,10 +1,12 @@
 <script lang="ts">
   import { onMount } from "svelte";
+  import Input from "../../(admin)/admin/products/Input.svelte";
+  import InputString from "../../../components/InputString.svelte";
 
   let name = "";
   let lastName = "";
   let companyName = "";
-  let country = "Serbia"; // Readonly field
+  let country = "Srbija"; // Readonly field
   let streetAndNumber = "";
   let municipality = "";
   let zipCode = "";
@@ -32,7 +34,7 @@
   async function fetchMunicipalities() {
     // Replace this with a real API call
     return [
-      { value: "belgrade", name: "Belgrade" },
+      { value: "belgrade", name: "Beograd" },
       { value: "novisad", name: "Novi Sad" },
       { value: "nis", name: "Niš" },
     ];
@@ -97,147 +99,111 @@
   class="flex flex-col w-full space-y-4 p-4"
   on:submit|preventDefault={submitForm}
 >
-  <div class="flex flex-col gap-y-8">
+  <div class="flex flex-col gap-y-6">
+    <h2
+      class="text-xl tracking-wide border-b border-gray-400 pb-2 border-b-0.5"
+    >
+      Detalji za naplatu
+    </h2>
     <div class="flex gap-x-12">
       <!-- Name -->
-      <div class="w-full">
-        <label for="name" class="block text-sm font-medium text-gray-700"
-          >Ime <span class="text-red-500">*</span></label
-        >
-        <input
-          id="name"
-          type="text"
-          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-          bind:value={name}
-          placeholder="Petar"
-        />
-        {#if errors.name}
-          <p class="text-red-500 text-sm">{errors.name}</p>
-        {/if}
-      </div>
+      <InputString
+        bind:value={name}
+        title="Ime"
+        placeholder="Petar"
+        error={errors?.name}
+        isRequired={true}
+        width={"64"}
+      />
 
       <!-- Last Name -->
-      <div class="w-full">
-        <label for="lastname" class="block text-sm font-medium text-gray-700"
-          >Prezime <span class="text-red-500">*</span></label
-        >
-        <input
-          id="lastname"
-          type="text"
-          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-          bind:value={lastName}
-          placeholder="Petrović"
-        />
-        {#if errors.lastName}
-          <p class="text-red-500 text-sm">{errors.lastName}</p>
-        {/if}
-      </div>
+      <InputString
+        bind:value={lastName}
+        title="Prezime"
+        placeholder="Petrović"
+        error={errors?.lastName}
+        isRequired={true}
+        width={"64"}
+      />
     </div>
 
-    <!-- Company Name (Optional) -->
-    <div>
-      <label for="company-name" class="block text-sm font-medium text-gray-700"
-        >Naziv kompanije (Opciono)</label
-      >
-      <input
-        id="company-name"
-        type="text"
-        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+    <div class="flex gap-x-12">
+      <!-- Company Name (Optional) -->
+      <InputString
         bind:value={companyName}
+        title="Naziv kompanije (Opciono)"
         placeholder="Kompanija d.o.o"
+        isRequired={false}
+        width={"64"}
       />
-    </div>
 
-    <!-- Country (Readonly) -->
-    <div>
-      <label for="country" class="block text-sm font-medium text-gray-700"
-        >Country</label
-      >
-      <input
-        id="country"
-        type="text"
-        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-        value={country}
-        readonly
-      />
+      <!-- Country (Readonly) -->
+      <div class="flex flex-col gap-y-2">
+        <label for="country">Zemlja</label>
+        <input
+          id="country"
+          type="text"
+          class="block w-32 rounded-md border-0 py-1.5 pl-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 text-md leading-6"
+          value={country}
+          readonly
+          disabled
+        />
+      </div>
     </div>
 
     <!-- Street and Number -->
-    <div>
-      <label for="street-number" class="block text-sm font-medium text-gray-700"
-        >Street and Number <span class="text-red-500">*</span></label
-      >
-      <input
-        id="street-number"
-        type="text"
-        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-        bind:value={streetAndNumber}
-        placeholder="Enter your street and number"
-      />
-      {#if errors.streetAndNumber}
-        <p class="text-red-500 text-sm">{errors.streetAndNumber}</p>
-      {/if}
-    </div>
+    <InputString
+      bind:value={streetAndNumber}
+      title="Ulica i broj"
+      placeholder="Kneza Miloša 23"
+      isRequired={true}
+      width={"96"}
+    />
 
     <!-- Municipality (Dropdown) -->
-    <div>
-      <label for="municipality" class="block text-sm font-medium text-gray-700"
-        >Municipality (Optional)</label
-      >
+    <div class="flex flex-col gap-y-2">
+      <label for="municipality">Okrug (Opciono)</label>
       <select
         id="municipality"
         bind:value={municipality}
-        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+        class="flex w-80 px-4 py-2 rounded-lg bg-white border border-gray-300"
       >
-        <option value="" disabled selected>Select your municipality</option>
+        <option value="" disabled selected>Odaberite okrug</option>
         {#each municipalityOptions as option}
-          <option value={option.value}>{option.name}</option>
+          <option
+            class="bg-white px-4 py-2 hover:bg-gray-100"
+            value={option.value}>{option.name}</option
+          >
         {/each}
       </select>
     </div>
 
-    <!-- Zip Code -->
-    <div>
-      <label for="zip-code" class="block text-sm font-medium text-gray-700"
-        >Zip Code <span class="text-red-500">*</span></label
-      >
-      <input
-        id="zip-code"
-        type="text"
-        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+    <div class="flex gap-x-12">
+      <!-- Zip Code -->
+      <InputString
         bind:value={zipCode}
-        placeholder="Enter your zip code"
+        title="Poštanski broj"
+        placeholder="11000"
+        isRequired={true}
+        width={"32"}
       />
-      {#if errors.zipCode}
-        <p class="text-red-500 text-sm">{errors.zipCode}</p>
-      {/if}
-    </div>
 
-    <!-- Email -->
-    <div>
-      <label for="email" class="block text-sm font-medium text-gray-700"
-        >Email <span class="text-red-500">*</span></label
-      >
-      <input
-        id="email"
-        type="email"
-        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+      <!-- Email -->
+      <InputString
         bind:value={email}
-        placeholder="Enter your email"
+        title="Email"
+        placeholder="kompanija@gmail.com"
+        isRequired={true}
+        width={"80"}
       />
-      {#if errors.email}
-        <p class="text-red-500 text-sm">{errors.email}</p>
-      {/if}
     </div>
 
     <!-- Special Notes (Optional) -->
     <div>
-      <label class="block text-sm font-medium text-gray-700" for="special-notes"
-        >Napomene o narudžbini (opciono)</label
-      >
+      <label for="special-notes">Napomene o narudžbini (opciono)</label>
       <textarea
         id="special-notes"
-        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+        class="block w-full rounded-md border-0 py-1.5 pl-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 text-md leading-6"
         bind:value={specialNotes}
         placeholder="Posebne napomene o narudžbini ili isporuci."
       ></textarea>
@@ -246,9 +212,9 @@
     <!-- Submit Button -->
     <button
       type="submit"
-      class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+      class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
     >
-      Submit
+      Potvrdi
     </button>
   </div>
 </form>

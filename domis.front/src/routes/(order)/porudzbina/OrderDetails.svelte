@@ -1,6 +1,5 @@
 <script lang="ts">
   import { formatPrice } from "../../../helpers/numberFormatter";
-  import { shortenString } from "../../../helpers/stringFormatter";
   import { cart } from "../../../stores/cart";
 
   let cartItems: Array<CartProduct> = [];
