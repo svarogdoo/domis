@@ -5,13 +5,13 @@ using Microsoft.EntityFrameworkCore;
 namespace domis.api.Database;
 
 public class IdentityDataContext(DbContextOptions<IdentityDataContext> options) :
-        IdentityDbContext<User, Role, string>(options)
+        IdentityDbContext<UserEntity, Role, string>(options)
 {
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
 
-        builder.Entity<User>().Property(u => u.FirstName).HasMaxLength(20);
+        builder.Entity<UserEntity>().Property(u => u.FirstName).HasMaxLength(20);
 
         builder.HasDefaultSchema("identity");
     }

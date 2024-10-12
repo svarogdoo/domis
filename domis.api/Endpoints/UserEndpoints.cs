@@ -1,4 +1,5 @@
-﻿using domis.api.Services;
+﻿using domis.api.Models;
+using domis.api.Services;
 using System.Security.Claims;
 
 namespace domis.api.Endpoints;
@@ -21,6 +22,20 @@ public static class UserEndpoints
 
             return Results.Ok(userProfile);
         })
-        .RequireAuthorization(); 
+        .RequireAuthorization();
+
+        group.MapPut("/profile", async (HttpContext http, IUserService userService, ProfileUpdateRequest request) =>
+        {
+            var userId = http.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (userId is null) return Results.Unauthorized();
+
+            var success = await userService.UpdateUserProfileAsync(userId, request);
+
+            if (!success) return Results.NotFound(); // or another appropriate result
+
+            return Results.NoContent(); // 204 No Content if update was successful
+        })
+        .RequireAuthorization();
     }
 }

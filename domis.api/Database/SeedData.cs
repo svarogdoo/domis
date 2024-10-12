@@ -8,7 +8,7 @@ public static class SeedData
     public static async Task SeedAsync(IServiceProvider serviceProvider)
     {
         var roleManager = serviceProvider.GetRequiredService<RoleManager<Role>>();
-        var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
+        var userManager = serviceProvider.GetRequiredService<UserManager<UserEntity>>();
 
         await SeedRolesAsync(roleManager);
 
@@ -28,7 +28,7 @@ public static class SeedData
         }
     }
 
-    private static async Task SeedAdminUserAsync(UserManager<User> userManager, RoleManager<Role> roleManager)
+    private static async Task SeedAdminUserAsync(UserManager<UserEntity> userManager, RoleManager<Role> roleManager)
     {
         var adminEmail = "admin@mail.com";
         var adminPassword = "sifra";
@@ -37,10 +37,12 @@ public static class SeedData
 
         if (adminUser == null)
         {
-            adminUser = new User
+            adminUser = new UserEntity
             {
                 UserName = adminEmail,
-                Email = adminEmail
+                Email = adminEmail,
+                FirstName = "AdminFirstName",
+                LastName = "AdminLastName",
             };
 
             var result = await userManager.CreateAsync(adminUser, adminPassword);

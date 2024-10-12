@@ -12,6 +12,7 @@ using Npgsql;
 using Serilog;
 using System.Data;
 using System.Text.Json.Serialization;
+using domis.api.Configuration;
 
 namespace domis.api.BaseExtensions;
 
@@ -112,7 +113,9 @@ public static class Configuration
 
         app.UseCors();
 
-        app.MapIdentityApi<User>();
+        //app.MapIdentityApi<UserEntity>();
+        app.MapCustomIdentityApi<UserEntity>();
+
         app.MapControllers();
 
         //app.UseExceptionHandler();
