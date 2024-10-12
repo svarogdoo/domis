@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { onDestroy, onMount } from "svelte";
-  import { cart } from "../../stores/cart";
+  import { onDestroy } from "svelte";
+  import { cart } from "../../../stores/cart";
   import CartItem from "./CartItem.svelte";
-  import { formatPrice } from "../../helpers/numberFormatter";
+  import { formatPrice } from "../../../helpers/numberFormatter";
 
   let cartProducts: Array<CartProduct> = [];
   let totalCartPrice: number;
@@ -49,10 +49,12 @@
           <p>Ukupno</p>
           <p>{formatPrice(totalCartPrice)} RSD</p>
         </div>
-        <button
-          class="text-light bg-black text-white mt-16 py-2 px-4 rounded-lg"
-          >PLATI</button
+        <a
+          href="/porudzbina"
+          class="text-light bg-black text-white mt-16 py-2 px-4 rounded-lg text-center tracking-widest"
         >
+          PLATI
+        </a>
       </div>
     </div>
   {:else}
