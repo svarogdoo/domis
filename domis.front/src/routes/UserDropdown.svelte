@@ -43,7 +43,7 @@
     {/if}
 
     <div
-      class="z-10 absolute right-0 w-48 bg-white text-black rounded-lg shadow-lg p-2 hidden group-hover:block group-hover:pointer-events-auto"
+      class="z-10 absolute right-0 w-48 bg-white text-black rounded-lg shadow-lg p-2 hidden group-hover:block group-hover:pointer-events-auto before:content-[''] before:absolute before:top-0 before:right-0 before:-translate-y-full before:w-full before:h-10"
     >
       {#if loggedIn}
         <ul>
