@@ -1,5 +1,4 @@
 ﻿using domis.api.DTOs.Product;
-using domis.api.Models.Enums;
 using domis.api.Services;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;

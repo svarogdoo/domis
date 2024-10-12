@@ -12,6 +12,7 @@ using Npgsql;
 using Serilog;
 using System.Data;
 using System.Text.Json.Serialization;
+using domis.api.Configuration;
 
 namespace domis.api.BaseExtensions;
 
@@ -81,6 +82,9 @@ public static class Configuration
         builder.Services.AddHttpClient<ISyncService, SyncService>();
         builder.Services.AddScoped<ISyncService, SyncService>();
 
+        builder.Services.AddScoped<IUserService, UserService>();
+        builder.Services.AddScoped<IUserRepository, UserRepository>();
+
         builder.Services.AddSingleton<SmtpClient>(serviceProvider =>
         {
             var client = new SmtpClient();
@@ -109,7 +113,9 @@ public static class Configuration
 
         app.UseCors();
 
-        app.MapIdentityApi<User>();
+        //app.MapIdentityApi<UserEntity>();
+        app.MapCustomIdentityApi<UserEntity>();
+
         app.MapControllers();
 
         //app.UseExceptionHandler();

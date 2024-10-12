@@ -2,7 +2,7 @@
 
 namespace domis.api.Models;
 
-public class User : IdentityUser
+public class UserEntity : IdentityUser
 {
     public string? FirstName { get; set; }
     public string? LastName { get; set; }
@@ -14,6 +14,6 @@ public class User : IdentityUser
 
 public class UserWithRoles
 {
-    public User User { get; set; }
+    public UserEntity User { get; set; }
     public List<string> Roles { get; set; }
 }

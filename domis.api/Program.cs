@@ -3,7 +3,6 @@ using domis.api.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
 builder.RegisterServices();
 
 var app = builder.Build();
@@ -16,6 +15,7 @@ app.RegisterCategoryEndpoints();
 app.RegisterSyncEndpoints();
 app.RegisterLocationEndpoints();
 app.RegisterOrderEndpoints();
+app.RegisterUserEndpoints();
 
 app.Run();
 

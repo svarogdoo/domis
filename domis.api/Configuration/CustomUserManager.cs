@@ -12,7 +12,7 @@ public class CustomUserManager<TUser>(IUserStore<TUser> store,
                          ILookupNormalizer keyNormalizer,
                          IdentityErrorDescriber errors,
                          IServiceProvider services,
-                         ILogger<UserManager<TUser>> logger) : UserManager<TUser>(store, optionsAccessor, passwordHasher, userValidators, passwordValidators, keyNormalizer, errors, services, logger) where TUser : User
+                         ILogger<UserManager<TUser>> logger) : UserManager<TUser>(store, optionsAccessor, passwordHasher, userValidators, passwordValidators, keyNormalizer, errors, services, logger) where TUser : UserEntity
 {
     public override async Task<IdentityResult> CreateAsync(TUser user, string password)
     {

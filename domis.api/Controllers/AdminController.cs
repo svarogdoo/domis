@@ -9,10 +9,10 @@ namespace domis.api.Controllers;
 [Route("api/[controller]")]
 public class AdminController : ControllerBase
 {
-    private readonly UserManager<User> _userManager;
+    private readonly UserManager<UserEntity> _userManager;
     private readonly RoleManager<Role> _roleManager;
 
-    public AdminController(UserManager<User> userManager, RoleManager<Role> roleManager)
+    public AdminController(UserManager<UserEntity> userManager, RoleManager<Role> roleManager)
     {
         _userManager = userManager;
         _roleManager = roleManager;
@@ -73,7 +73,7 @@ public class AdminController : ControllerBase
         // Remove existing roles if necessary
         var userRoles = await _userManager.GetRolesAsync(user);
 
-        return Ok(new UserWithRoles() {User = user, Roles = userRoles.ToList()});
+        return Ok(new UserWithRoles() {User = user, Roles = [.. userRoles] });
     }
     
     [HttpGet("roles")]

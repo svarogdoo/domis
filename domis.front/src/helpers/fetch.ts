@@ -1,4 +1,12 @@
-let headers = {};
+let headers: { [key: string]: string } = {}
+
+export const setAuthToken = (token: string | null) => {
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  } else {
+    delete headers["Authorization"]; // Remove the header if no token is provided
+  }
+};
 
 export async function fetchData<T>(url: string, method?: string): Promise<T> {
   return fetch(url, {
@@ -53,6 +61,7 @@ async function handleResponse(res: Response) {
     return res.json();
   }
 
-  console.info(`Fetch fail: ${res.status}`);
-  // throw new Error(`Fetch fail: ${res.status}`);
+  const error = new Error(res.statusText) as any;
+  error.status = res.status;
+  throw error;
 }
