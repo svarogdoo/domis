@@ -13,16 +13,16 @@ async function login(email: string, password: string): Promise<UserLoginResponse
     return loginResponse;
 }
 
-async function register(email: string, password: string): Promise<void> {
+async function register(body: UserRegisterRequest): Promise<void> {
     await fetchDataWithJsonBody<void>(
         `${API_URL}/register`,
         'POST',
-        JSON.stringify({ email, password })
+        JSON.stringify(body)
     );
 }
 
-async function profile() : Promise<UserProfile> {
-    const profile = await fetchData<UserProfile>(
+async function getProfile() : Promise<UserProfileResponse> {
+    const profile = await fetchData<UserProfileResponse>(
         `${API_URL}/api/user/profile`,
         'GET'
     );
@@ -30,8 +30,17 @@ async function profile() : Promise<UserProfile> {
     return profile;
 }
 
+async function updateProfile(body: UserProfileUpdateRequest): Promise<void> {
+    await fetchDataWithJsonBody<void>(
+        `${API_URL}/api/user/profile`,
+        'PUT',
+        JSON.stringify(body)
+    );
+}
+
 export const userService = {
     login,
     register,
-    profile
+    getProfile,
+    updateProfile
 };

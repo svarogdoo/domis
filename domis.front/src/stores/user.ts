@@ -3,7 +3,7 @@ import { userService } from "../services/user-service";
 
 interface UserState {
   isAuthenticated: boolean;
-  user: User | null;
+  user: UserCreds | null; //TODO: not in use yet
   token: string | null;
 }
 
@@ -14,7 +14,7 @@ const createUserStore = () => {
     token: null
   });
 
-  const setUser = (user: User, token: string) => {
+  const setUser = (user: UserCreds, token: string) => {
     set({
       isAuthenticated: true,
       user,
@@ -50,10 +50,10 @@ const createUserStore = () => {
       return loginResponse;
     },
 
-    async registerUser(email: string, password: string) {
-      await userService.register(email, password);   
+    async registerUser(request: UserRegisterRequest) {
+      await userService.register(request);   
       //log in user right after registering  
-      return this.loginUser(email, password);
+      return this.loginUser(request.email, request.password);
     },
 
     async logoutUser() {
@@ -64,8 +64,12 @@ const createUserStore = () => {
       });
     },
 
-    async profile(){
-      return await userService.profile();
+    async getProfile(){
+      return await userService.getProfile();
+    },
+
+    async updateProfile(request: UserProfileUpdateRequest){
+      const result = await userService.updateProfile(request);
     },
 
     async requestPasswordReset(email: string) {

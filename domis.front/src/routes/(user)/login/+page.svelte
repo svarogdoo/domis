@@ -13,7 +13,7 @@
       console.log('Login successful:', loginResponse);
 
       //probably redirect?
-      const userProfile = await userStore.profile();
+      const userProfile = await userStore.getProfile();
       console.info(userProfile);
     } catch (error: any) {
       if (error.status === 401) {

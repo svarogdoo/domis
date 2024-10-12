@@ -13,7 +13,7 @@ declare global {
     // interface Platform {}
   }
 
-  interface User {
+  interface UserCreds {
     userId?: number;
     userName: string;
     tokenType: string;
@@ -21,15 +21,36 @@ declare global {
     expiresIn: number;
     refreshToken: string;
   }
+  interface UserRegisterRequest {
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
+  }
   interface UserLoginResponse {
     tokenType: string;
     accessToken: string;
     expiresIn: number;
     refreshToken: string;
   }
-  interface UserProfile {
-    username: string;
+  interface UserProfileResponse {
     email: string;
+    firstName: string;
+    lastName: string;
+    addressLine: string;
+    city: string;
+    zipCode: string;
+    country: string;
+    phoneNumber: string;
+  }
+  interface UserProfileUpdateRequest {
+    firstName: string;
+    lastName: string;
+    addressLine: string;
+    city: string;
+    zipCode: string;
+    country: string;
+    phoneNumber: string;
   }
 
   interface Image {
