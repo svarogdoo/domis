@@ -2,9 +2,14 @@ import { fetchData } from "../helpers/fetch";
 import { categories } from "../stores/categories";
 
 export function getCategories() {
-  return fetchData<Array<Category>>(
-    "https://domis.onrender.com/api/categories"
-  );
+  try {
+    return fetchData<Array<Category>>(
+      "https://domis.onrender.com/api/categories"
+    );
+  } catch {
+    console.info("getCategories fail");
+    return [];
+  }
 }
 
 export function getCategoryProducts(id: number) {

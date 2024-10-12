@@ -1,6 +1,7 @@
 <script lang="ts">
   import backup from "$lib/assets/backup.jpg";
   import { mapQuantityTypeToString } from "../../../../enums";
+  import { handleImageError } from "../../../../helpers/imageFallback";
   import { formatPrice } from "../../../../helpers/numberFormatter";
 
   export let product: CategoryProduct;
@@ -25,6 +26,7 @@
       class="w-full h-auto object-cover aspect-square lg:rounded-lg"
       src={featuredImage}
       alt={product.name}
+      on:error={handleImageError}
       loading="lazy"
     />
   </div>
