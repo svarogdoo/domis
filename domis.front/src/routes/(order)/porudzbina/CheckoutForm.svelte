@@ -156,6 +156,7 @@
       bind:value={streetAndNumber}
       title="Ulica i broj"
       placeholder="Kneza Miloša 23"
+      error={errors?.streetAndNumber}
       isRequired={true}
       width={"96"}
     />
@@ -184,6 +185,7 @@
         bind:value={zipCode}
         title="Poštanski broj"
         placeholder="11000"
+        error={errors?.zipCode}
         isRequired={true}
         width={"32"}
       />
@@ -193,6 +195,7 @@
         bind:value={email}
         title="Email"
         placeholder="kompanija@gmail.com"
+        error={errors?.email}
         isRequired={true}
         width={"80"}
       />

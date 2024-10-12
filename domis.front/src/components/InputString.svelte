@@ -26,7 +26,7 @@
     </div>
   </div>
   {#if error}
-    <p class="mt-1 text-red-500 font-light text-sm pl-24">
+    <p class="mt-1 text-red-500 font-light text-sm">
       {error}
     </p>
   {/if}
