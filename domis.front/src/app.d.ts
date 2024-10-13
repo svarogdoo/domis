@@ -52,6 +52,11 @@ declare global {
     country: string;
     phoneNumber: string;
   }
+  interface UserState {
+    isAuthenticated: boolean;
+    user: UserProfileResponse | null;
+    token: string | null;
+  }
 
   interface Image {
     url: string;

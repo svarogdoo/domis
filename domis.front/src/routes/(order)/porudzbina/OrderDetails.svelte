@@ -24,10 +24,10 @@
         class="flex justify-between relative group"
         id="id-{item.cartItemId}"
       >
-        <p class="w-64 truncate">
+        <p class="w-52 truncate">
           {item.quantity} × {item.productDetails.name}
         </p>
-        <p>
+        <p class="text-end">
           {formatPrice(item.cartItemPrice)}
           <span class="font-light text-md">RSD</span>
         </p>

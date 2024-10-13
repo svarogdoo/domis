@@ -1,5 +1,6 @@
 <!-- src/routes/Login.svelte -->
 <script lang="ts">
+  import { goto } from "$app/navigation";
   import { userStore } from "../../../stores/user";
   let userName = "";
   let password = "";
@@ -10,16 +11,13 @@
 
     try {
       const loginResponse = await userStore.loginUser(userName, password);
-      console.log('Login successful:', loginResponse);
-
-      //probably redirect?
-      const userProfile = await userStore.getProfile();
-      console.info(userProfile);
+      goto("/");
     } catch (error: any) {
       if (error.status === 401) {
-        errorMessage = 'Invalid credentials. Please try again.';
+        errorMessage = "Korisničko ime i/ili lozinka su neispravni.";
       } else {
-        errorMessage = error.message || 'An unknown error occurred.';
+        errorMessage =
+          error.message || "Greška u obradi zahteva, pokušajte ponovo.";
       }
     }
   };
@@ -36,29 +34,29 @@
     <form class="flex flex-col gap-y-4" on:submit|preventDefault={handleLogin}>
       <div class="flex flex-col">
         <label for="username" class="block text-sm font-medium text-gray-700"
-          >Username</label
+          >Email</label
         >
         <input
           type="text"
           id="username"
           bind:value={userName}
           required
-          class="mt-1 p-2 border border-gray-300 rounded-md w-full focus:ring-blue-500 focus:border-blue-500"
-          placeholder="Enter your username"
+          class="mt-1 p-2 border border-gray-300 rounded-md w-full focus:ring-blue-500 focus:border-blue-500 placeholder:font-light text-sm"
+          placeholder="korisnicko-ime@email.com"
         />
       </div>
 
       <div class="flex flex-col">
         <label for="password" class="block text-sm font-medium text-gray-700"
-          >Password</label
+          >Lozinka</label
         >
         <input
           type="password"
           id="password"
           bind:value={password}
           required
-          class="mt-1 p-2 border border-gray-300 rounded-md w-full focus:ring-blue-500 focus:border-blue-500"
-          placeholder="Enter your password"
+          class="mt-1 p-2 border border-gray-300 rounded-md w-full focus:ring-blue-500 focus:border-blue-500 placeholder:font-light text-sm"
+          placeholder="Unesite lozinku"
         />
       </div>
 

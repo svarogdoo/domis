@@ -1,22 +1,32 @@
-<script>
+<script lang="ts">
   import { onMount } from "svelte";
   import userIcon from "$lib/icons/user.svg";
+  import { userStore } from "../stores/user";
+  import { goto } from "$app/navigation";
 
   let loggedIn = false;
   let initials = "";
+  let user: UserState;
 
-  onMount(() => {
-    const user = { isLoggedIn: true, name: "John Doe" };
+  $: userStore.subscribe((value) => {
+    user = value;
+    setInitials();
+  });
 
-    if (user.isLoggedIn) {
-      loggedIn = false;
-      initials = user.name
+  function setInitials() {
+    if (user.isAuthenticated) {
+      loggedIn = true;
+      initials = `${user.user?.firstName} ${user.user?.lastName}`
         .split(" ")
         .map((n) => n[0])
         .join("");
     } else {
       loggedIn = false;
     }
+  }
+
+  onMount(() => {
+    setInitials();
   });
 
   const handleLogin = () => {};
@@ -24,7 +34,9 @@
   const handleRegister = () => {};
 
   const handleLogout = () => {
-    loggedIn = false;
+    // loggedIn = false;
+    userStore.logoutUser();
+    goto("/");
   };
 </script>
 
@@ -38,7 +50,7 @@
       </div>
     {:else}
       <div class="cursor-pointer">
-        <img src={userIcon} alt="User Icon" class="w-10 h-10 rounded-full" />
+        <img src={userIcon} alt="User Icon" class="w-12 h-12 rounded-full" />
       </div>
     {/if}
 
@@ -48,11 +60,12 @@
       {#if loggedIn}
         <ul>
           <li>
-            <a
-              href="/logout"
+            <button
               on:click={handleLogout}
-              class="block px-4 py-2 hover:bg-gray-100">Logout</a
+              class="w-full text-left block px-4 py-2 hover:bg-gray-100"
             >
+              Izloguj se
+            </button>
           </li>
         </ul>
       {:else}
@@ -61,14 +74,16 @@
             <a
               href="/login"
               on:click={handleLogin}
-              class="block px-4 py-2 hover:bg-gray-100">Login</a
+              class="w-full text-left block px-4 py-2 hover:bg-gray-100"
+              >Uloguj se</a
             >
           </li>
           <li>
             <a
               href="/register"
               on:click={handleRegister}
-              class="block px-4 py-2 hover:bg-gray-100">Register</a
+              class="w-full text-left block px-4 py-2 hover:bg-gray-100"
+              >Registracija</a
             >
           </li>
         </ul>

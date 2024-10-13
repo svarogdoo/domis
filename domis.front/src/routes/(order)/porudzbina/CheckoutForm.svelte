@@ -2,6 +2,7 @@
   import { onMount } from "svelte";
   import Input from "../../(admin)/admin/products/Input.svelte";
   import InputString from "../../../components/InputString.svelte";
+  import { municipalityOptions } from "../../../helpers/municipalities";
 
   let name = "";
   let lastName = "";
@@ -13,8 +14,6 @@
   let email = "";
   let specialNotes = "";
 
-  let municipalityOptions: { value: string; name: string }[] = [];
-
   // Form errors
   let errors = {
     name: "",
@@ -24,12 +23,6 @@
     email: "",
     municipality: "",
   };
-
-  // Load municipalities from backend
-  onMount(async () => {
-    // Simulate a backend call to fetch municipality options
-    municipalityOptions = await fetchMunicipalities();
-  });
 
   async function fetchMunicipalities() {
     // Replace this with a real API call
@@ -143,7 +136,7 @@
         <input
           id="country"
           type="text"
-          class="block w-32 rounded-md border-0 py-1.5 pl-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 text-md leading-6"
+          class="block w-32 rounded-md border-0 py-1.5 pl-3 text-gray-900 ring-1 ring-inset ring-gray-300 font-light text-md leading-6"
           value={country}
           readonly
           disabled
@@ -167,13 +160,13 @@
       <select
         id="municipality"
         bind:value={municipality}
-        class="flex w-80 px-4 py-2 rounded-lg bg-white border border-gray-300"
+        class="flex w-80 px-4 py-2 rounded-lg bg-white border border-gray-300 font-light"
       >
         <option value="" disabled selected>Odaberite okrug</option>
         {#each municipalityOptions as option}
           <option
             class="bg-white px-4 py-2 hover:bg-gray-100"
-            value={option.value}>{option.name}</option
+            value={option.name}>{option.name}</option
           >
         {/each}
       </select>
@@ -202,11 +195,11 @@
     </div>
 
     <!-- Special Notes (Optional) -->
-    <div>
+    <div class="flex flex-col gap-y-2">
       <label for="special-notes">Napomene o narudžbini (opciono)</label>
       <textarea
         id="special-notes"
-        class="block w-full rounded-md border-0 py-1.5 pl-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 text-md leading-6"
+        class="block w-full rounded-md border-0 py-1.5 pl-3 font-light text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-inset focus:ring-blue-600 text-md leading-6"
         bind:value={specialNotes}
         placeholder="Posebne napomene o narudžbini ili isporuci."
       ></textarea>
@@ -215,7 +208,7 @@
     <!-- Submit Button -->
     <button
       type="submit"
-      class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+      class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-offset-2 focus:ring-blue-500"
     >
       Potvrdi
     </button>

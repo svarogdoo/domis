@@ -1,31 +1,17 @@
 import { writable } from "svelte/store";
 import { userService } from "../services/user-service";
 
-interface UserState {
-  isAuthenticated: boolean;
-  user: UserCreds | null; //TODO: not in use yet
-  token: string | null;
-}
-
 const createUserStore = () => {
   const { subscribe, set, update } = writable<UserState>({
     isAuthenticated: false,
     user: null,
-    token: null
+    token: null,
   });
 
-  const setUser = (user: UserCreds, token: string) => {
+  const setUser = (user: UserProfileResponse, token: string) => {
     set({
       isAuthenticated: true,
       user,
-      token,
-    });
-  };
-
-  const setToken = (token: string) => {
-    set({
-      isAuthenticated: true,
-      user: null,
       token,
     });
   };
@@ -43,16 +29,16 @@ const createUserStore = () => {
       const refreshToken = loginResponse.refreshToken;
 
       // TODO: Fetch user details after login
-      // const userDetails = await fetchUserDetails();
+      const userProfile = await this.getProfile();
 
-      setToken(token);
+      setUser(userProfile, token);
 
       return loginResponse;
     },
 
     async registerUser(request: UserRegisterRequest) {
-      await userService.register(request);   
-      //log in user right after registering  
+      await userService.register(request);
+      //log in user right after registering
       return this.loginUser(request.email, request.password);
     },
 
@@ -60,15 +46,15 @@ const createUserStore = () => {
       set({
         isAuthenticated: false,
         user: null,
-        token: null
+        token: null,
       });
     },
 
-    async getProfile(){
+    async getProfile() {
       return await userService.getProfile();
     },
 
-    async updateProfile(request: UserProfileUpdateRequest){
+    async updateProfile(request: UserProfileUpdateRequest) {
       const result = await userService.updateProfile(request);
     },
 
@@ -90,10 +76,9 @@ const createUserStore = () => {
     refreshUserSession(newToken: string) {
       update((state) => ({
         ...state,
-        token: newToken
+        token: newToken,
       }));
-    }
-
+    },
   };
 };
 

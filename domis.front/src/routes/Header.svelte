@@ -43,6 +43,9 @@
           />
         </div>
       </li>
+      <li>
+        <UserDropdown />
+      </li>
       <li
         class="relative"
         aria-current={$page.url.pathname === "/shop" ? "page" : undefined}
@@ -55,9 +58,6 @@
             {cartProducts.length}
           </div>
         {/if}
-      </li>
-      <li>
-        <UserDropdown />
       </li>
     </ul>
   </nav>
