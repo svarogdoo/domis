@@ -33,15 +33,13 @@
   <div class="flex flex-col h-full">
     <div class="flex flex-col gap-y-2 font-extralight px-1">
       <p class="text-sm lg:text-lg font-medium">{product?.name}</p>
-      <div class="gap-x-1 text-normal hidden lg:flex">
+      <!-- <div class="gap-x-1 text-normal hidden lg:flex">
         <p>Retificirana</p>
         <p>|</p>
         <p>Anka</p>
-      </div>
+      </div> -->
     </div>
-    <div
-      class="flex flex-col flex-grow gap-y-2 mt-2 lg:mt-6 justify-end items-center"
-    >
+    <div class="flex flex-col flex-grow gap-y-2 mt-2 justify-end items-center">
       <div class="flex items-center gap-x-1">
         <p class="lg:text-xl">{formatPrice(product.price)}</p>
         <p class="text-xs lg:text-sm text-gray-800 font-thin">RSD</p>

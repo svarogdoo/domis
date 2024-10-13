@@ -58,7 +58,7 @@
       >
         <div class="flex flex-col gap-y-2">
           <h2 class="text-lg lg:text-2xl">{product.name}</h2>
-          <div
+          <!-- <div
             class="flex gap-x-2 font-extralight tracking-wide text-sm lg:text-lg"
           >
             <p>Retificirana</p>
@@ -66,7 +66,7 @@
             <p>Anka</p>
             <p>|</p>
             <p>45x45</p>
-          </div>
+          </div> -->
         </div>
         <p class="text-gray-400 font-thin">SKU:{product.sku}</p>
       </div>
