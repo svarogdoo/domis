@@ -17,6 +17,8 @@ public interface IOrderService
 
     Task<bool> UpdateOrderStatus(int orderId, int statusId);
     Task<OrderDetailsDto?> GetOrderDetailsById(int orderId);
+
+    Task<IEnumerable<UserOrderDto>> GetOrdersByUserId(string userId);
 }
 public class OrderService(IOrderRepository orderRepository) : IOrderService
 {
@@ -56,4 +58,6 @@ public class OrderService(IOrderRepository orderRepository) : IOrderService
     public async Task<OrderDetailsDto?> GetOrderDetailsById(int orderId) => 
         await orderRepository.GetOrderDetailsByIdAsync(orderId);
 
+    public async Task<IEnumerable<UserOrderDto>> GetOrdersByUserId(string userId)
+        => await orderRepository.GetOrdersByUserIdAsync(userId);
 }

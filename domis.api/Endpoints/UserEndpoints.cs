@@ -37,5 +37,20 @@ public static class UserEndpoints
             return Results.NoContent(); // 204 No Content if update was successful
         })
         .RequireAuthorization();
+
+        group.MapGet("/orders", async (HttpContext http, IOrderService orderService) =>
+        {
+            var userId = http.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (userId is null) return Results.Unauthorized();
+
+            var userOrders = await orderService.GetOrdersByUserId(userId);
+
+            if (userOrders is null || !userOrders.Any()) return Results.NotFound();
+
+            return Results.Ok(userOrders);
+        })
+        .RequireAuthorization();
+
     }
 }
