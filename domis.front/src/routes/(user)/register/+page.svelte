@@ -1,9 +1,15 @@
-<script>
-  let isCompany = false;
+<script lang="ts">
+  import { goto } from "$app/navigation";
+    import { error } from "@sveltejs/kit";
+  import { userStore } from "../../../stores/user";
+    import Error from "../../+error.svelte";
 
+  let isCompany = false;
+  let errorMessage = "";
   let formData = {
-    username: "",
     email: "",
+    firstName: "",
+    lastName: "",
     password: "",
     confirmPassword: "",
     companyName: "",
@@ -11,13 +17,38 @@
     taxId: "",
   };
 
-  const handleSubmit = () => {
-    if (isCompany) {
-      // Handle company registration logic
-      console.log("Registering as a company:", formData);
-    } else {
-      // Handle regular user registration logic
-      console.log("Registering as a regular user:", formData);
+  const handleSubmit = async () => {
+    if (formData.password !== formData.confirmPassword) {
+      errorMessage = "Lozinke se ne poklapaju."
+      return;
+    }
+
+    try {
+      if (isCompany) {
+        //TODO:
+      } else {
+          const request = {
+              firstName: formData.firstName,
+              lastName: formData.lastName,
+              email: formData.email,
+              password: formData.password,
+          };
+
+          await userStore.registerUser(request);
+          goto('/');
+      }
+    } catch (error: any) {
+        console.error("Registration failed:", error.message);
+
+        if (error.errors && error.errors.DuplicateUserName) {
+            errorMessage = "Uneta imejl adresa već postoji."
+        } else if (error.errors && Object.keys(error.errors).length > 0) {
+            // If there are other validation errors, grab the first one
+            const firstErrorKey = Object.keys(error.errors)[0];
+            errorMessage = error.errors[firstErrorKey][0];
+        } else {
+            errorMessage = 'Došlo je do greške. Pokušajte ponovo.'; // General error message
+        }
     }
   };
 </script>
@@ -25,6 +56,11 @@
 <div class="flex items-center justify-center p-6">
   <div class="bg-white p-8 border rounded-xl w-full max-w-md">
     <h2 class="text-2xl font-bold mb-6 text-center">Registracija</h2>
+
+    <!-- Error Message Display -->
+    {#if errorMessage}
+    <p class="text-red-500 text-sm mb-4 text-center">{errorMessage}</p>
+    {/if}
 
     <!-- User Type Selection -->
     <div class="mb-6">
@@ -60,15 +96,29 @@
 
     <form on:submit|preventDefault={handleSubmit}>
       <div class="mb-4">
-        <label for="username" class="block font-medium text-gray-700 mb-2"
+        <label for="firstName" class="block font-medium text-gray-700 mb-2"
           >Ime</label
         >
         <input
-          id="username"
+          id="firstName"
           type="text"
           class="w-full p-2 border rounded"
-          bind:value={formData.username}
-          placeholder="Enter your username"
+          bind:value={formData.firstName}
+          placeholder="(uneti ime)"
+          required
+        />
+      </div>
+
+      <div class="mb-4">
+        <label for="lastName" class="block font-medium text-gray-700 mb-2">
+          Prezime
+        </label>
+        <input
+          id="lastName"
+          type="text"
+          class="w-full p-2 border rounded"
+          bind:value={formData.lastName}
+          placeholder="(uneti prezime)"
           required
         />
       </div>
@@ -83,7 +133,7 @@
           type="email"
           class="w-full p-2 border rounded"
           bind:value={formData.email}
-          placeholder="Enter your email"
+          placeholder="(uneti imejl adresu)"
           required
         />
       </div>
@@ -91,14 +141,14 @@
       <!-- Password -->
       <div class="mb-4">
         <label for="password" class="block font-medium text-gray-700 mb-2"
-          >Password</label
+          >Lozinka</label
         >
         <input
           id="password"
           type="password"
           class="w-full p-2 border rounded"
           bind:value={formData.password}
-          placeholder="Enter your password"
+          placeholder="(uneti lozinku)"
           required
         />
       </div>
@@ -107,14 +157,14 @@
       <div class="mb-4">
         <label
           for="confirmPassword"
-          class="block font-medium text-gray-700 mb-2">Confirm Password</label
+          class="block font-medium text-gray-700 mb-2">Ponovljena lozinka</label
         >
         <input
           id="confirmPassword"
           type="password"
           class="w-full p-2 border rounded"
           bind:value={formData.confirmPassword}
-          placeholder="Confirm your password"
+          placeholder="(ponoviti lozinku)"
           required
         />
       </div>
