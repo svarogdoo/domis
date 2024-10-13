@@ -16,7 +16,7 @@
     <div class="flex flex-col gap-y-4">
       <p class="font-semibold tracking-wider">Korisnički kutak</p>
       <div class="flex flex-col gap-y-2 font-light">
-        <p>Kako kupovati</p>
+        <a href="/kako-kupovati">Kako kupovati</a>
         <p>Naručivanje</p>
         <p>Česta pitanja</p>
         <p>Podaci o trgovcu</p>
