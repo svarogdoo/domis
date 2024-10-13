@@ -4,7 +4,7 @@
     formatPrice,
     formatToTwoDecimals,
   } from "../../../../helpers/numberFormatter";
-  import { getKutijaString } from "../../../../helpers/stringFormatter";
+  import { getPaketString } from "../../../../helpers/stringFormatter";
   import { cart } from "../../../../stores/cart";
 
   export let product: Product;
@@ -25,9 +25,10 @@
   }
 
   function handleAmountInputChanged() {
-    if (quantityType === QuantityType.Piece)
+    if (quantityType === QuantityType.Piece) {
       amountInput = Math.round(amountInput);
-    else if (isExtraChecked)
+      setTotalPrice();
+    } else if (isExtraChecked)
       boxInput = Math.ceil((1.1 * amountInput) / product.size.box);
     else boxInput = Math.ceil(amountInput / product.size.box);
   }
@@ -80,23 +81,34 @@
 <div class="flex flex-col mt-4">
   <!-- Quantity -->
   <div class="flex gap-x-4">
-    <input
-      type="number"
-      placeholder="Unesite broj {quantityTypeString}"
-      class="w-1/2 py-3 px-5 outline-none border border-gray-400 text-sm font-extralight tracking-wider"
-      bind:value={amountInput}
-      on:input={handleAmountInputChanged}
-      on:click={selectText}
-    />
-    {#if quantityType !== QuantityType.Piece}
+    <div class="relative w-1/2">
       <input
         type="number"
-        placeholder="ili unesite broj pakovanja"
-        class="w-1/2 py-3 px-5 outline-none border border-gray-400 text-sm font-extralight tracking-wider"
-        bind:value={boxInput}
-        on:input={handleBoxInputChanged}
+        placeholder="Unesite broj {quantityTypeString}"
+        class="w-full py-3 px-5 outline-none border border-gray-400 text-sm font-extralight tracking-wider"
+        bind:value={amountInput}
+        on:input={handleAmountInputChanged}
         on:click={selectText}
       />
+      <p class="absolute inset-y-0 right-0 font-light flex items-center mr-2">
+        {quantityTypeString}
+      </p>
+    </div>
+
+    {#if quantityType !== QuantityType.Piece}
+      <div class="relative w-1/2">
+        <input
+          type="number"
+          placeholder="ili unesite broj paketa"
+          class="w-full py-3 px-5 outline-none border border-gray-400 text-sm font-extralight tracking-wider"
+          bind:value={boxInput}
+          on:input={handleBoxInputChanged}
+          on:click={selectText}
+        />
+        <p class="absolute inset-y-0 right-0 font-light flex items-center mr-2">
+          {getPaketString(boxInput)}
+        </p>
+      </div>
     {/if}
   </div>
   <!-- Checkbox -->
@@ -142,7 +154,7 @@
       {#if boxInput > 0 && quantityType !== QuantityType.Piece}
         <p class="text-gray-500 text-sm lg:text-normal font-extralight">
           {boxInput}
-          {getKutijaString(boxInput)} pokriva
+          {getPaketString(boxInput)} pokriva
           {formatToTwoDecimals(boxInput * product.size.box)}
           {quantityTypeString}
         </p>

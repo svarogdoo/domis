@@ -87,7 +87,7 @@
             RSD <span class="font-light text-black text-sm lg:text-lg px-2"
               >{formatPrice(product?.price.perBox)}</span
             >
-            po pakovanju ({product?.size.box}
+            po paketu ({product?.size.box}
             {quantityTypeString})
           </p>
         {/if}
@@ -99,7 +99,7 @@
             po paleti ({product?.size.pallet}
             {quantityTypeString} | {formatToTwoDecimals(
               product?.size?.pallet / product?.size?.box
-            )} pakovanja)
+            )} paketa)
           </p>
         {/if}
       </div>

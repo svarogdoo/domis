@@ -1,7 +1,6 @@
-export function getKutijaString(value: number) {
-  if ([2, 3, 4].includes(value % 10) && Math.floor(value / 10) !== 1)
-    return "kutije";
-  else return "kutija";
+export function getPaketString(value: number) {
+  if (1 === value % 10 && Math.floor(value / 10) !== 1) return "paket";
+  else return "paketa";
 }
 
 export function shortenString(str: string, maxLength: number): string {
