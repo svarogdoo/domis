@@ -125,7 +125,7 @@ public static class OrderQueries
             SET status_id = @StatusId
             WHERE id = @OrderId;";
     
-      public const string  GetOrderDetails = @"
+    public const string  GetOrderDetails = @"
             SELECT
                 o.id AS OrderId,
                 o.user_id AS UserId,
@@ -173,4 +173,12 @@ public static class OrderQueries
             WHERE
                 o.id = @OrderId AND (pi.image_type_id is null or pi.image_type_id = 1);";
 
+    public const string GetOrdersByUserId = @"
+            SELECT 
+                id AS Id,
+                status_id AS StatusId,
+                payment_amount AS PaymentAmount,
+                comment AS Comment
+            FROM domis.order
+            WHERE user_id = @UserId";
 }

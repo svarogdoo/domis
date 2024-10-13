@@ -2,6 +2,7 @@
 using domis.api.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
+using SendGrid.Extensions.DependencyInjection;
 
 namespace domis.api.Extensions;
 
@@ -25,6 +26,8 @@ public static class AuthConfiguration
             options.Password.RequireUppercase = false;
             options.Password.RequiredLength = 3;
             options.Password.RequiredUniqueChars = 1;
+
+            options.SignIn.RequireConfirmedEmail = true;
         });
 
         services.AddAuthentication()

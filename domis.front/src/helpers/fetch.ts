@@ -63,5 +63,15 @@ async function handleResponse(res: Response) {
 
   const error = new Error(res.statusText) as any;
   error.status = res.status;
-  throw error;
+
+  // Attempt to parse the response body for error details
+  try {
+    const errorBody = await res.json(); // Parse the error body as JSON
+    error.errors = errorBody.errors; // Attach the errors to the error object
+    error.title = errorBody.title; // Optionally attach other relevant properties
+  } catch (e) {
+    console.error("Failed to parse error response:", e);
+  }
+
+  throw error; // Throw the error object with status and error details
 }
