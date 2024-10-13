@@ -18,17 +18,22 @@
   onDestroy(() => unsubscribe());
 </script>
 
-<header class="mb-4">
-  <nav>
-    <ul class="my-4 px-8">
-      <Hamburger bind:open={sidebar} />
-      <li
-        class="header-title pl-4"
-        aria-current={$page.url.pathname === "/" ? "page" : undefined}
-      >
-        <a href="/">domis</a>
-        <a href="/">enterijeri</a>
-      </li>
+<header class="flex flex-col items-center w-full mb-4">
+  <nav class="flex w-full justify-center">
+    <ul class="flex w-full justify-between items-center my-4 px-8">
+      <div class="flex items-center gap-x-4">
+        <li>
+          <Hamburger bind:open={sidebar} />
+        </li>
+        <li
+          class="header-title pl-4"
+          aria-current={$page.url.pathname === "/" ? "page" : undefined}
+        >
+          <a href="/">domis</a>
+          <a href="/">enterijeri</a>
+        </li>
+      </div>
+
       <li class="w-full hidden lg:flex justify-center">
         <div class="relative w-2/3 flex items-center">
           <img src={searchIcon} alt="search" class="absolute ml-4" />
@@ -43,22 +48,26 @@
           />
         </div>
       </li>
-      <li>
-        <UserDropdown />
-      </li>
-      <li
-        class="relative"
-        aria-current={$page.url.pathname === "/shop" ? "page" : undefined}
-      >
-        <a href="/korpa"> <img src={cartIcon} alt="cart" class="h-10" /></a>
-        {#if cartProducts?.length > 0}
-          <div
-            class="absolute top-0 right-0 text-center text-white text-sm rounded-full h-4 w-4 bg-red-500"
-          >
-            {cartProducts.length}
-          </div>
-        {/if}
-      </li>
+      <div class="flex items-center gap-x-4">
+        <li>
+          <UserDropdown />
+        </li>
+        <li
+          class="relative h-10 w-10"
+          aria-current={$page.url.pathname === "/shop" ? "page" : undefined}
+        >
+          <a href="/korpa">
+            <img src={cartIcon} alt="cart" class="h-10 w-10" />
+          </a>
+          {#if cartProducts?.length > 0}
+            <div
+              class="absolute top-0 right-0 text-center text-white text-sm rounded-full h-4 w-4 bg-red-500"
+            >
+              {cartProducts.length}
+            </div>
+          {/if}
+        </li>
+      </div>
     </ul>
   </nav>
   <div class="category h-1 gap-x-12 pl-4">
@@ -70,34 +79,11 @@
 </header>
 
 <style>
-  header {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    justify-content: space-between;
-  }
-
   .category {
     display: flex;
     width: 95%;
     border-bottom-width: 1px;
     border-bottom-color: #787878;
-  }
-
-  nav {
-    display: flex;
-    width: 100%;
-    justify-content: center;
-  }
-
-  ul {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    list-style: none;
-    justify-content: space-between;
-    align-items: center;
   }
 
   .header-title {

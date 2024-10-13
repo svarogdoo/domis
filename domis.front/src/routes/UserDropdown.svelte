@@ -60,6 +60,22 @@
       {#if loggedIn}
         <ul>
           <li>
+            <a
+              href="Profil"
+              class="w-full text-left block px-4 py-2 hover:bg-gray-100"
+            >
+              Profil
+            </a>
+          </li>
+          <li>
+            <a
+              href="/porudzbine"
+              class="w-full text-left block px-4 py-2 hover:bg-gray-100"
+            >
+              Porudžbine
+            </a>
+          </li>
+          <li class="border-t">
             <button
               on:click={handleLogout}
               class="w-full text-left block px-4 py-2 hover:bg-gray-100"

@@ -39,7 +39,6 @@
       <div class="flex flex-col gap-y-2 font-light">
         <p>Trajna akcija</p>
         <p>Nedeljna akcija</p>
-        <p>Novosti</p>
       </div>
     </div>
   </div>
