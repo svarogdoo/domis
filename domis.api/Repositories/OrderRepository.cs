@@ -221,7 +221,7 @@ public class OrderRepository(IDbConnection connection) : IOrderRepository
     {
         try
         {
-            OrderDetailsDto orderDetails = null;
+            OrderDetailsDto? orderDetails = null;
 
             var result = await connection
                 .QueryAsync<OrderDetailsDto, OrderStatusdetialsDto, OrderShippingDetailsDto, PaymentDetailsDto, OrderItemDto,

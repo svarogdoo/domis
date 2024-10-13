@@ -13,6 +13,8 @@ using Serilog;
 using System.Data;
 using System.Text.Json.Serialization;
 using domis.api.Configuration;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using SendGrid.Extensions.DependencyInjection;
 
 namespace domis.api.BaseExtensions;
 
@@ -25,6 +27,13 @@ public static class Configuration
             .CreateLogger();
 
         builder.Host.UseSerilog();
+
+        // Load appsettings.json and environment-specific files
+        builder.Configuration
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true);
+
+        builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
 
         builder.Services.AddControllers()
             .AddJsonOptions(opts =>
@@ -56,6 +65,10 @@ public static class Configuration
                           .AllowAnyHeader();
                 });
         });
+
+        builder.Services.AddSendGrid(options =>
+            options.ApiKey = builder.Configuration["Sendgrid:SendGridKey"]
+        );
 
         builder.Services.AddAutoMapper(typeof(MappingProfile));
 
@@ -97,6 +110,7 @@ public static class Configuration
 
         builder.Services.AddScoped<IExchangeRateRepository, ExchangeRateRepository>();
 
+        builder.Services.AddTransient<IEmailSender, EmailSender>();
     }
 
     public static void RegisterMiddlewares(this WebApplication app)

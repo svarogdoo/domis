@@ -44,7 +44,7 @@ public static class UserEndpoints
 
             if (userId is null) return Results.Unauthorized();
 
-            var userOrders = await orderService.GetOrdersByUserIdAsync(userId);
+            var userOrders = await orderService.GetOrdersByUserId(userId);
 
             if (userOrders is null || !userOrders.Any()) return Results.NotFound();
 
