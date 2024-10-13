@@ -20,6 +20,7 @@ public interface IOrderRepository
 
     Task<bool> UpdateOrderStatusAsync(int orderId, int statusId);
     Task<OrderDetailsDto?> GetOrderDetailsByIdAsync(int orderId);
+    Task<IEnumerable<UserOrderDto>> GetOrdersByUserIdAsync(string userId);
 }
 public class OrderRepository(IDbConnection connection) : IOrderRepository
 {
@@ -259,5 +260,19 @@ public class OrderRepository(IDbConnection connection) : IOrderRepository
             throw;
         }
     }
-    
+
+    public async Task<IEnumerable<UserOrderDto>> GetOrdersByUserIdAsync(string userId)
+    {
+        try
+        {
+            var userOrders = await connection.QueryAsync<UserOrderDto>(OrderQueries.GetOrdersByUserId, new { UserId = userId });
+
+            return userOrders;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, $"An error occurred while retrieving orders for user with ID {userId}: {ex.Message}");
+            throw;
+        }
+    }
 }
