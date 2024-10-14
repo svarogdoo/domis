@@ -33,7 +33,7 @@
           <li>Elektronskim putem, slanjem OBRASCA ZA REKLAMACIJU na elektronsku (email) adresu Prodavca: office@domisenterijeri.com</li>
         </ol>
         <p class="mt-4"> <!--TODO:href-->
-          <a href="/" class="text-blue-600 hover:underline">Preuzmite: Obrazac za reklamaciju</a>
+          <a href="http://domisenterijeri.com/domis/img/2020/10/Obrazac-za-reklamaciju.docx" class="text-blue-600 hover:underline">Preuzmite: Obrazac za reklamaciju</a>
         </p>
         <p class="mt-4">
           Prodavac je dužan da bez odlaganja, a najkasnije u roku od osam dana od dana prijema reklamacije, pisanim ili elektronskim putem odgovori Kupcu na izjavljenu reklamaciju, odnosno da saopšti kupcu pod broj pod kojim je zavedena njegova reklamaciju u evidenciji primljenih reklamacija. Odgovor Prodavca na reklamaciju mora da sadrži odluku da li prihvata reklamaciju, izjašnjenje o zahtevu Kupca i konkretan predlog i rok za rešavanje reklamacije. Rok ne može da bude duži od 30 dana, od dana podnošenja reklamacije.

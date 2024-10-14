@@ -27,7 +27,7 @@
       </p>
   
       <p class="mb-4"> <!--TODO:href-->
-        Formular za raskid ugovora možete skinuti <a href="/" class="text-blue-600 hover:underline">OVDE</a>. Popunjeni obrazac potrebno je da pošaljete na sledecu mail adresu komercijala@domisenterijeri.com
+        Formular za raskid ugovora možete skinuti <a href="http://domisenterijeri.com/domis/img/2020/10/obrazaczaodustanakodugovora.pdf" class="text-blue-600 hover:underline">OVDE</a>. Popunjeni obrazac potrebno je da pošaljete na sledecu mail adresu komercijala@domisenterijeri.com
       </p>
   
       <p class="mb-4">
@@ -53,7 +53,7 @@
       </p>
   
       <p class="mb-4"> <!--TODO:href-->
-        Formular za raskid ugovora možete skinuti <a href="/" class="text-blue-600 hover:underline">OVDE</a>.
+        Formular za raskid ugovora možete skinuti <a href="http://domisenterijeri.com/domis/img/2020/10/obrazaczaodustanakodugovora.pdf" class="text-blue-600 hover:underline">OVDE</a>.
       </p>
   
       <p class="mb-4">
