@@ -155,6 +155,23 @@ declare global {
     cartItemId: number;
     quantity: number;
   }
+
+  interface ShippingDetails {
+    firstName: string;
+    lastName: string;
+    companyName: string;
+    countryId: number;
+    city: string;
+    address: string;
+    apartment: string;
+    county: string;
+    postalCode: string;
+    phoneNumber: string;
+    email: string;
+  }
+  interface ShippingId {
+    orderShippingId: number;
+  }
 }
 
 export {};

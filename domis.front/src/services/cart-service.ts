@@ -4,8 +4,7 @@ import {
   fetchDataWithJsonBody,
   putDataWithJsonBody,
 } from "../helpers/fetch";
-import { cart } from "../stores/cart";
-import { API_URL } from "../config"
+import { API_URL } from "../config";
 
 let cartId: number = 3;
 // cart.subscribe((value) => {
@@ -38,9 +37,7 @@ export function addCartItem(cartProduct: CartProductDto) {
 }
 
 export function removeCartItem(cartItemId: number) {
-  return deleteData(
-    `${API_URL}/api/cart/cart-item/${cartItemId}`
-  );
+  return deleteData(`${API_URL}/api/cart/cart-item/${cartItemId}`);
 }
 
 export function updateCartItem(cartItemQuantity: CartItemQuantityUpdateDto) {

@@ -3,7 +3,7 @@
   import OrderDetails from "./OrderDetails.svelte";
 
   let formComponent: any;
-  let validate: () => boolean;
+  let validate: () => ShippingDetails | null;
 </script>
 
 <section class="flex w-full px-8 gap-x-12 lg:mt-6">

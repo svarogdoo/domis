@@ -1,74 +1,104 @@
 <script lang="ts">
   import InputString from "../../../components/InputString.svelte";
-  import { municipalityOptions } from "../../../helpers/municipalities";
+  import { countyOptions } from "../../../helpers/municipalities";
 
-  export const validate: () => boolean = validateForm;
+  export const validate: () => ShippingDetails | null = validateForm;
 
   let name = "";
   let lastName = "";
   let companyName = "";
   const country = "Srbija"; // Readonly field
-  let streetAndNumber = "";
-  let municipality = "";
-  let zipCode = "";
+  let city = "";
+  let apartment = "";
+  let address = "";
+  let county = "";
+  let postalCode = "";
   let email = "";
+  let phoneNumber = "";
   let specialNotes = "";
 
   // Form errors
   let errors = {
     name: "",
     lastName: "",
-    streetAndNumber: "",
-    zipCode: "",
+    city: "",
+    address: "",
+    apartment: "",
+    postalCode: "",
     email: "",
-    municipality: "",
+    phoneNumber: "",
+    county: "",
   };
 
-  function validateForm() {
+  function validateForm(): ShippingDetails | null {
     let valid = true;
 
     // Reset errors
     errors = {
       name: "",
       lastName: "",
-      streetAndNumber: "",
-      zipCode: "",
+      city: "",
+      address: "",
+      apartment: "",
+      postalCode: "",
       email: "",
-      municipality: "",
+      phoneNumber: "",
+      county: "",
     };
 
-    // Name validation
     if (!name.trim()) {
       errors.name = "Ime je obavezno polje";
       valid = false;
     }
 
-    // Last name validation
     if (!lastName.trim()) {
       errors.lastName = "Prezime je obavezno polje";
       valid = false;
     }
 
-    // Street and number validation
-    if (!streetAndNumber.trim()) {
-      errors.streetAndNumber = "Ulica i broj su neophodni";
+    if (!city.trim()) {
+      errors.city = "Grad je obavezno polje";
       valid = false;
     }
 
-    // Zip code validation
-    if (!zipCode.trim()) {
-      errors.zipCode = "Poštanski broj je obavezan";
+    if (!address.trim()) {
+      errors.address = "Ulica i broj su neophodni";
       valid = false;
     }
 
-    // Email validation
+    if (!postalCode.trim()) {
+      errors.postalCode = "Poštanski broj je obavezan";
+      valid = false;
+    }
+
     const emailPattern = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
     if (!email.match(emailPattern)) {
-      errors.email = "Nevalidna vrednost email-a";
+      errors.email = "Nispravna vrednost email-a";
       valid = false;
     }
 
-    return valid;
+    const phonePattern = /^6\d{8}$/;
+    if (!phoneNumber.match(phonePattern)) {
+      errors.phoneNumber = "Neispravna vrednost broja telefona";
+      valid = false;
+    }
+
+    if (valid) {
+      const shippingDetails: ShippingDetails = {
+        firstName: name,
+        lastName: lastName,
+        companyName: companyName,
+        countryId: 1, // hardcode to Serbia
+        city: city,
+        address: address,
+        county: county,
+        apartment: apartment,
+        postalCode: postalCode,
+        phoneNumber: phoneNumber,
+        email: email,
+      };
+      return shippingDetails;
+    } else return null;
   }
 </script>
 
@@ -100,17 +130,15 @@
         width={"64"}
       />
     </div>
-
+    <!-- Company Name (Optional) -->
+    <InputString
+      bind:value={companyName}
+      title="Naziv kompanije (Opciono)"
+      placeholder="Kompanija d.o.o"
+      isRequired={false}
+      width={"80"}
+    />
     <div class="flex gap-x-12">
-      <!-- Company Name (Optional) -->
-      <InputString
-        bind:value={companyName}
-        title="Naziv kompanije (Opciono)"
-        placeholder="Kompanija d.o.o"
-        isRequired={false}
-        width={"64"}
-      />
-
       <!-- Country (Readonly) -->
       <div class="flex flex-col gap-y-2">
         <label for="country">Zemlja</label>
@@ -123,28 +151,47 @@
           disabled
         />
       </div>
+
+      <!-- City -->
+      <InputString
+        bind:value={city}
+        title="Grad"
+        placeholder="Novi Sad"
+        error={errors?.city}
+        isRequired={true}
+        width={"64"}
+      />
+    </div>
+    <div class="flex gap-x-12">
+      <!-- Street and Number -->
+      <InputString
+        bind:value={address}
+        title="Ulica i broj"
+        placeholder="Kneza Miloša 23"
+        error={errors?.address}
+        isRequired={true}
+        width={"96"}
+      />
+      <!-- Apartment -->
+      <InputString
+        bind:value={apartment}
+        title="Broj stana"
+        placeholder="5"
+        isRequired={false}
+        width={"24"}
+      />
     </div>
 
-    <!-- Street and Number -->
-    <InputString
-      bind:value={streetAndNumber}
-      title="Ulica i broj"
-      placeholder="Kneza Miloša 23"
-      error={errors?.streetAndNumber}
-      isRequired={true}
-      width={"96"}
-    />
-
-    <!-- Municipality (Dropdown) -->
+    <!-- County (Dropdown) -->
     <div class="flex flex-col gap-y-2">
-      <label for="municipality">Okrug (Opciono)</label>
+      <label for="county">Okrug (Opciono)</label>
       <select
-        id="municipality"
-        bind:value={municipality}
+        id="county"
+        bind:value={county}
         class="flex w-80 px-4 py-2 rounded-lg bg-white border border-gray-300 font-light"
       >
         <option value="" disabled selected>Odaberite okrug</option>
-        {#each municipalityOptions as option}
+        {#each countyOptions as option}
           <option
             class="bg-white px-4 py-2 hover:bg-gray-100"
             value={option.name}>{option.name}</option
@@ -156,10 +203,10 @@
     <div class="flex gap-x-12">
       <!-- Zip Code -->
       <InputString
-        bind:value={zipCode}
+        bind:value={postalCode}
         title="Poštanski broj"
         placeholder="11000"
-        error={errors?.zipCode}
+        error={errors?.postalCode}
         isRequired={true}
         width={"32"}
       />
@@ -175,8 +222,20 @@
       />
     </div>
 
+    <div class="relative">
+      <InputString
+        bind:value={phoneNumber}
+        title="Broj telefona"
+        placeholder="60224455221"
+        error={errors?.phoneNumber}
+        isRequired={true}
+        width={"48"}
+        prefix="+381"
+      />
+    </div>
+
     <!-- Special Notes (Optional) -->
-    <div class="flex flex-col gap-y-2">
+    <div class="flex flex-col gap-y-2 mt-4">
       <label for="special-notes">Napomene o narudžbini (opciono)</label>
       <textarea
         id="special-notes"

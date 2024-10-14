@@ -1,5 +1,3 @@
-import { text } from "@sveltejs/kit";
-
 export enum QuantityType {
   None = 1,
   MeterSquared = 2,

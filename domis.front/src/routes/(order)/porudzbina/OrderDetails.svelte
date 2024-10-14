@@ -2,9 +2,11 @@
   import RadioButton from "../../../components/RadioButton.svelte";
   import { paymentOptions, type PaymentType } from "../../../enums";
   import { formatPrice } from "../../../helpers/numberFormatter";
+  import { saveShippingDetails } from "../../../services/order-service";
   import { cart } from "../../../stores/cart";
 
-  export let onClick: () => boolean;
+  export let onClick: () => ShippingDetails | null;
+
   let cartItems: Array<CartProduct> = [];
   let totalCartPrice: number;
   let isTermsAccepted = false;
@@ -14,8 +16,17 @@
     isTermsAccepted = !isTermsAccepted;
   }
 
-  function handleSubmit() {
-    console.info(onClick());
+  async function handleSubmit() {
+    let shippingDetails = onClick();
+    if (shippingDetails) {
+      console.info("idemo");
+      console.info(await saveShippingDetails(shippingDetails));
+      // ako je ovo uspelo
+      // post order
+      // ako je to uspelo, clean up cart
+
+      // ako nije uspelo - seks
+    }
   }
 
   const unsubscribe = cart.subscribe((value) => {
@@ -123,5 +134,4 @@
   >
     NARUČI
   </button>
-  <!-- TODO: Payment option choice -->
 </div>

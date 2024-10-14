@@ -5,6 +5,7 @@
   export let error: string = "";
   export let isRequired: boolean = false;
   export let width: string;
+  export let prefix: string = "";
 </script>
 
 <div class="flex flex-col">
@@ -15,11 +16,17 @@
       <label for="input">{title}</label>
     {/if}
     <div id="input" class="w-{width} relative rounded-md shadow-sm">
+      {#if prefix}
+        <p class="absolute inset-y-0 left-4 font-light flex items-center mr-2">
+          {prefix}
+        </p>
+      {/if}
       <input
         type="text"
         name="value"
         id="value"
-        class="block w-full rounded-md border-0 py-1.5 pl-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-inset focus:ring-blue-600 text-md leading-6 placeholder:font-light"
+        class="block w-full font-light tracking-wider rounded-md border-0 py-1.5 pl-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-inset focus:ring-blue-600 text-md leading-6 placeholder:font-light
+              {prefix ? 'pl-16' : ''}"
         {placeholder}
         bind:value
       />

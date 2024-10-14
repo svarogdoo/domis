@@ -1,4 +1,4 @@
-export const municipalityOptions = [
+export const countyOptions = [
   { name: "Beograd" },
   {
     name: "Bor",
