@@ -10,23 +10,23 @@
 
 <div class="flex h-full w-full items-center justify-center p-6">
   <div class="bg-white p-8 border rounded-xl w-full max-w-md">
-    <h2 class="text-2xl font-bold mb-6 text-center">Zaboravljena šifra</h2>
+    <h2 class="text-2xl font-bold mb-6 text-center">Promena lozinke</h2>
     <p class="text-gray-600 text-sm mb-6 text-center">
-      Unesite svoj email, mi ćemo vam poslati uputstva za promenu šifre.
+      Unesite svoj email, mi ćemo vam poslati uputstva za promenu lozinke.
     </p>
 
     <form on:submit|preventDefault={handlePasswordReset}>
       <!-- Email Input -->
       <div class="mb-4">
         <label for="email" class="block font-medium text-gray-700 mb-2"
-          >Email Address</label
+          >Email</label
         >
         <input
           id="email"
           type="email"
           class="w-full p-2 border rounded"
           bind:value={email}
-          placeholder="Enter your email"
+          placeholder="(unesite email)"
           required
         />
       </div>
@@ -37,7 +37,7 @@
           type="submit"
           class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
         >
-          Reset Password
+          Pošalji
         </button>
       </div>
     </form>
