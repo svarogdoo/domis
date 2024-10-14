@@ -58,6 +58,10 @@ const createUserStore = () => {
       const result = await userService.updateProfile(request);
     },
 
+    async forgotPassword(email: string) {
+      return await userService.forgotPassword(email);
+    },
+
     async requestPasswordReset(email: string) {
       const response = await fetch(
         "https://example.com/api/request-password-reset",
