@@ -4,7 +4,7 @@ using domis.api.Endpoints;
 var builder = WebApplication.CreateBuilder(args);
 
 string apiKey = Environment.GetEnvironmentVariable("SENDGRID_API_KEY");
-string fromEmail = Environment.GetEnvironmentVariable("SENDGRID_FROM");
+string fromEmail = Environment.GetEnvironmentVariable("RECIPIENT_EMAIL");
 
 builder.RegisterServices();
 
