@@ -121,7 +121,7 @@
     class="text-light bg-black text-white py-2 px-4 rounded-lg text-center tracking-widest hover:bg-gray-600 disabled:bg-gray-400"
     disabled={!isTermsAccepted}
   >
-    NARUČITE
+    NARUČI
   </button>
   <!-- TODO: Payment option choice -->
 </div>
