@@ -61,7 +61,7 @@ public class CustomEmailSender(IConfiguration configuration, ILogger<CustomEmail
     {
         var msg = new SendGridMessage()
         {
-            From = new EmailAddress(configuration["Sendgrid:From"], configuration["Sendgrid:Name"]),
+            From = new EmailAddress(Environment.GetEnvironmentVariable("SENDGRID_API_KEY"), Environment.GetEnvironmentVariable("SENDGRID_NAME")),
             Subject = subject,
             PlainTextContent = message,
             HtmlContent = message

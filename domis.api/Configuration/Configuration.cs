@@ -67,7 +67,7 @@ public static class Configuration
         });
 
         builder.Services.AddSendGrid(options =>
-            options.ApiKey = builder.Configuration["Sendgrid:SendGridKey"]
+            options.ApiKey = Environment.GetEnvironmentVariable("SENDGRID_API_KEY") ?? "Sendgrid API key Not Set"
         );
 
         builder.Services.AddAutoMapper(typeof(MappingProfile));
