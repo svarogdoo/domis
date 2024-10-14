@@ -57,7 +57,8 @@
       </p>
   
       <p class="mb-4">
-        Popunjeni obrazac potrebno je da pošaljete na sledecu mail adresu komercijala@domisenterijeri.com
+        Popunjeni obrazac potrebno je da pošaljete na sledeću mail adresu: 
+        <a class="text-blue-600 hover:underline" href="mailto:komercijala@domisenterijeri.com">komercijala@domisenterijeri.com</a>
       </p>
   
       <p class="mb-4">
