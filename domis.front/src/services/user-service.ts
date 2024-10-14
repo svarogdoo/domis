@@ -46,10 +46,19 @@ async function forgotPassword(email: string): Promise<void> {
     );
 }
 
+async function resetPassword(email: string, resetCode: string, newPassword: string){
+    await fetchDataWithJsonBody<void>(
+        `${API_URL}/resetPassword`,
+        'POST',
+        JSON.stringify({ email, resetCode, newPassword })
+    );
+}
+
 export const userService = {
     login,
     register,
     getProfile,
     updateProfile,
-    forgotPassword
+    forgotPassword,
+    resetPassword
 };

@@ -1,21 +1,28 @@
- <script>
+ <script lang="ts">
+  import { userStore } from "../../../stores/user";
+  import { page } from '$app/stores'
+
+  let resetCode: string = $page.url.searchParams.get('code') || "";
+  let email: string = $page.url.searchParams.get('email') || "";
+
   let password = "";
   let confirmPassword = "";
-  let resetToken = ""; // This would usually be extracted from the URL query params
 
-//http://localhost:5173/promena-sifre?email=lukardvn@gmail.com&code=Q2ZESjhLbTd4aEZyWTRSRnR1MERnSVV4RXMrSkFFTlVrVzFVbWduVDVoM01ENFRQc2VEdDBKMTY1TlVxVnhXbXdRYk1pQ2M4QngvMjdmMTdSSG9UYnVaZDhCTDFqV0FZcWgxWmN2WjU1VVAxSThjYm5ONGdaTWRGVXlJTlhSY2Q4UTFQQWtGZjFQU0loZlZEUlFhVXR5ekxXT3loaENLZ1prdnczNldrV1lvT0ZoRU04TUtRNzFVUzkrY21xb1hleElsRTNpTEZyRWlrSzY1QVVITWxwVHFYRFpRWkduMERDSWZNSTYyT1J6T2NOUEpQ
+  let errorMessage = "";
 
-  const handlePasswordChange = () => {
+  const handlePasswordChange = async () => {
     if (password !== confirmPassword) {
-      alert("Passwords do not match!");
+      errorMessage = "Lozinke se ne poklapaju.";
       return;
     }
 
-    // Add your logic to handle the password change, including the resetToken
-    console.log("Changing password with token:", resetToken);
-    console.log("New password:", password);
-
-    // You can call your password reset service here
+    try {
+      await userStore.resetPassword(email, resetCode, password);
+    }
+    catch (error: any) {
+      console.error("Password change failed:", error.message);
+      errorMessage = 'Došlo je do greške. Pokušajte ponovo.';
+    }
   };
 </script>
 
@@ -24,8 +31,12 @@
     <h2 class="text-2xl font-bold mb-6 text-center">Promena lozinke</h2>
 
     <p class="text-gray-600 text-sm mb-6 text-center">
-      Unesite novu lozinku za Vaš nalog
+      Unesite novu lozinku
     </p>
+
+    {#if errorMessage}
+    <p class="text-red-500 text-sm mb-4 text-center">{errorMessage}</p>
+    {/if}
 
     <form on:submit|preventDefault={handlePasswordChange}>
       <!-- New Password -->
