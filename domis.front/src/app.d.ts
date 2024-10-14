@@ -156,6 +156,10 @@ declare global {
     quantity: number;
   }
 
+  interface CheckoutFormData {
+    shippingDetails: ShippingDetails;
+    comment: string;
+  }
   interface ShippingDetails {
     firstName: string;
     lastName: string;
@@ -169,8 +173,20 @@ declare global {
     phoneNumber: string;
     email: string;
   }
-  interface ShippingId {
+  interface ShippingResponse {
     orderShippingId: number;
+  }
+
+  interface Order {
+    cartId: number;
+    paymentStatusId;
+    orderShippingId: number;
+    paymentVendorTypeId;
+    paymentAmount; // zasto ja saljem iznos sa fronta, bolje da se uzme iz karta?
+    comment: string;
+  }
+  interface OrderResponse {
+    orderId: number;
   }
 }
 

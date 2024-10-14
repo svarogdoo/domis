@@ -45,12 +45,12 @@ export const quantityTypeOptions = [
   },
 ];
 
-export enum PaymentType {
-  Takeover = 1,
+export enum PaymentVendorType {
+  OnDelivery = 1,
   BankPayment = 2,
   Online = 3,
 }
-export const paymentOptions = [
+export const paymentVendorOptions = [
   {
     value: 1,
     label: "Plaćanje pouzećem",

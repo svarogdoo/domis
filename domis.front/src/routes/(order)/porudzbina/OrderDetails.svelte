@@ -1,35 +1,51 @@
 <script lang="ts">
   import RadioButton from "../../../components/RadioButton.svelte";
-  import { paymentOptions, type PaymentType } from "../../../enums";
+  import { paymentVendorOptions, type PaymentVendorType } from "../../../enums";
   import { formatPrice } from "../../../helpers/numberFormatter";
-  import { saveShippingDetails } from "../../../services/order-service";
+  import {
+    saveOrder,
+    saveShippingDetails,
+  } from "../../../services/order-service";
   import { cart } from "../../../stores/cart";
 
-  export let onClick: () => ShippingDetails | null;
+  export let onClick: () => CheckoutFormData | null;
 
+  let cartId: number;
   let cartItems: Array<CartProduct> = [];
   let totalCartPrice: number;
   let isTermsAccepted = false;
-  let paymentOption: PaymentType;
+  let paymentVendor: PaymentVendorType;
 
   function handleExtraClicked() {
     isTermsAccepted = !isTermsAccepted;
   }
 
   async function handleSubmit() {
-    let shippingDetails = onClick();
-    if (shippingDetails) {
-      console.info("idemo");
-      console.info(await saveShippingDetails(shippingDetails));
-      // ako je ovo uspelo
-      // post order
-      // ako je to uspelo, clean up cart
+    let checkoutFormData = onClick();
+    if (checkoutFormData) {
+      const shippingResponse = await saveShippingDetails(
+        checkoutFormData.shippingDetails
+      );
+      if (shippingResponse) {
+        const order: Order = {
+          cartId: cartId,
+          paymentStatusId: 1,
+          orderShippingId: shippingResponse.orderShippingId,
+          paymentVendorTypeId: paymentVendor,
+          paymentAmount: 0,
+          comment: checkoutFormData.comment,
+        };
 
-      // ako nije uspelo - seks
+        const orderResponse = await saveOrder(order);
+        // ako je proslo napraviti novi cart
+
+        // cleanup carta
+      }
     }
   }
 
   const unsubscribe = cart.subscribe((value) => {
+    if (value && value.cartId) cartId = value.cartId;
     if (value && value.items) cartItems = value.items;
     if (value && value.totalCartPrice) totalCartPrice = value.totalCartPrice;
   });
@@ -80,10 +96,10 @@
   <div class="h-0.5 w-full bg-gray-400"></div>
 
   <RadioButton
-    options={paymentOptions}
+    options={paymentVendorOptions}
     legend="Odaberite način plaćanja:"
     isColumn={true}
-    bind:userSelected={paymentOption}
+    bind:userSelected={paymentVendor}
   />
 
   <p>

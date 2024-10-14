@@ -2,7 +2,7 @@
   import InputString from "../../../components/InputString.svelte";
   import { countyOptions } from "../../../helpers/municipalities";
 
-  export const validate: () => ShippingDetails | null = validateForm;
+  export const validate: () => CheckoutFormData | null = validateForm;
 
   let name = "";
   let lastName = "";
@@ -30,7 +30,7 @@
     county: "",
   };
 
-  function validateForm(): ShippingDetails | null {
+  function validateForm(): CheckoutFormData | null {
     let valid = true;
 
     // Reset errors
@@ -97,7 +97,10 @@
         phoneNumber: phoneNumber,
         email: email,
       };
-      return shippingDetails;
+      return {
+        shippingDetails: shippingDetails,
+        comment: specialNotes,
+      };
     } else return null;
   }
 </script>
@@ -133,7 +136,7 @@
     <!-- Company Name (Optional) -->
     <InputString
       bind:value={companyName}
-      title="Naziv kompanije (Opciono)"
+      title="Naziv kompanije"
       placeholder="Kompanija d.o.o"
       isRequired={false}
       width={"80"}
@@ -184,7 +187,7 @@
 
     <!-- County (Dropdown) -->
     <div class="flex flex-col gap-y-2">
-      <label for="county">Okrug (Opciono)</label>
+      <label for="county">Okrug</label>
       <select
         id="county"
         bind:value={county}
@@ -236,7 +239,7 @@
 
     <!-- Special Notes (Optional) -->
     <div class="flex flex-col gap-y-2 mt-4">
-      <label for="special-notes">Napomene o narudžbini (opciono)</label>
+      <label for="special-notes">Napomene o narudžbini</label>
       <textarea
         id="special-notes"
         class="block w-full rounded-md border-0 py-1.5 pl-3 font-light text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-inset focus:ring-blue-600 text-md leading-6"
