@@ -38,18 +38,22 @@ public class CustomEmailSender(IConfiguration configuration, ILogger<CustomEmail
 
     public async Task SendPasswordResetCodeAsync(UserEntity user, string email, string resetCode)
     {
+        var frontendBaseUrl = "http://localhost:5173";
+
         var subject = "Zahtev za promenu lozinke";
+
+        var resetLink = $"{frontendBaseUrl}/promena-sifre?email={email}&code={resetCode}";
 
         //var message = resetCode;
 
         var message = $@"
             <h1>Zahtev za promenu lozinke</h1>
             <p>Poštovani {user.UserName},</p>
-            <p>Ovo je vaš kod za promenu lozinke:</p>
-            <h2 style='color: #ff0000;'>{resetCode}</h2>
-            <p>Ukoliko niste tražili ovu akciju, možete slobodno ignorisati ovu poruku.</p>
-            <p>Hvala!</p>
-        ";
+            <p>Kliknite na sledeći link kako biste promenili lozinku:</p>
+            <a href='{resetLink}' style='color: #1a73e8;'>Promena lozinke</a>
+            <p>Ukoliko niste zahtevali promenu lozinke, možete slobodno ignorisati ovu poruku.</p>
+            <p>Hvala!</p>";
+
         await SendEmailAsync(email, subject, message);
     }
 

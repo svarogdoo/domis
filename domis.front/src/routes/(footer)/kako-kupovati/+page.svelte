@@ -1,3 +1,12 @@
+<script>
+  // Define your data here
+  const emailContact = "komercijala@domisenterijeri.com";
+  const websiteUrl = "http://www.domisenterijeri.com";
+  const phoneNumber = "(+381 22) 679 125";
+  const faxNumber = "(+381 22) 670 125";
+  const officeEmail = "office@domisenterijeri.com";
+</script>
+
 <section class="flex flex-col w-full items-center">
   <h1 class="mt-4 text-xl lg:text-2xl">Kako kupovati</h1>
   <h2 class="font-light text-sm lg:text-md">
@@ -21,7 +30,7 @@
       možete videti stanje naručenih proizvoda i opcije „Korpa“ i „Plaćanje“ se pojaviti
       prozoru u kojem ćete videti opcije za nastavak kupovine ili završavanje narudžbine.
       <br /><br />
-      Ukoliko želite proverite stanje naručenih proizvoda ili promenite poručenu
+      Ukoliko želite proveriti stanje naručenih proizvoda ili promeniti poručenu
       količinu kliknite na „Korpa“. Prelaskom na ovu stranicu, na njenoj levoj strani,
       stičete uvid u naziv poručenog proizvoda, njegovu cenu, naručenu količinu i
       ukupan iznos. Na ovoj stranici možete manipulisati proizvodom tako što ćete
@@ -36,17 +45,15 @@
       narudžbinu, to možete učiniti klikom na dugme „Nastavite plaćanje“ i tako prelazite
       na sledeći korak.
       <br /><br />
-      <span class="font-bold"
-        >KORAK 2: PORUČIVANJE Na ovoj stranici imate uvid u detalje</span
-      >
+      <span class="font-bold">KORAK 2: PORUČIVANJE</span>
       <br />
-      svoje porudžbine. Sa desne strane ispod „Vaša porudžbina“ nalaze se informacije
-      koje obuhvataju naziv poručenih proizvoda, izabranu količinu, iznos porudžbine
-      i iznos pripadajućeg PDV-a (za VP kupce).
+      Na ovoj stranici imate uvid u detalje svoje porudžbine. Sa desne strane ispod „Vaša porudžbina“ 
+      nalaze se informacije koje obuhvataju naziv poručenih proizvoda, izabranu količinu, 
+      iznos porudžbine i iznos pripadajućeg PDV-a (za VP kupce).
       <br /><br />
       Sa leve strane nalazi se formular sa podacima o kupcu. Ukoliko ste prijavljeni
-      na korisnički nalog vaši podaci će se nalaziti u formularu, a ukoliko niste,
-      potrebno je da ga pounite. Pređimo sada na objašnjenje polja tog formulara.
+      na korisnički nalog, vaši podaci će se nalaziti u formularu, a ukoliko niste,
+      potrebno je da ga popunite. Pređimo sada na objašnjenje polja tog formulara.
       <br /><br />
       Polja za unošenje „Imena“ i „Prezimena“ su obavezna, dok je popunjavanje polja
       „Ime pravnog lica“ dato kao opciono. Njega popunjavate samo u slučaju da sa
@@ -74,11 +81,12 @@
       <br />
       U slučaju da želite, bilo koji proizvod sa našeg sajta možete poručiti pozivom
       na brojeve najbližih Domis salona čije kontakt podatke možete pronaći i na
-      ovom sajtu u delu SALONI ili e-mailom na komercijala@domisenterijeri.com
+      ovom sajtu u delu <a href="/prodajna-mesta" class="text-blue-500 underline">SALONI</a> ili e-mailom na 
+      <a href="mailto:{emailContact}" class="text-blue-500 underline">{emailContact}</a>
       <br /><br />
       Ukoliko ste pravno lice, naše kolege u sektoru za Veleprodajne korisnike Vam
-      stoje na raspolaganju i možete ih kontaktirati pozivom na broj (+381 22) 679
-      125 ili e-mailom na komercijala@domisenterijeri.com
+      stoje na raspolaganju i možete ih kontaktirati pozivom na broj {phoneNumber} ili e-mailom na 
+      <a href="mailto:{emailContact}" class="text-blue-500 underline">{emailContact}</a>
       <br /><br />
       Radi brže komunikacije sa nama možete izdiktirati Šifru sa proizvoda koji Vas
       interesuje, a koju možete videti ispod slike svakog proizvoda u prodavnici.
@@ -96,15 +104,15 @@
       <br /> <br />
       Domis enterijeri Shop
       <br />
-      www.domisenterijeri.com
+      <a href={websiteUrl} class="text-blue-500 underline">{websiteUrl}</a>
       <br />
       1. novembra 10 22221 Laćarak
       <br />
-      Tel: (+381 22) 679 125
+      Tel: <a href="tel:{phoneNumber}" class="text-blue-500 underline">{phoneNumber}</a>
       <br />
-      Fax: (+381 22) 670 125
+      Fax: {faxNumber}
       <br />
-      e: office@domisenterijeri.com
+      e: <a href="mailto:{officeEmail}" class="text-blue-500 underline">{officeEmail}</a>
     </p>
   </div>
 </section>

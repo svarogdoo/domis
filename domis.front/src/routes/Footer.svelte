@@ -17,28 +17,29 @@
       <p class="font-semibold tracking-wider">Korisnički kutak</p>
       <div class="flex flex-col gap-y-2 font-light">
         <a href="/kako-kupovati">Kako kupovati</a>
-        <p>Naručivanje</p>
+        <a href="/narucivanje">Naručivanje</a>
         <p>Česta pitanja</p>
-        <p>Podaci o trgovcu</p>
+        <a href="/podaci-o-trgovcu">Podaci o trgovcu</a>
       </div>
     </div>
     <div class="flex flex-col gap-y-4">
       <p class="font-semibold tracking-wider">Kupovina</p>
       <div class="flex flex-col gap-y-2 font-light">
-        <p>Način plaćanja</p>
-        <p>Politika privatnosti</p>
-        <p>Korišćenje i kupovina</p>
-        <p>Prava i obaveze potrošača</p>
-        <p>Reklamacije</p>
-        <p>Pravo na odustanak od ugovora</p>
-        <p>Ugovor o prodaji na daljinu</p>
+        <a href="/napomena-za-robu-poslatu-kurirskom-sluzbom">Napomena za robu poslatu kurirskom sluzbom</a>
+        <a href="/nacin-placanja">Način plaćanja</a>
+        <a href="/uslovi-koriscenja">Uslovi korišćenja</a>
+        <a href="/koriscenje-i-kupovina">Korišćenje i kupovina</a>
+        <a href="/prava-obaveze-potrosaca">Prava i obaveze potrošača</a>
+        <a href="/reklamacije">Reklamacije</a>
+        <a href="/odustanak-od-ugovora">Pravo na odustanak od ugovora</a>
+        <a href="https://domisenterijeri.com/domis/img/2020/10/DomisUgovoroprodajinadaljinu.docx">Ugovor o prodaji na daljinu</a>
       </div>
     </div>
     <div class="flex flex-col gap-y-4">
       <p class="font-semibold tracking-wider">Prodaja</p>
       <div class="flex flex-col gap-y-2 font-light">
         <p>Trajna akcija</p>
-        <p>Nedeljna akcija</p>
+        <a href="https://domis.vercel.app/kategorija/83">Nedeljna akcija</a>
       </div>
     </div>
   </div>

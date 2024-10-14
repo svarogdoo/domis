@@ -1,10 +1,22 @@
-<script>
-  let email = "";
+<script lang="ts">
+    import { goto } from "$app/navigation";
+  import { userStore } from "../../../stores/user";
 
-  const handlePasswordReset = () => {
-    // Add your logic to handle password reset (e.g., API call)
+  let email = "";
+  let requestSent = false;
+  let errorMessage = "";
+
+  const handlePasswordReset = async () => {
     console.log("Requesting password reset for:", email);
-    // You can call your password reset service here
+    
+    try {
+      await userStore.forgotPassword(email);
+      requestSent = true;
+
+      goto("/login");
+    } catch (error: any) {
+      "Greška u obradi zahteva, pokušajte ponovo.";
+    }
   };
 </script>
 
@@ -14,6 +26,16 @@
     <p class="text-gray-600 text-sm mb-6 text-center">
       Unesite svoj email, mi ćemo vam poslati uputstva za promenu lozinke.
     </p>
+
+    {#if errorMessage}
+      <p class="text-red-500 text-sm mb-4">{errorMessage}</p>
+    {/if}
+
+    {#if requestSent}
+      <div class="text-green-500 text-center mb-6">
+        Zahtev za promenu lozinke je poslat. Proverite svoj email.
+      </div>
+    {/if}
 
     <form on:submit|preventDefault={handlePasswordReset}>
       <!-- Email Input -->

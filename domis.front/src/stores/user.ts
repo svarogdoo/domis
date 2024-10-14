@@ -28,7 +28,6 @@ const createUserStore = () => {
       const expiresIn = loginResponse.expiresIn;
       const refreshToken = loginResponse.refreshToken;
 
-      // TODO: Fetch user details after login
       const userProfile = await this.getProfile();
 
       setUser(userProfile, token);
@@ -55,24 +54,18 @@ const createUserStore = () => {
     },
 
     async updateProfile(request: UserProfileUpdateRequest) {
-      const result = await userService.updateProfile(request);
+      return await userService.updateProfile(request);
     },
 
-    async requestPasswordReset(email: string) {
-      const response = await fetch(
-        "https://example.com/api/request-password-reset",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Password reset request failed");
-      }
+    async forgotPassword(email: string) {
+      return await userService.forgotPassword(email);
     },
 
+    async resetPassword(email: string, resetCode: string, newPassword: string){
+      return await userService.resetPassword(email, resetCode, newPassword);
+    },
+
+    //TODO: actually implement
     refreshUserSession(newToken: string) {
       update((state) => ({
         ...state,

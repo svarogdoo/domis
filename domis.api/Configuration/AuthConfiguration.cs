@@ -27,7 +27,7 @@ public static class AuthConfiguration
             options.Password.RequiredLength = 3;
             options.Password.RequiredUniqueChars = 1;
 
-            options.SignIn.RequireConfirmedEmail = true;
+            //options.SignIn.RequireConfirmedEmail = true;
         });
 
         services.AddAuthentication()
