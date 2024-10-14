@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { onMount } from "svelte";
-  import Input from "../../(admin)/admin/products/Input.svelte";
   import InputString from "../../../components/InputString.svelte";
   import { municipalityOptions } from "../../../helpers/municipalities";
+
+  export const validate: () => boolean = validateForm;
 
   let name = "";
   let lastName = "";
@@ -23,15 +23,6 @@
     email: "",
     municipality: "",
   };
-
-  async function fetchMunicipalities() {
-    // Replace this with a real API call
-    return [
-      { value: "belgrade", name: "Beograd" },
-      { value: "novisad", name: "Novi Sad" },
-      { value: "nis", name: "Niš" },
-    ];
-  }
 
   function validateForm() {
     let valid = true;
@@ -79,19 +70,9 @@
 
     return valid;
   }
-
-  function submitForm() {
-    if (validateForm()) {
-      console.log("Form is valid!");
-      // Submit the form data
-    }
-  }
 </script>
 
-<form
-  class="flex flex-col w-full space-y-4 p-4"
-  on:submit|preventDefault={submitForm}
->
+<form class="flex flex-col w-full space-y-4 p-4">
   <div class="flex flex-col gap-y-6">
     <h2
       class="text-xl tracking-wide border-b border-gray-400 pb-2 border-b-0.5"
@@ -204,13 +185,5 @@
         placeholder="Posebne napomene o narudžbini ili isporuci."
       ></textarea>
     </div>
-
-    <!-- Submit Button -->
-    <button
-      type="submit"
-      class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-offset-2 focus:ring-blue-500"
-    >
-      Potvrdi
-    </button>
   </div>
 </form>

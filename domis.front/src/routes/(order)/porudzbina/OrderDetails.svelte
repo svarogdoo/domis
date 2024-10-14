@@ -1,9 +1,22 @@
 <script lang="ts">
+  import RadioButton from "../../../components/RadioButton.svelte";
+  import { paymentOptions, type PaymentType } from "../../../enums";
   import { formatPrice } from "../../../helpers/numberFormatter";
   import { cart } from "../../../stores/cart";
 
+  export let onClick: () => boolean;
   let cartItems: Array<CartProduct> = [];
   let totalCartPrice: number;
+  let isTermsAccepted = false;
+  let paymentOption: PaymentType;
+
+  function handleExtraClicked() {
+    isTermsAccepted = !isTermsAccepted;
+  }
+
+  function handleSubmit() {
+    console.info(onClick());
+  }
 
   const unsubscribe = cart.subscribe((value) => {
     if (value && value.items) cartItems = value.items;
@@ -54,5 +67,61 @@
     </p>
   </div>
   <div class="h-0.5 w-full bg-gray-400"></div>
+
+  <RadioButton
+    options={paymentOptions}
+    legend="Odaberite način plaćanja:"
+    isColumn={true}
+    bind:userSelected={paymentOption}
+  />
+
+  <p>
+    Vaši lični podaci biće korišćeni u cilju poboljšanja vašeg korisničkog
+    iskustva na ovoj web stranici, za upravljanje pristupom vašem računu i za
+    druge svrhe opisane u našim <a
+      href="/politika-privatnosti"
+      class="underline cursor-pointer">politika privatnosti</a
+    >.
+  </p>
+
+  <button
+    on:click={handleExtraClicked}
+    class="relative flex mt-4 gap-x-2 items-center"
+  >
+    <input
+      type="checkbox"
+      class="appearance-none h-5 w-5 cursor-pointer rounded-md border border-gray-700 checked:bg-gray-700"
+      checked={isTermsAccepted}
+    />
+    <span class="absolute text-white left-0.5">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-3.5 w-3.5"
+        viewBox="0 0 20 20"
+        fill="currentColor"
+        stroke="currentColor"
+        stroke-width="1"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+          clip-rule="evenodd"
+        ></path>
+      </svg>
+    </span>
+    <p class="pt-1 text-sm font-extralight tracking-wider">
+      Pročitao/la sam i prihvatam uslove veb mesta <span class="text-red-500"
+        >*</span
+      >
+    </p>
+  </button>
+
+  <button
+    on:click={handleSubmit}
+    class="text-light bg-black text-white py-2 px-4 rounded-lg text-center tracking-widest hover:bg-gray-600 disabled:bg-gray-400"
+    disabled={!isTermsAccepted}
+  >
+    NARUČITE
+  </button>
   <!-- TODO: Payment option choice -->
 </div>

@@ -1,4 +1,4 @@
-import { getPaketString } from "./helpers/stringFormatter";
+import { text } from "@sveltejs/kit";
 
 export enum QuantityType {
   None = 1,
@@ -18,7 +18,6 @@ export function mapQuantityTypeToString(quantityType: QuantityType): string {
       return "kom";
   }
 }
-
 export function mapQuantityTypeToCartString(
   quantityType: QuantityType,
   intValue?: number
@@ -33,7 +32,6 @@ export function mapQuantityTypeToCartString(
       return "kom";
   }
 }
-
 export const quantityTypeOptions = [
   {
     value: 4,
@@ -46,5 +44,22 @@ export const quantityTypeOptions = [
   {
     value: 2,
     label: "m²",
+  },
+];
+
+export enum PaymentType {
+  Takeover = 1,
+  BankPayment = 2,
+  Online = 3,
+}
+export const paymentOptions = [
+  {
+    value: 1,
+    label: "Plaćanje pouzećem",
+  },
+  {
+    value: 2,
+    label: "Uplata na račun",
+    text: "Izvršite uplatu direktno na naš račun. Kao poziv na broj navedite broj svoje porudžbine, u suprotnom vaša porudžbina neće biti obrađena i isporučena.",
   },
 ];
