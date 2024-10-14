@@ -29,7 +29,7 @@
         <a href="/nacin-placanja">Način plaćanja</a>
         <a href="/uslovi-koriscenja">Uslovi korišćenja</a>
         <a href="/koriscenje-i-kupovina">Korišćenje i kupovina</a>
-        <p>Prava i obaveze potrošača</p>
+        <a href="/prava-obaveze-potrosaca">Prava i obaveze potrošača</a>
         <a href="/reklamacije">Reklamacije</a>
         <a href="/odustanak-od-ugovora">Pravo na odustanak od ugovora</a>
         <a href="https://domisenterijeri.com/domis/img/2020/10/DomisUgovoroprodajinadaljinu.docx">Ugovor o prodaji na daljinu</a>
