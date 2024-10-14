@@ -110,7 +110,8 @@ public static class Configuration
 
         builder.Services.AddScoped<IExchangeRateRepository, ExchangeRateRepository>();
 
-        builder.Services.AddTransient<IEmailSender, EmailSender>();
+        //builder.Services.AddTransient<IEmailSender, EmailSender>();
+        builder.Services.AddTransient<ICustomEmailSender<UserEntity>, CustomEmailSender>();
     }
 
     public static void RegisterMiddlewares(this WebApplication app)
