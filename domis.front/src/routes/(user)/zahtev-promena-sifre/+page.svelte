@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { goto } from "$app/navigation";
   import { userStore } from "../../../stores/user";
 
   let email = "";
@@ -11,6 +12,8 @@
     try {
       await userStore.forgotPassword(email);
       requestSent = true;
+
+      goto("/login");
     } catch (error: any) {
       "Greška u obradi zahteva, pokušajte ponovo.";
     }
