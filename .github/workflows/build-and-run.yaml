@@ -25,4 +25,5 @@ jobs:
         env:
           SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
           SENDGRID_FROM: ${{ secrets.SENDGRID_FROM }}
+          RECIPIENT_EMAIL: ${{ env.SENDGRID_FROM }}
         run: dotnet run --project path-to-your-project
