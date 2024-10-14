@@ -24,11 +24,13 @@ public static class SyncEndpoints
         {
             var sendGridApiKey = Environment.GetEnvironmentVariable("SENDGRID_API_KEY") ?? "Not Set";
             var sendGridFrom = Environment.GetEnvironmentVariable("SENDGRID_FROM") ?? "Not Set";
+            var sendGridName = Environment.GetEnvironmentVariable("SENDGRID_NAME") ?? "Not Set";
 
             return Results.Ok(new
             {
                 SENDGRID_API_KEY = sendGridApiKey,
                 SENDGRID_FROM = sendGridFrom,
+                SENDGRID_NAME = sendGridName
             });
         }).WithDescription("Prints the environment variables for SendGrid.");
     }
