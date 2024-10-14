@@ -19,5 +19,19 @@ public static class SyncEndpoints
             var response = await syncService.UpdateExchangeRate();
             return Results.Ok(response);
         }).WithDescription("update exchange rates");
+
+        group.MapGet("/print-env-variables", () =>
+        {
+            var sendGridApiKey = Environment.GetEnvironmentVariable("SENDGRID_API_KEY") ?? "Not Set";
+            var sendGridFrom = Environment.GetEnvironmentVariable("SENDGRID_FROM") ?? "Not Set";
+            var sendGridName = Environment.GetEnvironmentVariable("SENDGRID_NAME") ?? "Not Set";
+
+            return Results.Ok(new
+            {
+                SENDGRID_API_KEY = sendGridApiKey,
+                SENDGRID_FROM = sendGridFrom,
+                SENDGRID_NAME = sendGridName
+            });
+        }).WithDescription("Prints the environment variables for SendGrid.");
     }
 }
