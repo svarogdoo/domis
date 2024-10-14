@@ -1,8 +1,6 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
-    import { error } from "@sveltejs/kit";
   import { userStore } from "../../../stores/user";
-    import Error from "../../+error.svelte";
 
   let isCompany = false;
   let errorMessage = "";

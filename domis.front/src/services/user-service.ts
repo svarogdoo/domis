@@ -38,9 +38,27 @@ async function updateProfile(body: UserProfileUpdateRequest): Promise<void> {
     );
 }
 
+async function forgotPassword(email: string): Promise<void> {
+    await fetchDataWithJsonBody<void>(
+        `${API_URL}/forgotPassword`,
+        'POST',
+        JSON.stringify({ email })
+    );
+}
+
+async function resetPassword(email: string, resetCode: string, newPassword: string){
+    await fetchDataWithJsonBody<void>(
+        `${API_URL}/resetPassword`,
+        'POST',
+        JSON.stringify({ email, resetCode, newPassword })
+    );
+}
+
 export const userService = {
     login,
     register,
     getProfile,
-    updateProfile
+    updateProfile,
+    forgotPassword,
+    resetPassword
 };
