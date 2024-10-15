@@ -11,7 +11,7 @@ public interface IProductService
     Task<ProductDetailsDto?> Update(ProductUpdateDto product);
     Task<IEnumerable<ProductBasicInfoDto>> GetProductsBasicInfoByCategory(int categoryId);
     Task<IEnumerable<ProductQuantityTypeDto>> GetAllQuantityTypes();
-    Task<IEnumerable<ProductBasicInfoDto>> SearchProducts(string searchTerm);
+    Task<IEnumerable<ProductBasicInfoDto>> SearchProducts(string searchTerm, int? pageNumber, int? pageSize);
 }
 
 public class ProductService(IProductRepository repository) : IProductService
@@ -31,6 +31,6 @@ public class ProductService(IProductRepository repository) : IProductService
     public async Task<ProductDetailsDto?> Update(ProductUpdateDto product)
         => await repository.Update(product);
 
-    public async Task<IEnumerable<ProductBasicInfoDto>> SearchProducts(string searchTerm)
-        => await repository.SearchProducts(searchTerm);
+    public async Task<IEnumerable<ProductBasicInfoDto>> SearchProducts(string searchTerm, int? pageNumber, int? pageSize)
+        => await repository.SearchProducts(searchTerm.ToLower(), pageNumber, pageSize);
 }
