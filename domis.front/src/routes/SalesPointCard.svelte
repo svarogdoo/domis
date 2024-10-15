@@ -12,7 +12,7 @@
     <div class="w-full relative display flex justify-center items-center">
       <div class="absolute w-full h-64 bg-black bg-opacity-50 backdrop-blur-sm"></div>
       <img
-        class="w-full h-64 object-cover opacity-40 bg-slate-500 hover:opacity-50 rounded-lg"
+        class="w-full h-64 object-cover opacity-45 bg-slate-500 hover:opacity-50 rounded-lg"
         src={salesPoint.image || backup}
         alt={salesPoint.name}
       />
@@ -44,18 +44,18 @@
         href={salesPoint.googleMapPin} 
         target="_blank" 
         rel="noopener noreferrer"
-        class="text-white bg-blue-500 hover:bg-blue-600 font-medium py-2 px-4 rounded-lg"
+        class="text-white bg-gray-500 hover:bg-blue-600 font-medium py-2 px-4 rounded-lg"
       >
-        Prikaz na mapi
+        Prikaži na mapi
       </a>
       {:else}
         <a 
           href={mapsUrl} 
           target="_blank" 
           rel="noopener noreferrer"
-          class="text-white bg-blue-500 hover:bg-blue-600 font-medium py-2 px-4 rounded-lg"
+          class="text-white bg-gray-500 hover:bg-blue-600 font-medium py-2 px-4 rounded-lg"
         >
-          Prikaz na mapi
+          Prikaži na mapi
         </a>
       {/if}
     </div>
