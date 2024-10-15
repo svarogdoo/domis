@@ -66,5 +66,13 @@ public static class ProductEndpoints
             return Results.Ok(quantityTypes);
         }).WithDescription("Get all quantity types");
 
+        group.MapGet("/search", async (string searchTerm, IProductService productService) =>
+        {
+            if (searchTerm.Length < 3)
+                return Results.Ok(new List<ProductBasicInfoDto>());
+
+            var products = await productService.SearchProducts(searchTerm);
+            return Results.Ok(products);
+        });
     }
 }

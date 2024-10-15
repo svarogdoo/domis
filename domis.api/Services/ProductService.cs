@@ -1,4 +1,5 @@
 ﻿using domis.api.DTOs.Product;
+using domis.api.Models;
 using domis.api.Repositories;
 
 namespace domis.api.Services;
@@ -10,6 +11,7 @@ public interface IProductService
     Task<ProductDetailsDto?> Update(ProductUpdateDto product);
     Task<IEnumerable<ProductBasicInfoDto>> GetProductsBasicInfoByCategory(int categoryId);
     Task<IEnumerable<ProductQuantityTypeDto>> GetAllQuantityTypes();
+    Task<IEnumerable<ProductBasicInfoDto>> SearchProducts(string searchTerm);
 }
 
 public class ProductService(IProductRepository repository) : IProductService
@@ -28,4 +30,7 @@ public class ProductService(IProductRepository repository) : IProductService
 
     public async Task<ProductDetailsDto?> Update(ProductUpdateDto product)
         => await repository.Update(product);
+
+    public async Task<IEnumerable<ProductBasicInfoDto>> SearchProducts(string searchTerm)
+        => await repository.SearchProducts(searchTerm);
 }

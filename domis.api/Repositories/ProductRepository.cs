@@ -5,10 +5,12 @@ using domis.api.DTOs.Product;
 using domis.api.Models;
 using domis.api.Repositories.Helpers;
 using domis.api.Repositories.Queries;
+using MailKit.Search;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using Serilog;
 using System.Data;
+using System.Data.Common;
 
 namespace domis.api.Repositories;
 
@@ -20,6 +22,7 @@ public interface IProductRepository
     Task<bool> NivelacijaUpdateProductBatch(IEnumerable<NivelacijaRecord> records);
     Task<IEnumerable<ProductBasicInfoDto>> GetProductsBasicInfoByCategory(int categoryId);
     Task<IEnumerable<ProductQuantityTypeDto>> GetAllQuantityTypes();
+    Task<IEnumerable<ProductBasicInfoDto>> SearchProducts(string query);
 }
 
 public class ProductRepository(IDbConnection connection, IMapper mapper) : IProductRepository
@@ -160,6 +163,16 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
         }
     }
 
+    public async Task<IEnumerable<ProductBasicInfoDto>> SearchProducts(string searchTerm)
+    {
+        var query = @"
+            SELECT id AS Id, product_name AS Name, sku as Sku
+            FROM domis.product
+            WHERE product_name LIKE @SearchTerm OR CAST(sku AS TEXT) ILIKE @SearchTerm";
+
+        var products = await connection.QueryAsync<ProductBasicInfoDto>(query, new { SearchTerm = "%" + searchTerm + "%" });
+        return products;
+    }
 
     #region ExtensionsMethods
     private static Price CalculatePrices(decimal unitPrice, Size? productSize)

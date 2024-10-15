@@ -119,6 +119,11 @@ declare global {
     box: number;
     pallet: number;
   }
+  interface ProductBasicInfo {
+    id: number;
+    name: string;
+    sku: number;
+  }
 
   interface Cart {
     cartId: number;
