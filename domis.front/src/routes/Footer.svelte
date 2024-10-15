@@ -37,6 +37,8 @@
     </div>
     <div class="flex flex-col gap-y-2">
       <a href="/prodajna-mesta" class="font-semibold tracking-wider">Prodajna mesta</a>
+      <a href="/montaza-ugradnja" class="font-semibold tracking-wider">Montaža i ugradnja - video</a>
+
     </div>
   </div>
   <p class="text-center font-light text-xs text-gray-600 mt-2">
