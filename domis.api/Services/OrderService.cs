@@ -1,4 +1,5 @@
 using domis.api.DTOs.Order;
+using domis.api.Models;
 using domis.api.Repositories;
 
 namespace domis.api.Services;
@@ -12,8 +13,7 @@ public interface IOrderService
     Task<bool> UpdateOrderShipping(int id, OrderShippingDto orderShipping);
     Task<OrderShippingDto?> GetOrderShippingById(int id);
     Task<bool> DeleteOrderShippingById(int id);
-    Task<int> CreateOrderFromCart(int cartId, int paymentStatusId, int orderShippingId, int paymentVendorTypeId,
-        decimal paymentAmount, string comment);
+    Task<int> CreateOrderFromCart(CreateOrderRequest createOrder);
 
     Task<bool> UpdateOrderStatus(int orderId, int statusId);
     Task<OrderDetailsDto?> GetOrderDetailsById(int orderId);
@@ -48,9 +48,8 @@ public class OrderService(IOrderRepository orderRepository) : IOrderService
         await orderRepository.DeleteOrderShippingById(id);
 
 
-    public async Task<int> CreateOrderFromCart(int cartId, int paymentStatusId, int orderShippingId, int paymentVendorTypeId,
-        decimal paymentAmount, string comment) =>
-        await orderRepository.CreateOrderFromCartAsync(cartId, paymentStatusId, orderShippingId, paymentVendorTypeId, paymentAmount, comment);
+    public async Task<int> CreateOrderFromCart(CreateOrderRequest createOrder) =>
+        await orderRepository.CreateOrderFromCartAsync(createOrder);
 
     public async Task<bool> UpdateOrderStatus(int orderId, int statusId) => 
         await orderRepository.UpdateOrderStatusAsync(orderId, statusId);

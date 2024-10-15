@@ -84,4 +84,19 @@ public static class CartQueries
     SET quantity = @Quantity, modified_at = @ModifiedAt
     WHERE cart_id = @CartId AND product_id = @ProductId
     RETURNING Id;";
+
+    public const string GetCartItemsWithProductPriceByCartId = @"
+        SELECT 
+            ci.id AS CartItemId, 
+            ci.cart_id AS CartId, 
+            ci.product_id AS ProductId,
+            p.id AS ProductId,
+            p.product_name AS ProductName,
+            p.price AS ProductPrice
+        FROM 
+            domis.cart_item ci
+        JOIN 
+            domis.product p ON ci.product_id = p.id
+        WHERE 
+            ci.cart_id = @CartId;
 }

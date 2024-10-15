@@ -10,7 +10,7 @@
         <p>Matični broj: 20014938</p>
         <p>Tekući račun: 265-3300310018509-64</p>
         <p>Sremska Mitrovica - Laćarak 1. novembar 10</p>
-        <p>Potvrda o registraciji</p>
+        <a href="https://domisenterijeri.com/domis/img/2020/10/Potvrda-o-izvrsenom-evidentiranju-za-pdv.pdf">Potvrda o registraciji</a>
       </div>
     </div>
     <div class="flex flex-col gap-y-4">

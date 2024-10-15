@@ -62,13 +62,7 @@ public static class OrderEndpoints
         
         group.MapPost("/", async ([FromBody] CreateOrderRequest request, IOrderService orderService) =>
         {
-            var response = await orderService.CreateOrderFromCart(
-                request.cartId, 
-                request.paymentStatusId, 
-                request.orderShippingId, 
-                request.paymentVendorTypeId, 
-                request.paymentAmount, 
-                request.comment);
+            var response = await orderService.CreateOrderFromCart(request);
 
             return Results.Ok(new CreateOrderResponse(response));
         }).WithDescription("Create new order based on cart id");
