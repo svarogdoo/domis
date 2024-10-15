@@ -98,5 +98,5 @@ public static class CartQueries
         JOIN 
             domis.product p ON ci.product_id = p.id
         WHERE 
-            ci.cart_id = @CartId;
+            ci.cart_id = @CartId";
 }
