@@ -51,7 +51,7 @@ public record CreateCartItemRequest(int? CartId, int ProductId, decimal Quantity
 //    public decimal Quantity { get; set; }
 //}
 
-public record CreateCartItemResponse(int? cartItemId);
+public record CreateCartItemResponse(int? cartId);
 
 public record UpdateCartItemRequest(int cartItemId, decimal quantity);
 public record UpdateCartItemResponse(bool updated);
