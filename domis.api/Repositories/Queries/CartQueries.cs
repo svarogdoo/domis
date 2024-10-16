@@ -132,4 +132,10 @@ public static class CartQueries
             domis.product p ON ci.product_id = p.id
         WHERE 
             ci.cart_id = @CartId;";
+
+    public const string GetCartItemQuantity = @"
+        SELECT quantity AS Quantity 
+        FROM domis.cart_item 
+        WHERE cart_id = @CartId AND product_id = @ProductId;"
+    ;
 }
