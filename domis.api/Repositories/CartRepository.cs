@@ -133,7 +133,7 @@ public class CartRepository(IDbConnection connection) : ICartRepository
             };
 
             var newCartItemId = await connection.ExecuteScalarAsync<int>(CartQueries.CreateCartItem, parameters);
-            return newCartItemId;
+            return cartId;
         }
         catch (Exception ex)
         {
