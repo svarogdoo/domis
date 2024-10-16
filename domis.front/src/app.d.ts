@@ -161,6 +161,9 @@ declare global {
     cartItemId: number;
     quantity: number;
   }
+  interface CartItemResponse {
+    cartId: number;
+  }
 
   interface CheckoutFormData {
     shippingDetails: ShippingDetails;
@@ -188,7 +191,6 @@ declare global {
     paymentStatusId;
     orderShippingId: number;
     paymentVendorTypeId;
-    paymentAmount; // zasto ja saljem iznos sa fronta, bolje da se uzme iz karta?
     comment: string;
   }
   interface OrderResponse {

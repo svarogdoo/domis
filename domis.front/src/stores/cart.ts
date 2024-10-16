@@ -7,7 +7,7 @@ import {
 } from "../services/cart-service";
 
 function createCart() {
-  const { subscribe, set } = writable<Cart>();
+  const { subscribe, set, update } = writable<Cart>();
 
   const getCartId = () => {
     const currentCart = get(cart);
@@ -23,7 +23,12 @@ function createCart() {
     },
     add: async (product: CartProductDto) => {
       product.cartId = getCartId();
-      await addCartItem(product);
+      const cartItemResponse = await addCartItem(product);
+      update((currentCart) => ({
+        ...currentCart,
+        cartId: cartItemResponse.cartId || currentCart?.cartId,
+      }));
+
       cart.initialize();
     },
     remove: async (cartItemId: number) => {

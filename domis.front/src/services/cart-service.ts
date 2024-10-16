@@ -16,7 +16,8 @@ export function createCat(user: CartUser) {
 
 export function getCart(cartId?: number) {
   try {
-    return fetchData<Cart>(`${API_URL}/api/cart?cartId=${cartId}`);
+    if (cartId) return fetchData<Cart>(`${API_URL}/api/cart?cartId=${cartId}`);
+    else return fetchData<Cart>(`${API_URL}/api/cart`);
   } catch {
     return null;
   }
@@ -28,7 +29,7 @@ export function addCartItem(cartProduct: CartProductDto) {
     productId: cartProduct.productId,
     quantity: cartProduct.quantity,
   };
-  return fetchDataWithJsonBody<CartProductDto>(
+  return fetchDataWithJsonBody<CartItemResponse>(
     `${API_URL}/api/cart/cart-item`,
     "post",
     JSON.stringify(cartProductDto)

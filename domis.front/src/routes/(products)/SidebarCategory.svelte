@@ -1,7 +1,7 @@
 <script lang="ts">
   import dropdownIcon from "$lib/icons/dropdown.svg";
   export let category: Category;
-  export let isHamburger: boolean;
+  export let isHamburger: boolean = false;
 
   let random = Math.random();
 

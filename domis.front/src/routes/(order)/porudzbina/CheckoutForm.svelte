@@ -225,6 +225,7 @@
       />
     </div>
 
+    <!-- Phone number -->
     <div class="relative">
       <InputString
         bind:value={phoneNumber}

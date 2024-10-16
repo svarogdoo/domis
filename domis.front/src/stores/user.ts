@@ -27,17 +27,16 @@ const createUserStore = () => {
 
     async initialize() {
       const savedUser = localStorage.getItem("user");
-      let userState;
       if (savedUser) {
-        userState = JSON.parse(savedUser);
+        let userState = JSON.parse(savedUser);
         set(userState);
         setAuthToken(userState.token);
+
+        console.info(userState);
       } else {
         set(userInitialState);
         localStorage.setItem("user", JSON.stringify(userInitialState));
       }
-
-      return userState.user.userId ?? null;
     },
 
     async loginUser(email: string, password: string) {
