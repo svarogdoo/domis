@@ -20,6 +20,8 @@ public interface ICartRepository
     Task<bool> DeleteCartItemAsync(int cartItemId);
     Task<bool> DeleteCartAsync(int cartId);
     Task<CartDto?> GetCartWithItemsAndProductDetailsAsync(int cartId);
+    Task<CartDto?> GetCartWithItemsAndProductDetailsAsyncByUserId(string userId);
+
 
 }
 public class CartRepository(IDbConnection connection) : ICartRepository
@@ -249,6 +251,49 @@ public class CartRepository(IDbConnection connection) : ICartRepository
         {
             Log.Error(ex,$"An error occurred while getting the cart details: {ex.Message}");
             throw; 
+        }
+    }
+
+    public async Task<CartDto?> GetCartWithItemsAndProductDetailsAsyncByUserId(string userId)
+    {
+        try
+        {
+            var cartDictionary = new Dictionary<int, CartDto>();
+
+            var result = await connection.QueryAsync<CartDto, CartItemDto, ProductCartDetailsDto, string, string, CartDto>(
+                CartQueries.GetCartByUser,
+                (cart, item, product, image, status) =>
+                {
+                    if (!cartDictionary.TryGetValue(cart.CartId, out var currentCart))
+                    {
+                        currentCart = cart;
+                        currentCart.Items = [];
+                        cartDictionary.Add(currentCart.CartId, currentCart);
+                    }
+
+                    if (item is not null
+                        && currentCart.Items.Find(i => i.CartItemId == item.CartItemId) == null)
+                    {
+                        item.ProductDetails = product;
+                        item.ProductDetails.Image = image;
+
+                        currentCart.Items.Add(item);
+                    }
+
+                    currentCart.Status = status; // Assign the status to the cart
+
+                    return currentCart;
+                },
+                new { UserId = userId },
+                splitOn: "CartItemId, Name, Url, Status"
+            );
+
+            return cartDictionary.Values.FirstOrDefault();
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, $"An error occurred while getting the cart details: {ex.Message}");
+            throw;
         }
     }
 }
