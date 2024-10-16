@@ -15,7 +15,11 @@ export function createCat(user: CartUser) {
 }
 
 export function getCart(cartId?: number) {
-  return fetchData<Cart>(`${API_URL}/api/cart?cartId=${cartId}`);
+  try {
+    return fetchData<Cart>(`${API_URL}/api/cart?cartId=${cartId}`);
+  } catch {
+    return null;
+  }
 }
 
 export function addCartItem(cartProduct: CartProductDto) {

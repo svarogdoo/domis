@@ -5,30 +5,16 @@
   import { getCategoryProducts } from "../../../../services/category-service";
   import { getLastSlug } from "../../../../helpers/slugParsing";
 
+  export let data;
+
   let categoryDetails: CategoryDetails;
   let products: Array<CategoryProduct> = [];
-  let slug;
   let isOpen = false;
   let sortType = "low-to-high";
 
-  $: slug = $page.params.slug;
-  $: if (slug) {
-    setCategoryData(slug);
-  }
+  $: products = data.props.products;
+  $: categoryDetails = data.props.category;
   $: sortProducts(sortType);
-
-  async function setCategoryData(slug: string) {
-    let lastSlug = getLastSlug(slug);
-    if (lastSlug) {
-      let categoryData = await getCategoryProducts(Number.parseInt(lastSlug));
-      products = categoryData.products;
-      categoryDetails = categoryData.category;
-    }
-  }
-
-  onMount(async () => {
-    setCategoryData(slug);
-  });
 
   function toggleDropdown() {
     isOpen = !isOpen;

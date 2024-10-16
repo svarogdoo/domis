@@ -4,13 +4,17 @@
   import cartIcon from "$lib/icons/cart.svg";
   import Hamburger from "../components/Hamburger.svelte";
   import { cart } from "../stores/cart";
-  import { onDestroy } from "svelte";
+  import { onDestroy, onMount } from "svelte";
   import UserDropdown from "./UserDropdown.svelte";
   import { productService } from "../services/product-service";
+  import { goto } from "$app/navigation";
+
   export let sidebar = false;
-  let searchTerm: string = '';
+
+  let searchTerm: string = "";
   let searchResults: Array<ProductBasicInfo> = [];
   let cartProducts: Array<CartProduct>;
+  let isDropdownOpen: boolean = false;
 
   const unsubscribe = cart.subscribe((value) => {
     if (value && value.items) cartProducts = value.items;
@@ -30,11 +34,32 @@
   }
 
   function debounceSearch() {
+    isDropdownOpen = true;
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(() => {
       handleSearchInput();
-    }, 2000);
+    }, 700);
   }
+
+  const handleClickOutside = (event: MouseEvent) => {
+    const searchField = document.getElementById("search-option");
+    if (searchField && !searchField.contains(event.target as Node)) {
+      isDropdownOpen = false;
+    }
+  };
+
+  function handleSearchOptionClick(product: ProductBasicInfo) {
+    isDropdownOpen = false;
+    searchTerm = product.name;
+    goto(`/proizvod/${product.id}`);
+  }
+
+  onMount(() => {
+    document.addEventListener("click", handleClickOutside);
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  });
 </script>
 
 <header class="flex flex-col items-center w-full mb-4">
@@ -66,11 +91,18 @@
             on:input={debounceSearch}
           />
 
-          {#if searchResults.length > 0}
-            <ul class="absolute top-full left-0 w-full bg-white border border-gray-300 rounded-md mt-1 z-50">
+          {#if isDropdownOpen && searchResults.length > 0}
+            <ul
+              class="absolute top-full left-0 w-full bg-white border border-gray-300 rounded-md mt-1 z-50"
+            >
               {#each searchResults as product}
-                <li class="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                  <a href={`/products/${product.id}`}>{product.name} ({product.sku})</a>
+                <li
+                  id="search-option"
+                  class="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                >
+                  <button on:click={() => handleSearchOptionClick(product)}
+                    >{product.name} ({product.sku})</button
+                  >
                 </li>
               {/each}
             </ul>

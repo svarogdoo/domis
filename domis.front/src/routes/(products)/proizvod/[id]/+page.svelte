@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from "svelte";
+  import { beforeUpdate, onMount } from "svelte";
   import { page } from "$app/stores";
   import { getLastSlug } from "../../../../helpers/slugParsing";
   import { getProduct } from "../../../../services/product-service";
@@ -12,31 +12,19 @@
   import { mapQuantityTypeToString, QuantityType } from "../../../../enums";
   import { handleImageError } from "../../../../helpers/imageFallback";
 
-  let product: Product;
+  export let data;
+
+  $: product = data.props.product;
+
   let quantityType: QuantityType = QuantityType.Piece;
   let quantityTypeString = mapQuantityTypeToString(quantityType);
   let featuredImage = fallbackImage;
-  let slug;
   let isExtraChecked = false;
 
-  $: slug = $page.params.slug;
   $: if (product?.images) {
     let imageUrl = product?.images.find((x) => x.type === "Featured")?.url;
     if (imageUrl) featuredImage = imageUrl;
   }
-
-  async function setProduct(slug: string) {
-    let lastSlug = getLastSlug(slug);
-    if (lastSlug) {
-      product = await getProduct(Number.parseInt(lastSlug));
-      quantityType = product.quantityType ?? QuantityType.Piece;
-      quantityTypeString = mapQuantityTypeToString(quantityType);
-    }
-  }
-
-  onMount(async () => {
-    setProduct(slug);
-  });
 </script>
 
 {#if product}
