@@ -1,5 +1,6 @@
 using System.Data;
 using Dapper;
+using domis.api.Common;
 using domis.api.DTOs.Cart;
 using domis.api.DTOs.Image;
 using domis.api.DTOs.Order;
@@ -15,7 +16,7 @@ public interface ICartRepository
     Task<IEnumerable<OrderStatusDto>?> GetAllOrderStatuses();
     Task<int> CreateCartAsync(string? userId);
     Task<bool> UpdateCartStatusAsync(int cartId, int statusId);
-    Task<int?> CreateCartItemAsync(int cartId, int productId, decimal quantity);
+    Task<int?> CreateCartItemAsync(int? cartId, int productId, decimal quantity, string? userId);
     Task<bool> UpdateCartItemQuantityAsync(int cartItemId, decimal quantity);
     Task<bool> DeleteCartItemAsync(int cartItemId);
     Task<bool> DeleteCartAsync(int cartId);
@@ -86,33 +87,34 @@ public class CartRepository(IDbConnection connection) : ICartRepository
         }
     }
     
-    public async Task<int?> CreateCartItemAsync(int cartId, int productId, decimal quantity)
+    public async Task<int?> CreateCartItemAsync(int? cartId, int productId, decimal quantity, string? userId)
     {
         try
         {
             var cartExists = await connection.ExecuteScalarAsync<bool>(CartQueries.CheckIfCartExists, new { CartId = cartId });
-            if (!cartExists) return null;
-            //{
-            //    throw new NotFoundException($"Cart with ID {cartId} does not exist.");
-            //}
+
+            //if cart does not exist -> create new one
+            if (!cartExists)
+            {
+                cartId = await CreateCartAsync(userId);
+            }
 
             var productExists = await connection.ExecuteScalarAsync<bool>(ProductQueries.CheckIfProductExists, new { ProductId = productId });
-            if (!productExists) return null;
-            //{
-            //    throw new NotFoundException($"Product with ID {productId} does not exist.");
-            //}
+            if (!productExists) throw new NotFoundException($"Product with ID {productId} does not exist.");
 
             // Check if the product exists in the cart
             var cartItemExists = await connection.ExecuteScalarAsync<bool>(CartQueries.CheckIfProductExistsInCart, new { CartId = cartId, ProductId = productId });
 
             if (cartItemExists)
             {
+                var currentQuantity = await connection.ExecuteScalarAsync<decimal>(CartQueries.GetCartItemQuantity, new { CartId = cartId, ProductId = productId });
+
                 // Update the quantity of the existing cart item
                 var updateParameters = new
                 {
                     CartId = cartId,
                     ProductId = productId,
-                    Quantity = quantity,
+                    Quantity = currentQuantity + quantity,
                     ModifiedAt = DateTime.UtcNow
                 };
 
