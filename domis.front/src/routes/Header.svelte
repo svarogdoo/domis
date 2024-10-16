@@ -6,9 +6,10 @@
   import { cart } from "../stores/cart";
   import { onDestroy } from "svelte";
   import UserDropdown from "./UserDropdown.svelte";
-
+  import { productService } from "../services/product-service";
   export let sidebar = false;
-  let searchTerm: string;
+  let searchTerm: string = '';
+  let searchResults: Array<ProductBasicInfo> = [];
   let cartProducts: Array<CartProduct>;
 
   const unsubscribe = cart.subscribe((value) => {
@@ -16,6 +17,24 @@
   });
 
   onDestroy(() => unsubscribe());
+
+  // Function to handle search input and call the product service
+  let debounceTimer: number;
+
+  async function handleSearchInput() {
+    if (searchTerm.trim().length >= 3) {
+      searchResults = await productService.searchProducts(searchTerm);
+    } else {
+      searchResults = [];
+    }
+  }
+
+  function debounceSearch() {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      handleSearchInput();
+    }, 2000);
+  }
 </script>
 
 <header class="flex flex-col items-center w-full mb-4">
@@ -44,8 +63,18 @@
             placeholder="Pretražite prodavnicu (upišite ime ili šifru proizvoda)"
             autocomplete="off"
             bind:value={searchTerm}
-            on:input
+            on:input={debounceSearch}
           />
+
+          {#if searchResults.length > 0}
+            <ul class="absolute top-full left-0 w-full bg-white border border-gray-300 rounded-md mt-1 z-50">
+              {#each searchResults as product}
+                <li class="px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                  <a href={`/products/${product.id}`}>{product.name} ({product.sku})</a>
+                </li>
+              {/each}
+            </ul>
+          {/if}
         </div>
       </li>
       <div class="flex items-center gap-x-4">

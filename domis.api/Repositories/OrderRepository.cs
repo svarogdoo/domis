@@ -1,6 +1,8 @@
 using System.Data;
 using Dapper;
+using domis.api.DTOs.Cart;
 using domis.api.DTOs.Order;
+using domis.api.Models;
 using domis.api.Repositories.Queries;
 using Serilog;
 
@@ -15,8 +17,7 @@ public interface IOrderRepository
     Task<bool> UpdateOrderShipping(int id, OrderShippingDto orderShipping);
     Task<OrderShippingDto?> GetOrderShippingById(int id);
     Task<bool> DeleteOrderShippingById(int id);
-    Task<int> CreateOrderFromCartAsync(int cartId, int paymentStatusId, int orderShippingId, int paymentVendorTypeId,
-        decimal paymentAmount, string comment);
+    Task<int> CreateOrderFromCartAsync(CreateOrderRequest createOrder);
 
     Task<bool> UpdateOrderStatusAsync(int orderId, int statusId);
     Task<OrderDetailsDto?> GetOrderDetailsByIdAsync(int orderId);
@@ -151,20 +152,23 @@ public class OrderRepository(IDbConnection connection) : IOrderRepository
         }
     }
     
-    public async Task<int> CreateOrderFromCartAsync(int cartId, int paymentStatusId, int orderShippingId, int paymentVendorTypeId, decimal paymentAmount, string comment)
+    public async Task<int> CreateOrderFromCartAsync(CreateOrderRequest createOrder)
     {
         connection.Open();
         using var transaction = connection.BeginTransaction();
         try
         {
+            var cartItems = await connection.QueryAsync<CartItemWithPriceDto>(CartQueries.GetCartItemsWithProductPriceByCartId, new { CartId = createOrder.cartId }, transaction);
+            var totalAmount = cartItems.Sum(i => i.ProductPrice);
+
             var orderId = await connection.QuerySingleAsync<int>(OrderQueries.CreateOrder, new
             {
-                CartId = cartId,
-                OrderShippingId = orderShippingId,
-                PaymentStatusId = paymentStatusId,
-                PaymentVendorTypeId = paymentVendorTypeId,
-                PaymentAmount = paymentAmount,
-                Comment = comment,
+                CartId = createOrder.cartId,
+                OrderShippingId = createOrder.orderShippingId,
+                PaymentStatusId = createOrder.paymentStatusId,
+                PaymentVendorTypeId = createOrder.paymentVendorTypeId,
+                PaymentAmount = totalAmount,
+                Comment = createOrder.comment,
                 CreatedAt = DateTime.UtcNow
             }, transaction);
 
@@ -172,13 +176,13 @@ public class OrderRepository(IDbConnection connection) : IOrderRepository
             await connection.ExecuteAsync(OrderQueries.CreateOrderItems, new
             {
                 OrderId = orderId,
-                CartId = cartId,
+                CartId = createOrder.cartId,
                 CreatedAt = DateTime.UtcNow
             }, transaction);
 
             await connection.ExecuteAsync(CartQueries.UpdateCartStatus, new
             {
-                CartId = cartId,
+                CartId = createOrder.cartId,
                 StatusId = 3 //converted to order
             }, transaction);
 
@@ -189,7 +193,7 @@ public class OrderRepository(IDbConnection connection) : IOrderRepository
         catch (Exception ex)
         {
             transaction.Rollback();
-            Log.Error(ex, $"An error occurred while creating an order from cart ID {cartId}: {ex.Message}");
+            Log.Error(ex, $"An error occurred while creating an order from cart ID {createOrder.cartId}: {ex.Message}");
             throw;
         }
         finally

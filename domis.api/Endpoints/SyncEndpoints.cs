@@ -20,6 +20,12 @@ public static class SyncEndpoints
             return Results.Ok(response);
         }).WithDescription("update exchange rates");
 
+        group.MapGet("/sales-points", async (ISyncService syncService) =>
+        {
+            var response = await syncService.GetSalesPoints();
+            return Results.Ok(response);
+        }).WithDescription("gets sales points");
+
         group.MapGet("/print-env-variables", () =>
         {
             var sendGridApiKey = Environment.GetEnvironmentVariable("SENDGRID_API_KEY") ?? "Not Set";
