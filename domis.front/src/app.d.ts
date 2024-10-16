@@ -120,6 +120,11 @@ declare global {
     box: number;
     pallet: number;
   }
+  interface ProductBasicInfo {
+    id: number;
+    name: string;
+    sku: number;
+  }
 
   interface Cart {
     cartId: number;
@@ -188,6 +193,17 @@ declare global {
   }
   interface OrderResponse {
     orderId: number;
+  }
+
+  interface SalesPoint {
+    id: number;
+    name: string;
+    address: string;
+    phoneNumbers: string[];
+    workingHours: string;
+    image?: string;
+    googleMapPin?: string;
+    optionalInfo?: string;
   }
 }
 

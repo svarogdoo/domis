@@ -11,6 +11,7 @@ public interface ISyncService
 {
     Task<bool> NivelacijaUpdateBatch();
     Task<bool> UpdateExchangeRate();
+    Task<IEnumerable<SalesPoint>> GetSalesPoints();
 }
 
 public class SyncService : ISyncService
@@ -27,13 +28,15 @@ public class SyncService : ISyncService
     private readonly IExchangeRateRepository _exchangeRateRepository;
     private readonly HttpClient _httpClient;
     private readonly IConfiguration _configuration;
+    private readonly ISyncRepository _syncRepository;
 
-    public SyncService(IProductRepository productRepo, IExchangeRateRepository exchangeRateRepo, IConfiguration configuration, HttpClient httpClient)
+    public SyncService(IProductRepository productRepo, IExchangeRateRepository exchangeRateRepo, ISyncRepository syncRepo, IConfiguration configuration, HttpClient httpClient)
     {
         _productRepository = productRepo;
         _exchangeRateRepository = exchangeRateRepo;
         _httpClient = httpClient;
         _configuration = configuration;
+        _syncRepository = syncRepo;
 
         _nbsUsername = _configuration["NBSSettings:Username"] ?? string.Empty;
         _nbsPassword = _configuration["NBSSettings:Password"] ?? string.Empty;
@@ -166,4 +169,7 @@ public class SyncService : ISyncService
         var dateToUse = belgradeDateTime.Date;
         return dateToUse;
     }
+
+    public async Task<IEnumerable<SalesPoint>> GetSalesPoints()
+        => await _syncRepository.GetSalesPoints();
 }

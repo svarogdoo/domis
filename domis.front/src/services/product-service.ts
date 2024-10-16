@@ -9,6 +9,11 @@ export function getProducts() {
   return fetchData<Array<Product>>(`${API_URL}/api/products`);
 }
 
+export async function searchProducts(searchTerm: string) {
+  const url = `${API_URL}/api/products/search?searchTerm=${encodeURIComponent(searchTerm)}`;
+  return fetchData<Array<ProductBasicInfo>>(url, "GET");
+}
+
 export async function putProduct(product: any) {
   try {
     const response = await fetch(`${API_URL}/api/products`, {
@@ -35,3 +40,11 @@ export async function getCategoryProductsBasicInfo(categoryId: string) {
     `${API_URL}/api/products/basic-info?categoryId=${categoryId}`
   );
 }
+
+export const productService = {
+  getProduct,
+  getProducts,
+  searchProducts,
+  putProduct,
+  getCategoryProductsBasicInfo
+};
