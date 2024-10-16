@@ -30,9 +30,10 @@ public static class AuthConfiguration
             //options.SignIn.RequireConfirmedEmail = true;
         });
 
-        services.AddAuthentication()
-                .AddBearerToken(IdentityConstants.BearerScheme);
-
+        services.AddAuthentication().AddBearerToken(IdentityConstants.BearerScheme, options => {
+            options.BearerTokenExpiration = TimeSpan.FromHours(12);
+        });
+     
         services.AddAuthorization();
 
         services.AddSwaggerGen(c =>
