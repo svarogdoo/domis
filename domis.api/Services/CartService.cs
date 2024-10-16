@@ -9,7 +9,7 @@ public interface ICartService
     Task<IEnumerable<OrderStatusDto>?> GetAllOrderStatuses();
     Task<int> CreateCart(string? userId);
     Task<bool> UpdateCartStatus(int cartId, int statusId);
-    Task<int?> CreateCartItem(int cartId, int productId, decimal quantity);
+    Task<int?> CreateCartItem(int? cartId, int productId, decimal quantity, string? userId);
     Task<bool> UpdateCartItemQuantity(int cartItemId, decimal quantity);
     Task<bool> DeleteCartItem(int cartItemId);
     Task<bool> DeleteCart(int cartId);
@@ -28,8 +28,8 @@ public class CartService(ICartRepository cartRepository) : ICartService
     public async Task<bool> UpdateCartStatus(int cartId, int statusId) => 
         await cartRepository.UpdateCartStatusAsync(cartId, statusId);
     
-    public async Task<int?> CreateCartItem(int cartId, int productId, decimal quantity) => 
-        await cartRepository.CreateCartItemAsync(cartId, productId, quantity);
+    public async Task<int?> CreateCartItem(int? cartId, int productId, decimal quantity, string? userId) => 
+        await cartRepository.CreateCartItemAsync(cartId, productId, quantity, userId);
 
     public async Task<bool> UpdateCartItemQuantity(int cartItemId, decimal quantity) => 
         await cartRepository.UpdateCartItemQuantityAsync(cartItemId, quantity);

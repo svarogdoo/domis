@@ -22,7 +22,7 @@ public record DeleteCartResponse(bool deleted);
 //    [Required] [Range(0.01, double.MaxValue, ErrorMessage = "Quantity must be greater than zero.")]decimal quantity
 //);
 
-public record CreateCartItemRequest(int CartId, int ProductId, decimal Quantity);
+public record CreateCartItemRequest(int? CartId, int ProductId, decimal Quantity);
 
 
 //public record CreateCartItemRequest(

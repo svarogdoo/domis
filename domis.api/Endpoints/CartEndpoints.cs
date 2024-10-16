@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
+using static System.Net.WebRequestMethods;
 
 namespace domis.api.Endpoints;
 
@@ -43,8 +44,9 @@ public static class CartEndpoints
             return Results.Ok(new DeleteCartResponse(response));
         }).WithDescription("Delete cart");
         
-        group.MapPost("/cart-item", async ([FromBody]CreateCartItemRequest request, IValidator<CreateCartItemRequest> validator, ICartService cartService) =>
+        group.MapPost("/cart-item", async Task<IResult> ([FromBody]CreateCartItemRequest request, IValidator<CreateCartItemRequest> validator, ICartService cartService, HttpContext http) =>
         {
+
             //var validationResults = new List<ValidationResult>();
             //var validationContext = new ValidationContext(request);
             //if (!Validator.TryValidateObject(request, validationContext, validationResults, true))
@@ -61,9 +63,11 @@ public static class CartEndpoints
 
             try
             {
-                var response = await cartService.CreateCartItem(request!.CartId, request!.ProductId, request!.Quantity);
+                var userId = http.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                var response = await cartService.CreateCartItem(request.CartId, request!.ProductId, request!.Quantity, userId);
                 return response == null
-                    ? Results.BadRequest("Cart or Product does not exist.")
+                    ? Results.BadRequest("This product does not exist.")
                     : Results.Ok(new CreateCartItemResponse(response.Value));
             }
             catch (Exception ex)
@@ -71,7 +75,6 @@ public static class CartEndpoints
                 Log.Error(ex, $"An unexpected error occurred: {ex.Message}");
                 return Results.StatusCode(500);
             }
-
         }).WithDescription("Create new cart item");
         
         group.MapPut("/cart-item-quantity", async ([FromBody]UpdateCartItemRequest request ,ICartService cartService) =>
