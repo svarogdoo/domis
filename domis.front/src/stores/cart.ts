@@ -18,20 +18,21 @@ function createCart() {
   return {
     subscribe,
     initialize: async () => {
-      set(await getCart(getCartId()));
+      const cart = await getCart(getCartId());
+      if (cart) set(cart);
     },
     add: async (product: CartProductDto) => {
       product.cartId = getCartId();
       await addCartItem(product);
-      set(await getCart(getCartId()));
+      cart.initialize();
     },
     remove: async (cartItemId: number) => {
       await removeCartItem(cartItemId);
-      set(await getCart(getCartId()));
+      cart.initialize();
     },
     update: async (cartItemId: number, quantity: number) => {
       await updateCartItem({ cartItemId: cartItemId, quantity: quantity });
-      set(await getCart(getCartId()));
+      cart.initialize();
     },
   };
 }
