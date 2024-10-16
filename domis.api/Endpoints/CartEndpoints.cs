@@ -70,6 +70,11 @@ public static class CartEndpoints
                     ? Results.BadRequest("This product does not exist.")
                     : Results.Ok(new CreateCartItemResponse(response.Value));
             }
+            catch (NotFoundException ex)
+            {
+                Log.Warning(ex, ex.Message);
+                return Results.NotFound(ex.Message);
+            }
             catch (Exception ex)
             {
                 Log.Error(ex, $"An unexpected error occurred: {ex.Message}");

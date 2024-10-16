@@ -1,5 +1,6 @@
 using System.Data;
 using Dapper;
+using domis.api.Common;
 using domis.api.DTOs.Cart;
 using domis.api.DTOs.Image;
 using domis.api.DTOs.Order;
@@ -93,17 +94,13 @@ public class CartRepository(IDbConnection connection) : ICartRepository
             var cartExists = await connection.ExecuteScalarAsync<bool>(CartQueries.CheckIfCartExists, new { CartId = cartId });
 
             //if cart does not exist -> create new one
-            if (!cartExists) await CreateCartAsync(userId);
-
-            //{
-            //    throw new NotFoundException($"Cart with ID {cartId} does not exist.");
-            //}
+            if (!cartExists)
+            {
+                cartId = await CreateCartAsync(userId);
+            }
 
             var productExists = await connection.ExecuteScalarAsync<bool>(ProductQueries.CheckIfProductExists, new { ProductId = productId });
-            if (!productExists) return null;
-            //{
-            //    throw new NotFoundException($"Product with ID {productId} does not exist.");
-            //}
+            if (!productExists) throw new NotFoundException($"Product with ID {productId} does not exist.");
 
             // Check if the product exists in the cart
             var cartItemExists = await connection.ExecuteScalarAsync<bool>(CartQueries.CheckIfProductExistsInCart, new { CartId = cartId, ProductId = productId });

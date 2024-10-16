@@ -7,12 +7,6 @@ public class CreateCartItemRequestValidator : AbstractValidator<CreateCartItemRe
 {
     public CreateCartItemRequestValidator()
     {
-        RuleFor(x => x.CartId)
-            .NotNull()
-            .NotEmpty()
-            .GreaterThan(0)
-            .WithMessage("CartId must be greater than zero.");
-
         RuleFor(x => x.ProductId)
             .NotNull()
             .NotEmpty()
