@@ -5,6 +5,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 
 namespace domis.api.Endpoints;
 
@@ -93,6 +94,32 @@ public static class CartEndpoints
 
             return Results.Ok(response);
         }).WithDescription("Get cart with details");
+
+        group.MapGet("/", async Task<IResult> (HttpContext http, [FromQuery] int? cartId, ICartService cartService) =>
+        {
+            if (cartId is not null)
+            {
+                // Handle guest user with cartId
+                var guestCart = await cartService.GetCartWithItemsAndProductDetails((int)cartId);
+                return guestCart != null 
+                    ? Results.Ok(guestCart) 
+                    : Results.NotFound("Cart not found for guest user.");
+            }
+            else
+            {
+                // Extract user ID from the token for authenticated users
+                var userId = http.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (userId is null)
+                {
+                    return Results.Unauthorized();
+                }
+                // Handle authenticated user's cart
+                var userCart = await cartService.GetCartByUserId(userId);
+                return userCart != null
+                    ? Results.Ok(userCart)
+                    : Results.NotFound("Cart not found for authenticated user.");
+            }
+        }).WithDescription("Get cart for guest or authenticated user");
     }
 }
 
