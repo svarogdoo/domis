@@ -34,6 +34,7 @@ declare global {
     refreshToken: string;
   }
   interface UserProfileResponse {
+    id: number;
     email: string;
     firstName: string;
     lastName: string;

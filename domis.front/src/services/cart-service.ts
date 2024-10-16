@@ -6,11 +6,6 @@ import {
 } from "../helpers/fetch";
 import { API_URL } from "../config";
 
-let cartId: number = 3;
-// cart.subscribe((value) => {
-//   cartId = value.cartId;
-// });
-
 export function createCat(user: CartUser) {
   return fetchDataWithJsonBody<Cart>(
     `${API_URL}/api/cart`,
@@ -19,13 +14,13 @@ export function createCat(user: CartUser) {
   );
 }
 
-export function getCart() {
-  return fetchData<Cart>(`${API_URL}/api/cart/${cartId}`);
+export function getCart(cartId?: number) {
+  return fetchData<Cart>(`${API_URL}/api/cart?cartId=${cartId}`);
 }
 
 export function addCartItem(cartProduct: CartProductDto) {
   let cartProductDto: CartProductDto = {
-    cartId: cartId,
+    cartId: cartProduct.cartId,
     productId: cartProduct.productId,
     quantity: cartProduct.quantity,
   };

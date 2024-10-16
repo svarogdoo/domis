@@ -7,6 +7,7 @@
   import { page } from "$app/stores";
   import { onMount } from "svelte";
   import { cart } from "../stores/cart";
+  import { userStore } from "../stores/user";
 
   let open = false;
   let previousSlug: string;
@@ -21,7 +22,14 @@
     previousSlug = $page.url.pathname;
   }
 
-  onMount(() => cart.initialize());
+  onMount(() => {
+    initializeUserAndCart();
+  });
+
+  async function initializeUserAndCart() {
+    await userStore.initialize();
+    cart.initialize();
+  }
 </script>
 
 <div

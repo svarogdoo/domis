@@ -37,9 +37,11 @@
         };
 
         const orderResponse = await saveOrder(order);
-        // ako je proslo napraviti novi cart
+        cart.initialize(); // refresh cart after order complete
 
-        // cleanup carta
+        if (orderResponse) {
+          //todo: show some success popup
+        }
       }
     }
   }

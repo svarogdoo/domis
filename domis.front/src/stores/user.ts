@@ -1,25 +1,44 @@
 import { writable } from "svelte/store";
 import { userService } from "../services/user-service";
+import { setAuthToken } from "../helpers/fetch";
 
 const createUserStore = () => {
-  const { subscribe, set, update } = writable<UserState>({
+  const userInitialState = {
     isAuthenticated: false,
     user: null,
     token: null,
-  });
+  };
+  const { subscribe, set, update } = writable<UserState>(userInitialState);
 
   const setUser = (user: UserProfileResponse, token: string) => {
-    set({
+    const userState: UserState = {
       isAuthenticated: true,
       user,
       token,
-    });
+    };
+    set(userState);
+    localStorage.setItem("user", JSON.stringify(userState));
   };
 
   return {
     subscribe, //out-of-the-box
     set,
     update,
+
+    async initialize() {
+      const savedUser = localStorage.getItem("user");
+      let userState;
+      if (savedUser) {
+        userState = JSON.parse(savedUser);
+        set(userState);
+        setAuthToken(userState.token);
+      } else {
+        set(userInitialState);
+        localStorage.setItem("user", JSON.stringify(userInitialState));
+      }
+
+      return userState.user.userId ?? null;
+    },
 
     async loginUser(email: string, password: string) {
       const loginResponse = await userService.login(email, password);
@@ -42,11 +61,8 @@ const createUserStore = () => {
     },
 
     async logoutUser() {
-      set({
-        isAuthenticated: false,
-        user: null,
-        token: null,
-      });
+      set(userInitialState);
+      localStorage.setItem("user", JSON.stringify(userInitialState));
     },
 
     async getProfile() {
@@ -61,7 +77,7 @@ const createUserStore = () => {
       return await userService.forgotPassword(email);
     },
 
-    async resetPassword(email: string, resetCode: string, newPassword: string){
+    async resetPassword(email: string, resetCode: string, newPassword: string) {
       return await userService.resetPassword(email, resetCode, newPassword);
     },
 

@@ -2,7 +2,6 @@
   import CheckoutForm from "./CheckoutForm.svelte";
   import OrderDetails from "./OrderDetails.svelte";
 
-  let formComponent: any;
   let validate: () => CheckoutFormData | null;
 </script>
 
