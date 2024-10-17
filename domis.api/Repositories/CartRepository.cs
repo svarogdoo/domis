@@ -119,7 +119,7 @@ public class CartRepository(IDbConnection connection) : ICartRepository
                 };
 
                 var updatedCartItemId = await connection.ExecuteScalarAsync<int>(CartQueries.UpdateQuantityBasedOnCartAndProduct, updateParameters);
-                return updatedCartItemId;
+                return cartId;
             }
 
             // Insert a new cart item
