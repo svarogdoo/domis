@@ -8,7 +8,9 @@ using System.Text;
 using System.Text.Encodings.Web;
 using domis.api.Common;
 using domis.api.Models;
+using domis.api.Services;
 using Microsoft.AspNetCore.Authentication.BearerToken;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Http.Metadata;
 using Microsoft.AspNetCore.Identity;
@@ -16,6 +18,7 @@ using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
+using Serilog;
 
 namespace domis.api.Configuration;
 
@@ -53,7 +56,7 @@ public static class IdentityApiEndpointRouteBuilderExtensions
         // NOTE: We cannot inject UserManager<TUser> directly because the TUser generic parameter is currently unsupported by RDG.
         // https://github.com/dotnet/aspnetcore/issues/47338
         routeGroup.MapPost("/register", async Task<Results<Ok, ValidationProblem>>
-            ([FromBody] Models.RegisterRequest registration, HttpContext context, [FromServices] IServiceProvider sp) =>
+            ([FromBody] Models.RegisterRequest registration, HttpContext context, [FromServices] IServiceProvider sp, HttpContext http, [FromServices] ICartService cartService) =>
         {
             var userManager = sp.GetRequiredService<UserManager<TUser>>();
 
@@ -81,12 +84,21 @@ public static class IdentityApiEndpointRouteBuilderExtensions
                 return CreateValidationProblem(result);
             }
 
+            if (registration.CartId.HasValue)
+            {
+                var cartId = registration.CartId.Value;
+                var userId = http.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                if (userId is not null)
+                    await cartService.SetCartUserId(cartId, userId);
+            }
+
             await SendConfirmationEmailAsync(user, userManager, context, email);
             return TypedResults.Ok();
         });
 
         routeGroup.MapPost("/login", async Task<Results<Ok<AccessTokenResponse>, EmptyHttpResult, ProblemHttpResult>>
-            ([FromBody] LoginRequest login, [FromQuery] bool? useCookies, [FromQuery] bool? useSessionCookies, [FromServices] IServiceProvider sp) =>
+            ([FromBody] Models.LoginRequest login, [FromQuery] bool? useCookies, [FromQuery] bool? useSessionCookies, [FromServices] IServiceProvider sp, HttpContext http, [FromServices] ICartService cartService) =>
         {
             var signInManager = sp.GetRequiredService<SignInManager<TUser>>();
 
@@ -111,6 +123,15 @@ public static class IdentityApiEndpointRouteBuilderExtensions
             if (!result.Succeeded)
             {
                 return TypedResults.Problem(result.ToString(), statusCode: StatusCodes.Status401Unauthorized);
+            }
+
+            if (login.CartId.HasValue)
+            {
+                var cartId = login.CartId.Value;
+                var userId = http.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                if (userId is not null)
+                    await cartService.SetCartUserId(cartId, userId);
             }
 
             // The signInManager already produced the needed response in the form of a cookie or bearer token.

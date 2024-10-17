@@ -15,6 +15,7 @@ public interface ICartService
     Task<bool> DeleteCart(int cartId);
     Task<CartDto?> GetCartWithItemsAndProductDetails(int cartId);
     Task<CartDto?> GetCartByUserId(string userId);
+    Task<bool> SetCartUserId(int cartId, string userId);
 }
 public class CartService(ICartRepository cartRepository) : ICartService
 
@@ -45,4 +46,7 @@ public class CartService(ICartRepository cartRepository) : ICartService
 
     public async Task<CartDto?> GetCartByUserId(string userId) 
         => await cartRepository.GetCartWithItemsAndProductDetailsAsyncByUserId(userId);
+
+    public async Task<bool> SetCartUserId(int cartId, string userId)
+        => await cartRepository.SetCartUserId(cartId, userId);
 }
