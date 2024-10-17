@@ -158,9 +158,12 @@ public class OrderRepository(IDbConnection connection) : IOrderRepository
         using var transaction = connection.BeginTransaction();
         try
         {
+            //get cart items with product price
             var cartItems = await connection.QueryAsync<CartItemWithPriceDto>(CartQueries.GetCartItemsWithProductPriceByCartId, new { CartId = createOrder.cartId }, transaction);
+            //calculate order total amount
             var totalAmount = cartItems.Sum(i => i.ProductPrice);
 
+            //create order from cart
             var orderId = await connection.QuerySingleAsync<int>(OrderQueries.CreateOrder, new
             {
                 CartId = createOrder.cartId,
@@ -172,7 +175,7 @@ public class OrderRepository(IDbConnection connection) : IOrderRepository
                 CreatedAt = DateTime.UtcNow
             }, transaction);
 
-
+            //create order items from cart items
             await connection.ExecuteAsync(OrderQueries.CreateOrderItems, new
             {
                 OrderId = orderId,
@@ -180,11 +183,16 @@ public class OrderRepository(IDbConnection connection) : IOrderRepository
                 CreatedAt = DateTime.UtcNow
             }, transaction);
 
+
+            //flag cart status to completed/order
+            //TODO: maybe we don't need this if we're already deleting the cart
             await connection.ExecuteAsync(CartQueries.UpdateCartStatus, new
             {
                 CartId = createOrder.cartId,
                 StatusId = 3 //converted to order
             }, transaction);
+
+            await connection.ExecuteAsync(CartQueries.DeleteCartQuery, new { CartId = createOrder.cartId }, transaction);
 
             transaction.Commit();
 
