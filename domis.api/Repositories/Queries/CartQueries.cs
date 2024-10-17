@@ -138,4 +138,11 @@ public static class CartQueries
         FROM domis.cart_item 
         WHERE cart_id = @CartId AND product_id = @ProductId;"
     ;
+
+    public const string SetCartUserId = @"
+        UPDATE domis.cart
+        SET user_id = @UserId
+        WHERE id = @CartId;"
+    ;
+
 }

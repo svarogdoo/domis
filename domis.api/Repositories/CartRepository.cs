@@ -22,8 +22,7 @@ public interface ICartRepository
     Task<bool> DeleteCartAsync(int cartId);
     Task<CartDto?> GetCartWithItemsAndProductDetailsAsync(int cartId);
     Task<CartDto?> GetCartWithItemsAndProductDetailsAsyncByUserId(string userId);
-
-
+    Task<bool> SetCartUserId(int cartId, string userId);
 }
 public class CartRepository(IDbConnection connection) : ICartRepository
 {
@@ -297,5 +296,10 @@ public class CartRepository(IDbConnection connection) : ICartRepository
             Log.Error(ex, $"An error occurred while getting the cart details: {ex.Message}");
             throw;
         }
+    }
+
+    public Task<bool> SetCartUserId(int cartId, string userId)
+    {
+        throw new NotImplementedException();
     }
 }
