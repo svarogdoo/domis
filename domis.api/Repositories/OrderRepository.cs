@@ -192,6 +192,7 @@ public class OrderRepository(IDbConnection connection) : IOrderRepository
                 StatusId = 3 //converted to order
             }, transaction);
 
+            await connection.ExecuteAsync(CartQueries.DeleteCartItemsQuery, new { CartId = createOrder.cartId }, transaction);
             await connection.ExecuteAsync(CartQueries.DeleteCartQuery, new { CartId = createOrder.cartId }, transaction);
 
             transaction.Commit();
