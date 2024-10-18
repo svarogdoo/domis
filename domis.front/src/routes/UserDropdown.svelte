@@ -36,9 +36,6 @@
 
   const handleLogout = () => {
     userStore.logoutUser();
-    cart.reset();
-    cart.initialize();
-    goto("/");
   };
 </script>
 

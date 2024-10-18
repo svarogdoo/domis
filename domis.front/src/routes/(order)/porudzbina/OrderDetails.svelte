@@ -36,10 +36,9 @@
         };
 
         const orderResponse = await saveOrder(order);
-        cart.initialize(); // todo: check if cart refreshes correctly
 
         if (orderResponse) {
-          //todo: show some success popup
+          cart.reset();
         }
       }
     }

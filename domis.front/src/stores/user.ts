@@ -65,7 +65,6 @@ const createUserStore = () => {
       localStorage.setItem("user", JSON.stringify(userInitialState));
       await cart.logoutUser();
       await goto("/");
-      window.location.reload();
     },
 
     async getProfile() {

@@ -41,8 +41,8 @@ function createCart() {
       setLocalStorageCartId();
     },
     logoutUser: async () => {
-      set(null);
       removeCartFromLocalStorage();
+      set(null);
     },
     get: async () => {
       const cart = await getCart(getCartId());
@@ -68,7 +68,8 @@ function createCart() {
       await cart.get();
     },
     reset: () => {
-      localStorage.setItem("cart", JSON.stringify({ cartId: null }));
+      removeCartFromLocalStorage();
+      set(null);
     },
   };
 }
