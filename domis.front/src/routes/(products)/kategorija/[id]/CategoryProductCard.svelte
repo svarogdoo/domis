@@ -50,7 +50,7 @@
         {/if}
       </div>
       <a
-        href="/category/product/product"
+        href="/proizvod/{product.id}"
         class="w-full text-center tracking-widest text-xs lg:text-sm px-4 py-2 lg:rounded-md bg-gray-200 hover:bg-gray-200"
         >NARUČI</a
       >

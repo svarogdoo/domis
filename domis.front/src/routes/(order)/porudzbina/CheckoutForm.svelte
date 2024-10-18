@@ -105,14 +105,14 @@
   }
 </script>
 
-<form class="flex flex-col w-full space-y-4 p-4">
-  <div class="flex flex-col gap-y-6">
+<form class="flex flex-col w-full space-y-4 py-4 lg:p-4">
+  <div class="flex flex-col gap-y-4 lg:gap-y-6">
     <h2
       class="text-xl tracking-wide border-b border-gray-400 pb-2 border-b-0.5"
     >
       Detalji za naplatu
     </h2>
-    <div class="flex gap-x-12">
+    <div class="flex flex-col gap-y-4 lg:flex-row gap-x-12">
       <!-- Name -->
       <InputString
         bind:value={name}
@@ -141,7 +141,7 @@
       isRequired={false}
       width={"80"}
     />
-    <div class="flex gap-x-12">
+    <div class="flex flex-col gap-y-4 lg:flex-row gap-x-12">
       <!-- Country (Readonly) -->
       <div class="flex flex-col gap-y-2">
         <label for="country">Zemlja</label>
@@ -165,7 +165,7 @@
         width={"64"}
       />
     </div>
-    <div class="flex gap-x-12">
+    <div class="flex flex-col gap-y-4 lg:flex-row gap-x-12">
       <!-- Street and Number -->
       <InputString
         bind:value={address}
@@ -173,7 +173,7 @@
         placeholder="Kneza Miloša 23"
         error={errors?.address}
         isRequired={true}
-        width={"96"}
+        width={"64"}
       />
       <!-- Apartment -->
       <InputString
@@ -203,7 +203,7 @@
       </select>
     </div>
 
-    <div class="flex gap-x-12">
+    <div class="flex flex-col gap-y-4 lg:flex-row gap-x-12">
       <!-- Zip Code -->
       <InputString
         bind:value={postalCode}
