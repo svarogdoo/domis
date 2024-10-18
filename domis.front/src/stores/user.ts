@@ -9,14 +9,16 @@ const createUserStore = () => {
     isAuthenticated: false,
     user: null,
     token: null,
+    refreshToken: null
   };
   const { subscribe, set, update } = writable<UserState>(userInitialState);
 
-  const setUser = (user: UserProfileResponse, token: string) => {
+  const setUser = (user: UserProfileResponse, token: string, refreshToken: string) => {
     const userState: UserState = {
       isAuthenticated: true,
       user,
       token,
+      refreshToken
     };
     set(userState);
     localStorage.setItem("user", JSON.stringify(userState));
@@ -48,7 +50,7 @@ const createUserStore = () => {
 
       const userProfile = await this.getProfile();
 
-      setUser(userProfile, token);
+      setUser(userProfile, token, refreshToken);
       cart.loginUser();
 
       return loginResponse;
@@ -82,6 +84,12 @@ const createUserStore = () => {
     async resetPassword(email: string, resetCode: string, newPassword: string) {
       return await userService.resetPassword(email, resetCode, newPassword);
     },
+
+    // async refreshAccessToken(refreshToken: string){
+    //   const loginResponse =  await userService.refreshAccessToken(refreshToken);
+    //   const userProfile = await this.getProfile();
+    //   setUser(userProfile, loginResponse.accessToken, loginResponse.refreshToken);
+    // },
 
     //TODO: actually implement
     refreshUserSession(newToken: string) {

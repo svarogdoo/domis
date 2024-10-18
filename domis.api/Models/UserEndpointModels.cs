@@ -32,3 +32,10 @@ public record LoginCartRequest(
     string Password,
     int? cartId
 );
+
+//public record AddressUpdateRequest(
+//    string AddressLine,
+//    string City,
+//    string ZipCode,
+//    string Country
+//);
