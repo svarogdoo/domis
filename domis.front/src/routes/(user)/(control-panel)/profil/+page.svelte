@@ -60,7 +60,7 @@
         <div>{user.email}</div>
         <!-- Non-editable email display -->
       </div>
-      <div class="flex gap-x-12">
+      <div class="flex flex-col gap-y-4 lg:flex-row gap-x-12">
         <InputString
           bind:value={updatedFirstName}
           title="Ime"
@@ -74,7 +74,7 @@
           width={"48"}
         />
       </div>
-      <div class="flex gap-x-12">
+      <div class="flex flex-col gap-y-4 lg:flex-row gap-x-12">
         <!-- Country (Readonly) -->
         <InputString
           bind:value={updatedCountry}
@@ -91,13 +91,13 @@
           width={"64"}
         />
       </div>
-      <div class="flex gap-x-12">
+      <div class="flex flex-col gap-y-4 lg:flex-row gap-x-12">
         <!-- Street and Number -->
         <InputString
           bind:value={updatedAddressLine}
           title="Ulica i broj"
           placeholder="Kneza Miloša 23"
-          width={"96"}
+          width={"80"}
         />
         <!-- Apartment -->
         <!-- <InputString
@@ -108,7 +108,7 @@
           width={"24"}
         /> -->
       </div>
-      <div class="flex gap-x-12">
+      <div class="flex flex-col gap-y-4 lg:flex-row gap-x-12">
         <!-- Zip Code -->
         <InputString
           bind:value={updatedZipCode}
