@@ -1,6 +1,8 @@
 import { writable } from "svelte/store";
 import { userService } from "../services/user-service";
 import { setAuthToken } from "../helpers/fetch";
+import { cart } from "./cart";
+import { goto } from "$app/navigation";
 
 const createUserStore = () => {
   const userInitialState = {
@@ -31,8 +33,6 @@ const createUserStore = () => {
         let userState = JSON.parse(savedUser);
         set(userState);
         setAuthToken(userState.token);
-
-        console.info(userState);
       } else {
         set(userInitialState);
         localStorage.setItem("user", JSON.stringify(userInitialState));
@@ -49,6 +49,7 @@ const createUserStore = () => {
       const userProfile = await this.getProfile();
 
       setUser(userProfile, token);
+      cart.loginUser();
 
       return loginResponse;
     },
@@ -62,6 +63,9 @@ const createUserStore = () => {
     async logoutUser() {
       set(userInitialState);
       localStorage.setItem("user", JSON.stringify(userInitialState));
+      await cart.logoutUser();
+      await goto("/");
+      window.location.reload();
     },
 
     async getProfile() {

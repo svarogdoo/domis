@@ -4,20 +4,16 @@
   import CartItem from "./CartItem.svelte";
   import { formatPrice } from "../../../helpers/numberFormatter";
 
-  let cartProducts: Array<CartProduct> = [];
-  let totalCartPrice: number;
+  let cartProducts: Array<CartProduct> | undefined = [];
+  let totalCartPrice: number | undefined;
 
-  const unsubscribe = cart.subscribe((value) => {
-    if (value && value.items) cartProducts = value.items;
-    if (value && value.totalCartPrice) totalCartPrice = value.totalCartPrice;
-  });
-
-  onDestroy(() => unsubscribe());
+  $: cartProducts = $cart?.items;
+  $: totalCartPrice = $cart?.totalCartPrice;
 </script>
 
 <section class="w-full flex flex-col">
   <h1 class="ml-12 my-8 text-3xl font-light text-black">Korpa</h1>
-  {#if cartProducts.length > 0}
+  {#if cartProducts && cartProducts.length > 0 && totalCartPrice}
     <div class="w-full flex justify-center items-start gap-x-8 mx-4">
       <table class="table table-hover">
         <thead class="w-full bg-black text-white">

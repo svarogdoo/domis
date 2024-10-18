@@ -127,7 +127,7 @@ declare global {
   }
 
   interface Cart {
-    cartId: number;
+    cartId?: number;
     userId: number;
     statusId: number;
     status: string;

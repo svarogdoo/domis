@@ -13,14 +13,10 @@
 
   let searchTerm: string = "";
   let searchResults: Array<ProductBasicInfo> = [];
-  let cartProducts: Array<CartProduct>;
+  let cartProducts: Array<CartProduct> | undefined;
   let isDropdownOpen: boolean = false;
 
-  const unsubscribe = cart.subscribe((value) => {
-    if (value && value.items) cartProducts = value.items;
-  });
-
-  onDestroy(() => unsubscribe());
+  $: cartProducts = $cart?.items;
 
   // Function to handle search input and call the product service
   let debounceTimer: number;
