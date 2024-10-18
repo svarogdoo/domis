@@ -18,7 +18,7 @@
       <div class="flex flex-col gap-y-1 font-light">
         <a href="/kako-kupovati">Kako kupovati</a>
         <a href="/narucivanje">Naručivanje</a>
-        <p>Česta pitanja</p>
+        <a href="/cesta-pitanja">Česta pitanja</a>
         <a href="/podaci-o-trgovcu">Podaci o trgovcu</a>
       </div>
     </div>
