@@ -1,5 +1,5 @@
-import { userStore } from '../stores/user';
-import { goto } from '$app/navigation';
+import { userStore } from "../stores/user";
+import { goto } from "$app/navigation";
 
 export const requireAuth = async () => {
   let isAuthenticated = false;
@@ -8,7 +8,7 @@ export const requireAuth = async () => {
   });
 
   if (!isAuthenticated) {
-    goto('/login'); // Adjust this path as needed
+    goto("/login"); // Adjust this path as needed
   }
 
   unsubscribe();
