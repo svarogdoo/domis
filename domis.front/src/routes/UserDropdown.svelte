@@ -61,7 +61,7 @@
         <ul>
           <li>
             <a
-              href="Profil"
+              href="/profil"
               class="w-full text-left block px-4 py-2 hover:bg-gray-100"
             >
               Profil
