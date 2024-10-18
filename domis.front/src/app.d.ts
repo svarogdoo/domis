@@ -57,6 +57,7 @@ declare global {
     isAuthenticated: boolean;
     user: UserProfileResponse | null;
     token: string | null;
+    refreshToken: string | null;
   }
 
   interface Image {

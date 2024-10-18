@@ -52,5 +52,18 @@ public static class UserEndpoints
         })
         .RequireAuthorization();
 
+        group.MapPut("address", async (HttpContext http, IUserService userService, string request) =>
+        {
+            var userId = http.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (userId is null) return Results.Unauthorized();
+
+            var success = await userService.UpdateUserAddressAsync(userId, request);
+
+            if (!success) return Results.NotFound();
+
+            return Results.NoContent();
+        }).RequireAuthorization()
+        .WithDescription("updates user address with provided info");
     }
 }

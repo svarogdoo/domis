@@ -8,6 +8,7 @@ public interface IUserRepository
 {
     Task<UserProfileDto?> GetUserByIdAsync(string id);
     Task<bool> UpdateUserProfileAsync(string id, ProfileUpdateRequest updated);
+    Task<bool> UpdateUserAddressAsync(string id, string address);
 }
 
 public class UserRepository(UserManager<UserEntity> userManager) : IUserRepository
@@ -31,6 +32,19 @@ public class UserRepository(UserManager<UserEntity> userManager) : IUserReposito
         );
 
         return user;
+    }
+
+    public async Task<bool> UpdateUserAddressAsync(string id, string address)
+    {
+        var user = await userManager.FindByIdAsync(id);
+
+        if (user == null) return false;
+
+        user.Address = address;
+
+        var result = await userManager.UpdateAsync(user);
+
+        return result.Succeeded;
     }
 
     public async Task<bool> UpdateUserProfileAsync(string id, ProfileUpdateRequest updated)

@@ -54,11 +54,22 @@ async function resetPassword(email: string, resetCode: string, newPassword: stri
     );
 }
 
+async function refreshAccessToken(refreshToken: string): Promise<UserLoginResponse> {
+    const result = await fetchDataWithJsonBody<UserLoginResponse>(
+        `${API_URL}/refresh`,
+        'POST',
+        JSON.stringify({ refreshToken })
+    );
+
+    return result;
+}
+
 export const userService = {
     login,
     register,
     getProfile,
     updateProfile,
     forgotPassword,
-    resetPassword
+    resetPassword,
+    refreshAccessToken
 };
