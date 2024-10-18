@@ -7,6 +7,7 @@
     saveShippingDetails,
   } from "../../../services/order-service";
   import { cart } from "../../../stores/cart";
+  import Popup from "../../../components/Popup.svelte";
 
   export let onClick: () => CheckoutFormData | null;
 
@@ -15,6 +16,8 @@
   let totalCartPrice: number;
   let isTermsAccepted = false;
   let paymentVendor: PaymentVendorType;
+  let showOrderSuccessPopup = false;
+  let showOrderFailedPopup = false;
 
   function handleExtraClicked() {
     isTermsAccepted = !isTermsAccepted;
@@ -39,6 +42,9 @@
 
         if (orderResponse) {
           cart.reset();
+          showOrderSuccessPopup = true;
+        } else {
+          showOrderFailedPopup = true;
         }
       }
     }
@@ -51,7 +57,9 @@
   });
 </script>
 
-<div class="flex flex-col w-full px-8 py-6 gap-y-4 bg-gray-50 font-light">
+<div
+  class="flex flex-col w-full px-8 py-6 gap-y-4 bg-gray-100 rounded-lg font-light"
+>
   <h2 class="text-xl tracking-wide">Detalji porudžbine</h2>
   <div class="h-0.5 w-full bg-gray-400"></div>
   <div class="flex flex-col gap-y-4">
@@ -150,4 +158,24 @@
   >
     NARUČI
   </button>
+
+  {#if showOrderSuccessPopup}
+    <Popup
+      bind:show={showOrderSuccessPopup}
+      title="Uspešna porudžbina!"
+      text="Vaša porudžbina je u obradi, uskoro ćete dobiti email konfirmacije!"
+      closeButtonText="Vratite se na početnu stranu"
+      isSuccess={true}
+      goTo="/"
+    />
+  {/if}
+  {#if showOrderFailedPopup}
+    <Popup
+      bind:show={showOrderFailedPopup}
+      title="Greška prilikom poručivanja!"
+      text="Izvinjavamo se za neprijatnost. Pokušajte ponovo ili nam se javite lično!"
+      closeButtonText="Zatvori"
+      isSuccess={false}
+    />
+  {/if}
 </div>
