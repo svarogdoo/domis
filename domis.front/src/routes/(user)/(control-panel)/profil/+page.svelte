@@ -114,7 +114,6 @@
           bind:value={updatedZipCode}
           title="Poštanski broj"
           placeholder="11000"
-          isRequired={true}
           width={"32"}
         />
         <!-- Phone number -->
