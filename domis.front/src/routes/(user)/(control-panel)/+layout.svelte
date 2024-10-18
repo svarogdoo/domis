@@ -2,7 +2,7 @@
   import UserPanelSidebar from "./UserPanelSidebar.svelte";
 </script>
 
-<div class="flex w-full gap-x-20 justify-between">
+<div class="flex w-full gap-x-20 justify-center">
   <div class="hidden lg:flex max-h-48 mt-14 w-1/5 rounded-lg">
     <UserPanelSidebar />
   </div>
