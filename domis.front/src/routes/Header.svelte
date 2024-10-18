@@ -66,7 +66,7 @@
           <Hamburger bind:open={sidebar} />
         </li>
         <li
-          class="header-title pl-4"
+          class="header-title pl-4 text-sm lg:text-md"
           aria-current={$page.url.pathname === "/" ? "page" : undefined}
         >
           <a href="/">domis</a>
@@ -105,18 +105,18 @@
           {/if}
         </div>
       </li>
-      <div class="flex items-center gap-x-4">
+      <div class="flex items-center lg:gap-x-4">
         <li>
           <UserDropdown />
         </li>
         <li
-          class="relative h-10 w-10"
+          class="relative h-8 w-8 lg:h-10 lg:w-10"
           aria-current={$page.url.pathname === "/shop" ? "page" : undefined}
         >
           <a href="/korpa">
-            <img src={cartIcon} alt="cart" class="h-10 w-10" />
+            <img src={cartIcon} alt="cart" class="h-8 w-8 lg:h-10 lg:w-10" />
           </a>
-          {#if cartProducts?.length > 0}
+          {#if cartProducts && cartProducts?.length > 0}
             <div
               class="absolute top-0 right-0 text-center text-white text-sm rounded-full h-4 w-4 bg-red-500"
             >

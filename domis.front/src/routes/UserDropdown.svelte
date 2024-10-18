@@ -43,13 +43,17 @@
   <div class="relative group">
     {#if loggedIn}
       <div
-        class="cursor-pointer flex items-center justify-center w-10 h-10 border-2 border-gray-500 rounded-full text-black font-bold"
+        class="cursor-pointer text-sm lg:text-base flex items-center justify-center w-8 h-8 lg:w-10 lg:h-10 border-2 border-gray-500 rounded-full text-black font-bold"
       >
         {initials}
       </div>
     {:else}
       <div class="cursor-pointer">
-        <img src={userIcon} alt="User Icon" class="w-12 h-12 rounded-full" />
+        <img
+          src={userIcon}
+          alt="User Icon"
+          class="w-6 h-6 lg:w-12 lg:h-12 rounded-full"
+        />
       </div>
     {/if}
 
