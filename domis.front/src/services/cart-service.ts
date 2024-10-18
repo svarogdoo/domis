@@ -14,10 +14,11 @@ export function createCat(user: CartUser) {
   );
 }
 
-export function getCart(cartId?: number) {
+export async function getCart(cartId?: number) {
   try {
-    if (cartId) return fetchData<Cart>(`${API_URL}/api/cart?cartId=${cartId}`);
-    else return fetchData<Cart>(`${API_URL}/api/cart`);
+    if (cartId)
+      return await fetchData<Cart>(`${API_URL}/api/cart?cartId=${cartId}`);
+    else return await fetchData<Cart>(`${API_URL}/api/cart`);
   } catch {
     return null;
   }

@@ -32,15 +32,13 @@
           paymentStatusId: 1,
           orderShippingId: shippingResponse.orderShippingId,
           paymentVendorTypeId: paymentVendor,
-          paymentAmount: 0,
           comment: checkoutFormData.comment,
         };
 
         const orderResponse = await saveOrder(order);
-        cart.initialize(); // refresh cart after order complete
 
         if (orderResponse) {
-          //todo: show some success popup
+          cart.reset();
         }
       }
     }

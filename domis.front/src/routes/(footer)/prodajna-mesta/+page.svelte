@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import SalesPointCard from "./SalesPointCard.svelte";
+  import SalesPointCard from "../../SalesPointCard.svelte";
   import { API_URL } from "../../../config";
   import { fetchData } from "../../../helpers/fetch";
 

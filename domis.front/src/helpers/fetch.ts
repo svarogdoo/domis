@@ -1,4 +1,4 @@
-let headers: { [key: string]: string } = {}
+let headers: { [key: string]: string } = {};
 
 export const setAuthToken = (token: string | null) => {
   if (token) {
@@ -70,7 +70,7 @@ async function handleResponse(res: Response) {
     error.errors = errorBody.errors; // Attach the errors to the error object
     error.title = errorBody.title; // Optionally attach other relevant properties
   } catch (e) {
-    console.error("Failed to parse error response:", e);
+    // console.error("Failed to parse error response:", e);
   }
 
   throw error; // Throw the error object with status and error details
