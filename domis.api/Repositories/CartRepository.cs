@@ -20,8 +20,8 @@ public interface ICartRepository
     Task<bool> UpdateCartItemQuantityAsync(int cartItemId, decimal quantity);
     Task<bool> DeleteCartItemAsync(int cartItemId);
     Task<bool> DeleteCartAsync(int cartId);
-    Task<CartDto?> GetCartWithItemsAndProductDetailsAsync(int cartId);
-    Task<CartDto?> GetCartWithItemsAndProductDetailsAsyncByUserId(string userId);
+    Task<CartDto?> GetCartWithItemsAndProductDetailsAsync(int cartId, decimal discount);
+    Task<CartDto?> GetCartWithItemsAndProductDetailsAsyncByUserId(string userId, decimal discount);
     Task<bool> SetCartUserId(int cartId, string userId);
 }
 public class CartRepository(IDbConnection connection) : ICartRepository
@@ -212,7 +212,7 @@ public class CartRepository(IDbConnection connection) : ICartRepository
         }
     }
     
-    public async Task<CartDto?> GetCartWithItemsAndProductDetailsAsync(int cartId)
+    public async Task<CartDto?> GetCartWithItemsAndProductDetailsAsync(int cartId, decimal discount = 0)
     {
         try
         {
@@ -234,6 +234,7 @@ public class CartRepository(IDbConnection connection) : ICartRepository
                     {
                         item.ProductDetails = product;
                         item.ProductDetails.Image = image;
+                        item.ProductDetails.Price = PricingHelper.CalculateDiscount(item.ProductDetails.Price, discount);
 
                         currentCart.Items.Add(item);
                     }
@@ -255,7 +256,7 @@ public class CartRepository(IDbConnection connection) : ICartRepository
         }
     }
 
-    public async Task<CartDto?> GetCartWithItemsAndProductDetailsAsyncByUserId(string userId)
+    public async Task<CartDto?> GetCartWithItemsAndProductDetailsAsyncByUserId(string userId, decimal discount = 0)
     {
         try
         {
@@ -277,7 +278,7 @@ public class CartRepository(IDbConnection connection) : ICartRepository
                     {
                         item.ProductDetails = product;
                         item.ProductDetails.Image = image;
-
+                        item.ProductDetails.Price = PricingHelper.CalculateDiscount(item.ProductDetails.Price, discount);
                         currentCart.Items.Add(item);
                     }
 

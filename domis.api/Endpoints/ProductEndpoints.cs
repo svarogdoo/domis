@@ -1,5 +1,7 @@
 ﻿using domis.api.DTOs.Product;
+using domis.api.Models;
 using domis.api.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 
@@ -20,9 +22,11 @@ public static class ProductEndpoints
         }).WithDescription("get all products");
 
 
-        group.MapGet("/{id:int}", async (int id, IProductService productService) =>
+        group.MapGet("/{id:int}", async (int id, IProductService productService, HttpContext httpContext, UserManager<UserEntity> userManager) =>
         {
-            var product = await productService.GetByIdWithDetails(id);
+            var user = await userManager.GetUserAsync(httpContext.User);
+
+            var product = await productService.GetByIdWithDetails(id, user);
 
             return product is null 
                 ? Results.NotFound() 

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Dapper;
+using domis.api.Common;
 using domis.api.DTOs.Image;
 using domis.api.DTOs.Product;
 using domis.api.Models;
@@ -17,7 +18,7 @@ namespace domis.api.Repositories;
 public interface IProductRepository
 {
     Task<IEnumerable<ProductPreviewDto>> GetAll();
-    Task<ProductDetailsDto?> GetByIdWithDetails(int id);
+    Task<ProductDetailsDto?> GetByIdWithDetails(int id, decimal discount);
     Task<ProductDetailsDto?> Update(ProductUpdateDto product);
     Task<bool> NivelacijaUpdateProductBatch(IEnumerable<NivelacijaRecord> records);
     Task<IEnumerable<ProductBasicInfoDto>> GetProductsBasicInfoByCategory(int categoryId);
@@ -43,7 +44,7 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
         }
     }
 
-    public async Task<ProductDetailsDto?> GetByIdWithDetails(int productId)
+    public async Task<ProductDetailsDto?> GetByIdWithDetails(int productId, decimal discount = 0)
     {
         try
         {
@@ -60,9 +61,15 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
             productDetail.Size = size;
             productDetail.Images = [.. images];
             productDetail.CategoryPaths = [.. categoryPaths];
-            productDetail.Price = product.Price != null 
-                ? CalculatePrices(product.Price.Value, size) 
-                : null;
+            if (product.Price.HasValue)
+            {
+                var discountedPrice = PricingHelper.CalculateDiscount(product.Price.Value, discount);
+                productDetail.Price = CalculatePriceByPackage(discountedPrice, size);
+            }
+            else
+            {
+                productDetail.Price = null;
+            }
 
             return productDetail;
         }
@@ -190,7 +197,7 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
     }
 
     #region ExtensionsMethods
-    private static Price CalculatePrices(decimal unitPrice, Size? productSize)
+    private static Price CalculatePriceByPackage(decimal unitPrice, Size? productSize)
     {
         decimal? pakPrice = null;
         decimal? palPrice = null;

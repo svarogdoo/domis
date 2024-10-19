@@ -1,7 +1,9 @@
-﻿using domis.api.Models;
+﻿using domis.api.DTOs.User;
+using domis.api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace domis.api.Controllers;
 
@@ -50,15 +52,29 @@ public class AdminController : ControllerBase
 
         return BadRequest("Failed to promote user to admin.");
     }
-    
+
     [HttpGet("users")]
-   // [Authorize(Roles = "Administrator")]
-    public Task<IActionResult> GetUsers()
+    // [Authorize(Roles = "Administrator")]
+    public async Task<IActionResult> GetUsers()
     {
-        var users =  _userManager.Users;
-        return Task.FromResult<IActionResult>(Ok(users));
+        var users = await _userManager.Users.ToListAsync(); // Fetch all users
+        var usersWithRoles = new List<UserWithRolesDto>();
+
+        foreach (var user in users)
+        {
+            var roles = await _userManager.GetRolesAsync(user); // Get roles for each user
+            usersWithRoles.Add(new UserWithRolesDto
+            {
+                UserId = user.Id,
+                UserName = user.UserName,
+                Roles = roles.ToList()
+            });
+        }
+
+        return Ok(usersWithRoles); // Return the list of users with their roles
     }
-    
+
+
     [HttpGet("user/{userId}")]
   //  [Authorize(Roles = "Administrator")]
     public async Task<IActionResult> GetUser([FromRoute] string userId)
