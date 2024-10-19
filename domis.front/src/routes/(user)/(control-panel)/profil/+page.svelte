@@ -51,7 +51,7 @@
   }
 </script>
 
-<section class="flex flex-col gap-y-12 my-4">
+<section class="flex flex-col gap-y-12">
   <h1 class="text-2xl">Korisnički profil</h1>
   <div class="flex flex-col gap-y-4">
     {#if user}

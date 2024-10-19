@@ -2,6 +2,7 @@
   import { onMount } from "svelte";
   import { userService } from "../../../../services/user-service";
   import OrderRow from "./OrderRow.svelte";
+  import OrderRowMobile from "./OrderRowMobile.svelte";
 
   let date = new Date();
   let orders: Array<UserOrder> = [
@@ -85,9 +86,9 @@
   //   });
 </script>
 
-<section class="w-full mt-12">
+<section class="w-full">
   {#if orders && orders.length > 0}
-    <table class="w-full table-hover">
+    <table class="hidden lg:table w-full table-hover">
       <thead class="w-full bg-black text-white">
         <th>Datum</th>
         <th>Status</th>
@@ -99,6 +100,16 @@
       <tbody class="divide-y divide-gray-200">
         {#each orders as order (order.id)}
           <OrderRow {order} />
+        {/each}
+      </tbody>
+    </table>
+    <table class="table lg:hidden w-full">
+      <thead class="w-full text-sm bg-black text-white"
+        ><th>Porudžbine</th></thead
+      >
+      <tbody class="divide-y divide-gray-200">
+        {#each orders as order (order.id)}
+          <OrderRowMobile {order} />
         {/each}
       </tbody>
     </table>

@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import OrderItemRow from "./OrderItemRow.svelte";
+  import OrderItemRowMobile from "./OrderItemRowMobile.svelte";
 
   export let show = false;
   export let orderItems: Array<UserOrderItem>;
@@ -15,9 +16,9 @@
 >
   <div
     id="order-item-popup"
-    class="flex flex-col gap-y-6 items-center bg-white p-6 rounded-lg shadow-lg text-center"
+    class="w-full lg:w-auto flex flex-col gap-y-6 items-center bg-white p-6 rounded-lg shadow-lg text-center"
   >
-    <table>
+    <table class="hidden lg:table">
       <thead class="w-full bg-black text-white">
         <th class=" "></th>
         <th class="text-start">Opis</th>
@@ -28,6 +29,17 @@
       <tbody class="divide-y divide-gray-200">
         {#each orderItems as item (item.id)}
           <OrderItemRow {item} />
+        {/each}
+      </tbody>
+    </table>
+    <!-- Mobile -->
+    <table class="table lg:hidden w-full">
+      <thead class="w-full text-sm bg-black text-white"
+        ><th>Proizvodi</th></thead
+      >
+      <tbody class="divide-y divide-gray-200">
+        {#each orderItems as item (item.id)}
+          <OrderItemRowMobile {item} />
         {/each}
       </tbody>
     </table>

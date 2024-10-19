@@ -17,6 +17,7 @@
     <div
       class="w-full flex flex-col gap-y-8 lg:flex-row justify-center items-start gap-x-8 px-4"
     >
+      <!-- Desktop -->
       <table class="hidden lg:table table-hover">
         <thead class="w-full bg-black text-white">
           <th class=" "></th>
@@ -32,6 +33,7 @@
           {/each}
         </tbody>
       </table>
+      <!-- Mobile -->
       <table class="table lg:hidden w-full">
         <thead class="w-full text-sm bg-black text-white"
           ><th>Proizvodi</th></thead
