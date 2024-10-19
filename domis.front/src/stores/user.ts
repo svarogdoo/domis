@@ -9,16 +9,20 @@ const createUserStore = () => {
     isAuthenticated: false,
     user: null,
     token: null,
-    refreshToken: null
+    refreshToken: null,
   };
   const { subscribe, set, update } = writable<UserState>(userInitialState);
 
-  const setUser = (user: UserProfileResponse, token: string, refreshToken: string) => {
+  const setUser = (
+    user: UserProfileResponse,
+    token: string,
+    refreshToken: string
+  ) => {
     const userState: UserState = {
       isAuthenticated: true,
       user,
       token,
-      refreshToken
+      refreshToken,
     };
     set(userState);
     localStorage.setItem("user", JSON.stringify(userState));

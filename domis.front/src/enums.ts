@@ -1,3 +1,4 @@
+// Quantity Type
 export enum QuantityType {
   None = 1,
   MeterSquared = 2,
@@ -45,10 +46,23 @@ export const quantityTypeOptions = [
   },
 ];
 
+// Payment Vendor
 export enum PaymentVendorType {
   OnDelivery = 1,
   BankPayment = 2,
-  Online = 3,
+  Card = 3,
+}
+export function mapPaymentVendorTypeToString(
+  paymentVendorType: PaymentVendorType
+): string {
+  switch (paymentVendorType) {
+    case PaymentVendorType.OnDelivery:
+      return "Pouzećem";
+    case PaymentVendorType.BankPayment:
+      return "Uplata na račun";
+    case PaymentVendorType.Card:
+      return "Kartično";
+  }
 }
 export const paymentVendorOptions = [
   {
@@ -61,3 +75,41 @@ export const paymentVendorOptions = [
     text: "Izvršite uplatu direktno na naš račun. Kao poziv na broj navedite broj svoje porudžbine, u suprotnom vaša porudžbina neće biti obrađena i isporučena.",
   },
 ];
+
+// Order Status
+export enum OrderStatus {
+  New = 1,
+  InProgress = 2,
+  Sent = 3,
+  Completed = 4,
+  Canceled = 5,
+}
+export function mapOrderStatusToString(orderStatus: OrderStatus): string {
+  switch (orderStatus) {
+    case OrderStatus.New:
+      return "U obradi";
+    case OrderStatus.InProgress:
+      return "Prihvaćena";
+    case OrderStatus.Sent:
+      return "Poslato";
+    case OrderStatus.Completed:
+      return "Završena";
+    case OrderStatus.Canceled:
+      return "Poništena";
+  }
+}
+
+export function getOrderStatusColor(orderStatus: OrderStatus): string {
+  switch (orderStatus) {
+    case OrderStatus.New:
+      return "bg-blue-200";
+    case OrderStatus.InProgress:
+      return "bg-blue-200";
+    case OrderStatus.Sent:
+      return "bg-blue-200";
+    case OrderStatus.Completed:
+      return "bg-green-200";
+    case OrderStatus.Canceled:
+      return "bg-red-200";
+  }
+}

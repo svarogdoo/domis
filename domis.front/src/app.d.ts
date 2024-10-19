@@ -1,6 +1,6 @@
 // See https://kit.svelte.dev/docs/types#app
 
-import type { QuantityType } from "./enums";
+import type { OrderStatus, PaymentVendorType, QuantityType } from "./enums";
 import type CartItem from "./routes/korpa/CartItem.svelte";
 
 // for information about these interfaces
@@ -144,9 +144,9 @@ declare global {
     productId: number;
     quantity: number;
     cartItemPrice: number;
-    productDetails: CartProductDetails;
+    productDetails: ProductDetails;
   }
-  interface CartProductDetails {
+  interface ProductDetails {
     sku: number;
     name: string;
     image: string;
@@ -196,6 +196,23 @@ declare global {
   }
   interface OrderResponse {
     orderId: number;
+  }
+  interface UserOrder {
+    id: number;
+    date: Date;
+    status: OrderStatus;
+    address: string;
+    paymentType: PaymentVendorType;
+
+    paymentAmount: number;
+    items: Array<UserOrderItem>;
+    comment: string;
+  }
+  interface UserOrderItem {
+    id: number;
+    quantity: number;
+    itemPrice: number;
+    productDetails: ProductDetails;
   }
 
   interface SalesPoint {

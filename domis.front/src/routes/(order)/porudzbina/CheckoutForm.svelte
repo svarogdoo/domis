@@ -1,6 +1,8 @@
 <script lang="ts">
+  import { onMount } from "svelte";
   import InputString from "../../../components/InputString.svelte";
   import { countyOptions } from "../../../helpers/municipalities";
+  import { userStore } from "../../../stores/user";
 
   export const validate: () => CheckoutFormData | null = validateForm;
 
@@ -16,6 +18,17 @@
   let email = "";
   let phoneNumber = "";
   let specialNotes = "";
+
+  $: if ($userStore.user) {
+    name = $userStore.user.firstName;
+    lastName = $userStore.user.lastName;
+    city = $userStore.user.city;
+    address = $userStore.user.addressLine;
+    // county = $userStore.user.county;
+    postalCode = $userStore.user.zipCode;
+    email = $userStore.user.email;
+    phoneNumber = $userStore.user.phoneNumber;
+  }
 
   // Form errors
   let errors = {
