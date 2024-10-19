@@ -2,6 +2,8 @@ using domis.api.Common;
 using domis.api.Models;
 using domis.api.Services;
 using FluentValidation;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using System.ComponentModel.DataAnnotations;
@@ -96,19 +98,20 @@ public static class CartEndpoints
             return Results.Ok(new DeleteCartItemResponse(response));
         }).WithDescription("Delete cart item");
         
-        group.MapGet("/{id}", async ([FromRoute]int id, ICartService cartService) =>
+        group.MapGet("/{id}", async ([FromRoute]int id, ICartService cartService, HttpContext httpContext, UserManager<UserEntity> userManager) =>
         {
-            var response = await cartService.GetCartWithItemsAndProductDetails(id);
+            var user = await userManager.GetUserAsync(httpContext.User);
+
+            var response = await cartService.GetCartWithItemsAndProductDetails(id, user);
 
             return Results.Ok(response);
         }).WithDescription("Get cart with details");
 
-        group.MapGet("/", async Task<IResult> (HttpContext http, [FromQuery] int? cartId, ICartService cartService) =>
+        group.MapGet("/", async Task<IResult> ([FromQuery] int? cartId, ICartService cartService, HttpContext http, UserManager<UserEntity> userManager) =>
         {
             if (cartId is not null)
             {
-                // Handle guest user with cartId
-                var guestCart = await cartService.GetCartWithItemsAndProductDetails((int)cartId);
+                var guestCart = await cartService.GetCartWithItemsAndProductDetails((int)cartId, null);
                 return guestCart != null 
                     ? Results.Ok(guestCart) 
                     : Results.NotFound("Cart not found for guest user.");
@@ -121,8 +124,9 @@ public static class CartEndpoints
                 {
                     return Results.Unauthorized();
                 }
-                // Handle authenticated user's cart
-                var userCart = await cartService.GetCartByUserId(userId);
+
+                var user = await userManager.GetUserAsync(http.User);
+                var userCart = await cartService.GetCartByUserId(userId, user);
                 return userCart != null
                     ? Results.Ok(userCart)
                     : Results.NotFound("Cart not found for authenticated user.");

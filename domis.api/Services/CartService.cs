@@ -1,5 +1,7 @@
+using domis.api.Common;
 using domis.api.DTOs.Cart;
 using domis.api.DTOs.Order;
+using domis.api.Models;
 using domis.api.Repositories;
 
 namespace domis.api.Services;
@@ -13,11 +15,11 @@ public interface ICartService
     Task<bool> UpdateCartItemQuantity(int cartItemId, decimal quantity);
     Task<bool> DeleteCartItem(int cartItemId);
     Task<bool> DeleteCart(int cartId);
-    Task<CartDto?> GetCartWithItemsAndProductDetails(int cartId);
-    Task<CartDto?> GetCartByUserId(string userId);
+    Task<CartDto?> GetCartWithItemsAndProductDetails(int cartId, UserEntity? user);
+    Task<CartDto?> GetCartByUserId(string userId, UserEntity? user);
     Task<bool> SetCartUserId(int cartId, string userId);
 }
-public class CartService(ICartRepository cartRepository) : ICartService
+public class CartService(ICartRepository cartRepository, IPriceHelpers priceHelpers) : ICartService
 
 {
     public async Task<IEnumerable<OrderStatusDto>?> GetAllOrderStatuses() => 
@@ -41,11 +43,19 @@ public class CartService(ICartRepository cartRepository) : ICartService
     public async Task<bool> DeleteCart(int cartId) => 
         await cartRepository.DeleteCartAsync(cartId);
 
-    public async Task<CartDto?> GetCartWithItemsAndProductDetails(int cartId) => 
-        await cartRepository.GetCartWithItemsAndProductDetailsAsync(cartId);
+    public async Task<CartDto?> GetCartWithItemsAndProductDetails(int cartId, UserEntity? user)
+    {
+        var discount = await priceHelpers.GetDiscount(user);
 
-    public async Task<CartDto?> GetCartByUserId(string userId) 
-        => await cartRepository.GetCartWithItemsAndProductDetailsAsyncByUserId(userId);
+        return await cartRepository.GetCartWithItemsAndProductDetailsAsync(cartId, discount);
+    }
+
+    public async Task<CartDto?> GetCartByUserId(string userId, UserEntity? user)
+    {
+        var discount = await priceHelpers.GetDiscount(user);
+
+        return await cartRepository.GetCartWithItemsAndProductDetailsAsyncByUserId(userId, discount);
+    }
 
     public async Task<bool> SetCartUserId(int cartId, string userId)
         => await cartRepository.SetCartUserId(cartId, userId);

@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using domis.api.Common;
 using domis.api.DTOs.Category;
 using domis.api.DTOs.Product;
 using domis.api.Models;
@@ -14,7 +15,7 @@ public interface ICategoryRepository
 
     //probably no need for this one
     Task<Category?> GetById(int id);
-    Task<CategoryWithProductsDto?> GetCategoryProducts(int categoryId, PageOptions options);
+    Task<CategoryWithProductsDto?> GetCategoryProducts(int categoryId, PageOptions options, decimal discount);
 }
 
 public class CategoryRepository(IDbConnection connection) : ICategoryRepository
@@ -61,7 +62,7 @@ public class CategoryRepository(IDbConnection connection) : ICategoryRepository
         return product;
     }
 
-    public async Task<CategoryWithProductsDto?> GetCategoryProducts(int categoryId, PageOptions options)
+    public async Task<CategoryWithProductsDto?> GetCategoryProducts(int categoryId, PageOptions options, decimal discount = 0)
     {
         try
         {
@@ -81,8 +82,14 @@ public class CategoryRepository(IDbConnection connection) : ICategoryRepository
             var result = new CategoryWithProductsDto
             {
                 Category = category,
-                Products = products.ToList()
+                Products = products.Select(product => new ProductPreviewDto
+                {
+                    Id = product.Id,
+                    Name = product.Name,
+                    Price = PricingHelper.CalculateDiscount(product.Price, discount)
+                }).ToList()
             };
+
 
             return result;
         }

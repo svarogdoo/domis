@@ -1,4 +1,5 @@
-﻿using domis.api.DTOs.Category;
+﻿using domis.api.Common;
+using domis.api.DTOs.Category;
 using domis.api.Models;
 using domis.api.Repositories;
 
@@ -10,10 +11,10 @@ public interface ICategoryService
 
     //probably no need for this one
     Task<Category?> GetById(int id);
-    Task<CategoryWithProductsDto?> GetCategoryProducts(int categoryId, PageOptions options);
+    Task<CategoryWithProductsDto?> GetCategoryProducts(int categoryId, PageOptions options, UserEntity? user);
 }
 
-public class CategoryService(ICategoryRepository repository) : ICategoryService
+public class CategoryService(ICategoryRepository repository, IPriceHelpers priceHelpers) : ICategoryService
 {
     public async Task<IEnumerable<CategoryMenuDto>?> GetAll()
     {
@@ -26,8 +27,10 @@ public class CategoryService(ICategoryRepository repository) : ICategoryService
         return await repository.GetById(id);
     }
 
-    public async Task<CategoryWithProductsDto?> GetCategoryProducts(int categoryId, PageOptions options)
+    public async Task<CategoryWithProductsDto?> GetCategoryProducts(int categoryId, PageOptions options, UserEntity? user)
     {
-        return await repository.GetCategoryProducts(categoryId, options);
+        var discount = await priceHelpers.GetDiscount(user);
+
+        return await repository.GetCategoryProducts(categoryId, options, discount);
     }
 }
