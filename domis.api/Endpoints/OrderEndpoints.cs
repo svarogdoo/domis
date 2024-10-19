@@ -1,6 +1,8 @@
 using domis.api.DTOs.Order;
 using domis.api.Models;
 using domis.api.Services;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace domis.api.Endpoints;
@@ -60,9 +62,11 @@ public static class OrderEndpoints
             return Results.Ok(new DeleteOrderShippingResponse(response));
         }).WithDescription("Delete order shipping");
         
-        group.MapPost("/", async ([FromBody] CreateOrderRequest request, IOrderService orderService) =>
+        group.MapPost("/", async ([FromBody] CreateOrderRequest request, IOrderService orderService, HttpContext http, UserManager<UserEntity> userManager) =>
         {
-            var response = await orderService.CreateOrderFromCart(request);
+            var user = await userManager.GetUserAsync(http.User);
+
+            var response = await orderService.CreateOrderFromCart(request, user);
 
             return Results.Ok(new CreateOrderResponse(response));
         }).WithDescription("Create new order based on cart id");

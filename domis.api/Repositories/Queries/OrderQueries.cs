@@ -174,11 +174,22 @@ public static class OrderQueries
                 o.id = @OrderId AND (pi.image_type_id is null or pi.image_type_id = 1);";
 
     public const string GetOrdersByUserId = @"
-            SELECT 
-                id AS Id,
-                status_id AS StatusId,
-                payment_amount AS PaymentAmount,
-                comment AS Comment
-            FROM domis.order
-            WHERE user_id = @UserId";
+        SELECT 
+            o.id AS Id,
+            o.status_id AS StatusId,
+            o.created_at AS Date,
+            o.payment_vendor_type_id AS PaymentTypeId,
+            o.payment_status_id AS PaymentStatusId,
+            o.payment_amount AS PaymentAmount,
+            TRIM(
+                CONCAT_WS(', ', 
+                    CASE WHEN os.address IS NOT NULL AND LENGTH(os.address) > 0 THEN os.address END,
+                    CASE WHEN os.apartment IS NOT NULL AND LENGTH(os.apartment) > 0 THEN os.apartment END,
+                    CASE WHEN os.postal_code IS NOT NULL AND LENGTH(os.postal_code) > 0 THEN os.postal_code END,
+                    CASE WHEN os.city IS NOT NULL AND LENGTH(os.city) > 0 THEN os.city END
+                )
+            ) AS Address
+        FROM domis.order o
+        LEFT JOIN domis.order_shipping os ON o.order_shipping_id = os.id
+        WHERE o.user_id = @UserId";
 }

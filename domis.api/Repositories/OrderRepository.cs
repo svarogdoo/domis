@@ -1,5 +1,6 @@
 using System.Data;
 using Dapper;
+using domis.api.Common;
 using domis.api.DTOs.Cart;
 using domis.api.DTOs.Order;
 using domis.api.Models;
@@ -17,7 +18,7 @@ public interface IOrderRepository
     Task<bool> UpdateOrderShipping(int id, OrderShippingDto orderShipping);
     Task<OrderShippingDto?> GetOrderShippingById(int id);
     Task<bool> DeleteOrderShippingById(int id);
-    Task<int> CreateOrderFromCartAsync(CreateOrderRequest createOrder);
+    Task<int> CreateOrderFromCartAsync(CreateOrderRequest createOrder, decimal discount);
 
     Task<bool> UpdateOrderStatusAsync(int orderId, int statusId);
     Task<OrderDetailsDto?> GetOrderDetailsByIdAsync(int orderId);
@@ -152,7 +153,7 @@ public class OrderRepository(IDbConnection connection) : IOrderRepository
         }
     }
     
-    public async Task<int> CreateOrderFromCartAsync(CreateOrderRequest createOrder)
+    public async Task<int> CreateOrderFromCartAsync(CreateOrderRequest createOrder, decimal discount = 0)
     {
         connection.Open();
         using var transaction = connection.BeginTransaction();
@@ -161,7 +162,8 @@ public class OrderRepository(IDbConnection connection) : IOrderRepository
             //get cart items with product price
             var cartItems = await connection.QueryAsync<CartItemWithPriceDto>(CartQueries.GetCartItemsWithProductPriceByCartId, new { CartId = createOrder.cartId }, transaction);
             //calculate order total amount
-            var totalAmount = cartItems.Sum(i => i.ProductPrice);
+            //TODO: include role discount
+            var totalAmount = cartItems.Sum(i => PricingHelper.CalculateDiscount(i.ProductPrice, discount));
 
             //create order from cart
             var orderId = await connection.QuerySingleAsync<int>(OrderQueries.CreateOrder, new

@@ -1,5 +1,6 @@
 ﻿using domis.api.Models;
 using domis.api.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace domis.api.Endpoints;
@@ -30,7 +31,7 @@ public static class CategoryEndpoints
         }).WithDescription("get category by id | NOT IMPLEMENTED");
 
 
-        group.MapGet("/{categoryId}/products", async (int categoryId, int? pageNumber, int? pageSize, ICategoryService categoryService) =>
+        group.MapGet("/{categoryId}/products", async (int categoryId, int? pageNumber, int? pageSize, ICategoryService categoryService, HttpContext httpContext, UserManager<UserEntity> userManager) =>
         {
             if (pageNumber <= 0)
             {
@@ -48,7 +49,9 @@ public static class CategoryEndpoints
                 PageSize = pageSize ?? 20 
             };
 
-            var categories = await categoryService.GetCategoryProducts(categoryId, pagination);
+            var user = await userManager.GetUserAsync(httpContext.User);
+
+            var categories = await categoryService.GetCategoryProducts(categoryId, pagination, user);
 
             return categories is null ? Results.NotFound() : Results.Ok(categories);
 
