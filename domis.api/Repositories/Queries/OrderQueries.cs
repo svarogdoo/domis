@@ -176,9 +176,11 @@ public static class OrderQueries
     public const string GetOrdersByUserId = @"
             SELECT 
                 id AS Id,
-                status_id AS StatusId,
-                payment_amount AS PaymentAmount,
-                comment AS Comment
+                status_id AS StatusId, -- status ordera
+                created_at AS Date, -- datum kreiranja
+                payment_vendor_type_id AS PaymentTypeId, --nacin placanja
+                payment_status_id AS PaymentStatusId, -- status placanja    
+                payment_amount AS PaymentAmount -- iznos
             FROM domis.order
             WHERE user_id = @UserId";
 }
