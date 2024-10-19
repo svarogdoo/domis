@@ -26,6 +26,11 @@
   function removeItemFromCart() {
     cart.remove(item.cartItemId);
   }
+
+  function selectText(event: Event) {
+    const input = event.target as HTMLInputElement;
+    input.select();
+  }
 </script>
 
 <tr class="h-full">
@@ -52,6 +57,7 @@
         class="px-2 py-1 w-16 rounded-lg border"
         bind:value={quantity}
         on:input={handleQuantityChange}
+        on:click={selectText}
       />
       <p>
         {mapQuantityTypeToCartString(

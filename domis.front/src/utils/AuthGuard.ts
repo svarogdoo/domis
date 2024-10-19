@@ -2,13 +2,19 @@ import { userStore } from "../stores/user";
 import { goto } from "$app/navigation";
 
 export const requireAuth = async () => {
-  let isAuthenticated = false;
+  let isAuthenticatedStore = false;
+
   const unsubscribe = userStore.subscribe((state) => {
-    isAuthenticated = state.isAuthenticated;
+    isAuthenticatedStore = state.isAuthenticated;
   });
 
-  if (!isAuthenticated) {
-    goto("/login"); // Adjust this path as needed
+  const savedUser = localStorage.getItem("user");
+  let isAuthenticatedStorage = false;
+  if (savedUser)
+    isAuthenticatedStorage = JSON.parse(savedUser)?.isAuthenticated;
+
+  if (!isAuthenticatedStorage && !isAuthenticatedStore) {
+    goto("/login");
   }
 
   unsubscribe();
