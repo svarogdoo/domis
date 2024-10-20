@@ -10,7 +10,8 @@ export function shortenString(str: string, maxLength: number): string {
   return str.slice(0, maxLength) + "...";
 }
 
-export function dateToString(date: Date): string {
+export function stringDateToString(dateString: string): string {
+  const date = new Date(dateString);
   const day = String(date.getDate()).padStart(2, "0");
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const year = date.getFullYear();

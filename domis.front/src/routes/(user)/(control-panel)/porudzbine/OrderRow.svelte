@@ -5,23 +5,23 @@
     mapPaymentVendorTypeToString,
   } from "../../../../enums";
   import { formatPrice } from "../../../../helpers/numberFormatter";
-  import { dateToString } from "../../../../helpers/stringFormatter";
   import OrderItemPopup from "./OrderItemPopup.svelte";
   import eyeIcon from "$lib/icons/eye.svg";
+  import { stringDateToString } from "../../../../helpers/stringFormatter";
 
   export let order: UserOrder;
   let showOrderItems = false;
 </script>
 
 <tr class="text-center">
-  <td class="py-5">{dateToString(order.date)}</td>
+  <td class="py-5">{stringDateToString(order.date)}</td>
   <td class="w-32"
-    ><p class="py-2 rounded-full text-md {getOrderStatusColor(order.status)}">
-      {mapOrderStatusToString(order.status)}
+    ><p class="py-2 rounded-full text-md {getOrderStatusColor(order.statusId)}">
+      {mapOrderStatusToString(order.statusId)}
     </p>
   </td>
   <td class="py-5">{order.address}</td>
-  <td class="py-5">{mapPaymentVendorTypeToString(order.paymentType)}</td>
+  <td class="py-5">{mapPaymentVendorTypeToString(order.paymentTypeId)}</td>
   <td class="py-5"
     >{formatPrice(order.paymentAmount)}
     <span class="font-light text-sm">RSD</span></td

@@ -199,11 +199,10 @@ declare global {
   }
   interface UserOrder {
     id: number;
-    date: Date;
-    status: OrderStatus;
+    date: string;
+    statusId: OrderStatus;
     address: string;
-    paymentType: PaymentVendorType;
-
+    paymentTypeId: PaymentVendorType;
     paymentAmount: number;
     items: Array<UserOrderItem>;
     comment: string;

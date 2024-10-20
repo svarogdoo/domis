@@ -3,87 +3,17 @@
   import { userService } from "../../../../services/user-service";
   import OrderRow from "./OrderRow.svelte";
   import OrderRowMobile from "./OrderRowMobile.svelte";
+  import { userStore } from "../../../../stores/user";
 
-  let date = new Date();
-  let orders: Array<UserOrder> = [
-    {
-      id: 1,
-      date: date,
-      status: 1,
-      address: "Cvijiceva 53",
-      paymentType: 1,
-      paymentAmount: 2000,
-      items: [
-        {
-          id: 1,
-          quantity: 2,
-          itemPrice: 2000,
-          productDetails: {
-            sku: 123,
-            name: "Proizvod",
-            image: "null",
-            price: 1000,
-            quantityType: 1,
-          },
-        },
-      ],
-      comment: "",
-    },
-    {
-      id: 2,
-      date: date,
-      status: 4,
-      address: "Cvijiceva 53",
-      paymentType: 1,
-      paymentAmount: 2000,
-      items: [
-        {
-          id: 1,
-          quantity: 2,
-          itemPrice: 2000,
-          productDetails: {
-            sku: 123,
-            name: "Proizvod",
-            image: "null",
-            price: 1000,
-            quantityType: 1,
-          },
-        },
-      ],
-      comment: "",
-    },
-    {
-      id: 3,
-      date: date,
-      status: 5,
-      address: "Cvijiceva 53",
-      paymentType: 1,
-      paymentAmount: 2000,
-      items: [
-        {
-          id: 1,
-          quantity: 2,
-          itemPrice: 2000,
-          productDetails: {
-            sku: 123,
-            name: "Proizvod",
-            image: "null",
-            price: 1000,
-            quantityType: 1,
-          },
-        },
-      ],
-      comment: "",
-    },
-  ];
+  let orders: Array<UserOrder> = [];
 
-  //   async function setOrders() {
-  //     orders = await userService.getUserOrders();
-  //   }
+  $: if ($userStore.token) {
+    setOrders();
+  }
 
-  //   onMount(() => {
-  //     setOrders();
-  //   });
+  async function setOrders() {
+    orders = await userService.getUserOrders();
+  }
 </script>
 
 <section class="w-full">
