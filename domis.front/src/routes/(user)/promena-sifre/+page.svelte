@@ -1,9 +1,9 @@
- <script lang="ts">
+<script lang="ts">
   import { userStore } from "../../../stores/user";
-  import { page } from '$app/stores'
+  import { page } from "$app/stores";
 
-  let resetCode: string = $page.url.searchParams.get('code') || "";
-  let email: string = $page.url.searchParams.get('email') || "";
+  let resetCode: string = $page.url.searchParams.get("code") || "";
+  let email: string = $page.url.searchParams.get("email") || "";
 
   let password = "";
   let confirmPassword = "";
@@ -18,10 +18,8 @@
 
     try {
       await userStore.resetPassword(email, resetCode, password);
-    }
-    catch (error: any) {
-      console.error("Password change failed:", error.message);
-      errorMessage = 'Došlo je do greške. Pokušajte ponovo.';
+    } catch (error: any) {
+      errorMessage = "Došlo je do greške. Pokušajte ponovo.";
     }
   };
 </script>
@@ -30,12 +28,10 @@
   <div class="bg-white p-8 rounded-xl border w-full max-w-md">
     <h2 class="text-2xl font-bold mb-6 text-center">Promena lozinke</h2>
 
-    <p class="text-gray-600 text-sm mb-6 text-center">
-      Unesite novu lozinku
-    </p>
+    <p class="text-gray-600 text-sm mb-6 text-center">Unesite novu lozinku</p>
 
     {#if errorMessage}
-    <p class="text-red-500 text-sm mb-4 text-center">{errorMessage}</p>
+      <p class="text-red-500 text-sm mb-4 text-center">{errorMessage}</p>
     {/if}
 
     <form on:submit|preventDefault={handlePasswordChange}>

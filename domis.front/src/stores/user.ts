@@ -1,4 +1,4 @@
-import { writable } from "svelte/store";
+import { get, writable } from "svelte/store";
 import { userService } from "../services/user-service";
 import { setAuthToken } from "../helpers/fetch";
 import { cart } from "./cart";
@@ -62,7 +62,6 @@ const createUserStore = () => {
 
     async registerUser(request: UserRegisterRequest) {
       await userService.register(request);
-      //log in user right after registering
       return this.loginUser(request.email, request.password);
     },
 
@@ -89,18 +88,14 @@ const createUserStore = () => {
       return await userService.resetPassword(email, resetCode, newPassword);
     },
 
-    // async refreshAccessToken(refreshToken: string){
-    //   const loginResponse =  await userService.refreshAccessToken(refreshToken);
-    //   const userProfile = await this.getProfile();
-    //   setUser(userProfile, loginResponse.accessToken, loginResponse.refreshToken);
-    // },
-
-    //TODO: actually implement
-    refreshUserSession(newToken: string) {
+    refreshUserSession(newToken: UserLoginResponse) {
       update((state) => ({
         ...state,
-        token: newToken,
+        token: newToken.accessToken,
+        refreshToken: newToken.refreshToken,
       }));
+      const currentUser = get(userStore);
+      localStorage.setItem("user", JSON.stringify(currentUser));
     },
   };
 };

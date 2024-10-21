@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { goto } from "$app/navigation";
+  import { goto } from "$app/navigation";
   import { userStore } from "../../../stores/user";
 
   let email = "";
@@ -7,15 +7,13 @@
   let errorMessage = "";
 
   const handlePasswordReset = async () => {
-    console.log("Requesting password reset for:", email);
-    
     try {
       await userStore.forgotPassword(email);
       requestSent = true;
 
       goto("/login");
     } catch (error: any) {
-      "Greška u obradi zahteva, pokušajte ponovo.";
+      ("Greška u obradi zahteva, pokušajte ponovo.");
     }
   };
 </script>
