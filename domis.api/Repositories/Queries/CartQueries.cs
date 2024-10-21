@@ -123,6 +123,7 @@ public static class CartQueries
             ci.id AS CartItemId, 
             ci.cart_id AS CartId, 
             ci.product_id AS ProductId,
+            ci.quantity AS Quantity,
             p.id AS ProductId,
             p.product_name AS ProductName,
             p.price AS ProductPrice

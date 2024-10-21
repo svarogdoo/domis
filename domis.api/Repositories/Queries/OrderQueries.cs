@@ -200,7 +200,7 @@ public static class OrderQueries
             SELECT
                 oi.id AS OrderItemId,
                 oi.product_id AS ProductId,
-                p.prices AS ProductPrice
+                p.price AS ProductPrice
                
             FROM
                 domis.order o

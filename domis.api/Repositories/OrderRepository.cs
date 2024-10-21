@@ -163,7 +163,7 @@ public class OrderRepository(IDbConnection connection) : IOrderRepository
             var cartItems = await connection.QueryAsync<CartItemWithPriceDto>(CartQueries.GetCartItemsWithProductPriceByCartId, new { CartId = createOrder.cartId }, transaction);
             //calculate order total amount
             //TODO: include role discount
-            var totalAmount = cartItems.Sum(i => PricingHelper.CalculateDiscount(i.ProductPrice, discount));
+            var totalAmount = cartItems.Sum(i => PricingHelper.CalculateDiscount(i.ProductPrice * i.Quantity, discount));
 
             //create order from cart
             var orderId = await connection.QuerySingleAsync<int>(OrderQueries.CreateOrder, new
@@ -187,7 +187,7 @@ public class OrderRepository(IDbConnection connection) : IOrderRepository
 
             //get all order items
 
-            var orderItems = await connection.QueryAsync<OrderItemWithPrice>(OrderQueries.GetOrderItemsWithPrices,new 
+            var orderItems = await connection.QueryAsync<OrderItemWithPriceDto>(OrderQueries.GetOrderItemsWithPrices,new 
             { OrderId = orderId 
             }, transaction);
 
@@ -195,7 +195,7 @@ public class OrderRepository(IDbConnection connection) : IOrderRepository
         
             foreach (var orderItem in orderItems)
             {
-                await connection.ExecuteAsyncOrderQueries(OrderQueries.UpdateOrderItemPrice, new
+                await connection.ExecuteAsync(OrderQueries.UpdateOrderItemPrice, new
                 {
                     ProductPrice = PricingHelper.CalculateDiscount(orderItem.ProductPrice, discount), // Updated price here
                     OrderItemId = orderItem.OrderItemId
