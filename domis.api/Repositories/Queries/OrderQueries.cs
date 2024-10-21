@@ -154,10 +154,13 @@ public static class OrderQueries
                 oi.id AS OrderItemId,
                 oi.product_id AS ProductId,
                 oi.quantity AS OrderItemQuantity,
+                oi.order_item_amount AS OrderItemAmount,
                 oi.created_at AS OrderItemCreatedAt,
                 oi.modified_at AS OrderItemModifiedAt,
                 p.product_name AS ProductName,
                 p.product_description AS ProductDescription,
+                p.quantity_type_id AS QuantityType,
+                p.sku AS Sku,
                i.blob_url AS Url
             FROM
                 domis.order o
@@ -192,4 +195,23 @@ public static class OrderQueries
         FROM domis.order o
         LEFT JOIN domis.order_shipping os ON o.order_shipping_id = os.id
         WHERE o.user_id = @UserId";
+
+    public const string GetOrderItemsWithPrices = @"
+            SELECT
+                oi.id AS OrderItemId,
+                oi.product_id AS ProductId,
+                p.prices AS ProductPrice
+               
+            FROM
+                domis.order o
+                LEFT JOIN domis.order_item oi ON o.id = oi.order_id
+                LEFT JOIN domis.product p ON oi.product_id = p.id
+            WHERE
+                o.id = @OrderId;";
+    
+    public const string UpdateOrderItemPrice = @"
+        UPDATE domis.order_item
+        SET order_item_amount = @ProductPrice
+        WHERE id = @OrderItemId;";
+
 }

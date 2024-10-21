@@ -185,10 +185,27 @@ public class OrderRepository(IDbConnection connection) : IOrderRepository
                 CreatedAt = DateTime.UtcNow
             }, transaction);
 
+            //get all order items
 
-            //flag cart status to completed/order
-            //TODO: maybe we don't need this if we're already deleting the cart
-            await connection.ExecuteAsync(CartQueries.UpdateCartStatus, new
+            var orderItems = await connection.QueryAsync<OrderItemWithPrice>(OrderQueries.GetOrderItemsWithPrices,new 
+            { OrderId = orderId 
+            }, transaction);
+
+             //update order items with calculated prices
+        
+            foreach (var orderItem in orderItems)
+            {
+                await connection.ExecuteAsyncOrderQueries(OrderQueries.UpdateOrderItemPrice, new
+                {
+                    ProductPrice = PricingHelper.CalculateDiscount(orderItem.ProductPrice, discount), // Updated price here
+                    OrderItemId = orderItem.OrderItemId
+                }, transaction);
+            }
+
+
+        //flag cart status to completed/order
+        //TODO: maybe we don't need this if we're already deleting the cart
+        await connection.ExecuteAsync(CartQueries.UpdateCartStatus, new
             {
                 CartId = createOrder.cartId,
                 StatusId = 3 //converted to order
