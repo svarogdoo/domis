@@ -163,7 +163,7 @@ public class OrderRepository(IDbConnection connection) : IOrderRepository
             var cartItems = await connection.QueryAsync<CartItemWithPriceDto>(CartQueries.GetCartItemsWithProductPriceByCartId, new { CartId = createOrder.cartId }, transaction);
             //calculate order total amount
             //TODO: include role discount
-            var totalAmount = cartItems.Sum(i => PricingHelper.CalculateDiscount(i.ProductPrice, discount));
+            var totalAmount = cartItems.Sum(i => PricingHelper.CalculateDiscount(i.ProductPrice * i.Quantity, discount));
 
             //create order from cart
             var orderId = await connection.QuerySingleAsync<int>(OrderQueries.CreateOrder, new
@@ -185,10 +185,27 @@ public class OrderRepository(IDbConnection connection) : IOrderRepository
                 CreatedAt = DateTime.UtcNow
             }, transaction);
 
+            //get all order items
 
-            //flag cart status to completed/order
-            //TODO: maybe we don't need this if we're already deleting the cart
-            await connection.ExecuteAsync(CartQueries.UpdateCartStatus, new
+            var orderItems = await connection.QueryAsync<OrderItemWithPriceDto>(OrderQueries.GetOrderItemsWithPrices,new 
+            { OrderId = orderId 
+            }, transaction);
+
+             //update order items with calculated prices
+        
+            foreach (var orderItem in orderItems)
+            {
+                await connection.ExecuteAsync(OrderQueries.UpdateOrderItemPrice, new
+                {
+                    ProductPrice = PricingHelper.CalculateDiscount(orderItem.ProductPrice, discount), // Updated price here
+                    OrderItemId = orderItem.OrderItemId
+                }, transaction);
+            }
+
+
+        //flag cart status to completed/order
+        //TODO: maybe we don't need this if we're already deleting the cart
+        await connection.ExecuteAsync(CartQueries.UpdateCartStatus, new
             {
                 CartId = createOrder.cartId,
                 StatusId = 3 //converted to order

@@ -48,6 +48,7 @@ public class OrderItemDto
     public int OrderItemId { get; set; }
     public int ProductId { get; set; }
     public decimal OrderItemQuantity { get; set; }
+    public decimal OrderItemAmount { get; set; }
     public DateTime OrderItemCreatedAt { get; set; }
     public DateTime? OrderItemModifiedAt { get; set; }
     public ProductOrderDetailsDto ProductDetails { get; set; }
@@ -57,5 +58,16 @@ public class ProductOrderDetailsDto
 {
     public string? ProductName { get; set; }
     public string? ProductDescription { get; set; }
+    public int? QuantityType { get; set; }
+    public int? Sku { get; set; }
+
     public string? Url { get; set; }
+}
+
+public class OrderItemWithPriceDto
+{
+    public int OrderItemId { get; set; }
+    public int ProductId { get; set; }
+    public decimal ProductPrice { get; set; }
+   
 }
