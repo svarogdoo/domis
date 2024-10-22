@@ -23,7 +23,7 @@ public interface IOrderRepository
 
     Task<bool> UpdateOrderStatusAsync(int orderId, int statusId);
     Task<OrderDetailsDto?> GetOrderDetailsByIdAsync(int orderId);
-    Task<IEnumerable<UserOrderDto>> GetOrdersByUserIdAsync(string userId);
+    Task<IEnumerable<UserOrderDto>> GetOrdersByUser(string userId);
 }
 public class OrderRepository(IDbConnection connection) : IOrderRepository
 {
@@ -192,18 +192,6 @@ public class OrderRepository(IDbConnection connection) : IOrderRepository
                 OrderId = orderId 
             }, transaction);
 
-             //update order items with calculated prices
-        
-            //foreach (var orderItem in orderItems)
-            //{
-            //    await connection.ExecuteAsync(OrderQueries.UpdateOrderItemPrice, new
-            //    {
-            //        ProductPrice = PricingHelper.CalculateDiscount(orderItem.ProductPrice, discount), // Updated price here
-            //        OrderItemId = orderItem.OrderItemId
-            //    }, transaction);
-            //}
-
-
             //flag cart status to completed/order
             //TODO: maybe we don't need this if we're already deleting the cart
             await connection.ExecuteAsync(CartQueries.UpdateCartStatus, new
@@ -301,7 +289,7 @@ public class OrderRepository(IDbConnection connection) : IOrderRepository
         }
     }
 
-    public async Task<IEnumerable<UserOrderDto>> GetOrdersByUserIdAsync(string userId)
+    public async Task<IEnumerable<UserOrderDto>> GetOrdersByUser(string userId)
     {
         try
         {
@@ -328,7 +316,7 @@ public class OrderRepository(IDbConnection connection) : IOrderRepository
                 }
 
                 // Fetch the order items for the current order
-                var orderItems = await connection.QueryAsync<UserOrderItem, ProductDetails, UserOrderItem>(
+                var orderItems = await connection.QueryAsync<UserOrderItem, OrderItemProduct, UserOrderItem>(
                     OrderQueries.GetOrderItemsByOrderId,
                     (orderItem, productDetails) =>
                     {
@@ -337,7 +325,7 @@ public class OrderRepository(IDbConnection connection) : IOrderRepository
                         return orderItem; // Return the order item with product details
                     },
                     new { OrderId = order.Id },
-                    splitOn: "ProductName" // Split on both ProductName and Url
+                    splitOn: "Name"
                 );
 
                 // Add the fetched order items to the user order

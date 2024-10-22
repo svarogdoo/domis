@@ -44,6 +44,6 @@
     </div></td
   >
   {#if showOrderItems}
-    <OrderItemPopup bind:show={showOrderItems} orderItems={order.items} />
+    <OrderItemPopup bind:show={showOrderItems} orderItems={order.orderItems} />
   {/if}
 </tr>

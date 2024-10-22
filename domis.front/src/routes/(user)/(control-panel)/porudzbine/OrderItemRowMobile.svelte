@@ -27,7 +27,7 @@
         <div class="flex gap-x-4 items-center">
           <p>
             <span class="font-light text-sm">Cena: </span>
-            {item.productDetails.price}
+            {item.itemPrice}
             <span class="font-light text-sm">RSD</span>
           </p>
           <div class="flex items-center gap-x-2">
@@ -42,7 +42,7 @@
         </div>
         <p class="mt-3">
           <span class="font-light text-sm">Ukupna cena: </span>
-          {formatPrice(item.itemPrice)}
+          {formatPrice(item.itemPriceTotal)}
           <span class="font-light text-sm">RSD</span>
         </p>
       </div>

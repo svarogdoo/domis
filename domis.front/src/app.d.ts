@@ -204,13 +204,14 @@ declare global {
     address: string;
     paymentTypeId: PaymentVendorType;
     paymentAmount: number;
-    items: Array<UserOrderItem>;
+    orderItems: Array<UserOrderItem>;
     comment: string;
   }
   interface UserOrderItem {
     id: number;
     quantity: number;
     itemPrice: number;
+    itemPriceTotal: number;
     productDetails: ProductDetails;
   }
 

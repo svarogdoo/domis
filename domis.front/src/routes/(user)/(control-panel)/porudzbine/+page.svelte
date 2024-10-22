@@ -13,6 +13,7 @@
 
   async function setOrders() {
     orders = await userService.getUserOrders();
+    console.log("Orders:", orders); // Check if orders are set properly
   }
 </script>
 
