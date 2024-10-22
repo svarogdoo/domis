@@ -16,12 +16,11 @@ public interface ICartRepository
     Task<IEnumerable<OrderStatusDto>?> GetAllOrderStatuses();
     Task<int> CreateCartAsync(string? userId);
     Task<bool> UpdateCartStatusAsync(int cartId, int statusId);
-    Task<int?> CreateCartItemAsync(int? cartId, int productId, decimal quantity, string? userId);
+    Task<int?> CreateCartItemAsync(int? cartId, int productId, decimal quantity, string? userId, decimal discount);
     Task<bool> UpdateCartItemQuantityAsync(int cartItemId, decimal quantity);
     Task<bool> DeleteCartItemAsync(int cartItemId);
     Task<bool> DeleteCartAsync(int cartId);
-    Task<CartDto?> GetCartWithItemsAndProductDetailsAsync(int cartId, decimal discount);
-    Task<CartDto?> GetCartWithItemsAndProductDetailsAsyncByUserId(string userId, decimal discount);
+    Task<CartDto?> GetCart(string? userId, int? cartId);
     Task<bool> SetCartUserId(int cartId, string userId);
 }
 public class CartRepository(IDbConnection connection) : ICartRepository
@@ -86,7 +85,7 @@ public class CartRepository(IDbConnection connection) : ICartRepository
         }
     }
     
-    public async Task<int?> CreateCartItemAsync(int? cartId, int productId, decimal quantity, string? userId)
+    public async Task<int?> CreateCartItemAsync(int? cartId, int productId, decimal quantity, string? userId, decimal discount = 0)
     {
         try
         {
@@ -107,7 +106,6 @@ public class CartRepository(IDbConnection connection) : ICartRepository
             if (cartItemExists)
             {
                 var currentQuantity = await connection.ExecuteScalarAsync<decimal>(CartQueries.GetCartItemQuantity, new { CartId = cartId, ProductId = productId });
-
                 // Update the quantity of the existing cart item
                 var updateParameters = new
                 {
@@ -122,11 +120,16 @@ public class CartRepository(IDbConnection connection) : ICartRepository
             }
 
             // Insert a new cart item
+            var price = PricingHelper.CalculateDiscount(
+                await connection.ExecuteScalarAsync<decimal>(ProductQueries.GetProductPrice, new { ProductId = productId }),
+                discount);
+
             var parameters = new
             {
                 CartId = cartId,
                 ProductId = productId,
                 Quantity = quantity,
+                Price = price,
                 CreatedAt = DateTime.UtcNow,
                 ModifiedAt = DateTime.UtcNow
             };
@@ -212,82 +215,58 @@ public class CartRepository(IDbConnection connection) : ICartRepository
         }
     }
     
-    public async Task<CartDto?> GetCartWithItemsAndProductDetailsAsync(int cartId, decimal discount = 0)
+    public Task<bool> SetCartUserId(int cartId, string userId)
     {
-        try
-        {
-            var cartDictionary = new Dictionary<int, CartDto>();
-
-            var result = await connection.QueryAsync<CartDto, CartItemDto, ProductCartDetailsDto, string, string, CartDto>(
-                CartQueries.GetCart,
-                (cart, item, product, image, status) =>
-                {
-                    if (!cartDictionary.TryGetValue(cart.CartId, out var currentCart))
-                    {
-                        currentCart = cart;
-                        currentCart.Items = [];
-                        cartDictionary.Add(currentCart.CartId, currentCart);
-                    }
-
-                    if (item is not null 
-                        && currentCart.Items.Find(i => i.CartItemId == item.CartItemId) == null)
-                    {
-                        item.ProductDetails = product;
-                        item.ProductDetails.Image = image;
-                        item.ProductDetails.Price = PricingHelper.CalculateDiscount(item.ProductDetails.Price, discount);
-
-                        currentCart.Items.Add(item);
-                    }
-
-                    currentCart.Status = status; // Assign the status to the cart
-
-                    return currentCart;
-                },
-                new { CartId = cartId },
-                splitOn: "CartItemId, Name, Url, Status"
-            );
-
-            return cartDictionary.Values.FirstOrDefault();
-        }
-        catch (Exception ex)
-        {
-            Log.Error(ex,$"An error occurred while getting the cart details: {ex.Message}");
-            throw; 
-        }
+        throw new NotImplementedException();
     }
 
-    public async Task<CartDto?> GetCartWithItemsAndProductDetailsAsyncByUserId(string userId, decimal discount = 0)
+    public async Task<CartDto?> GetCart(string? userId = null, int? cartId = null)
     {
         try
         {
             var cartDictionary = new Dictionary<int, CartDto>();
 
+            string query;
+            object parameters;
+
+            if (!string.IsNullOrEmpty(userId))
+            {
+                query = CartQueries.GetCartByUser;
+                parameters = new { UserId = userId };
+            }
+            else
+            {
+                query = CartQueries.GetCart;
+                parameters = new { CartId = cartId };
+            }
+
             var result = await connection.QueryAsync<CartDto, CartItemDto, ProductCartDetailsDto, string, string, CartDto>(
-                CartQueries.GetCartByUser,
-                (cart, item, product, image, status) =>
+            query,
+            (cart, item, product, image, status) =>
+            {
+                if (!cartDictionary.TryGetValue(cart.CartId, out var currentCart))
                 {
-                    if (!cartDictionary.TryGetValue(cart.CartId, out var currentCart))
-                    {
-                        currentCart = cart;
-                        currentCart.Items = [];
-                        cartDictionary.Add(currentCart.CartId, currentCart);
-                    }
+                    currentCart = cart;
+                    currentCart.Items = new List<CartItemDto>(); // Initialize the Items list properly
+                    cartDictionary.Add(currentCart.CartId, currentCart);
+                }
 
-                    if (item is not null
-                        && currentCart.Items.Find(i => i.CartItemId == item.CartItemId) == null)
-                    {
-                        item.ProductDetails = product;
-                        item.ProductDetails.Image = image;
-                        item.ProductDetails.Price = PricingHelper.CalculateDiscount(item.ProductDetails.Price, discount);
-                        currentCart.Items.Add(item);
-                    }
+                if (item is not null
+                    && currentCart.Items.Find(i => i.CartItemId == item.CartItemId) == null)
+                {
+                    item.ProductDetails = product;
+                    item.ProductDetails.Image = image;
+                    item.CartItemPrice = item.CartItemPrice;
+                    //item.ProductDetails.Price = PricingHelper.CalculateDiscount(item.ProductDetails.Price, discount);
+                    currentCart.Items.Add(item);
+                }
 
-                    currentCart.Status = status; // Assign the status to the cart
+                currentCart.Status = status; // Assign the status to the cart
 
-                    return currentCart;
-                },
-                new { UserId = userId },
-                splitOn: "CartItemId, Name, Url, Status"
+                return currentCart;
+            },
+            parameters,
+            splitOn: "CartItemId, Name, Url, Status"
             );
 
             return cartDictionary.Values.FirstOrDefault();
@@ -297,10 +276,5 @@ public class CartRepository(IDbConnection connection) : ICartRepository
             Log.Error(ex, $"An error occurred while getting the cart details: {ex.Message}");
             throw;
         }
-    }
-
-    public Task<bool> SetCartUserId(int cartId, string userId)
-    {
-        throw new NotImplementedException();
     }
 }
