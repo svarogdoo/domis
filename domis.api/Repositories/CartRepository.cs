@@ -231,12 +231,12 @@ public class CartRepository(IDbConnection connection) : ICartRepository
 
             if (!string.IsNullOrEmpty(userId))
             {
-                query = CartQueries.GetCartByUser;
+                query = CartQueries.GetCartByUserId;
                 parameters = new { UserId = userId };
             }
             else
             {
-                query = CartQueries.GetCart;
+                query = CartQueries.GetCartById;
                 parameters = new { CartId = cartId };
             }
 
