@@ -2,7 +2,6 @@
 using domis.api.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
-using SendGrid.Extensions.DependencyInjection;
 
 namespace domis.api.Extensions;
 

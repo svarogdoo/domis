@@ -62,7 +62,8 @@ public static class OrderEndpoints
             return Results.Ok(new DeleteOrderShippingResponse(response));
         }).WithDescription("Delete order shipping");
         
-        group.MapPost("/", async ([FromBody] CreateOrderRequest request, IOrderService orderService, HttpContext http, UserManager<UserEntity> userManager) =>
+        group.MapPost("/", async ([FromBody] CreateOrderRequest request, IOrderService orderService, 
+            HttpContext http, UserManager<UserEntity> userManager) =>
         {
             var user = await userManager.GetUserAsync(http.User);
 

@@ -49,7 +49,7 @@
     <p class="text-wrap pr-4">{item.productDetails.name}</p>
   </td>
   <td class="w-44 text-center"
-    >{item.productDetails.price} <span class="font-light text-sm">RSD</span></td
+    >{item.cartItemPrice} <span class="font-light text-sm">RSD</span></td
   >
   <td class="w-36">
     <div class="flex justify-center items-center gap-x-2">
@@ -68,7 +68,7 @@
     </div>
   </td>
   <td class="w-44 text-center"
-    >{formatPrice(item.cartItemPrice)}
+    >{formatPrice(item.cartItemPrice * item.quantity)}
     <span class="font-light text-sm">RSD</span></td
   >
   <td class="w-12">

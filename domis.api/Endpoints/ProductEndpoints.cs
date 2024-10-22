@@ -22,7 +22,8 @@ public static class ProductEndpoints
         }).WithDescription("get all products");
 
 
-        group.MapGet("/{id:int}", async (int id, IProductService productService, HttpContext httpContext, UserManager<UserEntity> userManager) =>
+        group.MapGet("/{id:int}", async (int id, IProductService productService, 
+            HttpContext httpContext, UserManager<UserEntity> userManager) =>
         {
             var user = await userManager.GetUserAsync(httpContext.User);
 

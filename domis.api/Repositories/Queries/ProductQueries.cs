@@ -185,4 +185,10 @@ public static class ProductQueries
         WHERE 
             product_id = @ProductId;"
     ;
+
+    public const string GetProductPrice = @"
+        SELECT price
+        FROM domis.product
+        WHERE id = @ProductId;
+    ";
 }

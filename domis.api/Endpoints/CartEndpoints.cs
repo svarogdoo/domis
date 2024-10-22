@@ -2,13 +2,9 @@ using domis.api.Common;
 using domis.api.Models;
 using domis.api.Services;
 using FluentValidation;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
-using System.ComponentModel.DataAnnotations;
-using System.Security.Claims;
-using static System.Net.WebRequestMethods;
 
 namespace domis.api.Endpoints;
 
@@ -46,16 +42,9 @@ public static class CartEndpoints
             return Results.Ok(new DeleteCartResponse(response));
         }).WithDescription("Delete cart");
         
-        group.MapPost("/cart-item", async Task<IResult> ([FromBody]CreateCartItemRequest request, IValidator<CreateCartItemRequest> validator, ICartService cartService, HttpContext http) =>
+        group.MapPost("/cart-item", async Task<IResult> ([FromBody]CreateCartItemRequest request, IValidator<CreateCartItemRequest> validator, ICartService cartService, 
+            HttpContext http, UserManager<UserEntity> userManager) =>
         {
-
-            //var validationResults = new List<ValidationResult>();
-            //var validationContext = new ValidationContext(request);
-            //if (!Validator.TryValidateObject(request, validationContext, validationResults, true))
-            //{
-            //    return Results.BadRequest(validationResults.Select(v => v.ErrorMessage));
-            //}
-
             var validationResult = await validator.ValidateAsync(request);
 
             if (!validationResult.IsValid)
@@ -65,9 +54,9 @@ public static class CartEndpoints
 
             try
             {
-                var userId = http.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var user = await userManager.GetUserAsync(http.User);
 
-                var response = await cartService.CreateCartItem(request.CartId, request!.ProductId, request!.Quantity, userId);
+                var response = await cartService.CreateCartItem(request.CartId, request!.ProductId, request!.Quantity, user);
                 return response == null
                     ? Results.BadRequest("This product does not exist.")
                     : Results.Ok(new CreateCartItemResponse(response.Value));
@@ -84,7 +73,7 @@ public static class CartEndpoints
             }
         }).WithDescription("Create new cart item");
         
-        group.MapPut("/cart-item-quantity", async ([FromBody]UpdateCartItemRequest request ,ICartService cartService) =>
+        group.MapPut("/cart-item-quantity", async ([FromBody]UpdateCartItemRequest request, ICartService cartService) =>
         {
             var response = await cartService.UpdateCartItemQuantity(request.cartItemId, request.quantity);
 
@@ -98,39 +87,20 @@ public static class CartEndpoints
             return Results.Ok(new DeleteCartItemResponse(response));
         }).WithDescription("Delete cart item");
         
-        group.MapGet("/{id}", async ([FromRoute]int id, ICartService cartService, HttpContext httpContext, UserManager<UserEntity> userManager) =>
+
+        group.MapGet("/", async Task<IResult> ([FromQuery] int? cartId, ICartService cartService, 
+            HttpContext http, UserManager<UserEntity> userManager) =>
         {
-            var user = await userManager.GetUserAsync(httpContext.User);
+            //TODO: decide what do we give priority to: cartId or user
+            var user = await userManager.GetUserAsync(http.User);
 
-            var response = await cartService.GetCartWithItemsAndProductDetails(id, user);
+            var cart = await cartService.GetCart(user, cartId);
+            
+            if (user is null && cartId is null) return Results.BadRequest();
 
-            return Results.Ok(response);
-        }).WithDescription("Get cart with details");
-
-        group.MapGet("/", async Task<IResult> ([FromQuery] int? cartId, ICartService cartService, HttpContext http, UserManager<UserEntity> userManager) =>
-        {
-            if (cartId is not null)
-            {
-                var guestCart = await cartService.GetCartWithItemsAndProductDetails((int)cartId, null);
-                return guestCart != null 
-                    ? Results.Ok(guestCart) 
-                    : Results.NotFound("Cart not found for guest user.");
-            }
-            else
-            {
-                // Extract user ID from the token for authenticated users
-                var userId = http.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (userId is null)
-                {
-                    return Results.Unauthorized();
-                }
-
-                var user = await userManager.GetUserAsync(http.User);
-                var userCart = await cartService.GetCartByUserId(userId, user);
-                return userCart != null
-                    ? Results.Ok(userCart)
-                    : Results.NotFound("Cart not found for authenticated user.");
-            }
+            return cart != null
+                ? Results.Ok(cart)
+                : Results.NotFound("Cart not found.");
         }).WithDescription("Get cart for guest or authenticated user");
     }
 }

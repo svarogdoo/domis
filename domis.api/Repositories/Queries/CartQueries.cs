@@ -22,8 +22,8 @@ public static class CartQueries
                 WHERE id = @CartId;";
     
     public const string CreateCartItem = @"
-                INSERT INTO domis.cart_item (cart_id, product_id, quantity, created_at, modified_at)
-                VALUES (@CartId, @ProductId, @Quantity, @CreatedAt, @ModifiedAt)
+                INSERT INTO domis.cart_item (cart_id, product_id, quantity, price, created_at, modified_at)
+                VALUES (@CartId, @ProductId, @Quantity, @Price, @CreatedAt, @ModifiedAt)
                 RETURNING id;";
     
     public const string UpdateCartItemQuantity = @"
@@ -85,6 +85,7 @@ public static class CartQueries
             ci.id AS CartItemId,
             ci.product_id AS ProductId,
             ci.quantity AS Quantity,
+            ci.price as CartItemPrice,
             ci.created_at AS CartItemCreatedAt,
             ci.modified_at AS CartItemModifiedAt,
             p.product_name AS Name,
@@ -109,14 +110,16 @@ public static class CartQueries
             (pi.image_type_id IS NULL OR pi.image_type_id = 1) AND c.user_id = @UserId;";
 
 
-    public const string CheckIfProductExistsInCart = @"SELECT COUNT(1) 
-    FROM domis.cart_item 
-    WHERE cart_id = @CartId AND product_id = @ProductId;";
+    public const string CheckIfProductExistsInCart = @"
+        SELECT COUNT(1) 
+        FROM domis.cart_item 
+        WHERE cart_id = @CartId AND product_id = @ProductId;";
 
-    public const string UpdateQuantityBasedOnCartAndProduct = @"UPDATE domis.cart_item 
-    SET quantity = @Quantity, modified_at = @ModifiedAt
-    WHERE cart_id = @CartId AND product_id = @ProductId
-    RETURNING Id;";
+    public const string UpdateQuantityBasedOnCartAndProduct = @"
+        UPDATE domis.cart_item 
+        SET quantity = @Quantity, modified_at = @ModifiedAt
+        WHERE cart_id = @CartId AND product_id = @ProductId
+        RETURNING Id;";
 
     public const string GetCartItemsWithProductPriceByCartId = @"
         SELECT 
