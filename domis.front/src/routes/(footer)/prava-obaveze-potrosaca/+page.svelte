@@ -1,7 +1,7 @@
 <section class="flex flex-col w-full items-center">
     <h1 class="mt-4 text-xl lg:text-2xl">Prava i obaveze potrošača</h1>
     <p class="mt-12 w-5/6 lg:w-2/3 text-center">Poslednje izmene na ovoj stranici bile su 18.4.2018.</p>
-    <div class="mt-12 w-full lg:w-4/5">
+    <div class="mt-12 w-5/6 lg:w-3/4">
         <br><p>Prodavac je dužan potrošača (kupca) upoznati o osnovnim obeležjima robe (proizvoda) koju kupuje, o ceni, načinu plaćanja, načinu i roku isporuke i načinu izvršenja drugih ugovornih obaveza, o funkcionalnosti robe, ukljucujuci i mere zaštite kupljene robe, o relevantnoj interoperabilnosti kupljene robe o kojima trgovac ima saznanja, o postojanju i uslovima postprodajnih usluga i garancijama, o postojanju zakonske odgovornosti Prodavca zbog nesaobraznosti robe ugovoru, o načinu izjavljivanja reklamacije, a naročito o mestu prijema i načinu postupanja po njima, kao i uslovima koji se odnose na ostvarivanje prava potrošača po osnovu saobraznosti, o dostupnosti servisa, odnosno održavanja i opravke za vreme i posle prestanka perioda u kojem Prodavac odgovara za nesaobraznost robe ugovoru, odnosno posle prestanka proizvodnje i uvoza robe.</p>
         <br><p>Prodavac će Potrošaču predati uputstvo za upotrebu i montažu. Ako isporučena roba nije saobrazna ugovoru, Potrošač nakon što obavesti Prodavca o nesaobraznosti, ima pravo da zahteva od Prodavca da otkloni nesaobraznost, bez naknade, opravkom ili zamenom, odnosno da zahteva odgovarajuće umanjenje cene ili da raskine ugovor u pogledu te robe.</p>
         <br><p>Potrošač ima pravo da bira da nesaobraznost robe trgovac otkloni opravkom ili zamenom.</p>

@@ -10,7 +10,7 @@
   <div class="w-full relative display flex flex-col justify-center items-center p-4 shadow-lg rounded-lg bg-white">
     <!-- Card Image with dark overlay and blur -->
     <div class="w-full relative display flex justify-center items-center">
-      <div class="absolute w-full h-64 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+      <div class="absolute w-full h-64 bg-black bg-opacity-70 backdrop-blur-sm"></div>
       <img
         class="w-full h-64 object-cover opacity-45 bg-slate-500 hover:opacity-50 rounded-lg"
         src={salesPoint.image || backup}

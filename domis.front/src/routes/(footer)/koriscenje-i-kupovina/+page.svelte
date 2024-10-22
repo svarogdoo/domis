@@ -1,8 +1,8 @@
 <section class="flex flex-col w-full items-center">
     <h1 class="mt-4 text-xl lg:text-2xl">Korišćenje i kupovina</h1>
-    <p class="mt-12 w-5/6 lg:w-2/3 text-center">Poslednje izmene na ovoj stranici bile su 18.4.2018.</p>
+    <p class="mt-12 w-5/6 lg:w-3/4 text-center">Poslednje izmene na ovoj stranici bile su 18.4.2018.</p>
     
-    <div class="mt-12 w-5/6 lg:w-2/3">
+    <div class="mt-12 w-5/6 lg:w-3/4">
         <p>
             Pažnja: upotrebom ovog internet sajta potvrđujete da ste pročitali, razumeli i prihvatili ove uslove korišćenja (u daljem tekstu “uslovi”) i slažete se da ste obavezni da ih poštujete, kao i sve druge primenljive zakone i propise. Ukoliko ne prihvatate ove uslove, nemojte koristiti ovaj internet sajt.
         </p>

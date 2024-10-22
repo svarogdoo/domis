@@ -14,6 +14,7 @@
       workingHours: "9:00 AM - 5:00 PM",
       image: "https://domisenterijeri.com/domis/img/2021/01/Maloprodaja.jpg",
       googleMapPin: "https://maps.app.goo.gl/nNyjFPrLDNz33JoF8",
+      optionalInfo: "LAMINAT I TEPIH CENTAR (+381 22) 210 18 98"
     },
     {
       id: 2,
@@ -67,14 +68,15 @@
   let salesPoints: SalesPoint[] = [];
 
   async function fetchSalesPoints() {
-    try {
-      salesPoints = await fetchData<SalesPoint[]>(
-        `${API_URL}/api/sales-points`
-      );
-    } catch (error) {
-      console.error("Failed to fetch sales points:", error);
-      salesPoints = hardcodedSalesPoints; // Use hardcoded data on failure
-    }
+    salesPoints = hardcodedSalesPoints;
+    //   try {
+    //     salesPoints = await fetchData<SalesPoint[]>(
+    //       `${API_URL}/api/sales-points`
+    //     );
+    //   } catch (error) {
+    //     console.error("Failed to fetch sales points:", error);
+    //     salesPoints = hardcodedSalesPoints; // Use hardcoded data on failure
+    //   }
   }
 
   onMount(() => {
