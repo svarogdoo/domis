@@ -104,22 +104,25 @@ public static class OrderQueries
                     @PaymentStatusId,
                     @PaymentVendorTypeId,
                     @PaymentAmount,
-                    @Comment,
+                    '',
                     @CreatedAt
                 FROM domis.cart c
                 WHERE c.id = @CartId
                 RETURNING id;";
-    
+
     public const string CreateOrderItems = @"
-                INSERT INTO domis.order_item (order_id, product_id, quantity, created_at)
-                SELECT 
-                    @OrderId,
-                    ci.product_id,
-                    ci.quantity,
-                    @CreatedAt
-                FROM domis.cart_item ci
-                WHERE ci.cart_id = @CartId;";
-    
+        INSERT INTO domis.order_item (order_id, product_id, quantity, order_item_amount, created_at)
+        SELECT 
+            @OrderId,
+            ci.product_id,
+            ci.quantity,
+            ci.price,
+            @CreatedAt
+        FROM domis.cart_item ci
+        WHERE ci.cart_id = @CartId
+        RETURNING id;"; // Assuming order_item_id is the primary key
+
+
     public const string UpdateOrderStatus = @"
             UPDATE domis.order
             SET status_id = @StatusId
@@ -200,15 +203,16 @@ public static class OrderQueries
         SELECT
             oi.id AS OrderItemId,
             oi.product_id AS ProductId,
-            p.price AS ProductPrice
-               
+            p.product_name AS ProductName,
+            oi.order_item_amount as ProductPrice,
+            oi.quantity AS Quantity         
         FROM
-            domis.order o
-            LEFT JOIN domis.order_item oi ON o.id = oi.order_id
-            LEFT JOIN domis.product p ON oi.product_id = p.id
+            domis.order_item oi
+        JOIN 
+            domis.product p ON p.id = oi.product_id
         WHERE
-            o.id = @OrderId;";
-    
+            oi.order_id = @OrderId;";
+
     public const string UpdateOrderItemPrice = @"
         UPDATE domis.order_item
         SET order_item_amount = @ProductPrice

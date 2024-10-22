@@ -21,7 +21,7 @@ public interface IOrderService
 
     Task<IEnumerable<UserOrderDto>> GetOrdersByUserId(string userId);
 }
-public class OrderService(IOrderRepository orderRepository, IPriceHelpers priceHelpers) : IOrderService
+public class OrderService(IOrderRepository orderRepository, IPriceHelpers priceHelpers, ICustomEmailSender<UserEntity> emailSender) : IOrderService
 {
     public async Task<IEnumerable<PaymentStatusDto>?> GetAllPaymentStatuses() => 
         await orderRepository.GetAllPaymentStatuses();
@@ -53,7 +53,11 @@ public class OrderService(IOrderRepository orderRepository, IPriceHelpers priceH
     {
         var discount = await priceHelpers.GetDiscount(user);
 
-        return await orderRepository.CreateOrderFromCartAsync(createOrder, discount);
+        var order =  await orderRepository.CreateOrderFromCartAsync(createOrder, discount);
+
+        await emailSender.SendOrderConfirmationAsync(user?.Email ?? order.Shipping!.Email, order);
+
+        return order.OrderId;
     }
 
     public async Task<bool> UpdateOrderStatus(int orderId, int statusId) => 

@@ -90,11 +90,12 @@
       valid = false;
     }
 
-    const phonePattern = /^6\d{8}$/;
+    const phonePattern = /^6\d{7,8}$/;
     if (!phoneNumber.match(phonePattern)) {
       errors.phoneNumber = "Neispravna vrednost broja telefona";
       valid = false;
     }
+
 
     if (valid) {
       const shippingDetails: ShippingDetails = {
