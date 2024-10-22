@@ -44,7 +44,7 @@ public static class CartQueries
                     DELETE FROM domis.cart
                     WHERE id = @CartId;";
     
-    public const string GetCart = @"
+    public const string GetCartById = @"
            SELECT 
                 c.id AS CartId,
                 c.user_id AS UserId,
@@ -53,6 +53,7 @@ public static class CartQueries
                 ci.id AS CartItemId,
                 ci.product_id AS ProductId,
                 ci.quantity AS Quantity,
+                ci.price as CartItemPrice,
                 ci.created_at AS CartItemCreatedAt,
                 ci.modified_at AS CartItemModifiedAt,
                 p.product_name AS Name,
@@ -76,7 +77,7 @@ public static class CartQueries
             WHERE 
                 (pi.image_type_id is null or pi.image_type_id = 1) AND c.id = @CartId;";
 
-    public const string GetCartByUser = @"
+    public const string GetCartByUserId = @"
         SELECT 
             c.id AS CartId,
             c.user_id AS UserId,
