@@ -219,7 +219,7 @@ public static class OrderQueries
         WHERE id = @OrderItemId;";
 
     public const string GetOrderItemsByOrderId = @"
-        SELECT 
+        SELECT DISTINCT ON (oi.id) 
             oi.id AS Id,
             oi.quantity AS Quantity,
             oi.order_item_amount AS ItemPrice,
@@ -232,5 +232,5 @@ public static class OrderQueries
         LEFT JOIN domis.product_image pi ON p.id = pi.product_id
         LEFT JOIN domis.image img ON pi.image_id = img.id AND pi.image_type_id = 1
         WHERE oi.order_id = @OrderId
-        ORDER BY oi.created_at DESC";
+        ORDER BY oi.id, oi.created_at DESC;";
 }
