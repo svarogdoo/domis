@@ -204,7 +204,7 @@ declare global {
     address: string;
     paymentTypeId: PaymentVendorType;
     paymentAmount: number;
-    items: Array<UserOrderItem>;
+    orderItems: Array<UserOrderItem>;
     comment: string;
   }
   interface UserOrderItem {

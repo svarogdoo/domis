@@ -27,11 +27,11 @@
     <span class="font-light text-sm">RSD</span></td
   >
   <td class="flex justify-center py-5">
-    <button on:click={() => (showOrderItems = true)}>
+    <button on:click={() => { showOrderItems = true; }}>
       <img class="w-6 h-6" src={eyeIcon} alt="eye" />
     </button>
   </td>
   {#if showOrderItems}
-    <OrderItemPopup bind:show={showOrderItems} orderItems={order.items} />
+    <OrderItemPopup bind:show={showOrderItems} orderItems={order.orderItems} />
   {/if}
 </tr>
