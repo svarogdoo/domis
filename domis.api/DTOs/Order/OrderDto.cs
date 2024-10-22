@@ -1,4 +1,5 @@
 using domis.api.DTOs.Order;
+using domis.api.DTOs.Product;
 
 public class OrderDetailsDto
 {
@@ -51,10 +52,12 @@ public class OrderItemDto
     public decimal OrderItemAmount { get; set; }
     public DateTime OrderItemCreatedAt { get; set; }
     public DateTime? OrderItemModifiedAt { get; set; }
-    public ProductOrderDetailsDto ProductDetails { get; set; }
+    public ProductDetails ProductDetails { get; set; }
 }
 
-public class ProductOrderDetailsDto
+
+
+public class ProductDetails
 {
     public string? ProductName { get; set; }
     public string? ProductDescription { get; set; }

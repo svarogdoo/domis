@@ -1,7 +1,6 @@
 using domis.api.DTOs.Order;
 using domis.api.Models;
 using domis.api.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 

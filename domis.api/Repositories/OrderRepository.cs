@@ -5,6 +5,7 @@ using domis.api.DTOs.Cart;
 using domis.api.DTOs.Order;
 using domis.api.Models;
 using domis.api.Repositories.Queries;
+using MailKit.Search;
 using Serilog;
 
 namespace domis.api.Repositories;
@@ -257,7 +258,7 @@ public class OrderRepository(IDbConnection connection) : IOrderRepository
 
             var result = await connection
                 .QueryAsync<OrderDetailsDto, OrderStatusdetialsDto, OrderShippingDetailsDto, PaymentDetailsDto, OrderItemDto,
-                    ProductOrderDetailsDto, string, OrderDetailsDto>(
+                    ProductDetails, string, OrderDetailsDto>(
                     OrderQueries.GetOrderDetails,
                     (order, orderStatus, orderShipping, paymentDetails, orderItem, product, url) =>
                     {
@@ -297,9 +298,47 @@ public class OrderRepository(IDbConnection connection) : IOrderRepository
     {
         try
         {
+            var orderDict = new Dictionary<int, UserOrderDto>();
+
             var userOrders = await connection.QueryAsync<UserOrderDto>(OrderQueries.GetOrdersByUserId, new { UserId = userId });
 
-            return userOrders;
+            foreach (var order in userOrders)
+            {
+                if (!orderDict.TryGetValue(order.Id, out var userOrder))
+                {
+                    userOrder = new UserOrderDto
+                    {
+                        Id = order.Id,
+                        StatusId = order.StatusId,
+                        Date = order.Date,
+                        Address = order.Address,
+                        PaymentTypeId = order.PaymentTypeId,
+                        PaymentStatusId = order.PaymentStatusId,
+                        PaymentAmount = order.PaymentAmount,
+                    };
+
+                    orderDict.Add(order.Id, userOrder);
+                }
+
+                // Fetch the order items for the current order
+                var orderItems = await connection.QueryAsync<UserOrderItem, ProductDetails, UserOrderItem>(
+                    OrderQueries.GetOrderItemsByOrderId,
+                    (orderItem, productDetails) =>
+                    {
+                        // Assign product details
+                        orderItem.ProductDetails = productDetails;
+                        return orderItem; // Return the order item with product details
+                    },
+                    new { OrderId = order.Id },
+                    splitOn: "ProductName" // Split on both ProductName and Url
+                );
+
+                // Add the fetched order items to the user order
+                userOrder.OrderItems.AddRange(orderItems);
+            }
+
+            return orderDict.Values;
+            //return userOrders;
         }
         catch (Exception ex)
         {

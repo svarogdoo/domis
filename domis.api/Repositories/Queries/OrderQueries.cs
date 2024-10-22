@@ -161,7 +161,7 @@ public static class OrderQueries
                 p.product_description AS ProductDescription,
                 p.quantity_type_id AS QuantityType,
                 p.sku AS Sku,
-               i.blob_url AS Url
+                i.blob_url AS Url
             FROM
                 domis.order o
                 LEFT JOIN domis.order_status os ON o.status_id = os.id
@@ -197,21 +197,36 @@ public static class OrderQueries
         WHERE o.user_id = @UserId";
 
     public const string GetOrderItemsWithPrices = @"
-            SELECT
-                oi.id AS OrderItemId,
-                oi.product_id AS ProductId,
-                p.price AS ProductPrice
+        SELECT
+            oi.id AS OrderItemId,
+            oi.product_id AS ProductId,
+            p.price AS ProductPrice
                
-            FROM
-                domis.order o
-                LEFT JOIN domis.order_item oi ON o.id = oi.order_id
-                LEFT JOIN domis.product p ON oi.product_id = p.id
-            WHERE
-                o.id = @OrderId;";
+        FROM
+            domis.order o
+            LEFT JOIN domis.order_item oi ON o.id = oi.order_id
+            LEFT JOIN domis.product p ON oi.product_id = p.id
+        WHERE
+            o.id = @OrderId;";
     
     public const string UpdateOrderItemPrice = @"
         UPDATE domis.order_item
         SET order_item_amount = @ProductPrice
         WHERE id = @OrderItemId;";
 
+    public const string GetOrderItemsByOrderId = @"
+        SELECT 
+            oi.id AS Id,
+            oi.quantity AS Quantity,
+            oi.order_item_amount AS ItemPrice,
+            p.product_name AS ProductName,
+            p.quantity_type_id AS QuantityType,
+            p.sku AS Sku,
+            img.blob_url AS Url
+        FROM domis.order_item oi
+        LEFT JOIN domis.product p ON oi.product_id = p.id
+        LEFT JOIN domis.product_image pi ON p.id = pi.product_id
+        LEFT JOIN domis.image img ON pi.image_id = img.id AND pi.image_type_id = 1
+        WHERE oi.order_id = @OrderId
+        ORDER BY oi.created_at DESC";
 }
