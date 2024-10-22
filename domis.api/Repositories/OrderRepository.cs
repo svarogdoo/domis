@@ -19,7 +19,7 @@ public interface IOrderRepository
     Task<bool> UpdateOrderShipping(int id, OrderShippingDto orderShipping);
     Task<OrderShippingDto?> GetOrderShippingById(int id);
     Task<bool> DeleteOrderShippingById(int id);
-    Task<int> CreateOrderFromCartAsync(CreateOrderRequest createOrder, decimal discount);
+    Task<OrderConfirmationDto> CreateOrderFromCartAsync(CreateOrderRequest createOrder, decimal discount);
 
     Task<bool> UpdateOrderStatusAsync(int orderId, int statusId);
     Task<OrderDetailsDto?> GetOrderDetailsByIdAsync(int orderId);
@@ -154,7 +154,7 @@ public class OrderRepository(IDbConnection connection) : IOrderRepository
         }
     }
     
-    public async Task<int> CreateOrderFromCartAsync(CreateOrderRequest createOrder, decimal discount = 0)
+    public async Task<OrderConfirmationDto> CreateOrderFromCartAsync(CreateOrderRequest createOrder, decimal discount = 0)
     {
         connection.Open();
         using var transaction = connection.BeginTransaction();
@@ -163,8 +163,8 @@ public class OrderRepository(IDbConnection connection) : IOrderRepository
             //get cart items with product price
             var cartItems = await connection.QueryAsync<CartItemWithPriceDto>(CartQueries.GetCartItemsWithProductPriceByCartId, new { CartId = createOrder.cartId }, transaction);
             //calculate order total amount
-            //TODO: include role discount
-            var totalAmount = cartItems.Sum(i => PricingHelper.CalculateDiscount(i.ProductPrice * i.Quantity, discount));
+            //TODO: include role discount? or not?
+            var totalAmount = cartItems.Sum(i => i.ProductPrice * i.Quantity);
 
             //create order from cart
             var orderId = await connection.QuerySingleAsync<int>(OrderQueries.CreateOrder, new
@@ -179,7 +179,7 @@ public class OrderRepository(IDbConnection connection) : IOrderRepository
             }, transaction);
 
             //create order items from cart items
-            await connection.ExecuteAsync(OrderQueries.CreateOrderItems, new
+            var affectedRows = await connection.ExecuteAsync(OrderQueries.CreateOrderItems, new
             {
                 OrderId = orderId,
                 CartId = createOrder.cartId,
@@ -187,26 +187,26 @@ public class OrderRepository(IDbConnection connection) : IOrderRepository
             }, transaction);
 
             //get all order items
-
-            var orderItems = await connection.QueryAsync<OrderItemWithPriceDto>(OrderQueries.GetOrderItemsWithPrices,new 
-            { OrderId = orderId 
+            var orderItems = await connection.QueryAsync<OrderItemWithPriceDto>(OrderQueries.GetOrderItemsWithPrices, new 
+            { 
+                OrderId = orderId 
             }, transaction);
 
              //update order items with calculated prices
         
-            foreach (var orderItem in orderItems)
-            {
-                await connection.ExecuteAsync(OrderQueries.UpdateOrderItemPrice, new
-                {
-                    ProductPrice = PricingHelper.CalculateDiscount(orderItem.ProductPrice, discount), // Updated price here
-                    OrderItemId = orderItem.OrderItemId
-                }, transaction);
-            }
+            //foreach (var orderItem in orderItems)
+            //{
+            //    await connection.ExecuteAsync(OrderQueries.UpdateOrderItemPrice, new
+            //    {
+            //        ProductPrice = PricingHelper.CalculateDiscount(orderItem.ProductPrice, discount), // Updated price here
+            //        OrderItemId = orderItem.OrderItemId
+            //    }, transaction);
+            //}
 
 
-        //flag cart status to completed/order
-        //TODO: maybe we don't need this if we're already deleting the cart
-        await connection.ExecuteAsync(CartQueries.UpdateCartStatus, new
+            //flag cart status to completed/order
+            //TODO: maybe we don't need this if we're already deleting the cart
+            await connection.ExecuteAsync(CartQueries.UpdateCartStatus, new
             {
                 CartId = createOrder.cartId,
                 StatusId = 3 //converted to order
@@ -217,7 +217,14 @@ public class OrderRepository(IDbConnection connection) : IOrderRepository
 
             transaction.Commit();
 
-            return orderId;
+
+            return new OrderConfirmationDto
+            {
+                OrderId = orderId,
+                OrderItems = orderItems.ToList(),
+                TotalPrice = totalAmount,
+                Shipping = await GetOrderShippingById(createOrder.orderShippingId)
+            };
         }
         catch (Exception ex)
         {

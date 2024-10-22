@@ -2,6 +2,7 @@
 using SendGrid;
 using System.Text.Encodings.Web;
 using domis.api.Models;
+using domis.api.DTOs.Order;
 
 namespace domis.api.Common;
 
@@ -9,6 +10,7 @@ public interface ICustomEmailSender<TUser> where TUser: UserEntity, new()/* : IE
 {
     Task SendPasswordResetCodeAsync(UserEntity user, string email, string resetCode);
     Task SendConfirmationLinkAsync(UserEntity user, string toEmail, string confirmationLink);
+    Task SendOrderConfirmationAsync(string email, OrderConfirmationDto order);
 }
 
 public class CustomEmailSender(IConfiguration configuration, ILogger<CustomEmailSender> logger, ISendGridClient sendGridClient) 
@@ -57,11 +59,45 @@ public class CustomEmailSender(IConfiguration configuration, ILogger<CustomEmail
         await SendEmailAsync(email, subject, message);
     }
 
+    public async Task SendOrderConfirmationAsync(string email, OrderConfirmationDto order)
+    {
+        var subject = $"Potvrda narudžbine #{order.OrderId}";
+
+        var message = $@"
+            <h1>Hvala vam na narudžbini #{order.OrderId}</h1>
+            <p>Ovo su detalji vaše narudžbine:</p>
+        
+            <h2>Stavke narudžbine</h2>
+            <ul>
+                {string.Join("", order.OrderItems.Select(item => $@"
+                    <li>
+                        Proizvod #{item.ProductId}: {item.ProductPrice} RSD 
+                        (Količina: {item.Quantity})
+                    </li>
+                "))}
+            </ul>
+
+            <p><strong>Ukupna cena:</strong> {order.TotalPrice?.ToString("F2")} RSD</p>
+        
+            <h2>Detalji isporuke</h2>
+            <p><strong>Ime i prezime:</strong> {order.Shipping?.FirstName} {order.Shipping?.LastName}</p>
+            <p><strong>Adresa:</strong> {order.Shipping?.Address}, {order.Shipping?.Apartment}, {order.Shipping?.City}, {order.Shipping?.PostalCode}</p>
+            <p><strong>Telefon:</strong> {order.Shipping?.PhoneNumber}</p>
+        
+            <p>Ukoliko imate bilo kakva pitanja, slobodno nas kontaktirajte.</p>
+            <p>Pozdrav, Vaš tim</p>
+        ";
+
+        await SendEmailAsync(email, subject, message);
+    }
+
+
     public async Task SendEmailAsync(string toEmail, string subject, string message)
     {
         var msg = new SendGridMessage()
         {
-            From = new EmailAddress(Environment.GetEnvironmentVariable("SENDGRID_API_KEY"), Environment.GetEnvironmentVariable("SENDGRID_NAME")),
+            From = new EmailAddress(Environment.GetEnvironmentVariable("SENDGRID_FROM") ?? "rdvn.luka@gmail.com", 
+                                    Environment.GetEnvironmentVariable("SENDGRID_NAME") ?? "Domis Enterijeri"),
             Subject = subject,
             PlainTextContent = message,
             HtmlContent = message
