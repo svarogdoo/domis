@@ -223,10 +223,10 @@ public static class OrderQueries
             oi.id AS Id,
             oi.quantity AS Quantity,
             oi.order_item_amount AS ItemPrice,
-            p.product_name AS ProductName,
+            p.product_name AS Name,
             p.quantity_type_id AS QuantityType,
             p.sku AS Sku,
-            img.blob_url AS Url
+            img.blob_url AS Image
         FROM domis.order_item oi
         LEFT JOIN domis.product p ON oi.product_id = p.id
         LEFT JOIN domis.product_image pi ON p.id = pi.product_id

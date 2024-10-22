@@ -211,6 +211,7 @@ declare global {
     id: number;
     quantity: number;
     itemPrice: number;
+    itemPriceTotal: number;
     productDetails: ProductDetails;
   }
 

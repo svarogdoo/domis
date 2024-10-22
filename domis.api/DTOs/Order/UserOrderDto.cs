@@ -16,6 +16,15 @@ public class UserOrderItem
 {
     public int Id { get; set; }
     public int Quantity { get; set; }
-    public decimal ItemPrice { get; set; }
-    public ProductDetails? ProductDetails { get; set; }
+    public decimal? ItemPrice { get; set; }
+    public decimal? ItemPriceTotal => ItemPrice * Quantity;
+    public OrderItemProduct? ProductDetails { get; set; }
+}
+
+public class OrderItemProduct
+{
+    public string? Name { get; set; }
+    public int? QuantityType { get; set; }
+    public int? Sku { get; set; }
+    public string? Image { get; set; }
 }
