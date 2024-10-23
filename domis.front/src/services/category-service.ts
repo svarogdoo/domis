@@ -11,8 +11,14 @@ export function getCategories() {
   }
 }
 
-export function getCategoryProducts(id: number) {
-  return fetchData<CategoryData>(`${API_URL}/api/categories/${id}/products`);
+export function getCategoryProducts(id: number, pageNumber?: number, pageSize?: number) {
+  let queryParams = new URLSearchParams();
+  if (pageNumber) queryParams.append("pageNumber", pageNumber.toString());
+  if (pageSize) queryParams.append("pageSize", pageSize.toString());
+
+  const url = `${API_URL}/api/categories/${id}/products?${queryParams.toString()}`;
+
+  return fetchData<CategoryData>(url);
 }
 
 export async function setCategories() {

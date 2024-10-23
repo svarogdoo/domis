@@ -61,31 +61,44 @@ public class CustomEmailSender(IConfiguration configuration, ILogger<CustomEmail
 
     public async Task SendOrderConfirmationAsync(string email, OrderConfirmationDto order)
     {
-        var subject = $"Potvrda narudžbine #{order.OrderId}";
+        var subject = $"Domis Enterijeri - Potvrda narudžbine #{order.OrderId}";
+
+        var shippingAddress = $"{order.Shipping?.Address}";
+        if (!string.IsNullOrWhiteSpace(order.Shipping?.Apartment))
+            shippingAddress += $", {order.Shipping.Apartment}";
+        if (!string.IsNullOrWhiteSpace(order.Shipping?.City))
+            shippingAddress += $", {order.Shipping.City}";
+        if (!string.IsNullOrWhiteSpace(order.Shipping?.PostalCode))
+            shippingAddress += $", {order.Shipping.PostalCode}";
 
         var message = $@"
-            <h1>Hvala vam na narudžbini #{order.OrderId}</h1>
-            <p>Ovo su detalji vaše narudžbine:</p>
+            <div style='font-family: Arial, sans-serif; color: #333;'>
+                <h1 style='color: #4CAF50;'>Hvala vam na narudžbini #{order.OrderId}</h1>
+                <p>Ovo su detalji vaše narudžbine:</p>
         
-            <h2>Stavke narudžbine</h2>
-            <ul>
-                {string.Join("", order.OrderItems.Select(item => $@"
-                    <li>
-                        Proizvod #{item.ProductId}: {item.ProductPrice} RSD 
-                        (Količina: {item.Quantity})
-                    </li>
-                "))}
-            </ul>
+                <h2 style='border-bottom: 1px solid #ddd; padding-bottom: 5px;'>Stavke narudžbine</h2>
+                <ul style='list-style-type: none; padding: 0;'>
+                    {string.Join("", order.OrderItems.Select(item => $@"
+                        <li style='margin-bottom: 10px;'>
+                            <strong>{item.ProductName}:</strong> {item.ProductPrice} RSD 
+                            <span style='font-size: 0.9em;'>(Količina: {item.Quantity})</span>
+                        </li>
+                    "))}
+                </ul>
 
-            <p><strong>Ukupna cena:</strong> {order.TotalPrice?.ToString("F2")} RSD</p>
+                <p style='font-weight: bold;'>Ukupna cena: {order.TotalPrice?.ToString("F2")} RSD</p>
         
-            <h2>Detalji isporuke</h2>
-            <p><strong>Ime i prezime:</strong> {order.Shipping?.FirstName} {order.Shipping?.LastName}</p>
-            <p><strong>Adresa:</strong> {order.Shipping?.Address}, {order.Shipping?.Apartment}, {order.Shipping?.City}, {order.Shipping?.PostalCode}</p>
-            <p><strong>Telefon:</strong> {order.Shipping?.PhoneNumber}</p>
+                <h2 style='border-bottom: 1px solid #ddd; padding-bottom: 5px;'>Detalji isporuke</h2>
+                <p><strong>Ime i prezime:</strong> {order.Shipping?.FirstName} {order.Shipping?.LastName}</p>
+                <p><strong>Adresa:</strong> {shippingAddress}</p>
+                <p><strong>Telefon:</strong> +381 {order.Shipping?.PhoneNumber}</p>
         
-            <p>Ukoliko imate bilo kakva pitanja, slobodno nas kontaktirajte.</p>
-            <p>Pozdrav, Vaš tim</p>
+                <p style='margin-top: 20px;'>Ukoliko imate bilo kakva pitanja, slobodno nas kontaktirajte.</p>
+            
+                <a href='https://www.domisenterijeri.com' style='color: #8f1410; text-decoration: underline; margin-top: 20px;'>Posetite našu stranicu</a>
+            
+                <p style='font-size: 1.4em; color: #8f1410; margin-top: 10px;'>Pozdrav, Vaši Domis Enterijeri</p>
+            </div>
         ";
 
         await SendEmailAsync(email, subject, message);

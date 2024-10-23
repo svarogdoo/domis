@@ -74,7 +74,7 @@ public class CategoryRepository(IDbConnection connection) : ICategoryRepository
             if (category is null)
                 return null;
 
-            offset = 0;  //TO-DO: remove when pagination is done on the FE
+            //offset = 0; options.PageSize = 1000;  //TODO: remove when pagination is done on the FE
 
             var productParams = new { CategoryId = categoryId, Offset = offset, Limit = options.PageSize };
             var products = await connection.QueryAsync<ProductPreviewDto>(ProductQueries.GetAllByCategoryWithPagination, productParams);
