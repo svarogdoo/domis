@@ -46,7 +46,7 @@ public static class CategoryEndpoints
             var pagination = new PageOptions 
             { 
                 PageNumber = pageNumber ?? 1, 
-                PageSize = pageSize ?? 20 
+                PageSize = pageSize ?? 18 
             };
 
             var user = await userManager.GetUserAsync(httpContext.User);

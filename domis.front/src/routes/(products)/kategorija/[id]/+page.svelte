@@ -10,8 +10,8 @@
   let isOpen = false;
   let sortType = "low-to-high";
 
-  let pageNumber = 1; // Default page
-  let pageSize = 18;  // Default page size
+  let pageNumber = 1;
+  let pageSize = 18;
 
   $: products = data.props.products;
   $: categoryDetails = data.props.category;
@@ -44,20 +44,20 @@
 
   function changePage(delta: number) {
     pageNumber += delta;
-    fetchProducts();  // Fetch new data based on the updated page number
 
     const newUrl = new URL(window.location.href);
-    newUrl.searchParams.set("stranica", pageNumber.toString());
+    newUrl.searchParams.set("strana", pageNumber.toString());
     history.pushState({}, '', newUrl);
+
+    fetchProducts();
   }
 
   onMount(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const pageParam = urlParams.get("stranica");
+    const pageParam = urlParams.get("strana");
     if (pageParam) {
       pageNumber = Number(pageParam);
     }
-    fetchProducts(); // Fetch products for the current page
   });
 </script>
 
