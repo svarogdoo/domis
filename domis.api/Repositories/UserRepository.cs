@@ -17,13 +17,13 @@ public class UserRepository(UserManager<UserEntity> userManager) : IUserReposito
     {
         var idUser = await userManager.FindByIdAsync(id);
 
-        if (idUser is null || idUser.Email is null)
+        if (idUser?.Email is null)
             return null;
 
         var roles = await userManager.GetRolesAsync(idUser);
 
-        if (roles.Contains(Roles.VP1.GetRoleName()) || roles.Contains(Roles.VP2.GetRoleName()) ||
-        roles.Contains(Roles.VP3.GetRoleName()) || roles.Contains(Roles.VP4.GetRoleName()))
+        if (roles.Contains(Roles.VP1.RoleName()) || roles.Contains(Roles.VP2.RoleName()) ||
+        roles.Contains(Roles.VP3.RoleName()) || roles.Contains(Roles.VP4.RoleName()))
         {
             return new UserWholesaleProfileDto(
                 idUser.FirstName!, idUser.LastName!, 

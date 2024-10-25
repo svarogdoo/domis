@@ -44,11 +44,11 @@ public static class UserEndpoints
 
             if (userId is null) return Results.Unauthorized();
 
-            var userOrders = await orderService.GetOrdersByUser(userId);
+            var userOrders = (await orderService.GetOrdersByUser(userId)).ToList();
 
-            if (userOrders is null || !userOrders.Any()) return Results.NotFound();
-
-            return Results.Ok(userOrders);
+            return userOrders.Count == 0 
+                ? Results.NotFound() 
+                : Results.Ok(userOrders);
         })
         .RequireAuthorization();
 
@@ -60,9 +60,9 @@ public static class UserEndpoints
 
             var success = await userService.UpdateUserAddressAsync(userId, request);
 
-            if (!success) return Results.NotFound();
-
-            return Results.NoContent();
+            return !success 
+                ? Results.NotFound() 
+                : Results.NoContent();
         }).RequireAuthorization()
         .WithDescription("updates user address with provided info");
     }

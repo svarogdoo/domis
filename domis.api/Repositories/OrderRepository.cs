@@ -35,7 +35,7 @@ public class OrderRepository(IDbConnection connection) : IOrderRepository
                 (await connection.QueryAsync<PaymentStatusDto>(OrderQueries.GetPaymentStatuses))
                 .ToList();
 
-            return paymentStatuses.Any() ? paymentStatuses : null;
+            return paymentStatuses.Count != 0 ? paymentStatuses : null;
         }
         catch (Exception ex)
         {
@@ -52,7 +52,7 @@ public class OrderRepository(IDbConnection connection) : IOrderRepository
                 (await connection.QueryAsync<OrderStatusDto>(OrderQueries.GetOrderStatuses))
                 .ToList();
 
-            return orderStatuses.Any() ? orderStatuses : null;
+            return orderStatuses.Count != 0 ? orderStatuses : null;
         }
         catch (Exception ex)
         {
@@ -69,7 +69,7 @@ public class OrderRepository(IDbConnection connection) : IOrderRepository
                 (await connection.QueryAsync<PaymentVendorTypeDto>(OrderQueries.GetPaymentVendors))
                 .ToList();
 
-            return paymentVendorTypes.Any() ? paymentVendorTypes : null;
+            return paymentVendorTypes.Count != 0 ? paymentVendorTypes : null;
         }
         catch (Exception ex)
         {
@@ -82,10 +82,7 @@ public class OrderRepository(IDbConnection connection) : IOrderRepository
     {
         try
         {
-            var orderShippingId =
-                await connection.ExecuteScalarAsync<int>(OrderQueries.CreateOrderShipping, orderShipping);
-
-            return orderShippingId;
+            return await connection.ExecuteScalarAsync<int>(OrderQueries.CreateOrderShipping, orderShipping);
         }
         catch (Exception ex)
         {
@@ -127,9 +124,7 @@ public class OrderRepository(IDbConnection connection) : IOrderRepository
     {
         try
         {
-            var result = await connection.QuerySingleOrDefaultAsync<OrderShippingWithCountryDto>(OrderQueries.GetOrderShipping, new { Id = id });
-
-            return result;
+            return await connection.QuerySingleOrDefaultAsync<OrderShippingWithCountryDto>(OrderQueries.GetOrderShipping, new { Id = id });
         }
         catch (Exception ex)
         {
@@ -161,7 +156,7 @@ public class OrderRepository(IDbConnection connection) : IOrderRepository
         try
         {
             //get cart items with product price
-            var cartItems = await connection.QueryAsync<CartItemWithPriceDto>(CartQueries.GetCartItemsWithProductPriceByCartId, new { CartId = createOrder.cartId }, transaction);
+            var cartItems = await connection.QueryAsync<CartItemWithPriceDto>(CartQueries.GetCartItemsWithProductPriceByCartId, new { CartId = createOrder.CartId }, transaction);
             //calculate order total amount
             //TODO: include role discount? or not?
             var totalAmount = cartItems.Sum(i => i.ProductPrice * i.Quantity);
@@ -169,12 +164,12 @@ public class OrderRepository(IDbConnection connection) : IOrderRepository
             //create order from cart
             var orderId = await connection.QuerySingleAsync<int>(OrderQueries.CreateOrder, new
             {
-                CartId = createOrder.cartId,
-                OrderShippingId = createOrder.orderShippingId,
-                PaymentStatusId = createOrder.paymentStatusId,
-                PaymentVendorTypeId = createOrder.paymentVendorTypeId,
+                CartId = createOrder.CartId,
+                OrderShippingId = createOrder.OrderShippingId,
+                PaymentStatusId = createOrder.PaymentStatusId,
+                PaymentVendorTypeId = createOrder.PaymentVendorTypeId,
                 PaymentAmount = totalAmount,
-                Comment = createOrder.comment,
+                Comment = createOrder.Comment,
                 CreatedAt = DateTime.UtcNow
             }, transaction);
 
@@ -182,7 +177,7 @@ public class OrderRepository(IDbConnection connection) : IOrderRepository
             var affectedRows = await connection.ExecuteAsync(OrderQueries.CreateOrderItems, new
             {
                 OrderId = orderId,
-                CartId = createOrder.cartId,
+                CartId = createOrder.CartId,
                 CreatedAt = DateTime.UtcNow
             }, transaction);
 
@@ -196,12 +191,12 @@ public class OrderRepository(IDbConnection connection) : IOrderRepository
             //TODO: maybe we don't need this if we're already deleting the cart
             await connection.ExecuteAsync(CartQueries.UpdateCartStatus, new
             {
-                CartId = createOrder.cartId,
+                CartId = createOrder.CartId,
                 StatusId = 3 //converted to order
             }, transaction);
 
-            await connection.ExecuteAsync(CartQueries.DeleteCartItemsQuery, new { CartId = createOrder.cartId }, transaction);
-            await connection.ExecuteAsync(CartQueries.DeleteCartQuery, new { CartId = createOrder.cartId }, transaction);
+            await connection.ExecuteAsync(CartQueries.DeleteCartItemsQuery, new { CartId = createOrder.CartId }, transaction);
+            await connection.ExecuteAsync(CartQueries.DeleteCartQuery, new { CartId = createOrder.CartId }, transaction);
 
             transaction.Commit();
 
@@ -211,13 +206,13 @@ public class OrderRepository(IDbConnection connection) : IOrderRepository
                 OrderId = orderId,
                 OrderItems = orderItems.ToList(),
                 TotalPrice = totalAmount,
-                Shipping = await GetOrderShippingById(createOrder.orderShippingId)
+                Shipping = await GetOrderShippingById(createOrder.OrderShippingId)
             };
         }
         catch (Exception ex)
         {
             transaction.Rollback();
-            Log.Error(ex, $"An error occurred while creating an order from cart ID {createOrder.cartId}: {ex.Message}");
+            Log.Error(ex, $"An error occurred while creating an order from cart ID {createOrder.CartId}: {ex.Message}");
             throw;
         }
         finally

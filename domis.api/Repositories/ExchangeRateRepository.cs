@@ -13,7 +13,7 @@ public class ExchangeRateRepository(IDbConnection connection) : IExchangeRateRep
 {
     public async Task<bool> UpdateExchangeRate(DateTime date, decimal rate)
     {
-        var upsertQuery = @"
+        const string upsertQuery = @"
                 INSERT INTO domis.ExchangeRate (Date, Rate) 
                 VALUES (@date, @rate)
                 ON CONFLICT (Date) 

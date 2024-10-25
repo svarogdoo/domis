@@ -17,7 +17,7 @@ public static class SeedData
 
     private static async Task SeedRolesAsync(RoleManager<Role> roleManager)
     {
-        string[] roles = Enum.GetValues(typeof(Roles)).Cast<Roles>().Select(r => r.GetRoleName()).ToArray();
+        string[] roles = Enum.GetValues(typeof(Roles)).Cast<Roles>().Select(r => r.RoleName()).ToArray();
 
         foreach (var role in roles)
         {
@@ -49,9 +49,9 @@ public static class SeedData
 
             if (result.Succeeded)
             {
-                if (await roleManager.RoleExistsAsync(Roles.Admin.GetRoleName()))
+                if (await roleManager.RoleExistsAsync(Roles.Admin.RoleName()))
                 {
-                    await userManager.AddToRoleAsync(adminUser, Roles.Admin.GetRoleName());
+                    await userManager.AddToRoleAsync(adminUser, Roles.Admin.RoleName());
                 }
             }
         }

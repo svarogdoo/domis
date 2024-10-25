@@ -31,7 +31,7 @@ public static class CategoryEndpoints
         }).WithDescription("get category by id | NOT IMPLEMENTED");
 
 
-        group.MapGet("/{categoryId}/products", async (int categoryId, int? pageNumber, int? pageSize, ICategoryService categoryService, HttpContext httpContext, UserManager<UserEntity> userManager) =>
+        group.MapGet("/{categoryId:int}/products", async (int categoryId, int? pageNumber, int? pageSize, ICategoryService categoryService, HttpContext httpContext, UserManager<UserEntity> userManager) =>
         {
             if (pageNumber <= 0)
             {

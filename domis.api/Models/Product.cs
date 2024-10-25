@@ -6,38 +6,38 @@ namespace domis.api.Models;
 public class Product
 {
     [Column("id")] //EF Core Data Annotation
-    public int? Id { get; set; }
+    public int? Id { get; init; }
 
     [Column("product_name")]
-    public string? Name { get; set; }
+    public string? Name { get; init; }
 
     [Column("product_description")]
-    public string? Description { get; set; }
+    public string? Description { get; init; }
 
     [Column("sku")]
     public int? Sku { get; set; }
 
     [Column("price")]
-    public decimal? Price { get; set; }
+    public decimal? Price { get; init; }
 
     [Column("stock")]
-    public decimal? Stock { get; set; }
+    public decimal? Stock { get; init; }
 
     [Column("active")]
-    public bool? IsActive { get; set; }
+    public bool? IsActive { get; init; }
 
-    public string? Title { get; set; }
-    public decimal? Width { get; set; }
-    public decimal? Height { get; set; }
-    public decimal? Depth { get; set; }
-    public decimal? Length { get; set; }
-    public decimal? Thickness { get; set; }
-    public decimal? Weight { get; set; }
-    public bool? IsItemType { get; set; }
-    public bool? IsSurfaceType { get; set; }
-    public string? FeaturedImageUrl { get; set; }
+    public string? Title { get; init; }
+    public decimal? Width { get; init; }
+    public decimal? Height { get; init; }
+    public decimal? Depth { get; init; }
+    public decimal? Length { get; init; }
+    public decimal? Thickness { get; init; }
+    public decimal? Weight { get; init; }
+    public bool? IsItemType { get; init; }
+    public bool? IsSurfaceType { get; init; }
+    public string? FeaturedImageUrl { get; init; }
     //public List<string> ImageUrls { get; set; } = [];
     //public ProductQuantityType? QuantityType { get; set; }
-    public int QuantityType { get; set; } // Use this property to store the quantity type ID
+    public int QuantityType { get; init; } // Use this property to store the quantity type ID
 
 }

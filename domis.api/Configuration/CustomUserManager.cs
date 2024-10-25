@@ -21,7 +21,7 @@ public class CustomUserManager<TUser>(IUserStore<TUser> store,
         if (result.Succeeded)
         {
             //assign default role - 'User' to new users
-            var defaultRole = Roles.User.GetRoleName();
+            var defaultRole = Roles.User.RoleName();
             await AddToRoleAsync(user, defaultRole);
         }
 

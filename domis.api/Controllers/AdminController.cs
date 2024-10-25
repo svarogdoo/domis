@@ -30,20 +30,20 @@ public class AdminController : ControllerBase
             return NotFound("User not found.");
         }
 
-        if (!await _roleManager.RoleExistsAsync(Roles.Admin.GetRoleName()))
+        if (!await _roleManager.RoleExistsAsync(Roles.Admin.RoleName()))
         {
             return BadRequest("Admin role does not exist.");
         }
 
         // Remove existing roles if necessary
         var userRoles = await _userManager.GetRolesAsync(user);
-        if (userRoles.Contains(Roles.User.GetRoleName()))
+        if (userRoles.Contains(Roles.User.RoleName()))
         {
-            await _userManager.RemoveFromRoleAsync(user, Roles.User.GetRoleName());
+            await _userManager.RemoveFromRoleAsync(user, Roles.User.RoleName());
         }
 
         // Add the admin role
-        var result = await _userManager.AddToRoleAsync(user, Roles.Admin.GetRoleName());
+        var result = await _userManager.AddToRoleAsync(user, Roles.Admin.RoleName());
 
         if (result.Succeeded)
         {
@@ -128,7 +128,7 @@ public class AdminController : ControllerBase
     // [Authorize(Roles = "Administrator")]
     public async Task<IActionResult> AddRole([FromRoute] string userId, [FromBody] RoleRequest request)
     {
-        var role = request.Role.GetRoleName();
+        var role = request.Role.RoleName();
         var user = await _userManager.FindByIdAsync(userId);
         if (user == null)
         {
@@ -163,7 +163,7 @@ public class AdminController : ControllerBase
     // [Authorize(Roles = "Administrator")]
     public async Task<IActionResult> DeleteRole([FromRoute] string userId, [FromBody] RoleRequest request)
     {
-        var role = request.Role.GetRoleName();
+        var role = request.Role.RoleName();
 
         var user = await _userManager.FindByIdAsync(userId);
         if (user == null)
@@ -180,7 +180,7 @@ public class AdminController : ControllerBase
         var userRoles = await _userManager.GetRolesAsync(user);
         if (userRoles.Contains(role))
         {
-           var result = await _userManager.RemoveFromRoleAsync(user, Roles.User.GetRoleName());
+           var result = await _userManager.RemoveFromRoleAsync(user, Roles.User.RoleName());
            
            if (result.Succeeded)
            {

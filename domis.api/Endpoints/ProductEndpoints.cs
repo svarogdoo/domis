@@ -61,7 +61,7 @@ public static class ProductEndpoints
         {
             var products = await productService.GetProductsBasicInfoByCategory(categoryId);
 
-            return products is null ? Results.NotFound() : Results.Ok(products);
+            return Results.Ok(products);
 
         }).WithDescription("get products basic info by category");
 
