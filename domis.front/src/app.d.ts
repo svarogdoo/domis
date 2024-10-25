@@ -33,24 +33,32 @@ declare global {
     expiresIn: number;
     refreshToken: string;
   }
-  interface UserProfileResponse {
-    id: number;
-    email: string;
+  interface UserProfileDto {
     firstName: string;
     lastName: string;
-    addressLine: string;
-    city: string;
-    zipCode: string;
-    country: string;
-    phoneNumber: string;
+    addressLine?: string;
+    apartment?: string;
+    city?: string;
+    postalCode?: string;
+    country?: string;
+    county?: string;
+    email: string;
+    phoneNumber?: string;
   }
+  interface UserWholesaleProfileDto extends UserProfileDto {
+    companyName?: string;
+  }
+  type UserProfileResponse = UserProfileDto | UserWholesaleProfileDto;
+
   interface UserProfileUpdateRequest {
     firstName: string;
     lastName: string;
     addressLine: string;
+    apartment: string;
     city: string;
-    zipCode: string;
+    postalCode: string;
     country: string;
+    county: string;
     phoneNumber: string;
   }
   interface UserState {

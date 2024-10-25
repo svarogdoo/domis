@@ -6,32 +6,37 @@ namespace domis.api.Repositories;
 
 public interface IUserRepository
 {
-    Task<UserProfileDto?> GetUserByIdAsync(string id);
+    Task<IUserProfileDto?> GetUserByIdAsync(string id);
     Task<bool> UpdateUserProfileAsync(string id, ProfileUpdateRequest updated);
     Task<bool> UpdateUserAddressAsync(string id, string address);
 }
 
 public class UserRepository(UserManager<UserEntity> userManager) : IUserRepository
 {
-    public async Task<UserProfileDto?> GetUserByIdAsync(string id)
+    public async Task<IUserProfileDto?> GetUserByIdAsync(string id)
     {
         var idUser = await userManager.FindByIdAsync(id);
 
         if (idUser is null || idUser.Email is null)
             return null;
 
-        var user = new UserProfileDto(
-            idUser.FirstName ?? string.Empty,
-            idUser.LastName ?? string.Empty,
-            idUser.AddressLine,
-            idUser.City,
-            idUser.ZipCode,
-            idUser.Country,
-            idUser.Email,
-            idUser.PhoneNumber
-        );
+        var roles = await userManager.GetRolesAsync(idUser);
 
-        return user;
+        if (roles.Contains(Roles.VP1.GetRoleName()) || roles.Contains(Roles.VP2.GetRoleName()) ||
+        roles.Contains(Roles.VP3.GetRoleName()) || roles.Contains(Roles.VP4.GetRoleName()))
+        {
+            return new UserWholesaleProfileDto(
+                idUser.FirstName!, idUser.LastName!, 
+                idUser.AddressLine, idUser.Apartment, idUser.City, idUser.PostalCode, idUser.Country, idUser.County, 
+                idUser.Email, idUser.PhoneNumber, idUser.CompanyName
+            );
+        }
+
+        return new UserProfileDto(
+            idUser.FirstName!, idUser.LastName!, 
+            idUser.AddressLine, idUser.Apartment, idUser.City, idUser.PostalCode, idUser.Country, idUser.County, 
+            idUser.Email, idUser.PhoneNumber
+        );
     }
 
     public async Task<bool> UpdateUserAddressAsync(string id, string address)
@@ -57,8 +62,10 @@ public class UserRepository(UserManager<UserEntity> userManager) : IUserReposito
         user.LastName = updated.LastName ?? user.LastName;
         user.AddressLine = updated.AddressLine ?? user.AddressLine;
         user.City = updated.City ?? user.City;
-        user.ZipCode = updated.ZipCode ?? user.ZipCode;
+        user.PostalCode = updated.PostalCode ?? user.PostalCode;
         user.Country = updated.Country ?? user.Country;
+        user.County = updated.County ?? user.County;
+        user.Apartment = updated.Apartment ?? user.Apartment;
         user.PhoneNumber = updated.PhoneNumber ?? user.PhoneNumber;
 
         var result = await userManager.UpdateAsync(user);

@@ -3,17 +3,19 @@
   import { userService } from "../../../../services/user-service";
   import OrderRow from "./OrderRow.svelte";
   import OrderRowMobile from "./OrderRowMobile.svelte";
-  import { userStore } from "../../../../stores/user";
 
   let orders: Array<UserOrder> = [];
 
-  $: if ($userStore.token) {
-    setOrders();
-  }
+  // $: if ($userStore.token) { //TODO: proveriti sta raditi ovde, ako menjam navigaciju i samim tim se user token ne menja, setOrders se nikada ne okine
+  //   setOrders();
+  // }
+
+  onMount(async () => { 
+    await setOrders();
+  });
 
   async function setOrders() {
     orders = await userService.getUserOrders();
-    console.log("Orders:", orders); // Check if orders are set properly
   }
 </script>
 
