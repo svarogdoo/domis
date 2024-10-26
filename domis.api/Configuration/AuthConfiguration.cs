@@ -1,9 +1,10 @@
 ﻿using domis.api.Database;
+using domis.api.Extensions;
 using domis.api.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
 
-namespace domis.api.Extensions;
+namespace domis.api.Configuration;
 
 public static class AuthConfiguration
 {

@@ -18,9 +18,9 @@ public static class UserEndpoints
 
             var userProfile = await userService.GetUserProfile(userId);
 
-            if (userProfile is null) return Results.NotFound();
-
-            return Results.Ok(userProfile);
+            return userProfile is not null 
+                ? Results.Ok(userProfile) 
+                : Results.NotFound();
         })
         .RequireAuthorization();
 
@@ -32,9 +32,9 @@ public static class UserEndpoints
 
             var success = await userService.UpdateUserProfileAsync(userId, request);
 
-            if (!success) return Results.NotFound(); // or another appropriate result
-
-            return Results.NoContent(); // 204 No Content if update was successful
+            return success 
+                ? Results.NoContent() 
+                : Results.NotFound();
         })
         .RequireAuthorization();
 
@@ -60,9 +60,9 @@ public static class UserEndpoints
 
             var success = await userService.UpdateUserAddressAsync(userId, request);
 
-            return !success 
-                ? Results.NotFound() 
-                : Results.NoContent();
+            return success 
+                ? Results.NoContent() 
+                : Results.NotFound();
         }).RequireAuthorization()
         .WithDescription("updates user address with provided info");
     }

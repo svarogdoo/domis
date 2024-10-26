@@ -39,5 +39,14 @@ public static class SyncEndpoints
                 SENDGRID_NAME = sendGridName
             });
         }).WithDescription("Prints the environment variables for SendGrid.");
+
+        group.MapPost("/newsletter", async (string email, ISyncService syncService) =>
+        {
+            var response = await syncService.SubscribeToNewsletter(email);
+
+            return response 
+                ? Results.Ok(response) 
+                : Results.BadRequest("Already subscribed.");
+        });
     }
 }

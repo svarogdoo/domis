@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 
-namespace domis.api.Extensions;
+namespace domis.api.Configuration;
 
 public class CustomUserManager<TUser>(IUserStore<TUser> store,
                          IOptions<IdentityOptions> optionsAccessor,
