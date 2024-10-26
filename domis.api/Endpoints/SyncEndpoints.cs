@@ -1,4 +1,5 @@
 ﻿using domis.api.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace domis.api.Endpoints;
 
@@ -40,7 +41,7 @@ public static class SyncEndpoints
             });
         }).WithDescription("Prints the environment variables for SendGrid.");
 
-        group.MapPost("/newsletter", async (string email, ISyncService syncService) =>
+        group.MapPost("/newsletter", async ([FromBody]string email, ISyncService syncService) =>
         {
             var response = await syncService.SubscribeToNewsletter(email);
 
