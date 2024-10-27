@@ -1,10 +1,11 @@
 <script lang="ts">
-  import { onMount } from "svelte";
   import InputString from "../../../components/InputString.svelte";
   import { countyOptions } from "../../../helpers/municipalities";
   import { userStore } from "../../../stores/user";
 
   export const validate: () => CheckoutFormData | null = validateForm;
+
+  let isUserDataPopulated = false;
 
   let name = "";
   let lastName = "";
@@ -19,15 +20,20 @@
   let phoneNumber = "";
   let specialNotes = "";
 
-  $: if ($userStore.user) {
-    name = $userStore.user.firstName;
-    lastName = $userStore.user.lastName;
-    city = $userStore.user.city;
-    address = $userStore.user.addressLine;
-    // county = $userStore.user.county;
-    postalCode = $userStore.user.postalCode;
-    email = $userStore.user.email;
-    phoneNumber = $userStore.user.phoneNumber;
+  $: if ($userStore.user && !isUserDataPopulated) {
+    name = $userStore.user.firstName ?? "";
+    lastName = $userStore.user.lastName ?? "";
+    city = $userStore.user.city ?? "";
+    address = $userStore.user.addressLine ?? "";
+    apartment = $userStore.user.apartment ?? "";
+    county = $userStore.user.county ?? "";
+    postalCode = $userStore.user.postalCode ?? "";
+    email = $userStore.user.email ?? "";
+    phoneNumber = $userStore.user.phoneNumber ?? "";
+
+    console.info($userStore.user.county);
+
+    isUserDataPopulated = true;
   }
 
   // Form errors
@@ -96,7 +102,6 @@
       valid = false;
     }
 
-
     if (valid) {
       const shippingDetails: ShippingDetails = {
         firstName: name,
@@ -162,7 +167,7 @@
         <input
           id="country"
           type="text"
-          class="block w-32 rounded-md border-0 py-1.5 pl-3 text-gray-900 ring-1 ring-inset ring-gray-300 font-light text-md leading-6"
+          class="block w-32 bg-gray-50 rounded-md border-0 py-1.5 pl-3 text-gray-900 ring-1 ring-inset ring-gray-300 font-light text-md leading-6"
           value={country}
           readonly
           disabled
