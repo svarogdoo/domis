@@ -3,15 +3,16 @@
   import { userService } from "../../../../services/user-service";
   import OrderRow from "./OrderRow.svelte";
   import OrderRowMobile from "./OrderRowMobile.svelte";
+  import { userStore } from "../../../../stores/user";
 
   let orders: Array<UserOrder> = [];
 
-  // $: if ($userStore.token) { //TODO: proveriti sta raditi ovde, ako menjam navigaciju i samim tim se user token ne menja, setOrders se nikada ne okine
-  //   setOrders();
-  // }
+  $: if ($userStore.token) {
+    if (orders.length === 0) setOrders();
+  }
 
-  onMount(async () => { 
-    await setOrders();
+  onMount(async () => {
+    if ($userStore.isAuthenticated) await setOrders();
   });
 
   async function setOrders() {
@@ -46,8 +47,6 @@
         {/each}
       </tbody>
     </table>
-  {:else}
-    <p>Nemate nijednu porudžbinu.</p>
   {/if}
 </section>
 
