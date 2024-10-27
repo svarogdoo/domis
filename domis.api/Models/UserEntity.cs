@@ -13,5 +13,6 @@ public class UserEntity : IdentityUser
     public string? AddressLine { get; set; }
     public string? Apartment { get; set; }
     public string? PostalCode { get; set; }
-    public string? Address { get; set; } //TODO: check if used anywhere
+    [Obsolete("UserEntity.Address not in use.")]
+    public string? Address { get; set; } //TODO: delete from the UserEntity model
 }

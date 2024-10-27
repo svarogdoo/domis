@@ -119,7 +119,7 @@ public class CartRepository(IDbConnection connection) : ICartRepository
                 return cartId;
             }
 
-            // Insert a new cart item
+            // calculate cartItem discount based on user role
             var price = PricingHelper.CalculateDiscount(
                 await connection.ExecuteScalarAsync<decimal>(ProductQueries.GetProductPrice, new { ProductId = productId }),
                 discount);
@@ -215,6 +215,7 @@ public class CartRepository(IDbConnection connection) : ICartRepository
         }
     }
     
+    //TODO: do we need this? 
     public Task<bool> SetCartUserId(int cartId, string userId)
     {
         throw new NotImplementedException();

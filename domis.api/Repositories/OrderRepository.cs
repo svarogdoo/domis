@@ -158,7 +158,6 @@ public class OrderRepository(IDbConnection connection) : IOrderRepository
             //get cart items with product price
             var cartItems = await connection.QueryAsync<CartItemWithPriceDto>(CartQueries.GetCartItemsWithProductPriceByCartId, new { CartId = createOrder.CartId }, transaction);
             //calculate order total amount
-            //TODO: include role discount? or not?
             var totalAmount = cartItems.Sum(i => i.ProductPrice * i.Quantity);
 
             //create order from cart
@@ -199,8 +198,7 @@ public class OrderRepository(IDbConnection connection) : IOrderRepository
             await connection.ExecuteAsync(CartQueries.DeleteCartQuery, new { CartId = createOrder.CartId }, transaction);
 
             transaction.Commit();
-
-
+            
             return new OrderConfirmationDto
             {
                 OrderId = orderId,
