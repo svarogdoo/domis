@@ -1,6 +1,5 @@
 <script lang="ts">
   import InputString from "../../../components/InputString.svelte";
-  import { countyOptions } from "../../../helpers/municipalities";
   import { userStore } from "../../../stores/user";
 
   export const validate: () => CheckoutFormData | null = validateForm;
@@ -30,8 +29,6 @@
     postalCode = $userStore.user.postalCode ?? "";
     email = $userStore.user.email ?? "";
     phoneNumber = $userStore.user.phoneNumber ?? "";
-
-    console.info($userStore.user.county);
 
     isUserDataPopulated = true;
   }
@@ -152,6 +149,7 @@
         width={"64"}
       />
     </div>
+
     <!-- Company Name (Optional) -->
     <InputString
       bind:value={companyName}
@@ -184,6 +182,27 @@
         width={"64"}
       />
     </div>
+
+    <div class="flex flex-col gap-y-4 lg:flex-row gap-x-12">
+      <!-- Postal Code -->
+      <InputString
+        bind:value={postalCode}
+        title="Poštanski broj"
+        placeholder="11000"
+        error={errors?.postalCode}
+        isRequired={true}
+        width={"32"}
+      />
+
+      <!-- County -->
+      <InputString
+        bind:value={county}
+        title="Opština"
+        placeholder="Palilula"
+        width={"64"}
+      />
+    </div>
+
     <div class="flex flex-col gap-y-4 lg:flex-row gap-x-12">
       <!-- Street and Number -->
       <InputString
@@ -204,35 +223,7 @@
       />
     </div>
 
-    <!-- County (Dropdown) -->
-    <div class="flex flex-col gap-y-2">
-      <label for="county">Okrug</label>
-      <select
-        id="county"
-        bind:value={county}
-        class="flex w-80 px-4 py-2 rounded-lg bg-white border border-gray-300 font-light"
-      >
-        <option value="" disabled selected>Odaberite okrug</option>
-        {#each countyOptions as option}
-          <option
-            class="bg-white px-4 py-2 hover:bg-gray-100"
-            value={option.name}>{option.name}</option
-          >
-        {/each}
-      </select>
-    </div>
-
     <div class="flex flex-col gap-y-4 lg:flex-row gap-x-12">
-      <!-- Zip Code -->
-      <InputString
-        bind:value={postalCode}
-        title="Poštanski broj"
-        placeholder="11000"
-        error={errors?.postalCode}
-        isRequired={true}
-        width={"32"}
-      />
-
       <!-- Email -->
       <InputString
         bind:value={email}
@@ -242,19 +233,18 @@
         isRequired={true}
         width={"80"}
       />
-    </div>
-
-    <!-- Phone number -->
-    <div class="relative">
-      <InputString
-        bind:value={phoneNumber}
-        title="Broj telefona"
-        placeholder="60224455221"
-        error={errors?.phoneNumber}
-        isRequired={true}
-        width={"48"}
-        prefix="+381"
-      />
+      <!-- Phone number -->
+      <div class="relative">
+        <InputString
+          bind:value={phoneNumber}
+          title="Broj telefona"
+          placeholder="60224455221"
+          error={errors?.phoneNumber}
+          isRequired={true}
+          width={"48"}
+          prefix="+381"
+        />
+      </div>
     </div>
 
     <!-- Special Notes (Optional) -->
