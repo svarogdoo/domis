@@ -25,7 +25,7 @@
     city = $userStore.user.city;
     address = $userStore.user.addressLine;
     // county = $userStore.user.county;
-    postalCode = $userStore.user.zipCode;
+    postalCode = $userStore.user.postalCode;
     email = $userStore.user.email;
     phoneNumber = $userStore.user.phoneNumber;
   }

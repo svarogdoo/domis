@@ -12,7 +12,7 @@ public enum Roles
 
 public static class RoleExtensions
 {
-    public static string GetRoleName(this Roles role)
+    public static string RoleName(this Roles role)
     {
         return role.ToString();
     }

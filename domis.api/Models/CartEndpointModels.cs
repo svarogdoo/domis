@@ -9,12 +9,12 @@ public record CreateCartRequest
     public string? UserId { get; set; }
 }
 
-public record CreateCartResponse(int cartId);
+public record CreateCartResponse(int CartId);
 
-public record UpdateCartRequest(int cartId, int statusId);
-public record UpdateCartResponse(bool updated);
+public record UpdateCartRequest(int CartId, int StatusId);
+public record UpdateCartResponse(bool Updated);
 
-public record DeleteCartResponse(bool deleted);
+public record DeleteCartResponse(bool Deleted);
 
 //public record CreateCartItemRequest(
 //    [Required] [Range(1, int.MaxValue, ErrorMessage = "CartId must be greater than zero.")] int cartId, 

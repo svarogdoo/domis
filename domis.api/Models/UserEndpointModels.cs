@@ -21,16 +21,19 @@ public record ProfileUpdateRequest(
     string? FirstName,
     string? LastName,
     string? AddressLine,
+    string? Apartment,
     string? City,
-    string? ZipCode,
+    string? PostalCode,
     string? Country,
-    string? PhoneNumber
+    string? County,
+    string? PhoneNumber,
+    string? CompanyName
 );
 
-public record LoginCartRequest(
+public record LoginWithCartRequest(
     string Email,
     string Password,
-    int? cartId
+    int? CartId
 );
 
 //public record AddressUpdateRequest(

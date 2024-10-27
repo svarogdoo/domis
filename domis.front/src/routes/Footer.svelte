@@ -1,3 +1,27 @@
+<script lang="ts">
+  import { syncService } from "../services/sync-service";
+
+  async function subscribeToNewsletter() {
+    //TODO: Mikica double-check
+    const emailInput = document.getElementById('newsletter-email') as HTMLInputElement;
+    const email = emailInput?.value;
+
+    if (!email) {
+      alert('Molimo vas da unesete email adresu.');
+      return;
+    }
+
+    try {
+      await syncService.subscribeToNewsletter(email);
+      alert('Uspešno ste se prijavili na newsletter!');
+    } catch (error) {
+      alert('Došlo je do greške. Molimo vas pokušajte ponovo.');
+      console.error('Error:', error);
+    }
+  }
+</script>
+
+
 <footer class="w-full flex flex-col pt-6 pb-1">
   <div class="flex flex-col lg:flex-row gap-y-4 pl-4 lg:pl-0 justify-around">
     <!-- Removed hidden class -->
@@ -51,6 +75,22 @@
       <a href="/montaza-ugradnja" class="font-semibold tracking-wider"
         >Montaža i ugradnja - video</a
       >
+      <div class="newsletter flex flex-col gap-y-1 mt-4">
+        <label for="newsletter-email" class="font-semibold tracking-wider">Prijavi se na newsletter</label>
+        <input
+          type="email"
+          id="newsletter-email"
+          placeholder="Unesite vašu email adresu"
+          class="p-2 border border-gray-300 rounded text-sm"
+        />
+        <button
+          type="button"
+          on:click={subscribeToNewsletter}
+          class="mt-2 p-1 bg-black text-white text-xs rounded w-24 ml-auto"
+        >
+          Prijavi se
+        </button>
+      </div>
     </div>
   </div>
   <p class="text-center font-light text-xs text-gray-600 mt-2">

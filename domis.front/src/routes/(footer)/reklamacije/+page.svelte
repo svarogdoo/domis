@@ -32,7 +32,7 @@
           <li>lično u bilo kom od naših maloprodajnih objekata. U svakom našem maloprodajnom objektu postoji posebno određeno i obeleženo mesto i osobe zadužene za reklamacije kojoj se potrošač može obratiti i izjaviti reklamaciju</li>
           <li>Elektronskim putem, slanjem OBRASCA ZA REKLAMACIJU na elektronsku (email) adresu Prodavca: <a href="mailto:office@domisenterijeri.com" class="text-blue-500 underline">office@domisenterijeri.com</a></li>
         </ol>
-        <p class="mt-4"> <!--TODO:href-->
+        <p class="mt-4">
           <a href="http://domisenterijeri.com/domis/img/2020/10/Obrazac-za-reklamaciju.docx" class="text-blue-600 hover:underline">Preuzmite: Obrazac za reklamaciju</a>
         </p>
         <p class="mt-4">

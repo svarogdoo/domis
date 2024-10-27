@@ -1,12 +1,12 @@
 namespace domis.api.Models;
 
-public record CreateOrderShippingResponse(int orderShippingId);
-public record UpdateOrderShippingResponse(bool updated);
-public record DeleteOrderShippingResponse(bool deleted);
+public record CreateOrderShippingResponse(int OrderShippingId);
+public record UpdateOrderShippingResponse(bool Updated);
+public record DeleteOrderShippingResponse(bool Deleted);
 
 
-public record CreateOrderRequest(int cartId, int paymentStatusId, int orderShippingId, int paymentVendorTypeId, string comment);
-public record CreateOrderResponse(int orderId);
+public record CreateOrderRequest(int CartId, int PaymentStatusId, int OrderShippingId, int PaymentVendorTypeId, string Comment);
+public record CreateOrderResponse(int OrderId);
 
-public record UpdateOrderRequest(int orderId, int statusId);
-public record UpdateOrderResponse(bool updated);
+public record UpdateOrderRequest(int OrderId, int StatusId);
+public record UpdateOrderResponse(bool Updated);

@@ -7,7 +7,7 @@ namespace domis.api.Extensions;
 
 public class CustomDecimalConverter : ITypeConverter
 {
-    public object ConvertFromString(string text, IReaderRow row, MemberMapData memberMapData)
+    public object? ConvertFromString(string? text, IReaderRow row, MemberMapData memberMapData)
     {
         if (string.IsNullOrWhiteSpace(text))
         {
@@ -26,7 +26,7 @@ public class CustomDecimalConverter : ITypeConverter
         throw new TypeConverterException(this, memberMapData, text, row.Context);
     }
 
-    public string ConvertToString(object value, IWriterRow row, MemberMapData memberMapData)
+    public string ConvertToString(object? value, IWriterRow row, MemberMapData memberMapData)
     {
         return value?.ToString() ?? string.Empty;
     }

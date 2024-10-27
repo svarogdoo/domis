@@ -40,21 +40,21 @@ public static class OrderEndpoints
             return Results.Ok(new CreateOrderShippingResponse(response));
         }).WithDescription("Create new order shipping");
         
-        group.MapPut("/shipping/{id}", async ([FromRoute] int id,[FromBody] OrderShippingDto request, IOrderService orderService) =>
+        group.MapPut("/shipping/{id:int}", async ([FromRoute] int id,[FromBody] OrderShippingDto request, IOrderService orderService) =>
         {
             var response = await orderService.UpdateOrderShipping(id, request);
 
             return Results.Ok(new UpdateOrderShippingResponse(response));
         }).WithDescription("Update order shipping");
         
-        group.MapGet("/shipping/{id}", async ([FromRoute] int id, IOrderService orderService) =>
+        group.MapGet("/shipping/{id:int}", async ([FromRoute] int id, IOrderService orderService) =>
         {
             var response = await orderService.GetOrderShippingById(id);
 
             return Results.Ok(response);
         }).WithDescription("Get order shipping");
         
-        group.MapDelete("/shipping/{id}", async ([FromRoute] int id, IOrderService orderService) =>
+        group.MapDelete("/shipping/{id:int}", async ([FromRoute] int id, IOrderService orderService) =>
         {
             var response = await orderService.DeleteOrderShippingById(id);
 
@@ -73,12 +73,12 @@ public static class OrderEndpoints
         
         group.MapPut("/order-status", async ([FromBody] UpdateOrderRequest request, IOrderService orderService) =>
         {
-            var response = await orderService.UpdateOrderStatus(request.orderId, request.statusId);
+            var response = await orderService.UpdateOrderStatus(request.OrderId, request.StatusId);
 
             return Results.Ok(new UpdateOrderResponse(response));
         }).WithDescription("Update order status");
         
-        group.MapGet("/{id}", async ([FromRoute] int id, IOrderService orderService) =>
+        group.MapGet("/{id:int}", async ([FromRoute] int id, IOrderService orderService) =>
         {
             var response = await orderService.GetOrderDetailsById(id);
 

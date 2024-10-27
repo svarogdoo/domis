@@ -13,7 +13,6 @@ public static class ProductEndpoints
     {
         var group = routes.MapGroup("/api/products").WithTags("Products");
 
-
         group.MapGet("/", async (IProductService productService) =>
         {
             var response = await productService.GetAll();
@@ -49,7 +48,6 @@ public static class ProductEndpoints
             {
                 return Results.BadRequest(new { Message = "Invalid quantity type ID provided. Please check and try again." });
             }
-            //TODO: whats this .Problem?
             catch (Exception ex)
             {
                 return Results.Problem(ex.Message);
@@ -61,7 +59,7 @@ public static class ProductEndpoints
         {
             var products = await productService.GetProductsBasicInfoByCategory(categoryId);
 
-            return products is null ? Results.NotFound() : Results.Ok(products);
+            return Results.Ok(products);
 
         }).WithDescription("get products basic info by category");
 

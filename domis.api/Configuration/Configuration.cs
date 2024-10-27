@@ -1,22 +1,20 @@
-﻿using domis.api.Common;
+﻿using System.Data;
+using System.Text.Json.Serialization;
+using domis.api.Common;
 using domis.api.Database;
 using domis.api.Extensions;
 using domis.api.Models;
 using domis.api.Repositories;
 using domis.api.Services;
-using FluentValidation.AspNetCore;
 using FluentValidation;
+using FluentValidation.AspNetCore;
 using MailKit.Net.Smtp;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
-using Serilog;
-using System.Data;
-using System.Text.Json.Serialization;
-using domis.api.Configuration;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using SendGrid.Extensions.DependencyInjection;
+using Serilog;
 
-namespace domis.api.BaseExtensions;
+namespace domis.api.Configuration;
 
 public static class Configuration
 {

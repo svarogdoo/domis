@@ -20,7 +20,7 @@ public class LocationRepository(IDbConnection connection) : ILocationRepository
                 (await connection.QueryAsync<CountryDto>(CommonQueries.GetCountries))
                 .ToList();
 
-            return countries.Any() ? countries : null;
+            return countries.Count != 0 ? countries : null;
         }
         catch (Exception ex)
         {

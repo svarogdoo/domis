@@ -12,6 +12,7 @@ public interface ISyncService
     Task<bool> NivelacijaUpdateBatch();
     Task<bool> UpdateExchangeRate();
     Task<IEnumerable<SalesPoint>> GetSalesPoints();
+    Task<bool> SubscribeToNewsletter(string email);
 }
 
 public class SyncService : ISyncService
@@ -172,4 +173,7 @@ public class SyncService : ISyncService
 
     public async Task<IEnumerable<SalesPoint>> GetSalesPoints()
         => await _syncRepository.GetSalesPoints();
+
+    public async Task<bool> SubscribeToNewsletter(string email) 
+        => await _syncRepository.SubscribeToNewsletter(email);
 }

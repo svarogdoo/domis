@@ -33,7 +33,7 @@ public class CartRepository(IDbConnection connection) : ICartRepository
                 (await connection.QueryAsync<OrderStatusDto>(CartQueries.GetAllCartStatuses))
                 .ToList();
 
-            return orderStatuses.Any() ?  orderStatuses: null;
+            return orderStatuses.Count != 0 ?  orderStatuses: null;
         }
         catch (Exception ex)
         {
@@ -49,7 +49,7 @@ public class CartRepository(IDbConnection connection) : ICartRepository
             var parameters = new
             {
                 UserId = userId,
-                StatusId = 1, // Assuming 1 is the status for "Active"
+                StatusId = 1, //Active
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -74,7 +74,7 @@ public class CartRepository(IDbConnection connection) : ICartRepository
                 StatusId = statusId
             };
 
-            int rowsAffected = await connection.ExecuteAsync(CartQueries.UpdateCartStatus, parameters);
+            var rowsAffected = await connection.ExecuteAsync(CartQueries.UpdateCartStatus, parameters);
             
             return rowsAffected > 0;
         }
@@ -115,7 +115,7 @@ public class CartRepository(IDbConnection connection) : ICartRepository
                     ModifiedAt = DateTime.UtcNow
                 };
 
-                var updatedCartItemId = await connection.ExecuteScalarAsync<int>(CartQueries.UpdateQuantityBasedOnCartAndProduct, updateParameters);
+                await connection.ExecuteScalarAsync<int>(CartQueries.UpdateQuantityBasedOnCartAndProduct, updateParameters);
                 return cartId;
             }
 
@@ -134,7 +134,7 @@ public class CartRepository(IDbConnection connection) : ICartRepository
                 ModifiedAt = DateTime.UtcNow
             };
 
-            var newCartItemId = await connection.ExecuteScalarAsync<int>(CartQueries.CreateCartItem, parameters);
+            await connection.ExecuteScalarAsync<int>(CartQueries.CreateCartItem, parameters);
             return cartId;
         }
         catch (Exception ex)
@@ -155,7 +155,7 @@ public class CartRepository(IDbConnection connection) : ICartRepository
                 ModifiedAt = DateTime.UtcNow
             };
             
-            int rowsAffected = await connection.ExecuteAsync(CartQueries.UpdateCartItemQuantity, parameters);
+            var rowsAffected = await connection.ExecuteAsync(CartQueries.UpdateCartItemQuantity, parameters);
 
             return rowsAffected > 0;
         }
@@ -175,7 +175,7 @@ public class CartRepository(IDbConnection connection) : ICartRepository
                 CartItemId = cartItemId
             };
 
-            int rowsAffected = await connection.ExecuteAsync(CartQueries.DeleteCartItem, parameters);
+            var rowsAffected = await connection.ExecuteAsync(CartQueries.DeleteCartItem, parameters);
 
             return rowsAffected > 0;
         }
@@ -196,7 +196,7 @@ public class CartRepository(IDbConnection connection) : ICartRepository
             var parameters = new { CartId = cartId };
 
             await connection.ExecuteAsync(CartQueries.DeleteCartItemsQuery, parameters, transaction);
-            int rowsAffected = await connection.ExecuteAsync(CartQueries.DeleteCartQuery, parameters, transaction);
+            var rowsAffected = await connection.ExecuteAsync(CartQueries.DeleteCartQuery, parameters, transaction);
 
             transaction.Commit();
 

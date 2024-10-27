@@ -26,7 +26,7 @@ public class CategoryRepository(IDbConnection connection) : ICategoryRepository
         {
             var categories = (await connection.QueryAsync<CategoryMenuDto>(CategoryQueries.GetAll)).ToList();
 
-            if (categories is null || categories.Count == 0)
+            if (categories.Count == 0)
             {
                 return null;
             }
@@ -34,11 +34,11 @@ public class CategoryRepository(IDbConnection connection) : ICategoryRepository
             var categoryDict = categories.ToDictionary(c => c.Id);
             foreach (var category in categories)
             {
-                if (category.ParentCategoryId.HasValue && categoryDict.TryGetValue(category.ParentCategoryId.Value, out var parentCategory))
-                {
-                    parentCategory.Subcategories ??= [];
-                    parentCategory.Subcategories.Add(category);
-                }
+                if (!category.ParentCategoryId.HasValue ||
+                    !categoryDict.TryGetValue(category.ParentCategoryId.Value, out var parentCategory)) continue;
+                
+                parentCategory.Subcategories ??= [];
+                parentCategory.Subcategories.Add(category);
             }
 
             // Return the top-level categories
@@ -53,7 +53,7 @@ public class CategoryRepository(IDbConnection connection) : ICategoryRepository
     //probably no need for this one
     public async Task<Category?> GetById(int id)
     {
-        var sql = @"";
+        const string sql = @"";
 
         var parameters = new { Id = id };
 

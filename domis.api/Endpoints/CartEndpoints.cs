@@ -30,12 +30,12 @@ public static class CartEndpoints
         
         group.MapPut("/cart-status", async ([FromBody]UpdateCartRequest request ,ICartService cartService) =>
         {
-            var response = await cartService.UpdateCartStatus(request.cartId, request.statusId);
+            var response = await cartService.UpdateCartStatus(request.CartId, request.StatusId);
 
             return Results.Ok(new UpdateCartResponse(response));
         }).WithDescription("Update cart status");
         
-        group.MapDelete("/{id}", async ([FromRoute]int id ,ICartService cartService) =>
+        group.MapDelete("/{id:int}", async ([FromRoute]int id ,ICartService cartService) =>
         {
             var response = await cartService.DeleteCart(id);
 
@@ -80,7 +80,7 @@ public static class CartEndpoints
             return Results.Ok(new UpdateCartItemResponse(response));
         }).WithDescription("Update cart item quantity");
         
-        group.MapDelete("/cart-item/{id}", async ([FromRoute]int id ,ICartService cartService) =>
+        group.MapDelete("/cart-item/{id:int}", async ([FromRoute]int id ,ICartService cartService) =>
         {
             var response = await cartService.DeleteCartItem(id);
 

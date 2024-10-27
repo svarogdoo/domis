@@ -29,7 +29,7 @@ const createUserStore = () => {
   };
 
   return {
-    subscribe, //out-of-the-box
+    subscribe,
     set,
     update,
 
@@ -73,7 +73,9 @@ const createUserStore = () => {
     },
 
     async getProfile() {
-      return await userService.getProfile();
+      var user = await userService.getProfile();
+      console.info(user);
+      return user;
     },
 
     async updateProfile(request: UserProfileUpdateRequest) {

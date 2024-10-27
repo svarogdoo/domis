@@ -6,20 +6,20 @@ using domis.api.DTOs.Order;
 
 namespace domis.api.Common;
 
-public interface ICustomEmailSender<TUser> where TUser: UserEntity, new()/* : IEmailSender*/
+public interface ICustomEmailSender<TUser> where TUser: UserEntity, new()
 {
     Task SendPasswordResetCodeAsync(UserEntity user, string email, string resetCode);
     Task SendConfirmationLinkAsync(UserEntity user, string toEmail, string confirmationLink);
     Task SendOrderConfirmationAsync(string email, OrderConfirmationDto order);
 }
 
-public class CustomEmailSender(IConfiguration configuration, ILogger<CustomEmailSender> logger, ISendGridClient sendGridClient) 
+public class CustomEmailSender(ILogger<CustomEmailSender> logger, ISendGridClient sendGridClient) 
     : ICustomEmailSender<UserEntity>
 {
 
     public async Task SendConfirmationLinkAsync(UserEntity user, string toEmail, string confirmationLink)
     {
-        var subject = "Potvrdite svoju email adresu";
+        const string subject = "Potvrdite svoju email adresu";
 
         // Create a detailed and formatted message in Serbian
         var message = $@"
@@ -40,9 +40,9 @@ public class CustomEmailSender(IConfiguration configuration, ILogger<CustomEmail
 
     public async Task SendPasswordResetCodeAsync(UserEntity user, string email, string resetCode)
     {
-        var frontendBaseUrl = "http://localhost:5173";
+        const string frontendBaseUrl = "http://localhost:5173";
 
-        var subject = "Zahtev za promenu lozinke";
+        const string subject = "Zahtev za promenu lozinke";
 
         var resetLink = $"{frontendBaseUrl}/promena-sifre?email={email}&code={resetCode}";
 
@@ -105,7 +105,7 @@ public class CustomEmailSender(IConfiguration configuration, ILogger<CustomEmail
     }
 
 
-    public async Task SendEmailAsync(string toEmail, string subject, string message)
+    private async Task SendEmailAsync(string toEmail, string subject, string message)
     {
         var msg = new SendGridMessage()
         {
@@ -118,7 +118,7 @@ public class CustomEmailSender(IConfiguration configuration, ILogger<CustomEmail
         msg.AddTo(new EmailAddress(toEmail));
 
         var response = await sendGridClient.SendEmailAsync(msg);
-        logger.LogInformation(response.IsSuccessStatusCode
+        logger.LogInformation(response is { IsSuccessStatusCode: true }
                                ? $"Email to {toEmail} queued successfully!"
                                : $"Failure Email to {toEmail}");
     }

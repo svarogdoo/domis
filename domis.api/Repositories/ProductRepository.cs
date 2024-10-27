@@ -177,7 +177,7 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
 
         var offset = (pageNumber - 1) * pageSize;
 
-        var query = @"
+        const string query = @"
             SELECT id AS Id, product_name AS Name, sku AS Sku
             FROM domis.product
             WHERE product_name ILIKE @SearchTerm OR CAST(sku AS TEXT) ILIKE @SearchTerm

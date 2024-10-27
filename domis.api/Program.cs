@@ -1,4 +1,4 @@
-using domis.api.BaseExtensions;
+using domis.api.Configuration;
 using domis.api.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
