@@ -16,6 +16,7 @@ app.RegisterSyncEndpoints();
 app.RegisterLocationEndpoints();
 app.RegisterOrderEndpoints();
 app.RegisterUserEndpoints();
+app.RegisterAdminEndpoints();
 //app.RegisterIdentityHelperEndpoints();
 
 app.Run();
