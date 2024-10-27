@@ -1,5 +1,6 @@
 using domis.api.DTOs.User;
 using domis.api.Models;
+using domis.api.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,9 +15,14 @@ public interface IAdminService
     Task<Role?> UpdateRoleDiscount(string roleName, decimal discount);
     Task<bool> AddRoleToUser(string userId, Roles role);
     Task<bool> RemoveRoleFromUser(string userId, Roles role);
+    
+    Task<IEnumerable<OrderDetailsDto>> Orders();
 }
 
-public class AdminService(UserManager<UserEntity> userManager, RoleManager<Role> roleManager)
+public class AdminService(
+    UserManager<UserEntity> userManager, 
+    RoleManager<Role> roleManager, 
+    IOrderRepository orderRepository)
     : IAdminService
 {
     public async Task<UserWithRolesDto?> PromoteToAdmin(string userId)
@@ -127,4 +133,7 @@ public class AdminService(UserManager<UserEntity> userManager, RoleManager<Role>
         var result = await userManager.RemoveFromRoleAsync(user, roleName);
         return result.Succeeded;
     }
+
+    public async Task<IEnumerable<OrderDetailsDto>> Orders() 
+        => await orderRepository.GetOrders();
 }
