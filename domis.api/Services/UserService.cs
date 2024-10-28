@@ -9,6 +9,7 @@ public interface IUserService
     Task<IUserProfileDto?> UserProfile(string id);
     Task<bool> UpdateUserProfileAsync(string id, ProfileUpdateRequest updateDto);
     Task<bool> UpdateUserAddressAsync(string id, string address);
+    Task<IEnumerable<string>> Roles(string userId);
 }
 
 public class UserService(IUserRepository userRepository, IOrderRepository orderRepository) : IUserService
@@ -18,7 +19,10 @@ public class UserService(IUserRepository userRepository, IOrderRepository orderR
 
     public async Task<bool> UpdateUserAddressAsync(string id, string address)
         => await userRepository.UpdateUserAddressAsync(id, address);
-    
+
+    public async Task<IEnumerable<string>> Roles(string userId)
+        => await userRepository.GetUserRolesAsync(userId);
+
     public async Task<bool> UpdateUserProfileAsync(string id, ProfileUpdateRequest updateDto)
         => await userRepository.UpdateUserProfileAsync(id, updateDto);
 }
