@@ -93,7 +93,7 @@ public class CategoryRepository(IDbConnection connection) : ICategoryRepository
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "An error ocurred while getting products by category"); throw;
+            Log.Error(ex, "An error occurred while getting products by category"); throw;
         }
     }
 }

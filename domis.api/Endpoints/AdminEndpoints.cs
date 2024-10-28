@@ -81,6 +81,8 @@ public static class AdminEndpoints
         {
             var response = await adminService.Orders();
             return Results.Ok(response);
-        });
+        })
+        .WithDescription("Gets all orders in the system.");
+        // .RequireAuthorization("Administrator");
     }
 }

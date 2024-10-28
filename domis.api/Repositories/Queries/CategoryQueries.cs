@@ -11,8 +11,8 @@ public static class CategoryQueries
                 category_name AS Name,
                 sort_number AS SortNumber
             FROM domis.category
-            WHERE parent_category_id IS NULL
-
+            WHERE parent_category_id IS NULL AND active = true
+            
             UNION ALL
 
             -- Recursive member: Join to find subcategories
@@ -24,6 +24,7 @@ public static class CategoryQueries
             FROM domis.category c
             INNER JOIN CategoryHierarchy ch
                 ON c.parent_category_id = ch.Id
+            WHERE c.active = true
         )
 
         -- Select all categories and their subcategories
@@ -34,8 +35,7 @@ public static class CategoryQueries
         FROM CategoryHierarchy
         ORDER BY SortNumber ASC NULLS LAST, Name ASC; --sort by sort number, then by category name
     ";
-
-
+    
     public const string GetProductCategories = @"
             WITH RECURSIVE RecursiveCategoryHierarchy AS (
                 -- Anchor member: Start with categories for the product
@@ -46,7 +46,7 @@ public static class CategoryQueries
                     c.id::text AS Path -- Start with the category ID as the path
                 FROM domis.product_category pc
                 JOIN domis.category c ON pc.category_id = c.id
-                WHERE pc.product_id = @ProductId
+                WHERE pc.product_id = @ProductId AND active = true
 
                 UNION ALL
 
@@ -59,6 +59,7 @@ public static class CategoryQueries
                 FROM domis.category c
                 INNER JOIN RecursiveCategoryHierarchy rch
                     ON c.id = rch.ParentCategoryId
+                WHERE 
             )
 
             -- Select only the path and product ID for top-level categories (where ParentCategoryId is NULL)
