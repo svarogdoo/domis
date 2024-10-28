@@ -72,12 +72,13 @@ public static class OrderEndpoints
             return Results.Ok(new CreateOrderResponse(response));
         }).WithDescription("Create new order based on cart id");
 
-        group.MapPut("/order-status", async ([FromBody] UpdateOrderRequest request, IOrderService orderService) =>
+        group.MapPut("/order-status", async ([FromBody] UpdateOrderStatusRequest request, IOrderService orderService) =>
         {
             var response = await orderService.UpdateOrderStatus(request.OrderId, request.StatusId);
 
             return Results.Ok(new UpdateOrderResponse(response));
-        }).WithDescription("Update order status");
+        }).WithDescription("Update order status(1-New, 2-In Progress, 3-Sent, 4-Completed, 5-Canceled)");
+        //.RequireAuthorization("Administrator");
 
         group.MapGet("/{id:int}", async ([FromRoute] int id, IOrderService orderService) =>
         {

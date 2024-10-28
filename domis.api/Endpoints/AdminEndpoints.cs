@@ -84,5 +84,14 @@ public static class AdminEndpoints
         })
         .WithDescription("Gets all orders in the system.");
         // .RequireAuthorization("Administrator");
+
+        group.MapPut("/orders/status", async ([FromBody] UpdateOrderStatusRequest request, IOrderService orderService) =>
+        {
+            var response = await orderService.UpdateOrderStatus(request.OrderId, request.StatusId);
+
+            return Results.Ok(new UpdateOrderResponse(response));
+        })
+        .WithDescription("Update order status(1-New, 2-In Progress, 3-Sent, 4-Completed, 5-Canceled)");
+        // .RequireAuthorization("Administrator");
     }
 }
