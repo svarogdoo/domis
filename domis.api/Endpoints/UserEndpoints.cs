@@ -16,7 +16,7 @@ public static class UserEndpoints
 
             if (userId is null) return Results.Unauthorized();
 
-            var userProfile = await userService.GetUserProfile(userId);
+            var userProfile = await userService.UserProfile(userId);
 
             return userProfile is not null 
                 ? Results.Ok(userProfile) 

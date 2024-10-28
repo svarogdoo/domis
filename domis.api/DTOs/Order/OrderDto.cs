@@ -8,13 +8,13 @@ public class OrderDetailsDto
     public decimal Amount { get; set; }
     public string? Comment { get; set; }
     public DateTime OrderCreatedAt { get; set; }
-    public OrderStatusdetialsDto OrderStatus { get; set; }
+    public OrderStatusDetailsDto OrderStatus { get; set; }
     public OrderShippingDetailsDto? OrderShipping { get; set; }
     public PaymentDetailsDto PaymentDetails { get; set; }
     public List<OrderItemDto> OrderItems { get; set; } = new List<OrderItemDto>();
 }
 
-public class OrderStatusdetialsDto
+public class OrderStatusDetailsDto
 {
     public int OrderStatusId { get; set; }
     public string OrderStatusName { get; set; }
