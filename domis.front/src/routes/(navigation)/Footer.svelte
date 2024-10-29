@@ -1,26 +1,27 @@
 <script lang="ts">
-  import { syncService } from "../services/sync-service";
+  import { syncService } from "../../services/sync-service";
 
   async function subscribeToNewsletter() {
     //TODO: Mikica double-check
-    const emailInput = document.getElementById('newsletter-email') as HTMLInputElement;
+    const emailInput = document.getElementById(
+      "newsletter-email"
+    ) as HTMLInputElement;
     const email = emailInput?.value;
 
     if (!email) {
-      alert('Molimo vas da unesete email adresu.');
+      alert("Molimo vas da unesete email adresu.");
       return;
     }
 
     try {
       await syncService.subscribeToNewsletter(email);
-      alert('Uspešno ste se prijavili na newsletter!');
+      alert("Uspešno ste se prijavili na newsletter!");
     } catch (error) {
-      alert('Došlo je do greške. Molimo vas pokušajte ponovo.');
-      console.error('Error:', error);
+      alert("Došlo je do greške. Molimo vas pokušajte ponovo.");
+      console.error("Error:", error);
     }
   }
 </script>
-
 
 <footer class="w-full flex flex-col pt-6 pb-1">
   <div class="flex flex-col lg:flex-row gap-y-4 pl-4 lg:pl-0 justify-around">
@@ -76,7 +77,9 @@
         >Montaža i ugradnja - video</a
       >
       <div class="newsletter flex flex-col gap-y-1 mt-4">
-        <label for="newsletter-email" class="font-semibold tracking-wider">Prijavi se na newsletter</label>
+        <label for="newsletter-email" class="font-semibold tracking-wider"
+          >Prijavi se na newsletter</label
+        >
         <input
           type="email"
           id="newsletter-email"

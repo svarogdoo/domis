@@ -1,8 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import SalesPointCard from "../../SalesPointCard.svelte";
-  import { API_URL } from "../../../config";
-  import { fetchData } from "../../../helpers/fetch";
+  import SalesPointCard from "./SalesPointCard.svelte";
 
   // Hardcoded data
   const hardcodedSalesPoints: SalesPoint[] = [
@@ -14,7 +12,7 @@
       workingHours: "9:00 AM - 5:00 PM",
       image: "https://domisenterijeri.com/domis/img/2021/01/Maloprodaja.jpg",
       googleMapPin: "https://maps.app.goo.gl/nNyjFPrLDNz33JoF8",
-      optionalInfo: "LAMINAT I TEPIH CENTAR (+381 22) 210 18 98"
+      optionalInfo: "LAMINAT I TEPIH CENTAR (+381 22) 210 18 98",
     },
     {
       id: 2,

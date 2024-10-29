@@ -1,9 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import userIcon from "$lib/icons/user.svg";
-  import { userStore } from "../stores/user";
-  import { goto } from "$app/navigation";
-  import { cart } from "../stores/cart";
+  import { userStore } from "../../stores/user";
 
   let loggedIn = false;
   let initials = "";

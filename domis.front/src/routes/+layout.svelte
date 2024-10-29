@@ -1,9 +1,9 @@
 <script lang="ts">
-  import Header from "./Header.svelte";
+  import Header from "./(navigation)/Header.svelte";
   import "./styles.css";
   import "../app.css";
-  import Footer from "./Footer.svelte";
-  import HeaderSidebar from "./HeaderSidebar.svelte";
+  import Footer from "./(navigation)/Footer.svelte";
+  import HeaderSidebar from "./(navigation)/HeaderSidebar.svelte";
   import { page } from "$app/stores";
   import { onMount } from "svelte";
   import { cart } from "../stores/cart";
@@ -32,13 +32,11 @@
   }
 </script>
 
-<div
-  class="relative w-full h-full bg-white flex flex-col items-center 2xl:w-3/4 2xl:m-auto"
->
+<div class="relative w-full h-full bg-white flex flex-col items-center">
   <HeaderSidebar bind:open />
   <Header bind:sidebar={open} />
 
-  <main class="w-full flex flex-col flex-grow pb-8">
+  <main class="w-full flex flex-col flex-grow pb-8 2xl:w-3/4 2xl:m-auto">
     <slot />
   </main>
 

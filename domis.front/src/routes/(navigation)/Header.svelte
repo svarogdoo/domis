@@ -2,11 +2,11 @@
   import { page } from "$app/stores";
   import searchIcon from "$lib/icons/search.svg";
   import cartIcon from "$lib/icons/cart.svg";
-  import Hamburger from "../components/Hamburger.svelte";
-  import { cart } from "../stores/cart";
+  import Hamburger from "../../components/Hamburger.svelte";
+  import { cart } from "../../stores/cart";
   import { onDestroy, onMount } from "svelte";
   import UserDropdown from "./UserDropdown.svelte";
-  import { productService } from "../services/product-service";
+  import { productService } from "../../services/product-service";
   import { goto } from "$app/navigation";
 
   export let sidebar = false;
@@ -58,34 +58,54 @@
   });
 </script>
 
-<header class="flex flex-col items-center w-full mb-4">
-  <nav class="flex w-full justify-center">
-    <ul class="flex w-full justify-between items-center my-4 px-8">
+<header class="flex flex-col items-center w-full mb-4 shadow-md">
+  <!-- Top bar -->
+  <div class="flex justify-center w-full bg-black text-xs text-domis-white">
+    <div class="flex w-full xl:w-4/5 2xl:3/5 py-2 items-center justify-between">
+      <div class="flex gap-x-12">
+        <p>Beograd</p>
+        <p>Kontakt</p>
+      </div>
+      <div class="flex gap-x-12">
+        <p>Usluge</p>
+        <p>Isporuke i preuzimanje</p>
+      </div>
+    </div>
+  </div>
+
+  <nav class="flex w-full justify-center xl:w-4/5 2xl:3/5">
+    <ul class="flex w-full justify-between items-center my-4">
       <div class="flex items-center gap-x-4">
-        <li>
-          <Hamburger bind:open={sidebar} />
-        </li>
+        {#if sidebar}
+          <li>
+            <Hamburger bind:open={sidebar} />
+          </li>
+        {/if}
         <li
-          class="header-title pl-4 text-sm lg:text-md"
+          class="header-title pl-4 text-lg lg:pl-0 lg:text-md"
           aria-current={$page.url.pathname === "/" ? "page" : undefined}
         >
-          <a href="/">domis</a>
-          <a href="/">enterijeri</a>
+          <a href="/" class="text-domis-red">domis</a>
+          <a href="/" class="text-domis-dark">enterijeri</a>
         </li>
       </div>
 
       <li class="w-full hidden lg:flex justify-center">
         <div class="relative w-2/3 flex items-center">
-          <img src={searchIcon} alt="search" class="absolute ml-4" />
           <input
-            class="pl-12 py-3 rounded-md font-extralight border border-black w-full"
+            class="pl-5 py-3 rounded-lg font-extralight border bg-domis-white border-gray-300 placeholder:text-gray-500 placeholder:text-sm placeholder:tracking-wide w-full"
             type="text"
             id="search-field"
-            placeholder="Pretražite prodavnicu (upišite ime ili šifru proizvoda)"
+            placeholder="Upišite ime ili šifru proizvoda"
             autocomplete="off"
             bind:value={searchTerm}
             on:input={debounceSearch}
           />
+          <div
+            class="absolute right-0 flex items-center justify-center h-full bg-domis-dark w-16 rounded-lg"
+          >
+            <img src={searchIcon} alt="search" class="w-6 h-auto" />
+          </div>
 
           {#if isDropdownOpen && searchResults.length > 0}
             <ul
@@ -118,7 +138,7 @@
           </a>
           {#if cartProducts && cartProducts?.length > 0}
             <div
-              class="absolute top-0 right-0 text-center text-white text-sm rounded-full h-4 w-4 bg-red-500"
+              class="absolute top-0 right-0 text-center text-white text-sm rounded-full h-5 w-5 bg-domis-red"
             >
               {cartProducts.length}
             </div>
@@ -127,28 +147,25 @@
       </div>
     </ul>
   </nav>
-  <div class="category h-1 gap-x-12 pl-4">
-    <!-- <p>Keramika</p>
-    <p>Lajsne</p>
-    <p>Kamen</p>
-    <p>Leksan</p> -->
+
+  <!-- Bottom nav -->
+  <div class="flex items-center gap-x-12 my-2">
+    <p class="bg-domis-dark text-domis-white rounded-lg px-8 py-3">Katalog</p>
+    <p>Podovi i obloge</p>
+    <p>Pločice i graniti</p>
+    <p>Kupatila</p>
+    <p>Zid i dekoracije</p>
+    <p>Rasveta</p>
+    <p>Građevinski materijal i alati</p>
   </div>
 </header>
 
 <style>
-  .category {
-    display: flex;
-    width: 95%;
-    border-bottom-width: 1px;
-    border-bottom-color: #787878;
-  }
-
   .header-title {
     display: flex;
     flex-direction: column;
   }
   .header-title a {
-    color: black;
     text-decoration: none;
     font-weight: 600;
     letter-spacing: 0.3em;

@@ -1,5 +1,5 @@
 <script>
-  import Sidebar from "./(products)/Sidebar.svelte";
+  import Sidebar from "../(products)/Sidebar.svelte";
 
   export let open = false;
 </script>
