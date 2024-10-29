@@ -6,12 +6,15 @@ export function getCategories() {
   try {
     return fetchData<Array<Category>>(`${API_URL}/api/categories`);
   } catch {
-    console.info("getCategories fail");
     return [];
   }
 }
 
-export function getCategoryProducts(id: number, pageNumber?: number, pageSize?: number) {
+export function getCategoryProducts(
+  id: number,
+  pageNumber?: number,
+  pageSize?: number
+) {
   let queryParams = new URLSearchParams();
   if (pageNumber) queryParams.append("pageNumber", pageNumber.toString());
   if (pageSize) queryParams.append("pageSize", pageSize.toString());

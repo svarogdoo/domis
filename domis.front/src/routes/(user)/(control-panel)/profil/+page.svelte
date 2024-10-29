@@ -5,68 +5,49 @@
   import InputString from "../../../../components/InputString.svelte";
   import { userService } from "../../../../services/user-service";
 
-  let user: UserProfileResponse | null = null;
-  let updatedFirstName = "";
-  let updatedLastName = "";
-  let updatedAddressLine = "";
-  let updatedApartment = "";
-  let updatedCity = "";
-  let updatedPostalCode = "";
-  let updatedCountry = "";
-  let updatedCounty = "";
-  let updatedPhoneNumber = "";
-  let updatedCompanyName = "";
+  let isUserDataPopulated = false;
 
-  const unsubscribe = userStore.subscribe((state) => {
-    user = state.user as UserProfileResponse | UserWholesaleProfileDto;
+  let firstName = "";
+  let lastName = "";
+  let addressLine = "";
+  let apartment = "";
+  let city = "";
+  let postalCode = "";
+  let country = "";
+  let county = "";
+  let email = "";
+  let phoneNumber = "";
+  let companyName = "";
 
-    if (user) {
-      updatedFirstName = user.firstName;
-      updatedLastName = user.lastName;
-      updatedAddressLine = user.addressLine || "";
-      updatedApartment = user.apartment || "";
-      updatedCity = user.city || "";
-      updatedPostalCode = user.postalCode || "";
-      updatedCountry = user.country || "";
-      updatedCounty = user.county || "";
-      updatedPhoneNumber = user.phoneNumber || "";
-      updatedCompanyName = (user as UserWholesaleProfileDto).companyName || "";
-    }
-  });
+  $: if ($userStore.user && !isUserDataPopulated) {
+    firstName = $userStore.user.firstName ?? "";
+    lastName = $userStore.user.lastName ?? "";
+    addressLine = $userStore.user.addressLine ?? "";
+    apartment = $userStore.user.apartment ?? "";
+    city = $userStore.user.city ?? "";
+    postalCode = $userStore.user.postalCode ?? "";
+    country = $userStore.user.country ?? "";
+    county = $userStore.user.county ?? "";
+    email = $userStore.user.email ?? "";
+    phoneNumber = $userStore.user.phoneNumber ?? "";
+    companyName =
+      ($userStore.user as UserWholesaleProfileDto).companyName ?? "";
 
-  onMount(() => {
-    requireAuth(); // Ensure the user is authenticated
-
-    const fetchProfile = async () => {
-      const profile = await userService.getProfile();
-      console.log(profile);
-      if (profile) {
-        userStore.set({
-          user: profile,
-          isAuthenticated: true,
-          token: localStorage.getItem('token'),
-          refreshToken: localStorage.getItem('refreshToken'),
-        });
-      }
-    };
-
-    fetchProfile();
-
-    return () => unsubscribe();
-  });
+    isUserDataPopulated = true;
+  }
 
   async function updateProfile() {
     const request = {
-      firstName: updatedFirstName,
-      lastName: updatedLastName,
-      addressLine: updatedAddressLine,
-      apartment: updatedApartment,
-      city: updatedCity,
-      postalCode: updatedPostalCode,
-      country: updatedCountry,
-      county: updatedCounty,
-      phoneNumber: updatedPhoneNumber,
-      ...(updatedCompanyName && { companyName: updatedCompanyName }) // Add companyName only if not empty
+      firstName: firstName,
+      lastName: lastName,
+      addressLine: addressLine,
+      apartment: apartment,
+      city: city,
+      postalCode: postalCode,
+      country: country,
+      county: county,
+      phoneNumber: phoneNumber,
+      ...(companyName && { companyName: companyName }), // Add companyName only if not empty
     };
 
     await userStore.updateProfile(request);
@@ -76,36 +57,91 @@
 <section class="flex flex-col gap-y-12">
   <h1 class="text-2xl">Korisnički profil</h1>
   <div class="flex flex-col gap-y-4">
-    {#if user}
+    {#if isUserDataPopulated}
       <div class="flex gap-x-4">
         <strong>Email:</strong>
-        <div>{user.email}</div>
+        <div>{email}</div>
       </div>
       <div class="flex flex-col gap-y-4 lg:flex-row gap-x-12">
-        <InputString bind:value={updatedFirstName} title="Ime" placeholder="Petar" width={"48"} />
-        <InputString bind:value={updatedLastName} title="Prezime" placeholder="Petrović" width={"48"} />
+        <InputString
+          bind:value={firstName}
+          title="Ime"
+          placeholder="Petar"
+          width={"48"}
+        />
+        <InputString
+          bind:value={lastName}
+          title="Prezime"
+          placeholder="Petrović"
+          width={"48"}
+        />
       </div>
       <div class="flex flex-col gap-y-4 lg:flex-row gap-x-12">
-        <InputString bind:value={updatedCountry} title="Država" placeholder="Srbija" width={"32"} />
-        <InputString bind:value={updatedCity} title="Grad" placeholder="Novi Sad" width={"64"} />
+        <InputString
+          bind:value={country}
+          title="Država"
+          placeholder="Srbija"
+          width={"32"}
+        />
+        <InputString
+          bind:value={city}
+          title="Grad"
+          placeholder="Novi Sad"
+          width={"64"}
+        />
       </div>
       <div class="flex flex-col gap-y-4 lg:flex-row gap-x-12">
-        <InputString bind:value={updatedAddressLine} title="Ulica i broj" placeholder="Kneza Miloša 23" width={"80"} />
-        <InputString bind:value={updatedApartment} title="Stan" placeholder="Apt 12B" width={"32"} />
+        <InputString
+          bind:value={addressLine}
+          title="Ulica i broj"
+          placeholder="Kneza Miloša 23"
+          width={"80"}
+        />
+        <InputString
+          bind:value={apartment}
+          title="Stan"
+          placeholder="Apt 12B"
+          width={"32"}
+        />
       </div>
       <div class="flex flex-col gap-y-4 lg:flex-row gap-x-12">
-        <InputString bind:value={updatedPostalCode} title="Poštanski broj" placeholder="11000" width={"32"} />
-        <InputString bind:value={updatedPhoneNumber} title="Broj telefona" placeholder="60224455221" width={"48"} prefix="+381" />
+        <InputString
+          bind:value={postalCode}
+          title="Poštanski broj"
+          placeholder="11000"
+          width={"32"}
+        />
+        <InputString
+          bind:value={county}
+          title="Opština"
+          placeholder="Novi Sad"
+          width={"48"}
+        />
       </div>
       <div class="flex flex-col gap-y-4 lg:flex-row gap-x-12">
-        <InputString bind:value={updatedCounty} title="Opština" placeholder="Novi Sad" width={"48"} />
+        <InputString
+          bind:value={phoneNumber}
+          title="Broj telefona"
+          placeholder="60224455221"
+          width={"48"}
+          prefix="+381"
+        />
       </div>
-      {#if 'companyName' in user}
+      <!-- TODO: Special Role type field -->
+      {#if companyName}
         <div class="flex flex-col gap-y-4 lg:flex-row gap-x-12">
-          <InputString bind:value={updatedCompanyName} title="Naziv firme" placeholder="Ime firme" width={"80"} />
+          <InputString
+            bind:value={companyName}
+            title="Naziv firme"
+            placeholder="Ime firme"
+            width={"80"}
+          />
         </div>
       {/if}
-      <button on:click={updateProfile} class="mt-4 text-light bg-black text-white py-2 px-4 rounded-lg hover:bg-gray-600">
+      <button
+        on:click={updateProfile}
+        class="mt-4 text-light bg-black text-white py-2 px-4 rounded-lg hover:bg-gray-600"
+      >
         Sačuvaj promene
       </button>
     {:else}

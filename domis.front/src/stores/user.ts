@@ -74,12 +74,21 @@ const createUserStore = () => {
 
     async getProfile() {
       var user = await userService.getProfile();
-      console.info(user);
       return user;
     },
 
     async updateProfile(request: UserProfileUpdateRequest) {
-      return await userService.updateProfile(request);
+      await userService.updateProfile(request);
+      var userData = await this.getProfile();
+      update((state) => ({
+        ...state,
+        user: userData,
+      }));
+      const currentUser = get(userStore);
+      localStorage.setItem(
+        "user",
+        JSON.stringify({ ...currentUser, user: userData })
+      );
     },
 
     async forgotPassword(email: string) {

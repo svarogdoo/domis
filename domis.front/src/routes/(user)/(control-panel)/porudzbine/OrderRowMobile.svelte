@@ -21,9 +21,8 @@
           {formatDateStringToString(order.date)}
         </p>
         <p
-          class="px-3 py-1 rounded-full text-md {getOrderStatusColor(
-            order.statusId
-          )}"
+          class="px-3 py-1 rounded-full text-md
+          {getOrderStatusColor(order.statusId)}"
         >
           {mapOrderStatusToString(order.statusId)}
         </p>

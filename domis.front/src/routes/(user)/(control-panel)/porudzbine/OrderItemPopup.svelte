@@ -1,12 +1,9 @@
 <script lang="ts">
-  import { onMount } from "svelte";
   import OrderItemRow from "./OrderItemRow.svelte";
   import OrderItemRowMobile from "./OrderItemRowMobile.svelte";
 
   export let show = false;
   export let orderItems: Array<UserOrderItem>;
-
-  $: console.log("OrderItemPopup rendered", orderItems);
 
   const closePopup = () => {
     show = false;
