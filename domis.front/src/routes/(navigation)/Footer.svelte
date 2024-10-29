@@ -89,7 +89,7 @@
         <button
           type="button"
           on:click={subscribeToNewsletter}
-          class="mt-2 p-1 bg-black text-white text-xs rounded w-24 ml-auto"
+          class="mt-2 p-1 bg-domis-dark text-white text-xs rounded w-24 ml-auto"
         >
           Prijavi se
         </button>

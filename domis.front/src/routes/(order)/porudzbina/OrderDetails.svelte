@@ -80,7 +80,7 @@
           <span class="font-light text-md">RSD</span>
         </p>
         <span
-          class="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-1 bg-white border border-gray-300 rounded text-xs p-2 text-black opacity-0 transition-opacity duration-200 ease-in-out group-hover:opacity-100"
+          class="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-1 bg-white border border-gray-300 rounded text-xs p-2 text-domis-dark opacity-0 transition-opacity duration-200 ease-in-out group-hover:opacity-100"
         >
           {item.quantity} × {item.productDetails.name}
         </span>
@@ -153,7 +153,7 @@
 
   <button
     on:click={handleSubmit}
-    class="text-light bg-black text-white py-2 px-4 rounded-lg text-center tracking-widest hover:bg-gray-600 disabled:bg-gray-400"
+    class="text-light bg-domis-dark text-white py-2 px-4 rounded-lg text-center tracking-widest hover:bg-gray-600 disabled:bg-gray-400"
     disabled={!isTermsAccepted}
   >
     NARUČI

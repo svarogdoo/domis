@@ -60,7 +60,7 @@
 
 <header class="flex flex-col items-center w-full mb-4 shadow-md">
   <!-- Top bar -->
-  <div class="flex justify-center w-full bg-black text-xs text-domis-white">
+  <div class="flex justify-center w-full bg-black text-xs text-domis-light">
     <div class="flex w-full xl:w-4/5 2xl:3/5 py-2 items-center justify-between">
       <div class="flex gap-x-12">
         <p>Beograd</p>
@@ -85,7 +85,7 @@
           class="header-title pl-4 text-lg lg:pl-0 lg:text-md"
           aria-current={$page.url.pathname === "/" ? "page" : undefined}
         >
-          <a href="/" class="text-domis-red">domis</a>
+          <a href="/" class="text-domis-primary">domis</a>
           <a href="/" class="text-domis-dark">enterijeri</a>
         </li>
       </div>
@@ -93,7 +93,7 @@
       <li class="w-full hidden lg:flex justify-center">
         <div class="relative w-2/3 flex items-center">
           <input
-            class="pl-5 py-3 rounded-lg font-extralight border bg-domis-white border-gray-300 placeholder:text-gray-500 placeholder:text-sm placeholder:tracking-wide w-full"
+            class="pl-5 py-3 rounded-lg font-extralight border bg-domis-light border-gray-300 placeholder:text-gray-500 placeholder:text-sm placeholder:tracking-wide w-full"
             type="text"
             id="search-field"
             placeholder="Upišite ime ili šifru proizvoda"
@@ -150,7 +150,7 @@
 
   <!-- Bottom nav -->
   <div class="flex items-center gap-x-12 my-2">
-    <p class="bg-domis-dark text-domis-white rounded-lg px-8 py-3">Katalog</p>
+    <p class="bg-domis-dark text-domis-light rounded-lg px-8 py-3">Katalog</p>
     <p>Podovi i obloge</p>
     <p>Pločice i graniti</p>
     <p>Kupatila</p>

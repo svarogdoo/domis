@@ -9,10 +9,10 @@ export default {
         },
         domis:{
           dark: '#2F2F2F',
-          red: '#B22222',
-          white: '#F5F5F5',
-          light: '#D8C3A5',
-          blue: '#6B7A8F'
+          primary: '#B22222',
+          light: '#F5F5F5',
+          secondary: '#D8C3A5',
+          accent: '#6B7A8F'
         }
       }
     },

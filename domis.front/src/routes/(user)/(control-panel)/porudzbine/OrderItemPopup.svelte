@@ -11,14 +11,14 @@
 </script>
 
 <div
-  class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+  class="fixed inset-0 flex items-center justify-center bg-domis-dark bg-opacity-50 z-50"
 >
   <div
     id="order-item-popup"
     class="w-full lg:w-auto flex flex-col gap-y-6 items-center bg-white p-6 rounded-lg shadow-lg text-center"
   >
     <table class="hidden lg:table">
-      <thead class="w-full bg-black text-white">
+      <thead class="w-full bg-domis-dark text-white">
         <th class=" "></th>
         <th class="text-start">Opis</th>
         <th class="text-center">Cena</th>
@@ -33,7 +33,7 @@
     </table>
     <!-- Mobile -->
     <table class="table lg:hidden w-full">
-      <thead class="w-full text-sm bg-black text-white"
+      <thead class="w-full text-sm bg-domis-dark text-white"
         ><th>Proizvodi</th></thead
       >
       <tbody class="divide-y divide-gray-200">
@@ -44,7 +44,7 @@
     </table>
 
     <button
-      class="text-light bg-black text-white py-2 px-12 rounded-lg text-center tracking-widest hover:bg-gray-600 disabled:bg-gray-400"
+      class="text-light bg-domis-dark text-white py-2 px-12 rounded-lg text-center tracking-widest hover:bg-gray-600 disabled:bg-gray-400"
       on:click={closePopup}
       >Zatvori
     </button>

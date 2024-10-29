@@ -140,7 +140,7 @@
       {/if}
       <button
         on:click={updateProfile}
-        class="mt-4 text-light bg-black text-white py-2 px-4 rounded-lg hover:bg-gray-600"
+        class="mt-4 text-light bg-domis-dark text-white py-2 px-4 rounded-lg hover:bg-gray-600"
       >
         Sačuvaj promene
       </button>

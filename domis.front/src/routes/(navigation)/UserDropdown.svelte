@@ -41,7 +41,7 @@
   <div class="relative group">
     {#if loggedIn}
       <div
-        class="cursor-pointer text-sm lg:text-base flex items-center justify-center w-8 h-8 lg:w-10 lg:h-10 border-2 border-gray-500 rounded-full text-black font-bold"
+        class="cursor-pointer text-sm lg:text-base flex items-center justify-center w-8 h-8 lg:w-10 lg:h-10 border-2 border-gray-500 rounded-full text-domis-dark font-bold"
       >
         {initials}
       </div>
@@ -56,7 +56,7 @@
     {/if}
 
     <div
-      class="z-10 absolute right-0 w-48 bg-white text-black rounded-lg shadow-lg p-2 hidden group-hover:block group-hover:pointer-events-auto before:content-[''] before:absolute before:top-0 before:right-0 before:-translate-y-full before:w-full before:h-10"
+      class="z-10 absolute right-0 w-48 bg-white text-domis-dark rounded-lg shadow-lg p-2 hidden group-hover:block group-hover:pointer-events-auto before:content-[''] before:absolute before:top-0 before:right-0 before:-translate-y-full before:w-full before:h-10"
     >
       {#if loggedIn}
         <ul>

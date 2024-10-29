@@ -6,7 +6,7 @@
 
 <a href="kategorija/{category?.id}">
   <div class="w-full relative display flex justify-center items-center">
-    <div class="absolute w-full h-96 bg-black"></div>
+    <div class="absolute w-full h-96 bg-domis-dark"></div>
     <img
       class="w-full h-96 object-cover opacity-60 text-white bg-slate-500 hover:opacity-60"
       src={backup}

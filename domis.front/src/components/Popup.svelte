@@ -15,7 +15,7 @@
 </script>
 
 <div
-  class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+  class="fixed inset-0 flex items-center justify-center bg-domis-dark bg-opacity-50 z-50"
 >
   <div class="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full text-center">
     <h2 class="text-2xl font-semibold mb-10">{title}</h2>

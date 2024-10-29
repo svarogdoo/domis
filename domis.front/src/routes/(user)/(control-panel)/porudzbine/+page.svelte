@@ -23,7 +23,7 @@
 <section class="w-full">
   {#if orders && orders.length > 0}
     <table class="hidden lg:table w-full table-hover">
-      <thead class="w-full bg-black text-white">
+      <thead class="w-full bg-domis-dark text-white">
         <th>Datum</th>
         <th>Status</th>
         <th>Adresa isporuke</th>
@@ -38,7 +38,7 @@
       </tbody>
     </table>
     <table class="table lg:hidden w-full">
-      <thead class="w-full text-sm bg-black text-white"
+      <thead class="w-full text-sm bg-domis-dark text-white"
         ><th>Porudžbine</th></thead
       >
       <tbody class="divide-y divide-gray-200">

@@ -12,14 +12,16 @@
 </script>
 
 <section class="w-full flex flex-col">
-  <h1 class="ml-12 my-8 text-2xl lg:text-3xl font-light text-black">Korpa</h1>
+  <h1 class="ml-12 my-8 text-2xl lg:text-3xl font-light text-domis-dark">
+    Korpa
+  </h1>
   {#if cartProducts && cartProducts.length > 0 && totalCartPrice}
     <div
       class="w-full flex flex-col gap-y-8 lg:flex-row justify-center items-start gap-x-8 px-4"
     >
       <!-- Desktop -->
       <table class="hidden lg:table table-hover">
-        <thead class="w-full bg-black text-white">
+        <thead class="w-full bg-domis-dark text-white">
           <th class=" "></th>
           <th class="text-start">Opis</th>
           <th class="text-center">Cena</th>
@@ -35,7 +37,7 @@
       </table>
       <!-- Mobile -->
       <table class="table lg:hidden w-full">
-        <thead class="w-full text-sm bg-black text-white"
+        <thead class="w-full text-sm bg-domis-dark text-white"
           ><th>Proizvodi</th></thead
         >
         <tbody class="divide-y divide-gray-200">
@@ -54,14 +56,14 @@
           <p>Ukupno</p>
           <p>{formatPrice(totalCartPrice)} RSD</p>
         </div>
-        <div class="w-full h-0.5 bg-black my-4"></div>
+        <div class="w-full h-0.5 bg-domis-dark my-4"></div>
         <div class="flex justify-between text-lg gap-x-8">
           <p>Ukupno</p>
           <p>{formatPrice(totalCartPrice)} RSD</p>
         </div>
         <a
           href="/porudzbina"
-          class="text-light bg-black text-white mt-16 py-2 px-4 rounded-lg text-center tracking-widest"
+          class="text-light bg-domis-dark text-white mt-16 py-2 px-4 rounded-lg text-center tracking-widest"
         >
           PLATI
         </a>
