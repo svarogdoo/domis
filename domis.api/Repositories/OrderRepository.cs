@@ -24,6 +24,7 @@ public interface IOrderRepository
     Task<bool> UpdateOrderStatusAsync(int orderId, int statusId);
     Task<OrderDetailsDto?> GetOrderDetailsByIdAsync(int orderId);
     Task<IEnumerable<UserOrderDto>> GetOrdersByUser(string userId);
+    Task<IEnumerable<OrderDetailsDto>> GetOrders();
 }
 public class OrderRepository(IDbConnection connection) : IOrderRepository
 {
@@ -158,7 +159,6 @@ public class OrderRepository(IDbConnection connection) : IOrderRepository
             //get cart items with product price
             var cartItems = await connection.QueryAsync<CartItemWithPriceDto>(CartQueries.GetCartItemsWithProductPriceByCartId, new { CartId = createOrder.CartId }, transaction);
             //calculate order total amount
-            //TODO: include role discount? or not?
             var totalAmount = cartItems.Sum(i => i.ProductPrice * i.Quantity);
 
             //create order from cart
@@ -199,8 +199,7 @@ public class OrderRepository(IDbConnection connection) : IOrderRepository
             await connection.ExecuteAsync(CartQueries.DeleteCartQuery, new { CartId = createOrder.CartId }, transaction);
 
             transaction.Commit();
-
-
+            
             return new OrderConfirmationDto
             {
                 OrderId = orderId,
@@ -247,7 +246,7 @@ public class OrderRepository(IDbConnection connection) : IOrderRepository
             OrderDetailsDto? orderDetails = null;
 
             var result = await connection
-                .QueryAsync<OrderDetailsDto, OrderStatusdetialsDto, OrderShippingDetailsDto, PaymentDetailsDto, OrderItemDto,
+                .QueryAsync<OrderDetailsDto, OrderStatusDetailsDto, OrderShippingDetailsDto, PaymentDetailsDto, OrderItemDto,
                     ProductDetails, string, OrderDetailsDto>(
                     OrderQueries.GetOrderDetails,
                     (order, orderStatus, orderShipping, paymentDetails, orderItem, product, url) =>
@@ -335,5 +334,48 @@ public class OrderRepository(IDbConnection connection) : IOrderRepository
             Log.Error(ex, $"An error occurred while retrieving orders for user with ID {userId}: {ex.Message}");
             throw;
         }
+    }
+
+    public async Task<IEnumerable<OrderDetailsDto>> GetOrders()
+    {
+        try
+        {
+            var orderDictionary = new Dictionary<int, OrderDetailsDto>();
+
+            var result = await connection
+                .QueryAsync<OrderDetailsDto, OrderStatusDetailsDto, OrderShippingDetailsDto, PaymentDetailsDto, OrderItemDto,
+                    ProductDetails, string, OrderDetailsDto>(
+                    OrderQueries.GetAllOrders,
+                    (order, orderStatus, orderShipping, paymentDetails, orderItem, product, url) =>
+                    {
+                        if (!orderDictionary.TryGetValue(order.OrderId, out var orderDetails))
+                        {
+                            orderDetails = order;
+                            orderDetails.OrderStatus = orderStatus;
+                            orderDetails.OrderShipping = orderShipping;
+                            orderDetails.PaymentDetails = paymentDetails;
+                            orderDetails.OrderItems = new List<OrderItemDto>();
+                            orderDictionary.Add(order.OrderId, orderDetails);
+                        }
+
+                        if (orderDetails.OrderItems.Any(oi => oi.OrderItemId == orderItem.OrderItemId))
+                            return orderDetails;
+                        
+                        orderItem.ProductDetails = product;
+                        orderItem.ProductDetails.Url = url;
+                        orderDetails.OrderItems.Add(orderItem);
+
+                        return orderDetails;
+                    },
+                    splitOn: "OrderStatusId,OrderShippingId,PaymentStatusId,OrderItemId,ProductName,Url"
+                );
+
+            return orderDictionary.Values.OrderByDescending(o => o.OrderId).ToList();
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, $"An error occurred while fetching orders: {ex.Message}");
+            throw;
+        }    
     }
 }

@@ -179,6 +179,58 @@ public static class OrderQueries
             WHERE
                 o.id = @OrderId AND (pi.image_type_id is null or pi.image_type_id = 1);";
 
+    public const string GetAllOrders = @"
+        SELECT
+            o.id AS OrderId,
+            o.user_id AS UserId,
+            o.payment_amount AS Amount,
+            o.comment AS Comment,
+            o.created_at AS OrderCreatedAt,
+            o.status_id AS OrderStatusId,
+            os.status_name AS OrderStatusName,
+            o.order_shipping_id AS OrderShippingId,
+            osh.first_name AS ShippingFirstName,
+            osh.last_name AS ShippingLastName,
+            osh.company_name AS ShippingCompanyName,
+            osh.country_id AS ShippingCountryId,
+            c.country_name AS ShippingCountryName,
+            osh.city AS ShippingCity,
+            osh.address AS ShippingAddress,
+            osh.apartment AS ShippingApartment,
+            osh.county AS ShippingCounty,
+            osh.postal_code AS ShippingPostalCode,
+            osh.phone_number AS ShippingPhoneNumber,
+            osh.email AS ShippingEmail,
+            o.payment_status_id AS PaymentStatusId,
+            ps.status_name AS PaymentStatusName,
+            o.payment_vendor_type_id AS PaymentVendorTypeId,
+            pvt.payment_vendor_type_name AS PaymentVendorTypeName,
+            oi.id AS OrderItemId,
+            oi.product_id AS ProductId,
+            oi.quantity AS OrderItemQuantity,
+            oi.order_item_amount AS OrderItemAmount,
+            oi.created_at AS OrderItemCreatedAt,
+            oi.modified_at AS OrderItemModifiedAt,
+            p.product_name AS ProductName,
+            p.product_description AS ProductDescription,
+            p.quantity_type_id AS QuantityType,
+            p.sku AS Sku,
+            i.blob_url AS Url
+        FROM
+            domis.order o
+            LEFT JOIN domis.order_status os ON o.status_id = os.id
+            LEFT JOIN domis.order_shipping osh ON o.order_shipping_id = osh.id
+            LEFT JOIN domis.country c ON osh.country_id = c.id
+            LEFT JOIN domis.payment_status ps ON o.payment_status_id = ps.id
+            LEFT JOIN domis.payment_vendor_type pvt ON o.payment_vendor_type_id = pvt.id
+            LEFT JOIN domis.order_item oi ON o.id = oi.order_id
+            LEFT JOIN domis.product p ON oi.product_id = p.id
+            LEFT JOIN domis.product_image pi ON p.id = pi.product_id
+            LEFT JOIN domis.image i ON pi.image_id = i.id
+        WHERE
+            pi.image_type_id IS NULL OR pi.image_type_id = 1;"
+    ; 
+
     public const string GetOrdersByUserId = @"
         SELECT 
             o.id AS Id,

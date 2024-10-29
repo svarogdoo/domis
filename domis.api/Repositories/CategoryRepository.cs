@@ -73,9 +73,7 @@ public class CategoryRepository(IDbConnection connection) : ICategoryRepository
 
             if (category is null)
                 return null;
-
-            //offset = 0; options.PageSize = 1000;  //TODO: remove when pagination is done on the FE
-
+            
             var productParams = new { CategoryId = categoryId, Offset = offset, Limit = options.PageSize };
             var products = await connection.QueryAsync<ProductPreviewDto>(ProductQueries.GetAllByCategoryWithPagination, productParams);
 
@@ -95,7 +93,7 @@ public class CategoryRepository(IDbConnection connection) : ICategoryRepository
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "An error ocurred while getting products by category"); throw;
+            Log.Error(ex, "An error occurred while getting products by category"); throw;
         }
     }
 }
