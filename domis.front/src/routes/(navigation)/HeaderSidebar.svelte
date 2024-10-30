@@ -5,7 +5,7 @@
 </script>
 
 <aside
-  class="fixed overflow-y-scroll w-full h-full bg-gray-200 border-r-2 pt-16 shadow-lg z-20 lg:hidden"
+  class="fixed overflow-y-scroll w-full h-full bg-gray-200 border-r-2 pt-16 shadow-lg z-10 lg:hidden"
   class:open
 >
   <Sidebar hamburgerStyle={true} />

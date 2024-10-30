@@ -8,6 +8,7 @@
   import UserDropdown from "./UserDropdown.svelte";
   import { productService } from "../../services/product-service";
   import { goto } from "$app/navigation";
+  import Catalogue from "./Catalogue.svelte";
 
   export let sidebar = false;
 
@@ -15,6 +16,7 @@
   let searchResults: Array<ProductBasicInfo> = [];
   let cartProducts: Array<CartProduct> | undefined;
   let isDropdownOpen: boolean = false;
+  let showCatalogue: boolean = false;
 
   $: cartProducts = $cart?.items;
 
@@ -60,7 +62,9 @@
 
 <header class="flex flex-col items-center w-full mb-4 shadow-md">
   <!-- Top bar -->
-  <div class="flex justify-center w-full bg-black text-xs text-domis-light">
+  <div
+    class="hidden lg:flex justify-center w-full bg-black text-xs text-domis-light"
+  >
     <div class="flex w-full xl:w-4/5 2xl:3/5 py-2 items-center justify-between">
       <div class="flex gap-x-12">
         <p>Beograd</p>
@@ -74,15 +78,13 @@
   </div>
 
   <nav class="flex w-full justify-center xl:w-4/5 2xl:3/5">
-    <ul class="flex w-full justify-between items-center my-4">
+    <ul class="flex w-full justify-between items-center px-2 lg:px-0 lg:my-4">
       <div class="flex items-center gap-x-4">
-        {#if sidebar}
-          <li>
-            <Hamburger bind:open={sidebar} />
-          </li>
-        {/if}
+        <li>
+          <Hamburger bind:open={sidebar} />
+        </li>
         <li
-          class="header-title pl-4 text-lg lg:pl-0 lg:text-md"
+          class="header-title pl-4 lg:pl-0 text-sm lg:text-xl"
           aria-current={$page.url.pathname === "/" ? "page" : undefined}
         >
           <a href="/" class="text-domis-primary">domis</a>
@@ -149,15 +151,30 @@
   </nav>
 
   <!-- Bottom nav -->
-  <div class="flex items-center gap-x-12 my-2">
-    <p class="bg-domis-dark text-domis-light rounded-lg px-8 py-3">Katalog</p>
+  <div
+    class="hidden lg:flex w-full xl:w-4/5 2xl:3/5 items-center justify-between my-2 tracking-wide"
+  >
+    <button
+      on:click={() => {
+        showCatalogue = !showCatalogue;
+      }}
+      class="bg-domis-dark text-domis-light rounded-lg px-8 py-3"
+      >Katalog</button
+    >
     <p>Podovi i obloge</p>
     <p>Pločice i graniti</p>
     <p>Kupatila</p>
     <p>Zid i dekoracije</p>
     <p>Rasveta</p>
     <p>Građevinski materijal i alati</p>
+    <p class=" text-domis-primary">Akcija</p>
   </div>
+
+  {#if showCatalogue}
+    <div class="flex w-full justify-center xl:w-4/5 2xl:3/5 slide-down">
+      <Catalogue />
+    </div>
+  {/if}
 </header>
 
 <style>
