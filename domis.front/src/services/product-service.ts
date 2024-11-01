@@ -9,9 +9,9 @@ export function getProducts() {
   return fetchData<Array<Product>>(`${API_URL}/api/products`);
 }
 
-export async function searchProducts(searchTerm: string) {
+export async function searchProductsOrCategories(searchTerm: string) {
   const url = `${API_URL}/api/products/search?searchTerm=${encodeURIComponent(searchTerm)}`;
-  return fetchData<Array<ProductBasicInfo>>(url, "GET");
+  return fetchData<Array<SearchResult>>(url, "GET");
 }
 
 export async function putProduct(product: any) {
@@ -44,7 +44,7 @@ export async function getCategoryProductsBasicInfo(categoryId: string) {
 export const productService = {
   getProduct,
   getProducts,
-  searchProducts,
+  searchProductsOrCategories,
   putProduct,
   getCategoryProductsBasicInfo
 };

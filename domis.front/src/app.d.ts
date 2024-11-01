@@ -135,6 +135,13 @@ declare global {
     sku: number;
   }
 
+  interface SearchResult {
+    id: number;
+    name: string;
+    sku: number;
+    type: string;
+  }
+
   interface Cart {
     cartId?: number;
     userId: number;

@@ -1,4 +1,5 @@
 ﻿using domis.api.Common;
+using domis.api.DTOs.Common;
 using domis.api.DTOs.Product;
 using domis.api.Models;
 using domis.api.Repositories;
@@ -12,7 +13,7 @@ public interface IProductService
     Task<ProductDetailsDto?> Update(ProductUpdateDto product);
     Task<IEnumerable<ProductBasicInfoDto>> GetProductsBasicInfoByCategory(int categoryId);
     Task<IEnumerable<ProductQuantityTypeDto>> GetAllQuantityTypes();
-    Task<IEnumerable<ProductBasicInfoDto>> SearchProducts(string searchTerm, int? pageNumber, int? pageSize);
+    Task<IEnumerable<SearchResultDto>> SearchProducts(string searchTerm, int? pageNumber, int? pageSize);
 }
 
 public class ProductService(IProductRepository repository, IPriceHelpers priceHelpers) : IProductService
@@ -36,6 +37,11 @@ public class ProductService(IProductRepository repository, IPriceHelpers priceHe
     public async Task<ProductDetailsDto?> Update(ProductUpdateDto product)
         => await repository.Update(product);
 
-    public async Task<IEnumerable<ProductBasicInfoDto>> SearchProducts(string searchTerm, int? pageNumber, int? pageSize)
-        => await repository.SearchProducts(searchTerm.ToLower(), pageNumber, pageSize);
+    public async Task<IEnumerable<SearchResultDto>> SearchProducts(string searchTerm, int? pageNumber, int? pageSize)
+    {
+        pageNumber ??= 1;
+        pageSize ??= 20;
+        
+        return await repository.SearchProducts(searchTerm.ToLower(), pageNumber, pageSize);
+    }
 }

@@ -1,4 +1,5 @@
-﻿using domis.api.DTOs.Product;
+﻿using domis.api.DTOs.Common;
+using domis.api.DTOs.Product;
 using domis.api.Models;
 using domis.api.Services;
 using Microsoft.AspNetCore.Identity;
@@ -73,7 +74,7 @@ public static class ProductEndpoints
         group.MapGet("/search", async (string searchTerm, int? pageNumber, int? pageSize, IProductService productService) =>
         {
             if (searchTerm.Length < 3)
-                return Results.Ok(new List<ProductBasicInfoDto>());
+                return Results.Ok(new List<SearchResultDto>());
 
             var products = await productService.SearchProducts(searchTerm, pageNumber, pageSize);
             return Results.Ok(products);
