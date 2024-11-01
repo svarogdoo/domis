@@ -63,7 +63,21 @@ public static class UserEndpoints
             return success 
                 ? Results.NoContent() 
                 : Results.NotFound();
-        }).RequireAuthorization()
+        })
+        .RequireAuthorization()
         .WithDescription("updates user address with provided info");
+
+        group.MapGet("/roles", async (HttpContext http, IUserService userService) =>
+        {
+            var userId = http.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (userId is null) return Results.Unauthorized();
+
+            var response = await userService.Roles(userId);
+
+            return Results.Ok(response.ToList());
+        })
+        .RequireAuthorization()
+        .WithDescription("Gets roles of a logged in user.");
     }
 }
