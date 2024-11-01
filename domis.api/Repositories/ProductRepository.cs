@@ -12,6 +12,7 @@ using Npgsql;
 using Serilog;
 using System.Data;
 using System.Data.Common;
+using domis.api.DTOs.Common;
 
 namespace domis.api.Repositories;
 
@@ -23,7 +24,7 @@ public interface IProductRepository
     Task<bool> NivelacijaUpdateProductBatch(IEnumerable<NivelacijaRecord> records);
     Task<IEnumerable<ProductBasicInfoDto>> GetProductsBasicInfoByCategory(int categoryId);
     Task<IEnumerable<ProductQuantityTypeDto>> GetAllQuantityTypes();
-    Task<IEnumerable<ProductBasicInfoDto>> SearchProducts(string query, int? pageNumber, int? pageSize);
+    Task<IEnumerable<SearchResultDto>> SearchProducts(string query, int? pageNumber, int? pageSize);
 }
 
 public class ProductRepository(IDbConnection connection, IMapper mapper) : IProductRepository
@@ -55,7 +56,7 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
             var size = await connection.QuerySingleOrDefaultAsync<Size>(ProductQueries.GetProductSizing, new { ProductId = productId });
             var images = (await connection.QueryAsync<ImageGetDto>(ImageQueries.GetProductImages, new { ProductId = productId })).ToList();
             var categoryPaths = (await connection.QueryAsync<string>(CategoryQueries.GetProductCategories, new { ProductId = productId })).ToList();
-
+            
             var productDetail = mapper.Map<ProductDetailsDto>(product);
             
             productDetail.Size = size;
@@ -170,7 +171,7 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
         }
     }
 
-    public async Task<IEnumerable<ProductBasicInfoDto>> SearchProducts(string searchTerm, int? pageNumber, int? pageSize)
+    public async Task<IEnumerable<SearchResultDto>> SearchProducts(string searchTerm, int? pageNumber, int? pageSize)
     {
         pageNumber ??= 1;
         pageSize ??= 10;
@@ -178,13 +179,18 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
         var offset = (pageNumber - 1) * pageSize;
 
         const string query = @"
-            SELECT id AS Id, product_name AS Name, sku AS Sku
+            SELECT id AS Id, product_name AS Name, sku AS Sku, 'Product' AS Type
             FROM domis.product
             WHERE product_name ILIKE @SearchTerm OR CAST(sku AS TEXT) ILIKE @SearchTerm
+            UNION
+            SELECT id AS Id, category_name AS Name, NULL AS Sku, 'Category' AS Type
+            FROM domis.category
+            WHERE category_name ILIKE @SearchTerm
+            ORDER BY Type ASC
             LIMIT @PageSize OFFSET @Offset
         ";
 
-        var products = await connection.QueryAsync<ProductBasicInfoDto>(
+        var products = await connection.QueryAsync<SearchResultDto>(
                 query,
                 new
                 {

@@ -13,7 +13,7 @@
   export let sidebar = false;
 
   let searchTerm: string = "";
-  let searchResults: Array<ProductBasicInfo> = [];
+  let searchResults: Array<SearchResult> = [];
   let cartProducts: Array<CartProduct> | undefined;
   let isDropdownOpen: boolean = false;
   let showCatalogue: boolean = false;
@@ -25,7 +25,7 @@
 
   async function handleSearchInput() {
     if (searchTerm.trim().length >= 3) {
-      searchResults = await productService.searchProducts(searchTerm);
+      searchResults = await productService.searchProductsOrCategories(searchTerm);
     } else {
       searchResults = [];
     }
@@ -46,11 +46,15 @@
     }
   };
 
-  function handleSearchOptionClick(product: ProductBasicInfo) {
+  function handleSearchOptionClick(item: SearchResult) {
     isDropdownOpen = false;
-    searchTerm = product.name;
-    goto(`/proizvod/${product.id}`);
-  }
+    searchTerm = item.name;
+
+    if (item.type === 'Product') {
+      goto(`/proizvod/${item.id}`);
+    } else if (item.type === 'Category') {
+      goto(`/kategorija/${item.id}`);
+    }  }
 
   onMount(() => {
     document.addEventListener("click", handleClickOutside);
@@ -113,14 +117,18 @@
             <ul
               class="absolute top-full left-0 w-full bg-white border border-gray-300 rounded-md mt-1 z-50"
             >
-              {#each searchResults as product}
+              {#each searchResults as item}
                 <li
                   id="search-option"
                   class="px-4 py-2 hover:bg-gray-100 cursor-pointer"
                 >
-                  <button on:click={() => handleSearchOptionClick(product)}
-                    >{product.name} ({product.sku})</button
-                  >
+                  <button on:click={() => handleSearchOptionClick(item)}>
+                    {#if item.type === 'Category'}
+                      <strong>{item.name}</strong>
+                    {:else if item.type === 'Product'}
+                      {item.name} ({item.sku})
+                    {/if}
+                  </button>
                 </li>
               {/each}
             </ul>

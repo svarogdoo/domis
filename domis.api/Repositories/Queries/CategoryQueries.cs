@@ -36,38 +36,37 @@ public static class CategoryQueries
         ORDER BY SortNumber ASC NULLS LAST, Name ASC; --sort by sort number, then by category name
     ";
     
-    public const string GetProductCategories = @"
-            WITH RECURSIVE RecursiveCategoryHierarchy AS (
-                -- Anchor member: Start with categories for the product
-                SELECT
-                    pc.product_id AS ProductId,
-                    c.id AS CategoryId,
-                    c.parent_category_id AS ParentCategoryId,
-                    c.id::text AS Path -- Start with the category ID as the path
-                FROM domis.product_category pc
-                JOIN domis.category c ON pc.category_id = c.id
-                WHERE pc.product_id = @ProductId AND active = true
-
-                UNION ALL
-
-                -- Recursive member: Join to find parent categories
-                SELECT
-                    rch.ProductId, -- Propagate product ID
-                    c.id AS CategoryId,
-                    c.parent_category_id AS ParentCategoryId,
-                    c.id::text || '/' || rch.Path AS Path -- Prepend the current category ID to the existing path
-                FROM domis.category c
-                INNER JOIN RecursiveCategoryHierarchy rch
-                    ON c.id = rch.ParentCategoryId
-                WHERE 
-            )
-
-            -- Select only the path and product ID for top-level categories (where ParentCategoryId is NULL)
+    public static string GetProductCategories = @"
+        WITH RECURSIVE RecursiveCategoryHierarchy AS (
+            -- Anchor member: Start with categories for the product
             SELECT
-                Path
-            FROM RecursiveCategoryHierarchy
-            WHERE ParentCategoryId IS NULL
-            ORDER BY Path;";
+                pc.product_id AS ProductId,
+                c.id AS CategoryId,
+                c.parent_category_id AS ParentCategoryId,
+                c.id::text AS Path -- Start with the category ID as the path
+            FROM domis.product_category pc
+            JOIN domis.category c ON pc.category_id = c.id
+            WHERE pc.product_id = @ProductId AND active = true
+
+            UNION ALL
+
+            -- Recursive member: Join to find parent categories
+            SELECT
+                rch.ProductId, -- Propagate product ID
+                c.id AS CategoryId,
+                c.parent_category_id AS ParentCategoryId,
+                c.id::text || '/' || rch.Path AS Path -- Prepend the current category ID to the existing path
+            FROM domis.category c
+            INNER JOIN RecursiveCategoryHierarchy rch
+                ON c.id = rch.ParentCategoryId
+        )
+
+        -- Select only the path and product ID for top-level categories (where ParentCategoryId is NULL)
+        SELECT
+            Path
+        FROM RecursiveCategoryHierarchy
+        WHERE ParentCategoryId IS NULL
+        ORDER BY Path;";
 
     public const string GetCategoryById = @"
         SELECT id as Id, category_name as Name, category_description as Description 
