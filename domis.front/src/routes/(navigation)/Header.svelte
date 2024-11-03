@@ -1,10 +1,11 @@
 <script lang="ts">
   import { page } from "$app/stores";
   import searchIcon from "$lib/icons/search.svg";
+  import hamburgerIcon from "$lib/icons/hamburger.svg";
   import cartIcon from "$lib/icons/cart.svg";
   import Hamburger from "../../components/Hamburger.svelte";
   import { cart } from "../../stores/cart";
-  import { onDestroy, onMount } from "svelte";
+  import { onMount } from "svelte";
   import UserDropdown from "./UserDropdown.svelte";
   import { productService } from "../../services/product-service";
   import { goto } from "$app/navigation";
@@ -17,15 +18,21 @@
   let cartProducts: Array<CartProduct> | undefined;
   let isDropdownOpen: boolean = false;
   let showCatalogue: boolean = false;
+  let currentUrl = $page.url.pathname;
 
   $: cartProducts = $cart?.items;
+  $: if ($page.url.pathname !== currentUrl) {
+    showCatalogue = false;
+    currentUrl = $page.url.pathname;
+  }
 
   // Function to handle search input and call the product service
   let debounceTimer: number;
 
   async function handleSearchInput() {
     if (searchTerm.trim().length >= 3) {
-      searchResults = await productService.searchProductsOrCategories(searchTerm);
+      searchResults =
+        await productService.searchProductsOrCategories(searchTerm);
     } else {
       searchResults = [];
     }
@@ -50,11 +57,12 @@
     isDropdownOpen = false;
     searchTerm = item.name;
 
-    if (item.type === 'Product') {
+    if (item.type === "Product") {
       goto(`/proizvod/${item.id}`);
-    } else if (item.type === 'Category') {
+    } else if (item.type === "Category") {
       goto(`/kategorija/${item.id}`);
-    }  }
+    }
+  }
 
   onMount(() => {
     document.addEventListener("click", handleClickOutside);
@@ -65,22 +73,6 @@
 </script>
 
 <header class="flex flex-col items-center w-full mb-4 shadow-md">
-  <!-- Top bar -->
-  <div
-    class="hidden lg:flex justify-center w-full bg-black text-xs text-domis-light"
-  >
-    <div class="flex w-full xl:w-4/5 2xl:3/5 py-2 items-center justify-between">
-      <div class="flex gap-x-12">
-        <p>Beograd</p>
-        <p>Kontakt</p>
-      </div>
-      <div class="flex gap-x-12">
-        <p>Usluge</p>
-        <p>Isporuke i preuzimanje</p>
-      </div>
-    </div>
-  </div>
-
   <nav class="flex w-full justify-center xl:w-4/5 2xl:3/5">
     <ul class="flex w-full justify-between items-center px-2 lg:px-0 lg:my-4">
       <div class="flex items-center gap-x-4">
@@ -123,9 +115,9 @@
                   class="px-4 py-2 hover:bg-gray-100 cursor-pointer"
                 >
                   <button on:click={() => handleSearchOptionClick(item)}>
-                    {#if item.type === 'Category'}
+                    {#if item.type === "Category"}
                       <strong>{item.name}</strong>
-                    {:else if item.type === 'Product'}
+                    {:else if item.type === "Product"}
                       {item.name} ({item.sku})
                     {/if}
                   </button>
@@ -159,30 +151,33 @@
   </nav>
 
   <!-- Bottom nav -->
-  <div
-    class="hidden lg:flex w-full xl:w-4/5 2xl:3/5 items-center justify-between my-2 tracking-wide"
-  >
-    <button
-      on:click={() => {
-        showCatalogue = !showCatalogue;
-      }}
-      class="bg-domis-dark text-domis-light rounded-lg px-8 py-3"
-      >Katalog</button
-    >
-    <p>Podovi i obloge</p>
-    <p>Pločice i graniti</p>
-    <p>Kupatila</p>
-    <p>Zid i dekoracije</p>
-    <p>Rasveta</p>
-    <p>Građevinski materijal i alati</p>
-    <p class=" text-domis-primary">Akcija</p>
-  </div>
-
-  {#if showCatalogue}
-    <div class="flex w-full justify-center xl:w-4/5 2xl:3/5 slide-down">
-      <Catalogue />
+  <div class="relative hidden lg:flex flex-col w-full xl:w-4/5 2xl:3/5">
+    <div class="flex w-full items-center justify-between my-2 tracking-wide">
+      <button
+        on:click={() => {
+          showCatalogue = !showCatalogue;
+        }}
+        class="bg-domis-primary text-domis-light rounded-lg px-6 py-3 flex gap-x-2 items-center"
+      >
+        <img src={hamburgerIcon} alt="icon" class="h-5 w-5" />
+        <p>Katalog</p></button
+      >
+      <a href="/kategorija/2">Pločice i graniti</a>
+      <a href="/kategorija/1">Podovi i obloge</a>
+      <a href="/kategorija/105">Kupatila</a>
+      <a href="/kategorija/3">Zid i dekoracije</a>
+      <a href="/kategorija/688">Rasveta</a>
+      <a href="/kategorija/4">Građevinski materijal i alati</a>
+      <a href="/kategorija/907" class="font-semibold text-domis-primary"
+        >Akcija</a
+      >
     </div>
-  {/if}
+    {#if showCatalogue}
+      <div class="flex w-full">
+        <Catalogue />
+      </div>
+    {/if}
+  </div>
 </header>
 
 <style>

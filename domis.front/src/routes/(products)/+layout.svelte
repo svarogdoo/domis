@@ -13,7 +13,7 @@
     <div class="product-sidebar hidden lg:flex">
       <Sidebar />
     </div>
-    <div class="products lg:pt-10">
+    <div class="products lg:pt-2">
       <slot />
     </div>
   </div>
@@ -32,7 +32,7 @@
   }
 
   .product-sidebar {
-    width: 17%;
+    width: 20%;
   }
 
   .products {
