@@ -9,7 +9,7 @@
 </script>
 
 <div class="product-search">
-  <div class="category gap-x-12 pt-4">
+  <div class="category pt-4">
     <div class="product-sidebar hidden lg:flex">
       <Sidebar />
     </div>

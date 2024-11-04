@@ -21,6 +21,7 @@
       if (selectedCategory?.subcategories)
         categoriesList = flattenCategories(selectedCategory.subcategories);
       else categoriesList = [];
+      console.info(categoriesList);
     });
   }
 
@@ -73,7 +74,9 @@
       {#each categoriesList as category}
         <a
           href="/kategorija/{category.id}"
-          class="text-md font-light ml-{category.level * 3}">{category.name}</a
+          class="text-md {category.level === 1
+            ? 'font-normal'
+            : 'font-light'} ml-{category.level * 2}">{category.name}</a
         >
       {/each}
     </ul>
