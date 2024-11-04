@@ -2,8 +2,6 @@
   import { page } from "$app/stores";
   import { categories } from "../../stores/categories";
 
-  export let hamburgerStyle = false;
-
   interface UnwrappedCategory {
     name: string;
     level: number;
@@ -77,17 +75,6 @@
           href="/kategorija/{category.id}"
           class="text-md font-light ml-{category.level * 3}">{category.name}</a
         >
-        <!-- <li
-          class="w-full flex flex-col relative border-b border-gray-400 my-1 py-1 tracking-wider font-light text-wrap pr-4"
-        >
-          <a
-            href="/kategorija/{category.id}"
-            class="hover:scale-105 transition ease-in-out">{category.name}</a
-          >
-          {#if category.subcategories?.length && category.subcategories.length > 0}
-            <SidebarCategory {category} isHamburger={hamburgerStyle} />
-          {/if}
-        </li> -->
       {/each}
     </ul>
   {/if}
