@@ -25,6 +25,9 @@ public interface IProductRepository
     Task<IEnumerable<ProductBasicInfoDto>> GetProductsBasicInfoByCategory(int categoryId);
     Task<IEnumerable<ProductQuantityTypeDto>> GetAllQuantityTypes();
     Task<IEnumerable<SearchResultDto>> SearchProducts(string query, int? pageNumber, int? pageSize);
+    Task<bool> PutProductOnSale(ProductSaleRequest request);
+    Task<bool> AssignProductToCategory(AssignProductToCategoryRequest request);
+    Task<bool> ProductExists(int productId);
 }
 
 public class ProductRepository(IDbConnection connection, IMapper mapper) : IProductRepository
@@ -57,15 +60,33 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
             var images = (await connection.QueryAsync<ImageGetDto>(ImageQueries.GetProductImages, new { ProductId = productId })).ToList();
             var categoryPaths = (await connection.QueryAsync<string>(CategoryQueries.GetProductCategories, new { ProductId = productId })).ToList();
             
+            // Check for an active sale
+            var sale = await connection.QuerySingleOrDefaultAsync<Sale>(ProductQueries.GetActiveSale, new 
+            { 
+                ProductId = productId, 
+                CurrentDate = DateTime.UtcNow 
+            });
+            
             var productDetail = mapper.Map<ProductDetailsDto>(product);
             
             productDetail.Size = size;
             productDetail.Images = [.. images];
             productDetail.CategoryPaths = [.. categoryPaths];
+            
             if (product.Price.HasValue)
             {
-                var discountedPrice = PricingHelper.CalculateDiscount(product.Price.Value, discount);
-                productDetail.Price = CalculatePriceByPackage(discountedPrice, size);
+                //if there is a sale on the product
+                if (sale is { SalePrice: not null })
+                {
+                    productDetail.IsOnSale = true;
+                    productDetail.Price = CalculatePackagingPrices(sale.SalePrice.Value, size);
+                }
+                else //if there is no sale
+                {
+                    var discountedPrice = PricingHelper.CalculateDiscount(product.Price.Value, discount);
+                    productDetail.Price = CalculatePackagingPrices(discountedPrice, size);
+                    productDetail.IsOnSale = false;
+                }
             }
             else
             {
@@ -202,8 +223,71 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
         return products;
     }
 
+    public async Task<bool> PutProductOnSale(ProductSaleRequest request)
+    {
+        try
+        {
+            var exists = await ProductExists(request.ProductId);
+
+            if (!exists) return false;
+            
+            decimal salePrice;
+            
+            if (request is { SalePrice: not null, SalePercentage: not null } or { SalePercentage: null, SalePrice: null})
+            {
+                // Both SalePrice and SalePercentage provided
+                return false;
+            }
+            
+            if (request.SalePrice.HasValue)
+            {
+                salePrice = request.SalePrice.Value;
+            }
+            else
+            {
+                if (request.SalePercentage is < 0 or > 100)
+                {
+                    return false; 
+                }
+                var originalPrice = await connection.ExecuteScalarAsync<decimal>(ProductQueries.GetProductPrice, new { ProductId = request.ProductId });
+                salePrice = originalPrice - (originalPrice * request.SalePercentage!.Value / 100);
+            }
+            
+            var saleRecord = new
+            {
+                ProductId = request.ProductId,
+                SalePrice = salePrice,
+                StartDate = request.StartDate,
+                EndDate = request.EndDate,
+                IsActive = true
+            };
+            
+            var affectedRows = await connection.ExecuteAsync(ProductQueries.InsertSale, saleRecord);
+            
+            return affectedRows > 0;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "An error occurred while putting the product on sale for ProductId {ProductId}", request.ProductId);
+            throw;
+        }
+    }
+
+    public async Task<bool> AssignProductToCategory(AssignProductToCategoryRequest request)
+    {
+        const string query = @"
+            INSERT INTO domis.product_category (product_id, category_id)
+            VALUES (@ProductId, @CategoryId)
+            ON CONFLICT (product_id) 
+            DO UPDATE SET category_id = @CategoryId;
+        ";
+
+        var affectedRows = await connection.ExecuteAsync(query, new { request.ProductId, request.CategoryId });
+        return affectedRows > 0;
+    }
+
     #region ExtensionsMethods
-    private static Price CalculatePriceByPackage(decimal unitPrice, Size? productSize)
+    private static Price CalculatePackagingPrices(decimal unitPrice, Size? productSize)
     {
         decimal? pakPrice = null;
         decimal? palPrice = null;
@@ -225,5 +309,9 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
             Pal = palPrice
         };
     }
+
+    public async Task<bool> ProductExists(int productId) 
+        => await connection.ExecuteScalarAsync<bool>(ProductQueries.CheckIfProductExists, new { ProductId = productId });
+
     #endregion ExtensionMethods
 }

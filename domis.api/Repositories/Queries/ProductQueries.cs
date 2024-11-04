@@ -31,13 +31,23 @@ public static class ProductQueries
 
     public const string GetAll = @"
                     SELECT
-                        id AS Id,       
-                        product_name AS Name,
-                        sku AS Sku,
-                        price AS Price,
-                        stock AS Stock,
-                        product_description AS Description
-                    FROM domis.product"
+                        p.id AS Id,       
+                        p.product_name AS Name,
+                        p.sku AS Sku,
+                        p.price AS Price,
+                        p.stock AS Stock,
+                        p.product_description AS Description,
+                        s.sale_price AS SalePrice,
+                        s.start_date AS SaleStartDate,
+                        s.end_date AS SaleEndDate,
+                        CASE 
+                            WHEN s.id IS NOT NULL AND s.is_active = TRUE AND s.start_date <= CURRENT_TIMESTAMP AND s.end_date >= CURRENT_TIMESTAMP 
+                            THEN TRUE 
+                            ELSE FALSE 
+                        END AS IsOnSale
+                    FROM domis.product p
+                    LEFT JOIN
+                        domis.sales s ON p.id = s.product_id"
     ;
 
     public const string GetAllByCategory = @"
@@ -190,4 +200,24 @@ public static class ProductQueries
         FROM domis.product
         WHERE id = @ProductId;
     ";
+    
+    public const string InsertSale = @"
+        INSERT INTO domis.sales (product_id, sale_price, start_date, end_date, is_active) 
+        VALUES (@ProductId, @SalePrice, @StartDate, @EndDate, @IsActive)
+    ";
+    
+    public const string GetActiveSale = @"
+        SELECT 
+            id AS Id,
+            product_id AS ProductId,
+            sale_price AS SalePrice,
+            start_date AS StartDate,
+            end_date AS EndDate,
+            is_active AS IsActive
+        FROM domis.sales
+        WHERE product_id = @ProductId 
+          AND is_active = TRUE
+          --AND start_date <= @CurrentDate 
+          --AND end_date >= @CurrentDate
+        LIMIT 1";
 }

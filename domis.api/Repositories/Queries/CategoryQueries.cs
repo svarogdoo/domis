@@ -72,4 +72,9 @@ public static class CategoryQueries
         SELECT id as Id, category_name as Name, category_description as Description 
         FROM domis.category
         WHERE id = @CategoryId;";
+
+    public const string CheckIfCategoryExists = @"
+    SELECT EXISTS 
+    (SELECT 1 FROM domis.product WHERE id = @ProductId);
+    ";
 }

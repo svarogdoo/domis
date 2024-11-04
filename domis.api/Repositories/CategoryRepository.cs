@@ -16,6 +16,7 @@ public interface ICategoryRepository
     //probably no need for this one
     Task<Category?> GetById(int id);
     Task<CategoryWithProductsDto?> GetCategoryProducts(int categoryId, PageOptions options, decimal discount);
+    Task<bool> CategoryExists(int categoryId);
 }
 
 public class CategoryRepository(IDbConnection connection) : ICategoryRepository
@@ -96,4 +97,7 @@ public class CategoryRepository(IDbConnection connection) : ICategoryRepository
             Log.Error(ex, "An error occurred while getting products by category"); throw;
         }
     }
+
+    public async Task<bool> CategoryExists(int categoryId)
+        => await connection.ExecuteScalarAsync<bool>(CategoryQueries.CheckIfCategoryExists, new { CategoryId = categoryId });
 }
