@@ -220,4 +220,42 @@ public static class ProductQueries
           --AND start_date <= @CurrentDate 
           --AND end_date >= @CurrentDate
         LIMIT 1";
+    
+    public static string GetProductCategoriesPaths = @"
+        WITH RECURSIVE RecursiveCategoryHierarchy AS (
+            -- Anchor member: Start with categories for the product
+            SELECT
+                pc.product_id AS ProductId,
+                c.id AS CategoryId,
+                c.parent_category_id AS ParentCategoryId,
+                c.category_name AS CategoryName,
+                ROW_NUMBER() OVER (ORDER BY c.id) AS PathId, -- Unique ID per distinct path
+                1 AS Level -- Starting level
+            FROM domis.product_category pc
+            JOIN domis.category c ON pc.category_id = c.id
+            WHERE pc.product_id = @ProductId AND active = true
+
+            UNION ALL
+
+            -- Recursive member: Join to find parent categories
+            SELECT
+                rch.ProductId,
+                c.id AS CategoryId,
+                c.parent_category_id AS ParentCategoryId,
+                c.category_name AS CategoryName,
+                rch.PathId, -- Propagate the PathId to keep categories within the same path
+                rch.Level + 1 AS Level -- Increment level for each parent
+            FROM domis.category c
+            INNER JOIN RecursiveCategoryHierarchy rch
+                ON c.id = rch.ParentCategoryId
+        )
+
+        -- Select each category in the hierarchy with its PathId, ordered by level
+        SELECT
+            PathId,
+            CategoryId AS Id,
+            CategoryName AS Name,
+            Level
+        FROM RecursiveCategoryHierarchy
+        ORDER BY PathId, Level DESC;";
 }

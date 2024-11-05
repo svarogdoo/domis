@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Collections;
+using AutoMapper;
 using Dapper;
 using domis.api.Common;
 using domis.api.DTOs.Image;
@@ -12,7 +13,9 @@ using Npgsql;
 using Serilog;
 using System.Data;
 using System.Data.Common;
+using domis.api.DTOs.Category;
 using domis.api.DTOs.Common;
+using ProductBasicInfoDto = domis.api.DTOs.Product.ProductBasicInfoDto;
 
 namespace domis.api.Repositories;
 
@@ -58,7 +61,17 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
 
             var size = await connection.QuerySingleOrDefaultAsync<Size>(ProductQueries.GetProductSizing, new { ProductId = productId });
             var images = (await connection.QueryAsync<ImageGetDto>(ImageQueries.GetProductImages, new { ProductId = productId })).ToList();
-            var categoryPaths = (await connection.QueryAsync<string>(CategoryQueries.GetProductCategories, new { ProductId = productId })).ToList();
+            
+            var categoryPathResults = await connection.QueryAsync<ProdCategoryPathRow>(ProductQueries.GetProductCategoriesPaths, new { ProductId = productId });
+            var categoryPaths = categoryPathResults
+                .Where(row => row.PathId.HasValue && row.Id.HasValue) // Ensure PathId and Id are not null
+                .GroupBy(row => row.PathId.Value)
+                .Select(group => group.Select(row => new CategoryPath
+                {
+                    Id = row.Id.Value,
+                    Name = row.Name
+                }).ToList())
+                .ToList();
             
             // Check for an active sale
             var sale = await connection.QuerySingleOrDefaultAsync<Sale>(ProductQueries.GetActiveSale, new 
@@ -71,7 +84,7 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
             
             productDetail.Size = size;
             productDetail.Images = [.. images];
-            productDetail.CategoryPaths = [.. categoryPaths];
+            productDetail.CategoryPaths = categoryPaths;
             
             if (product.Price.HasValue)
             {

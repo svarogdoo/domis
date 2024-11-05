@@ -71,9 +71,11 @@ public class CategoryRepository(IDbConnection connection) : ICategoryRepository
 
             var categoryParams = new { CategoryId = categoryId };
             var category = await connection.QuerySingleOrDefaultAsync<CategoryBasicInfoDto>(CategoryQueries.GetCategoryById, categoryParams);
-
+            
             if (category is null)
                 return null;
+            
+            category.Paths = await GetCategoryPath(categoryId);
             
             var productParams = new { CategoryId = categoryId, Offset = offset, Limit = options.PageSize };
             var products = await connection.QueryAsync<ProductPreviewDto>(ProductQueries.GetAllByCategoryWithPagination, productParams);
@@ -100,4 +102,7 @@ public class CategoryRepository(IDbConnection connection) : ICategoryRepository
 
     public async Task<bool> CategoryExists(int categoryId)
         => await connection.ExecuteScalarAsync<bool>(CategoryQueries.CheckIfCategoryExists, new { CategoryId = categoryId });
+
+    private async Task<IEnumerable<CategoryPath>> GetCategoryPath(int categoryId) 
+        => await connection.QueryAsync<CategoryPath>(CategoryQueries.GetCategoryPath, new { CategoryId = categoryId });
 }
