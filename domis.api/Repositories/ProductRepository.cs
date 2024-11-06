@@ -28,7 +28,7 @@ public interface IProductRepository
     Task<IEnumerable<ProductBasicInfoDto>> GetProductsBasicInfoByCategory(int categoryId);
     Task<IEnumerable<ProductQuantityTypeDto>> GetAllQuantityTypes();
     Task<IEnumerable<SearchResultDto>> SearchProducts(string query, int? pageNumber, int? pageSize);
-    Task<bool> PutProductOnSale(ProductSaleRequest request);
+    Task<bool> PutProductsOnSale(ProductSaleRequest request);
     Task<bool> AssignProductToCategory(AssignProductToCategoryRequest request);
     Task<bool> ProductExists(int productId);
 }
@@ -74,7 +74,7 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
                 .ToList();
             
             // Check for an active sale
-            var sale = await connection.QuerySingleOrDefaultAsync<Sale>(ProductQueries.GetActiveSale, new 
+            var sale = await connection.QuerySingleOrDefaultAsync<SaleEntity>(ProductQueries.GetActiveSale, new 
             { 
                 ProductId = productId, 
                 CurrentDate = DateTime.UtcNow 
@@ -236,52 +236,50 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
         return products;
     }
 
-    public async Task<bool> PutProductOnSale(ProductSaleRequest request)
+    public async Task<bool> PutProductsOnSale(ProductSaleRequest request)
     {
         try
         {
-            var exists = await ProductExists(request.ProductId);
+            foreach (var productId in  request.ProductIds)
+            {
+                var exists = await ProductExists(productId);
+                if (!exists) continue;
 
-            if (!exists) return false;
+                decimal salePrice;
             
-            decimal salePrice;
-            
-            if (request is { SalePrice: not null, SalePercentage: not null } or { SalePercentage: null, SalePrice: null})
-            {
-                // Both SalePrice and SalePercentage provided
-                return false;
-            }
-            
-            if (request.SalePrice.HasValue)
-            {
-                salePrice = request.SalePrice.Value;
-            }
-            else
-            {
-                if (request.SalePercentage is < 0 or > 100)
+                if (request.SalePrice.HasValue)
                 {
-                    return false; 
+                    salePrice = request.SalePrice.Value;
                 }
-                var originalPrice = await connection.ExecuteScalarAsync<decimal>(ProductQueries.GetProductPrice, new { ProductId = request.ProductId });
-                salePrice = originalPrice - (originalPrice * request.SalePercentage!.Value / 100);
+                else
+                {
+                    var originalPrice = await connection.ExecuteScalarAsync<decimal>(ProductQueries.GetProductPrice, new { ProductId = productId });
+                    salePrice = originalPrice - (originalPrice * request.SalePercentage!.Value / 100);
+                }
+                
+                var saleRecord = new
+                {
+                    ProductId = productId,
+                    SalePrice = salePrice,
+                    StartDate = request.StartDate,
+                    EndDate = request.EndDate,
+                    IsActive = true
+                };
+                
+                // Insert the sale record into the database for each product
+                var affectedRows = await connection.ExecuteAsync(ProductQueries.InsertSale, saleRecord);
+
+                if (affectedRows == 0)
+                {
+                    Log.Information("Product with id {ProductId} wasn't put on sale.", productId);
+                }
             }
             
-            var saleRecord = new
-            {
-                ProductId = request.ProductId,
-                SalePrice = salePrice,
-                StartDate = request.StartDate,
-                EndDate = request.EndDate,
-                IsActive = true
-            };
-            
-            var affectedRows = await connection.ExecuteAsync(ProductQueries.InsertSale, saleRecord);
-            
-            return affectedRows > 0;
+            return true;
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "An error occurred while putting the product on sale for ProductId {ProductId}", request.ProductId);
+            Log.Error(ex, "An error occurred while putting the products on sale for request {Request}", request);
             throw;
         }
     }

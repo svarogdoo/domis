@@ -7,3 +7,9 @@ public class ProductBasicInfoDto
     public int? Sku { get; set; }
     public string? Name { get; set; }
 }
+
+public class ProductPriceDto
+{
+    public required int Id { get; set; }
+    public decimal? Price { get; set; }
+}

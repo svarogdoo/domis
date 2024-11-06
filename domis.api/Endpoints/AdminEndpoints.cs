@@ -98,14 +98,35 @@ public static class AdminEndpoints
         // .RequireAuthorization("Administrator");
 
         group.MapPost("/product/sale", async ([FromBody] ProductSaleRequest request, IProductService productService) =>
+        {
+            try
             {
-                var success = await productService.PutProductOnSale(request);
+                var success = await productService.PutProductsOnSale(request);
                 return success
                     ? Results.Ok("Product put on sale successfully.")
-                    : Results.BadRequest(
-                        "Failed to put product on sale. Ensure that either sale price or percentage is provided.");
-            })
-            .WithDescription("Put a product on sale.");
+                    : Results.BadRequest();
+            }
+            catch (Exception ex)
+            {
+                return Results.BadRequest(ex.Message);
+            }
+        })
+        .WithDescription("Put a product on sale.");
+        // .RequireAuthorization("Administrator");
+        
+        group.MapPost("/category/sale", async ([FromBody] CategorySaleRequest request, ICategoryService categoryService) =>
+        {
+            try
+            {
+                var result = await categoryService.PutCategoryOnSale(request);
+                return Results.Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return Results.BadRequest(ex.Message);
+            }
+        })
+        .WithDescription("Put products within category on sale. If some products are already on sale separately, they will not be put on sale and will be returned for admin to decide what to do.");
         // .RequireAuthorization("Administrator");
 
         group.MapPost("/product/category", async ([FromBody] AssignProductToCategoryRequest request, IProductService productService) =>

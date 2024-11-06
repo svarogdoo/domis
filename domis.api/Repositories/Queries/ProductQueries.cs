@@ -79,6 +79,34 @@ public static class ProductQueries
         FROM ActiveProductsInCategory
         ORDER BY Name; -- Ensure you have a column to order by
     ";
+    
+    public const string GetProductsWithPricesByCategory = @"
+        WITH RECURSIVE CategoryHierarchy AS (
+            -- Anchor member: Start with the given category
+            SELECT id
+            FROM domis.category
+            WHERE id = @CategoryId
+
+            UNION ALL
+
+            -- Recursive member: Join to get all subcategories
+            SELECT c.id
+            FROM domis.category c
+            INNER JOIN CategoryHierarchy ch ON c.parent_category_id = ch.id
+        ),
+        ActiveProductsInCategory AS (
+            -- Select products in the specified category and its subcategories
+            SELECT
+                p.Id AS Id,
+                p.price AS Price
+            FROM domis.product p
+            INNER JOIN domis.product_category pc ON p.id = pc.product_id
+            INNER JOIN CategoryHierarchy ch ON pc.category_id = ch.id
+            WHERE p.active = true -- filter to include only active products
+        )
+        SELECT Id, Price
+        FROM ActiveProductsInCategory
+    ";
 
 
     public const string GetAllByCategoryWithPagination = @"

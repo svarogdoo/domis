@@ -14,7 +14,7 @@ public interface IProductService
     Task<IEnumerable<ProductBasicInfoDto>> GetProductsBasicInfoByCategory(int categoryId);
     Task<IEnumerable<ProductQuantityTypeDto>> GetAllQuantityTypes();
     Task<IEnumerable<SearchResultDto>> SearchProducts(string searchTerm, int? pageNumber, int? pageSize);
-    Task<bool> PutProductOnSale(ProductSaleRequest request);
+    Task<bool> PutProductsOnSale(ProductSaleRequest request);
     Task<bool> AssignProductToCategory(AssignProductToCategoryRequest request);
 }
 
@@ -47,8 +47,13 @@ public class ProductService(IProductRepository repository, ICategoryRepository c
         return await repository.SearchProducts(searchTerm.ToLower(), pageNumber, pageSize);
     }
 
-    public async Task<bool> PutProductOnSale(ProductSaleRequest request) 
-        => await repository.PutProductOnSale(request);
+    public async Task<bool> PutProductsOnSale(ProductSaleRequest request)
+    {
+        if (request is { SalePrice: not null, SalePercentage: not null } or { SalePercentage: null, SalePrice: null} || request.SalePercentage is < 0 or > 100)
+            throw new ArgumentException("Invalid sale percentage or price request.");
+        
+        return await repository.PutProductsOnSale(request);
+    }
 
     public async Task<bool> AssignProductToCategory(AssignProductToCategoryRequest request)
     {
