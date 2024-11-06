@@ -13,4 +13,10 @@ public class ProductPreviewDto
     public string? FeaturedImageUrl { get; set; }
     public string? Description { get; set; }
     public ProductQuantityType? QuantityType{ get; set; }
+    
+    // New properties for sale information
+    public bool IsOnSale { get; set; }
+    public decimal? SalePrice { get; set; }
+    public DateTime? SaleStartDate { get; set; }
+    public DateTime? SaleEndDate { get; set; }
 }

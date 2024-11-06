@@ -14,9 +14,11 @@ public interface IProductService
     Task<IEnumerable<ProductBasicInfoDto>> GetProductsBasicInfoByCategory(int categoryId);
     Task<IEnumerable<ProductQuantityTypeDto>> GetAllQuantityTypes();
     Task<IEnumerable<SearchResultDto>> SearchProducts(string searchTerm, int? pageNumber, int? pageSize);
+    Task<bool> PutProductsOnSale(ProductSaleRequest request);
+    Task<bool> AssignProductToCategory(AssignProductToCategoryRequest request);
 }
 
-public class ProductService(IProductRepository repository, IPriceHelpers priceHelpers) : IProductService
+public class ProductService(IProductRepository repository, ICategoryRepository categoryRepo, IPriceHelpers priceHelpers) : IProductService
 {
     public async Task<IEnumerable<ProductPreviewDto>> GetAll()
         => await repository.GetAll();
@@ -43,5 +45,24 @@ public class ProductService(IProductRepository repository, IPriceHelpers priceHe
         pageSize ??= 20;
         
         return await repository.SearchProducts(searchTerm.ToLower(), pageNumber, pageSize);
+    }
+
+    public async Task<bool> PutProductsOnSale(ProductSaleRequest request)
+    {
+        if (request is { SalePrice: not null, SalePercentage: not null } or { SalePercentage: null, SalePrice: null} || request.SalePercentage is < 0 or > 100)
+            throw new ArgumentException("Invalid sale percentage or price request.");
+        
+        return await repository.PutProductsOnSale(request);
+    }
+
+    public async Task<bool> AssignProductToCategory(AssignProductToCategoryRequest request)
+    {
+        var productExists = await repository.ProductExists(request.ProductId);
+        if (!productExists) throw new ArgumentException("Product does not exist.");
+        
+        var categoryExists = await categoryRepo.CategoryExists(request.CategoryId);
+        if (!categoryExists) throw new ArgumentException("Category does not exist.");
+        
+        return await repository.AssignProductToCategory(request);
     }
 }

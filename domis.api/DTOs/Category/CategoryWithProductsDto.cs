@@ -13,4 +13,11 @@ public class CategoryBasicInfoDto
     public int? Id { get; set; }
     public string? Name { get; set; }
     public string? Description { get; set; }
+    public IEnumerable<CategoryPath>? Paths { get; set; } //NEW
+}
+
+public class CategoryPath //NEW
+{
+    public int? Id { get; set; }
+    public string? Name { get; set; }
 }
