@@ -10,10 +10,13 @@ public interface IUserRepository
     Task<bool> UpdateUserProfileAsync(string id, ProfileUpdateRequest updated);
     Task<bool> UpdateUserAddressAsync(string id, string address);
     Task<IEnumerable<string>> GetUserRolesAsync(string userId);
+    Task<string?> GetUserRoleAsync(string userId);
 }
 
 public class UserRepository(UserManager<UserEntity> userManager) : IUserRepository
 {
+    private readonly List<string> _rolePriorities = ["VP4", "VP3", "VP2", "VP1", "Admin", "User"];
+    
     public async Task<IUserProfileDto?> GetUserByIdAsync(string id)
     {
         var idUser = await userManager.FindByIdAsync(id);
@@ -61,6 +64,18 @@ public class UserRepository(UserManager<UserEntity> userManager) : IUserReposito
             return [];
 
         return await userManager.GetRolesAsync(idUser);    
+    }
+
+    public async Task<string?> GetUserRoleAsync(string userId)
+    {
+        var idUser = await userManager.FindByIdAsync(userId);
+
+        if (idUser?.Email is null)
+            return null;
+
+        var roles =  await userManager.GetRolesAsync(idUser);
+
+        return _rolePriorities.FirstOrDefault(r => roles.Contains(r));
     }
 
     public async Task<bool> UpdateUserProfileAsync(string id, ProfileUpdateRequest updated)

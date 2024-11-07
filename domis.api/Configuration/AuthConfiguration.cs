@@ -34,7 +34,13 @@ public static class AuthConfiguration
             options.BearerTokenExpiration = TimeSpan.FromHours(12);
         });
      
-        services.AddAuthorization();
+        services.AddAuthorizationBuilder()
+             .AddPolicy("Admin", policy => policy.RequireRole("Admin"))
+             .AddPolicy("VP1", policy => policy.RequireRole("VP1"))
+             .AddPolicy("VP2", policy => policy.RequireRole("VP2"))
+             .AddPolicy("VP3", policy => policy.RequireRole("VP3"))
+             .AddPolicy("VP4", policy => policy.RequireRole("VP4"))
+             .AddPolicy("User", policy => policy.RequireRole("User"));
 
         services.AddSwaggerGen(c =>
         {

@@ -78,7 +78,7 @@ public static class OrderEndpoints
 
             return Results.Ok(new UpdateOrderResponse(response));
         }).WithDescription("Update order status(1-New, 2-In Progress, 3-Sent, 4-Completed, 5-Canceled)");
-        //.RequireAuthorization("Administrator");
+        //.RequireAuthorization("Admin");
 
         group.MapGet("/{id:int}", async ([FromRoute] int id, IOrderService orderService) =>
         {
