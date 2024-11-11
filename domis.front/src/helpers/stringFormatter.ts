@@ -1,3 +1,5 @@
+import { userStore } from "../stores/user";
+
 export function getPaketString(value: number) {
   if (1 === value % 10 && Math.floor(value / 10) !== 1) return "paket";
   else return "paketa";
@@ -17,4 +19,9 @@ export function stringDateToString(dateString: string): string {
   const year = date.getFullYear();
 
   return `${day}.${month}.${year}.`;
+}
+
+export function getCurrencyString(): string {
+  if (userStore.isUserVP()) return "EUR";
+  return "RSD";
 }

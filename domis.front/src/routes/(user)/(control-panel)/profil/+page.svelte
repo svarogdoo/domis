@@ -1,7 +1,7 @@
 <script lang="ts">
   import { userStore } from "../../../../stores/user";
   import { onMount } from "svelte";
-  import { requireAuth } from "../../../../utils/AuthGuard";
+  import { requireAuth } from "../../../../utils/authGuard";
   import InputString from "../../../../components/InputString.svelte";
   import { userService } from "../../../../services/user-service";
 

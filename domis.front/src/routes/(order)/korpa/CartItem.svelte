@@ -4,6 +4,7 @@
   import { formatPrice } from "../../../helpers/numberFormatter";
   import { cart } from "../../../stores/cart";
   import { handleImageError } from "../../../helpers/imageFallback";
+  import { getCurrencyString } from "../../../helpers/stringFormatter";
 
   export let item: CartProduct;
 
@@ -49,7 +50,8 @@
     <p class="text-wrap pr-4">{item.productDetails.name}</p>
   </td>
   <td class="w-44 text-center"
-    >{item.cartItemPrice} <span class="font-light text-sm">RSD</span></td
+    >{item.cartItemPrice}
+    <span class="font-light text-sm">{getCurrencyString()}</span></td
   >
   <td class="w-36">
     <div class="flex justify-center items-center gap-x-2">
@@ -69,7 +71,7 @@
   </td>
   <td class="w-44 text-center"
     >{formatPrice(item.cartItemPrice * item.quantity)}
-    <span class="font-light text-sm">RSD</span></td
+    <span class="font-light text-sm">{getCurrencyString()}</span></td
   >
   <td class="w-12">
     <button on:click={removeItemFromCart}>

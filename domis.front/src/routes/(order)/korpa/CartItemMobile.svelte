@@ -3,6 +3,7 @@
   import { formatPrice } from "../../../helpers/numberFormatter";
   import { cart } from "../../../stores/cart";
   import { handleImageError } from "../../../helpers/imageFallback";
+  import { getCurrencyString } from "../../../helpers/stringFormatter";
 
   export let item: CartProduct;
 
@@ -50,7 +51,7 @@
           <p>
             <span class="font-light text-sm">Cena: </span>
             {item.productDetails.price}
-            <span class="font-light text-sm">RSD</span>
+            <span class="font-light text-sm">{getCurrencyString()}</span>
           </p>
           <div class="flex items-center gap-x-2">
             <input
@@ -70,7 +71,7 @@
         <p class="mt-3">
           <span class="font-light text-sm">Ukupna cena: </span>
           {formatPrice(item.cartItemPrice)}
-          <span class="font-light text-sm">RSD</span>
+          <span class="font-light text-sm">{getCurrencyString()}</span>
         </p>
       </div>
     </div>

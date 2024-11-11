@@ -8,6 +8,7 @@
   } from "../../../services/order-service";
   import { cart } from "../../../stores/cart";
   import Popup from "../../../components/Popup.svelte";
+  import { getCurrencyString } from "../../../helpers/stringFormatter";
 
   export let onClick: () => CheckoutFormData | null;
 
@@ -77,7 +78,7 @@
         </p>
         <p class="text-end">
           {formatPrice(item.cartItemPrice)}
-          <span class="font-light text-md">RSD</span>
+          <span class="font-light text-md">{getCurrencyString()}</span>
         </p>
         <span
           class="absolute left-1/2 transform -translate-x-1/2 bottom-full mb-1 bg-white border border-gray-300 rounded text-xs p-2 text-domis-dark opacity-0 transition-opacity duration-200 ease-in-out group-hover:opacity-100"
@@ -91,14 +92,16 @@
   <div class="flex justify-between">
     <p>Ukupno</p>
     <p>
-      {formatPrice(totalCartPrice)} <span class="font-light text-md">RSD</span>
+      {formatPrice(totalCartPrice)}
+      <span class="font-light text-md">{getCurrencyString()}</span>
     </p>
   </div>
   <div class="h-0.5 w-full bg-gray-400"></div>
   <div class="flex justify-between text-lg">
     <p class="font-normal">Ukupno</p>
     <p>
-      {formatPrice(totalCartPrice)} <span class="font-light text-md">RSD</span>
+      {formatPrice(totalCartPrice)}
+      <span class="font-light text-md">{getCurrencyString()}</span>
     </p>
   </div>
   <div class="h-0.5 w-full bg-gray-400"></div>

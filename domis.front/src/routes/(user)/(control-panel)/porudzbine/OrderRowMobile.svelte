@@ -7,7 +7,10 @@
   import { formatPrice } from "../../../../helpers/numberFormatter";
   import OrderItemPopup from "./OrderItemPopup.svelte";
   import eyeIcon from "$lib/icons/eye.svg";
-  import { stringDateToString as formatDateStringToString } from "../../../../helpers/stringFormatter";
+  import {
+    stringDateToString as formatDateStringToString,
+    getCurrencyString,
+  } from "../../../../helpers/stringFormatter";
 
   export let order: UserOrder;
   let showOrderItems = false;
@@ -32,7 +35,7 @@
       <p>{order.address}</p>
       <p>
         {formatPrice(order.paymentAmount)}
-        <span class="font-light text-sm">RSD</span>
+        <span class="font-light text-sm">{getCurrencyString()}</span>
       </p>
       <div class="flex items-center justify-center gap-x-2">
         <p>Artikli:</p>

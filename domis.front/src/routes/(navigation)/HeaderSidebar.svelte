@@ -46,7 +46,7 @@
 </script>
 
 <aside
-  class="fixed overflow-y-scroll w-full h-full bg-white border-r-2 pt-16 shadow-lg z-10 lg:hidden"
+  class="fixed overflow-y-scroll w-full h-svh bg-white border-r-2 pt-16 shadow-lg z-10 lg:hidden"
   class:open
 >
   <!-- Top level categories -->

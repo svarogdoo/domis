@@ -3,6 +3,7 @@ import { userService } from "../services/user-service";
 import { setAuthToken } from "../helpers/fetch";
 import { cart } from "./cart";
 import { goto } from "$app/navigation";
+import { USER_ROLES } from "../constants";
 
 const createUserStore = () => {
   const userInitialState = {
@@ -10,19 +11,22 @@ const createUserStore = () => {
     user: null,
     token: null,
     refreshToken: null,
+    userRole: "test",
   };
   const { subscribe, set, update } = writable<UserState>(userInitialState);
 
   const setUser = (
     user: UserProfileResponse,
     token: string,
-    refreshToken: string
+    refreshToken: string,
+    userRole: string
   ) => {
     const userState: UserState = {
       isAuthenticated: true,
       user,
       token,
       refreshToken,
+      userRole,
     };
     set(userState);
     localStorage.setItem("user", JSON.stringify(userState));
@@ -53,8 +57,15 @@ const createUserStore = () => {
       const refreshToken = loginResponse.refreshToken;
 
       const userProfile = await this.getProfile();
+      const userRoleRes = await userService.getUserRole();
+      let userRole = userInitialState.userRole;
+      console.info(userRoleRes, "role");
 
-      setUser(userProfile, token, refreshToken);
+      if (userRoleRes?.length > 0) {
+        userRole = userRoleRes[0];
+      }
+
+      setUser(userProfile, token, refreshToken, userRole);
       cart.loginUser();
 
       return loginResponse;
@@ -107,6 +118,21 @@ const createUserStore = () => {
       }));
       const currentUser = get(userStore);
       localStorage.setItem("user", JSON.stringify(currentUser));
+    },
+
+    isUserAdmin() {
+      return get(userStore).userRole === USER_ROLES.ADMIN;
+    },
+    isUserRegular() {
+      return get(userStore).userRole === USER_ROLES.USER;
+    },
+    isUserVP() {
+      return (
+        get(userStore).userRole === USER_ROLES.VP1 ||
+        get(userStore).userRole === USER_ROLES.VP2 ||
+        get(userStore).userRole === USER_ROLES.VP3 ||
+        get(userStore).userRole === USER_ROLES.VP4
+      );
     },
   };
 };

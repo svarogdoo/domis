@@ -11,6 +11,7 @@
   import SurfaceQuantity from "./SurfaceQuantity.svelte";
   import { mapQuantityTypeToString, QuantityType } from "../../../../enums";
   import { handleImageError } from "../../../../helpers/imageFallback";
+  import { getCurrencyString } from "../../../../helpers/stringFormatter";
 
   export let data;
 
@@ -64,7 +65,8 @@
       >
         {#if product?.price?.perUnit}
           <p class="text-xs lg:text-sm">
-            RSD <span class="font-light text-domis-dark text-sm lg:text-lg px-2"
+            {getCurrencyString()}
+            <span class="font-light text-domis-dark text-sm lg:text-lg px-2"
               >{formatPrice(product?.price.perUnit)}</span
             >
             po {quantityTypeString}
@@ -72,7 +74,8 @@
         {/if}
         {#if product?.price?.perBox && product?.size?.box}
           <p class="text-xs lg:text-sm">
-            RSD <span class="font-light text-domis-dark text-sm lg:text-lg px-2"
+            {getCurrencyString()}
+            <span class="font-light text-domis-dark text-sm lg:text-lg px-2"
               >{formatPrice(product?.price.perBox)}</span
             >
             po paketu ({product?.size.box}
@@ -81,7 +84,8 @@
         {/if}
         {#if product?.price?.perPallet && product?.size?.pallet}
           <p class="text-xs lg:text-sm">
-            RSD <span class="font-light text-domis-dark text-sm lg:text-lg px-2"
+            {getCurrencyString()}
+            <span class="font-light text-domis-dark text-sm lg:text-lg px-2"
               >{formatPrice(product?.price.perPallet)}</span
             >
             po paleti ({product?.size.pallet}

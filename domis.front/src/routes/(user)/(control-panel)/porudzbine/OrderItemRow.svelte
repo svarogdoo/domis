@@ -2,6 +2,7 @@
   import { mapQuantityTypeToCartString } from "../../../../enums";
   import { handleImageError } from "../../../../helpers/imageFallback";
   import { formatPrice } from "../../../../helpers/numberFormatter";
+  import { getCurrencyString } from "../../../../helpers/stringFormatter";
 
   export let item: UserOrderItem;
 </script>
@@ -22,7 +23,8 @@
     <p class="text-wrap pr-4">{item.productDetails.name}</p>
   </td>
   <td class="w-44 text-center"
-    >{item.itemPrice} <span class="font-light text-sm">RSD</span></td
+    >{item.itemPrice}
+    <span class="font-light text-sm">{getCurrencyString()}</span></td
   >
   <td class="w-36">
     <div class="flex justify-center items-center gap-x-2">
@@ -37,6 +39,6 @@
   </td>
   <td class="w-44 text-center"
     >{formatPrice(item.itemPriceTotal)}
-    <span class="font-light text-sm">RSD</span></td
+    <span class="font-light text-sm">{getCurrencyString()}</span></td
   >
 </tr>

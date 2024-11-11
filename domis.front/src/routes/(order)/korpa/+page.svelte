@@ -3,6 +3,7 @@
   import CartItem from "./CartItem.svelte";
   import { formatPrice } from "../../../helpers/numberFormatter";
   import CartItemMobile from "./CartItemMobile.svelte";
+  import { getCurrencyString } from "../../../helpers/stringFormatter";
 
   let cartProducts: Array<CartProduct> | undefined = [];
   let totalCartPrice: number | undefined;
@@ -54,12 +55,12 @@
         </h2>
         <div class="flex justify-between mt-16 font-light gap-x-8">
           <p>Ukupno</p>
-          <p>{formatPrice(totalCartPrice)} RSD</p>
+          <p>{formatPrice(totalCartPrice)} {getCurrencyString()}</p>
         </div>
         <div class="w-full h-0.5 bg-domis-dark my-4"></div>
         <div class="flex justify-between text-lg gap-x-8">
           <p>Ukupno</p>
-          <p>{formatPrice(totalCartPrice)} RSD</p>
+          <p>{formatPrice(totalCartPrice)} {getCurrencyString()}</p>
         </div>
         <a
           href="/porudzbina"

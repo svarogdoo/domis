@@ -98,7 +98,6 @@ export function mapOrderStatusToString(orderStatus: OrderStatus): string {
       return "Poništena";
   }
 }
-
 export function getOrderStatusColor(orderStatus: OrderStatus): string {
   switch (orderStatus) {
     case OrderStatus.New:

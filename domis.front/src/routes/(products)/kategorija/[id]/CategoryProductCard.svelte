@@ -3,6 +3,7 @@
   import { mapQuantityTypeToString } from "../../../../enums";
   import { handleImageError } from "../../../../helpers/imageFallback";
   import { formatPrice } from "../../../../helpers/numberFormatter";
+  import { getCurrencyString } from "../../../../helpers/stringFormatter";
 
   export let product: CategoryProduct;
   let featuredImage = backup;
@@ -23,7 +24,7 @@
 >
   <div class="w-full">
     <img
-      class="w-full h-auto object-cover aspect-square lg:rounded-lg"
+      class="w-full h-auto object-cover aspect-square rounded-md"
       src={featuredImage}
       alt={product.name}
       on:error={handleImageError}
@@ -42,7 +43,9 @@
     <div class="flex flex-col flex-grow gap-y-2 mt-2 justify-end items-center">
       <div class="flex items-center gap-x-1">
         <p class="lg:text-xl">{formatPrice(product.price)}</p>
-        <p class="text-xs lg:text-sm text-gray-800 font-thin">RSD</p>
+        <p class="text-xs lg:text-sm text-gray-800 font-thin">
+          {getCurrencyString()}
+        </p>
         {#if quantityTypeString}
           <p class="text-xs lg:text-sm text-gray-400 font-thin">
             po {quantityTypeString}

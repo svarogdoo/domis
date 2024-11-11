@@ -21,7 +21,6 @@
       if (selectedCategory?.subcategories)
         categoriesList = flattenCategories(selectedCategory.subcategories);
       else categoriesList = [];
-      console.info(categoriesList);
     });
   }
 
@@ -65,9 +64,9 @@
 </script>
 
 <aside class="w-full h-full flex flex-col gap-y-4">
-  <!-- TODO: Loader -->
+  <p>Stranice</p>
   {#if selectedCategory}
-    <h2 class="font-bold text-lg">Kategorije</h2>
+    <h2 class="font-bold text-lg mt-10">Kategorije</h2>
     <ul class="flex flex-col gap-y-2">
       <a href="/kategorija/{selectedCategory.id}">{selectedCategory.name}</a>
 
@@ -76,7 +75,7 @@
           href="/kategorija/{category.id}"
           class="text-md {category.level === 1
             ? 'font-normal'
-            : 'font-light'} ml-{category.level * 2}">{category.name}</a
+            : 'font-light'} ml-{(category.level + 1) * 2}">{category.name}</a
         >
       {/each}
     </ul>

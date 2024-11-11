@@ -81,6 +81,10 @@ async function getUserOrders() {
   return await fetchData<Array<UserOrder>>(`${API_URL}/api/user/orders`, "GET");
 }
 
+async function getUserRole() {
+  return await fetchData<Array<string>>(`${API_URL}/api/user/roles`, "GET");
+}
+
 export const userService = {
   login,
   register,
@@ -90,4 +94,5 @@ export const userService = {
   resetPassword,
   refreshAccessToken,
   getUserOrders,
+  getUserRole,
 };

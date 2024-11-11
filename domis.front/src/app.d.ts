@@ -1,6 +1,11 @@
 // See https://kit.svelte.dev/docs/types#app
 
-import type { OrderStatus, PaymentVendorType, QuantityType } from "./enums";
+import type {
+  OrderStatus,
+  PaymentVendorType,
+  QuantityType,
+  UserRole,
+} from "./enums";
 import type CartItem from "./routes/korpa/CartItem.svelte";
 
 // for information about these interfaces
@@ -66,6 +71,7 @@ declare global {
     user: UserProfileResponse | null;
     token: string | null;
     refreshToken: string | null;
+    userRole: UserRole;
   }
 
   interface Image {

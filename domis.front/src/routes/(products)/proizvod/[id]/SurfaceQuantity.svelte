@@ -4,7 +4,10 @@
     formatPrice,
     formatToTwoDecimals,
   } from "../../../../helpers/numberFormatter";
-  import { getPaketString } from "../../../../helpers/stringFormatter";
+  import {
+    getCurrencyString,
+    getPaketString,
+  } from "../../../../helpers/stringFormatter";
   import { cart } from "../../../../stores/cart";
 
   export let product: Product;
@@ -149,7 +152,8 @@
     <p class="tracking-wider font-semibold text-md lg:text-lg">Ukupan iznos</p>
     <div class="flex flex-col">
       <p class="text-right text-lg lg:text-2xl">
-        {formatPrice(totalPrice)} RSD
+        {formatPrice(totalPrice)}
+        {getCurrencyString()}
       </p>
       {#if boxInput > 0 && quantityType !== QuantityType.Piece}
         <p class="text-gray-500 text-sm lg:text-normal font-extralight">

@@ -7,7 +7,10 @@
   import { formatPrice } from "../../../../helpers/numberFormatter";
   import OrderItemPopup from "./OrderItemPopup.svelte";
   import eyeIcon from "$lib/icons/eye.svg";
-  import { stringDateToString } from "../../../../helpers/stringFormatter";
+  import {
+    getCurrencyString,
+    stringDateToString,
+  } from "../../../../helpers/stringFormatter";
 
   export let order: UserOrder;
   let showOrderItems = false;
@@ -24,10 +27,14 @@
   <td class="py-5">{mapPaymentVendorTypeToString(order.paymentTypeId)}</td>
   <td class="py-5"
     >{formatPrice(order.paymentAmount)}
-    <span class="font-light text-sm">RSD</span></td
+    <span class="font-light text-sm">{getCurrencyString()}</span></td
   >
   <td class="flex justify-center py-5">
-    <button on:click={() => { showOrderItems = true; }}>
+    <button
+      on:click={() => {
+        showOrderItems = true;
+      }}
+    >
       <img class="w-6 h-6" src={eyeIcon} alt="eye" />
     </button>
   </td>
