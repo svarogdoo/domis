@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Collections;
+using AutoMapper;
 using Dapper;
 using domis.api.Common;
 using domis.api.DTOs.Image;
@@ -12,7 +13,9 @@ using Npgsql;
 using Serilog;
 using System.Data;
 using System.Data.Common;
+using domis.api.DTOs.Category;
 using domis.api.DTOs.Common;
+using ProductBasicInfoDto = domis.api.DTOs.Product.ProductBasicInfoDto;
 
 namespace domis.api.Repositories;
 
@@ -25,6 +28,9 @@ public interface IProductRepository
     Task<IEnumerable<ProductBasicInfoDto>> GetProductsBasicInfoByCategory(int categoryId);
     Task<IEnumerable<ProductQuantityTypeDto>> GetAllQuantityTypes();
     Task<IEnumerable<SearchResultDto>> SearchProducts(string query, int? pageNumber, int? pageSize);
+    Task<bool> PutProductsOnSale(ProductSaleRequest request);
+    Task<bool> AssignProductToCategory(AssignProductToCategoryRequest request);
+    Task<bool> ProductExists(int productId);
 }
 
 public class ProductRepository(IDbConnection connection, IMapper mapper) : IProductRepository
@@ -55,17 +61,45 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
 
             var size = await connection.QuerySingleOrDefaultAsync<Size>(ProductQueries.GetProductSizing, new { ProductId = productId });
             var images = (await connection.QueryAsync<ImageGetDto>(ImageQueries.GetProductImages, new { ProductId = productId })).ToList();
-            var categoryPaths = (await connection.QueryAsync<string>(CategoryQueries.GetProductCategories, new { ProductId = productId })).ToList();
+            
+            var categoryPathResults = await connection.QueryAsync<ProdCategoryPathRow>(ProductQueries.GetProductCategoriesPaths, new { ProductId = productId });
+            var categoryPaths = categoryPathResults
+                .Where(row => row.PathId.HasValue && row.Id.HasValue) // Ensure PathId and Id are not null
+                .GroupBy(row => row.PathId.Value)
+                .Select(group => group.Select(row => new CategoryPath
+                {
+                    Id = row.Id.Value,
+                    Name = row.Name
+                }).ToList())
+                .ToList();
+            
+            // Check for an active sale
+            var sale = await connection.QuerySingleOrDefaultAsync<SaleEntity>(ProductQueries.GetActiveSale, new 
+            { 
+                ProductId = productId, 
+                CurrentDate = DateTime.UtcNow 
+            });
             
             var productDetail = mapper.Map<ProductDetailsDto>(product);
             
             productDetail.Size = size;
             productDetail.Images = [.. images];
-            productDetail.CategoryPaths = [.. categoryPaths];
+            productDetail.CategoryPaths = categoryPaths;
+            
             if (product.Price.HasValue)
             {
-                var discountedPrice = PricingHelper.CalculateDiscount(product.Price.Value, discount);
-                productDetail.Price = CalculatePriceByPackage(discountedPrice, size);
+                //if there is a sale on the product
+                if (sale is { SalePrice: not null })
+                {
+                    productDetail.IsOnSale = true;
+                    productDetail.Price = CalculatePackagingPrices(sale.SalePrice.Value, size);
+                }
+                else //if there is no sale
+                {
+                    var discountedPrice = PricingHelper.CalculateDiscount(product.Price.Value, discount);
+                    productDetail.Price = CalculatePackagingPrices(discountedPrice, size);
+                    productDetail.IsOnSale = false;
+                }
             }
             else
             {
@@ -202,8 +236,69 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
         return products;
     }
 
+    public async Task<bool> PutProductsOnSale(ProductSaleRequest request)
+    {
+        try
+        {
+            foreach (var productId in  request.ProductIds)
+            {
+                var exists = await ProductExists(productId);
+                if (!exists) continue;
+
+                decimal salePrice;
+            
+                if (request.SalePrice.HasValue)
+                {
+                    salePrice = request.SalePrice.Value;
+                }
+                else
+                {
+                    var originalPrice = await connection.ExecuteScalarAsync<decimal>(ProductQueries.GetProductPrice, new { ProductId = productId });
+                    salePrice = originalPrice - (originalPrice * request.SalePercentage!.Value / 100);
+                }
+                
+                var saleRecord = new
+                {
+                    ProductId = productId,
+                    SalePrice = salePrice,
+                    StartDate = request.StartDate,
+                    EndDate = request.EndDate,
+                    IsActive = true
+                };
+                
+                // Insert the sale record into the database for each product
+                var affectedRows = await connection.ExecuteAsync(ProductQueries.InsertSale, saleRecord);
+
+                if (affectedRows == 0)
+                {
+                    Log.Information("Product with id {ProductId} wasn't put on sale.", productId);
+                }
+            }
+            
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "An error occurred while putting the products on sale for request {Request}", request);
+            throw;
+        }
+    }
+
+    public async Task<bool> AssignProductToCategory(AssignProductToCategoryRequest request)
+    {
+        const string query = @"
+            INSERT INTO domis.product_category (product_id, category_id)
+            VALUES (@ProductId, @CategoryId)
+            ON CONFLICT (product_id) 
+            DO UPDATE SET category_id = @CategoryId;
+        ";
+
+        var affectedRows = await connection.ExecuteAsync(query, new { request.ProductId, request.CategoryId });
+        return affectedRows > 0;
+    }
+
     #region ExtensionsMethods
-    private static Price CalculatePriceByPackage(decimal unitPrice, Size? productSize)
+    private static Price CalculatePackagingPrices(decimal unitPrice, Size? productSize)
     {
         decimal? pakPrice = null;
         decimal? palPrice = null;
@@ -225,5 +320,9 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
             Pal = palPrice
         };
     }
+
+    public async Task<bool> ProductExists(int productId) 
+        => await connection.ExecuteScalarAsync<bool>(ProductQueries.CheckIfProductExists, new { ProductId = productId });
+
     #endregion ExtensionMethods
 }

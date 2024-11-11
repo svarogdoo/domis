@@ -31,13 +31,23 @@ public static class ProductQueries
 
     public const string GetAll = @"
                     SELECT
-                        id AS Id,       
-                        product_name AS Name,
-                        sku AS Sku,
-                        price AS Price,
-                        stock AS Stock,
-                        product_description AS Description
-                    FROM domis.product"
+                        p.id AS Id,       
+                        p.product_name AS Name,
+                        p.sku AS Sku,
+                        p.price AS Price,
+                        p.stock AS Stock,
+                        p.product_description AS Description,
+                        s.sale_price AS SalePrice,
+                        s.start_date AS SaleStartDate,
+                        s.end_date AS SaleEndDate,
+                        CASE 
+                            WHEN s.id IS NOT NULL AND s.is_active = TRUE AND s.start_date <= CURRENT_TIMESTAMP AND s.end_date >= CURRENT_TIMESTAMP 
+                            THEN TRUE 
+                            ELSE FALSE 
+                        END AS IsOnSale
+                    FROM domis.product p
+                    LEFT JOIN
+                        domis.sales s ON p.id = s.product_id"
     ;
 
     public const string GetAllByCategory = @"
@@ -68,6 +78,34 @@ public static class ProductQueries
         SELECT Id, Sku, Name
         FROM ActiveProductsInCategory
         ORDER BY Name; -- Ensure you have a column to order by
+    ";
+    
+    public const string GetProductsWithPricesByCategory = @"
+        WITH RECURSIVE CategoryHierarchy AS (
+            -- Anchor member: Start with the given category
+            SELECT id
+            FROM domis.category
+            WHERE id = @CategoryId
+
+            UNION ALL
+
+            -- Recursive member: Join to get all subcategories
+            SELECT c.id
+            FROM domis.category c
+            INNER JOIN CategoryHierarchy ch ON c.parent_category_id = ch.id
+        ),
+        ActiveProductsInCategory AS (
+            -- Select products in the specified category and its subcategories
+            SELECT
+                p.Id AS Id,
+                p.price AS Price
+            FROM domis.product p
+            INNER JOIN domis.product_category pc ON p.id = pc.product_id
+            INNER JOIN CategoryHierarchy ch ON pc.category_id = ch.id
+            WHERE p.active = true -- filter to include only active products
+        )
+        SELECT Id, Price
+        FROM ActiveProductsInCategory
     ";
 
 
@@ -190,4 +228,62 @@ public static class ProductQueries
         FROM domis.product
         WHERE id = @ProductId;
     ";
+    
+    public const string InsertSale = @"
+        INSERT INTO domis.sales (product_id, sale_price, start_date, end_date, is_active) 
+        VALUES (@ProductId, @SalePrice, @StartDate, @EndDate, @IsActive)
+    ";
+    
+    public const string GetActiveSale = @"
+        SELECT 
+            id AS Id,
+            product_id AS ProductId,
+            sale_price AS SalePrice,
+            start_date AS StartDate,
+            end_date AS EndDate,
+            is_active AS IsActive
+        FROM domis.sales
+        WHERE product_id = @ProductId 
+          AND is_active = TRUE
+          --AND start_date <= @CurrentDate 
+          --AND end_date >= @CurrentDate
+        LIMIT 1";
+    
+    public static string GetProductCategoriesPaths = @"
+        WITH RECURSIVE RecursiveCategoryHierarchy AS (
+            -- Anchor member: Start with categories for the product
+            SELECT
+                pc.product_id AS ProductId,
+                c.id AS CategoryId,
+                c.parent_category_id AS ParentCategoryId,
+                c.category_name AS CategoryName,
+                ROW_NUMBER() OVER (ORDER BY c.id) AS PathId, -- Unique ID per distinct path
+                1 AS Level -- Starting level
+            FROM domis.product_category pc
+            JOIN domis.category c ON pc.category_id = c.id
+            WHERE pc.product_id = @ProductId AND active = true
+
+            UNION ALL
+
+            -- Recursive member: Join to find parent categories
+            SELECT
+                rch.ProductId,
+                c.id AS CategoryId,
+                c.parent_category_id AS ParentCategoryId,
+                c.category_name AS CategoryName,
+                rch.PathId, -- Propagate the PathId to keep categories within the same path
+                rch.Level + 1 AS Level -- Increment level for each parent
+            FROM domis.category c
+            INNER JOIN RecursiveCategoryHierarchy rch
+                ON c.id = rch.ParentCategoryId
+        )
+
+        -- Select each category in the hierarchy with its PathId, ordered by level
+        SELECT
+            PathId,
+            CategoryId AS Id,
+            CategoryName AS Name,
+            Level
+        FROM RecursiveCategoryHierarchy
+        ORDER BY PathId, Level DESC;";
 }

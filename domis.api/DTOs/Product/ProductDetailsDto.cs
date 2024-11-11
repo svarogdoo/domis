@@ -1,6 +1,7 @@
 ﻿using domis.api.DTOs.Image;
 using domis.api.Models.Enums;
 using System.Text.Json.Serialization;
+using domis.api.DTOs.Category;
 
 namespace domis.api.DTOs.Product;
 
@@ -16,7 +17,14 @@ public class ProductDetailsDto
     public Size? Size { get; set; }
     public string? FeaturedImageUrl { get; set; }
     public List<ImageGetDto> Images { get; set; } = [];
-    public string[] CategoryPaths { get; set; } = [];
+    // public string[] CategoryPaths { get; set; } = [];
+    public IEnumerable<IEnumerable<CategoryPath>> CategoryPaths { get; set; } = [];
+    
+    // New properties for sale information
+    public bool IsOnSale { get; set; }
+    public decimal? SalePrice { get; set; }
+    public DateTime? SaleStartDate { get; set; }
+    public DateTime? SaleEndDate { get; set; }
     // ---------------------------------
     public int? QuantityType { get; set; }
     public string? Title { get; set; }

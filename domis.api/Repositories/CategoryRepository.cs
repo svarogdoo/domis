@@ -16,6 +16,8 @@ public interface ICategoryRepository
     //probably no need for this one
     Task<Category?> GetById(int id);
     Task<CategoryWithProductsDto?> GetCategoryProducts(int categoryId, PageOptions options, decimal discount);
+    Task<bool> CategoryExists(int categoryId);
+    Task<IEnumerable<SaleEntity>> PutCategoryOnSale(CategorySaleRequest request);
 }
 
 public class CategoryRepository(IDbConnection connection) : ICategoryRepository
@@ -70,9 +72,11 @@ public class CategoryRepository(IDbConnection connection) : ICategoryRepository
 
             var categoryParams = new { CategoryId = categoryId };
             var category = await connection.QuerySingleOrDefaultAsync<CategoryBasicInfoDto>(CategoryQueries.GetCategoryById, categoryParams);
-
+            
             if (category is null)
                 return null;
+            
+            category.Paths = await GetCategoryPath(categoryId);
             
             var productParams = new { CategoryId = categoryId, Offset = offset, Limit = options.PageSize };
             var products = await connection.QueryAsync<ProductPreviewDto>(ProductQueries.GetAllByCategoryWithPagination, productParams);
@@ -96,4 +100,64 @@ public class CategoryRepository(IDbConnection connection) : ICategoryRepository
             Log.Error(ex, "An error occurred while getting products by category"); throw;
         }
     }
+
+    public async Task<bool> CategoryExists(int categoryId)
+        => await connection.ExecuteScalarAsync<bool>(CategoryQueries.CheckIfCategoryExists, new { CategoryId = categoryId });
+
+    public async Task<IEnumerable<SaleEntity>> PutCategoryOnSale(CategorySaleRequest request)
+    {   
+        try
+        {            
+            var productsAlreadyOnSale = new List<SaleEntity>();
+            
+            var products = await connection.QueryAsync<ProductPriceDto>(ProductQueries.GetProductsWithPricesByCategory, new { request.CategoryId });
+
+            var saleRecords = new List<object>();
+
+            foreach (var product in products)
+            {
+                if (product.Price <= 0)
+                    continue;
+                
+                var existingSale = await connection.QuerySingleOrDefaultAsync<SaleEntity>(
+                    "SELECT * FROM domis.sales WHERE product_id = @ProductId AND is_active = 1",
+                    new { ProductId = product.Id });
+
+                if (existingSale is not null)
+                {
+                    productsAlreadyOnSale.Add(existingSale);
+                    continue;
+                }
+                
+                var salePrice = product.Price * (1 - request.SalePercentage / 100);
+                
+                var saleRecord = new SaleEntity()
+                {
+                    ProductId = product.Id,
+                    SalePrice = salePrice,
+                    StartDate = request.StartDate,
+                    EndDate = request.EndDate,
+                    IsActive = true
+                };
+
+                // Add this sale record to the list
+                saleRecords.Add(saleRecord);
+            }
+            
+            if (saleRecords.Count == 0)
+                return [];
+            
+            await connection.ExecuteAsync(ProductQueries.InsertSale, saleRecords);
+
+            return productsAlreadyOnSale;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "An error occurred while putting the product on sale for Category {CategoryId}", request.CategoryId);
+            throw;
+        }    
+    }
+
+    private async Task<IEnumerable<CategoryPath>> GetCategoryPath(int categoryId) 
+        => await connection.QueryAsync<CategoryPath>(CategoryQueries.GetCategoryPath, new { CategoryId = categoryId });
 }

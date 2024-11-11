@@ -68,8 +68,29 @@ public static class CategoryQueries
         WHERE ParentCategoryId IS NULL
         ORDER BY Path;";
 
+    
     public const string GetCategoryById = @"
         SELECT id as Id, category_name as Name, category_description as Description 
         FROM domis.category
         WHERE id = @CategoryId;";
+
+    public const string CheckIfCategoryExists = @"
+        SELECT EXISTS 
+        (SELECT 1 FROM domis.product WHERE id = @ProductId);
+    ";
+
+    public const string GetCategoryPath = @"
+        WITH RECURSIVE category_path AS (
+            SELECT id, category_name, parent_category_id, 1 as level
+            FROM domis.category
+            WHERE id = @CategoryId
+            UNION ALL
+            SELECT c.id, c.category_name, c.parent_category_id, cp.level + 1
+            FROM domis.category c
+            INNER JOIN category_path cp ON cp.parent_category_id = c.id
+        )
+        SELECT id as Id, category_name as Name
+        FROM category_path
+        ORDER BY level DESC
+    ";
 }
