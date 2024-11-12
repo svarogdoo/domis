@@ -9,6 +9,8 @@
   let products: Array<CategoryProduct> = [];
   let isOpen = false;
   let sortType = "low-to-high";
+  let loadMoreTrigger: HTMLElement;
+  let loading = false;
 
   let pageNumber = 1;
   let pageSize = 18;
@@ -37,23 +39,16 @@
     isOpen = false;
   }
 
-  async function fetchProducts() {
-    const categoryData = await getCategoryProducts(
+  async function loadMore() {
+    loading = true;
+    const newItems = await getCategoryProducts(
       Number.parseInt(categoryDetails.id),
       pageNumber,
       pageSize
     );
-    products = categoryData.products;
-  }
-
-  function changePage(delta: number) {
-    pageNumber += delta;
-
-    const newUrl = new URL(window.location.href);
-    newUrl.searchParams.set("strana", pageNumber.toString());
-    history.pushState({}, "", newUrl);
-
-    fetchProducts();
+    products = [...products, ...newItems.products];
+    loading = false;
+    pageNumber++;
   }
 
   onMount(() => {
@@ -62,6 +57,18 @@
     if (pageParam) {
       pageNumber = Number(pageParam);
     }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !loading) {
+          loadMore();
+        }
+      },
+      {
+        rootMargin: "100px", // Start loading earlier, as it approaches
+      }
+    );
+    observer.observe(loadMoreTrigger);
   });
 </script>
 
@@ -110,23 +117,21 @@
     {/each}
   </div>
 
-  <!-- Pagination Controls -->
-  <div class="flex justify-end mt-4">
-    <div class="flex space-x-2">
-      <button
-        on:click={() => changePage(-1)}
-        disabled={pageNumber === 1}
-        class="disabled:opacity-50"
-      >
-        Prethodna
-      </button>
-      <button
-        on:click={() => changePage(1)}
-        disabled={products.length < pageSize}
-        class="disabled:opacity-50"
-      >
-        Sledeća
-      </button>
+  <!-- Trigger for loading more data -->
+  <div bind:this={loadMoreTrigger} style="height: 1px;"></div>
+
+  <!-- Loading indicator -->
+  {#if loading}
+    <div class="flex self-center items-center mt-4 space-x-1">
+      <div
+        class="w-1.5 h-1.5 bg-domis-accent rounded-full animate-bounce"
+      ></div>
+      <div
+        class="w-1.5 h-1.5 bg-domis-accent rounded-full animate-bounce animation-delay-200"
+      ></div>
+      <div
+        class="w-1.5 h-1.5 bg-domis-accent rounded-full animate-bounce animation-delay-400"
+      ></div>
     </div>
-  </div>
+  {/if}
 </section>
