@@ -61,8 +61,9 @@
   <!-- Subcategories -->
   {#if selectedCategory}
     <div class="flex flex-col w-4/5 pl-12 gap-y-2">
-      <h2 class="font-semibold text-lg">{selectedCategory.name}</h2>
-
+      <a href="/kategorija/{selectedCategory.id}" class="font-semibold text-lg"
+        >{selectedCategory.name}</a
+      >
       <div class="flex flex-col flex-wrap gap-y-1 h-96">
         {#each list as listItem}
           <a

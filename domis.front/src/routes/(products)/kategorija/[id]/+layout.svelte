@@ -1,7 +1,7 @@
 <script>
   import { onMount } from "svelte";
+  import { setCategories } from "../../../../services/category-service";
   import Sidebar from "./Sidebar.svelte";
-  import { setCategories } from "../../services/category-service";
 
   onMount(() => {
     setCategories();

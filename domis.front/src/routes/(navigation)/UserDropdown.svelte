@@ -2,10 +2,12 @@
   import { onMount } from "svelte";
   import userIcon from "$lib/icons/user.svg";
   import { userStore } from "../../stores/user";
+  import UserDropdownItem from "./UserDropdownItem.svelte";
 
   let loggedIn = false;
   let initials = "";
   let user: UserState;
+  let isUserAdmin = false;
 
   $: userStore.subscribe((value) => {
     user = value;
@@ -60,22 +62,14 @@
     >
       {#if loggedIn}
         <ul>
-          <li>
-            <a
-              href="/profil"
-              class="w-full text-left block px-4 py-2 hover:bg-gray-100"
-            >
-              Profil
-            </a>
-          </li>
-          <li>
-            <a
-              href="/porudzbine"
-              class="w-full text-left block px-4 py-2 hover:bg-gray-100"
-            >
-              Porudžbine
-            </a>
-          </li>
+          {#if userStore.isUserAdmin()}
+            <UserDropdownItem href="/admin/proizvodi" text="Proizvodi" />
+            <UserDropdownItem href="/admin/korisnici" text="Korisnici" />
+            <UserDropdownItem href="/admin/porudzbine" text="Porudžbine" />
+          {:else}
+            <UserDropdownItem href="/profil" text="Profil" />
+            <UserDropdownItem href="/porudzbine" text="Porudžbine" />
+          {/if}
           <li class="border-t">
             <button
               on:click={handleLogout}

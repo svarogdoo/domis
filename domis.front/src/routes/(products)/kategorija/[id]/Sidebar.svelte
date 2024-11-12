@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from "$app/stores";
-  import { categories } from "../../stores/categories";
+  import { categories } from "../../../../stores/categories";
 
   interface UnwrappedCategory {
     name: string;
@@ -64,9 +64,8 @@
 </script>
 
 <aside class="w-full h-full flex flex-col gap-y-4">
-  <p>Stranice</p>
   {#if selectedCategory}
-    <h2 class="font-bold text-lg mt-10">Kategorije</h2>
+    <h2 class="font-bold text-lg">Kategorije</h2>
     <ul class="flex flex-col gap-y-2">
       <a href="/kategorija/{selectedCategory.id}">{selectedCategory.name}</a>
 

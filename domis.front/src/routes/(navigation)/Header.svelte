@@ -162,7 +162,7 @@
         <img src={hamburgerIcon} alt="icon" class="h-5 w-5" />
         <p>Katalog</p></button
       >
-      <a href="/kategorija/2">Pločice i graniti</a>
+      <a href="/kategorija/701">Pločice i graniti</a>
       <a href="/kategorija/1">Podovi i obloge</a>
       <a href="/kategorija/105">Kupatila</a>
       <a href="/kategorija/3">Zid i dekoracije</a>

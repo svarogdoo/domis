@@ -113,7 +113,7 @@ declare global {
     stock: number;
     featuredImageUrl: string;
     images: Array<Image>; // ne slati za put
-    categoryPaths: Array<string>; // ne slati za put
+    categoryPaths: Array<Array<CategoryPath>>;
     title?: string;
     width?: number;
     height?: number;
@@ -139,6 +139,10 @@ declare global {
     id: number;
     name: string;
     sku: number;
+  }
+  interface CategoryPath {
+    id: number;
+    name: string;
   }
 
   interface SearchResult {
