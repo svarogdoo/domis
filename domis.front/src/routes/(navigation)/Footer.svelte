@@ -23,41 +23,34 @@
   }
 </script>
 
-<footer class="w-full flex flex-col pt-6 pb-1">
-  <div class="flex flex-col lg:flex-row gap-y-4 pl-4 lg:pl-0 justify-around">
-    <!-- Removed hidden class -->
-    <div class="flex flex-col gap-y-4">
+<footer class="w-full flex flex-col items-center pt-6 pb-1 bg-domis-light">
+  <div class="flex flex-col w-full lg:w-4/5 lg:flex-row gap-y-4 px-4 lg:pl-0">
+    <div class="lg:w-1/6 flex flex-col gap-y-4">
       <div class="header-title text-lg">
-        <a href="/">domis</a>
+        <a class="text-domis-primary" href="/">domis</a>
         <a href="/">enterijeri</a>
       </div>
       <div class="flex flex-col gap-y-1 font-light">
-        <p>PIB: 103758656</p>
-        <p>Matični broj: 20014938</p>
-        <p>Tekući račun: 265-3300310018509-64</p>
-        <p>Sremska Mitrovica - Laćarak 1. novembar 10</p>
-        <a
-          href="https://domisenterijeri.com/domis/img/2020/10/Potvrda-o-izvrsenom-evidentiranju-za-pdv.pdf"
-          >Potvrda o registraciji</a
-        >
+        <a href="/podaci-o-trgovcu">Naši podaci</a>
+        <a href="/prodajna-mesta">Prodajna mesta</a>
+        <a href="/montaza-ugradnja">Montaža i ugradnja</a>
       </div>
     </div>
-    <div class="flex flex-col gap-y-2">
+    <div class="lg:w-1/6 flex flex-col gap-y-2">
       <p class="font-semibold tracking-wider">Korisnički kutak</p>
       <div class="flex flex-col gap-y-1 font-light">
         <a href="/kako-kupovati">Kako kupovati</a>
         <a href="/narucivanje">Naručivanje</a>
         <a href="/cesta-pitanja">Česta pitanja</a>
-        <a href="/podaci-o-trgovcu">Podaci o trgovcu</a>
+        <a href="/nacin-placanja">Način plaćanja</a>
       </div>
     </div>
-    <div class="flex flex-col gap-y-2">
+    <div class="lg:w-2/6 flex flex-col gap-y-2">
       <p class="font-semibold tracking-wider">Kupovina</p>
       <div class="flex flex-col gap-y-1 font-light">
         <a href="/napomena-za-robu-poslatu-kurirskom-sluzbom"
           >Napomena za robu poslatu kurirskom sluzbom</a
         >
-        <a href="/nacin-placanja">Način plaćanja</a>
         <a href="/uslovi-koriscenja">Uslovi korišćenja</a>
         <a href="/koriscenje-i-kupovina">Korišćenje i kupovina</a>
         <a href="/prava-obaveze-potrosaca">Prava i obaveze potrošača</a>
@@ -69,43 +62,37 @@
         >
       </div>
     </div>
-    <div class="flex flex-col gap-y-2">
-      <a href="/prodajna-mesta" class="font-semibold tracking-wider"
-        >Prodajna mesta</a
-      >
-      <a href="/montaza-ugradnja" class="font-semibold tracking-wider"
-        >Montaža i ugradnja - video</a
-      >
-      <div class="newsletter flex flex-col gap-y-1 mt-4">
+    <div class="lg:w-2/6 flex flex-col gap-y-2">
+      <div class="newsletter flex flex-col items-center gap-y-2 mt-4">
         <label for="newsletter-email" class="font-semibold tracking-wider"
           >Prijavi se na newsletter</label
         >
-        <input
-          type="email"
-          id="newsletter-email"
-          placeholder="Unesite vašu email adresu"
-          class="p-2 border border-gray-300 rounded text-sm"
-        />
-        <button
-          type="button"
-          on:click={subscribeToNewsletter}
-          class="mt-2 p-1 bg-domis-dark text-white text-xs rounded w-24 ml-auto"
-        >
-          Prijavi se
-        </button>
+        <div class="relative">
+          <input
+            type="email"
+            id="newsletter-email"
+            placeholder="Unesite vašu email adresu"
+            class="px-6 py-3 border border-gray-300 w-80 rounded text-sm"
+          />
+          <button
+            type="button"
+            on:click={subscribeToNewsletter}
+            class="absolute right-0 h-full bg-domis-dark text-white text-xs tracking-wider rounded w-24"
+          >
+            Prijavite se
+          </button>
+        </div>
       </div>
     </div>
   </div>
   <p class="text-center font-light text-xs text-gray-600 mt-2">
-    © Copyright <a href="https://svarog.io/">Domis enterijeri</a> 2024
+    © Copyright <a href="https://svarog.io/"
+      ><span class="text-domis-primary">Domis</span> enterijeri</a
+    > 2024
   </p>
 </footer>
 
 <style>
-  footer {
-    background-color: #d9d9d9;
-  }
-
   .header-title {
     display: flex;
     flex-direction: column;
