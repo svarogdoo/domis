@@ -45,12 +45,6 @@ public class ProductUpdateDto
 
     [JsonPropertyName("thickness")]
     public decimal? Thickness { get; set; }
-
-    //[JsonPropertyName("isItemType")]
-    //public bool? IsItem { get; set; }
-
-    //[JsonPropertyName("isSurfaceType")]
-    //public bool? IsSurfaceType { get; set; }
     [JsonPropertyName("quantityType")]
     public int? QuantityType { get; set; }
 }

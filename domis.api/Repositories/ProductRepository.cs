@@ -92,7 +92,10 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
                 {
                     var discountedPrice = PricingHelper.CalculateDiscount(product.Price.Value, discount);
                     productDetail.Price = CalculatePakPalPrices(discountedPrice, size);
-                    productDetail.SaleInfo.IsActive = false;
+                    productDetail.SaleInfo = new SaleInfo
+                    {
+                        IsActive = false
+                    };
                 }
             }
             else
