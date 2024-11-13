@@ -6,6 +6,7 @@ namespace domis.api.Common;
 public interface IPriceHelpers
 {
     Task<decimal> GetDiscount(UserEntity? user);
+    Task<bool> IsUserVp(UserEntity? user);
 }
 
 public class PriceHelpers(UserManager<UserEntity> userManager, RoleManager<Role> roleManager) : IPriceHelpers
@@ -36,6 +37,14 @@ public class PriceHelpers(UserManager<UserEntity> userManager, RoleManager<Role>
         var role = await roleManager.FindByNameAsync(userRole);
 
         return role?.Discount ?? 0;
+    }
+    
+    public async Task<bool> IsUserVp(UserEntity? user)
+    {
+        if (user is null) return false;
+
+        var roles = await userManager.GetRolesAsync(user);
+        return roles.Any(role => role.StartsWith("VP"));
     }
 }
 

@@ -18,7 +18,7 @@ public interface IProductService
     Task<bool> AssignProductToCategory(AssignProductToCategoryRequest request);
 }
 
-public class ProductService(IProductRepository repository, ICategoryRepository categoryRepo, IPriceHelpers priceHelpers) : IProductService
+public class ProductService(IProductRepository repository, ICategoryRepository categoryRepo, IUserRepository userRepo, IPriceHelpers priceHelpers) : IProductService
 {
     public async Task<IEnumerable<ProductPreviewDto>> GetAll()
         => await repository.GetAll();
@@ -29,8 +29,17 @@ public class ProductService(IProductRepository repository, ICategoryRepository c
     public async Task<ProductDetailsDto?> GetByIdWithDetails(int id, UserEntity? user)
     {
         var discount = await priceHelpers.GetDiscount(user);
+        var isVp = await priceHelpers.IsUserVp(user);
 
-        return await repository.GetByIdWithDetails(id, discount);
+        var role = user is not null
+            ? await userRepo.GetUserRoleAsync(user.Id)
+            : "User";
+        
+        var productDetails = role is "User" or "Admin"
+            ? await repository.GetByIdWithDetails(id, discount)
+            : await repository.GetByIdWithDetailsForVp(id, role);
+
+        return productDetails;
     }
 
     public async Task<IEnumerable<ProductBasicInfoDto>> GetProductsBasicInfoByCategory(int categoryId)
