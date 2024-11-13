@@ -29,6 +29,19 @@ public static class ProductQueries
             WHERE p.id = @ProductId AND it.image_type_name = 'Featured';"
     ;
 
+    public const string GetSingleProductPricesForVP = @"
+        SELECT
+            pp.product_id AS ProductId,
+            MAX(CASE WHEN pp.packaging_type = 'pal' THEN pp.price END) AS PalPrice,
+            MAX(CASE WHEN pp.packaging_type = 'pak' THEN pp.price END) AS PakPrice
+        FROM domis.product_pricing pp
+        WHERE pp.product_id = @ProductId
+          AND pp.user_type = @Role
+          AND pp.packaging_type IN ('pak', 'pal')
+        GROUP BY pp.product_id;
+    ";
+
+    
     public const string GetAll = @"
                     SELECT
                         p.id AS Id,       

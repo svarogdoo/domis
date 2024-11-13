@@ -23,6 +23,7 @@ public interface IProductRepository
 {
     Task<IEnumerable<ProductPreviewDto>> GetAll();
     Task<ProductDetailsDto?> GetByIdWithDetails(int id, decimal discount);
+    Task<ProductDetailsDto?> GetByIdWithDetailsForVp(int id, string role);
     Task<ProductDetailsDto?> Update(ProductUpdateDto product);
     Task<bool> NivelacijaUpdateProductBatch(IEnumerable<NivelacijaRecord> records);
     Task<IEnumerable<ProductBasicInfoDto>> GetProductsBasicInfoByCategory(int categoryId);
@@ -61,20 +62,10 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
 
             var size = await connection.QuerySingleOrDefaultAsync<Size>(ProductQueries.GetProductSizing, new { ProductId = productId });
             var images = (await connection.QueryAsync<ImageGetDto>(ImageQueries.GetProductImages, new { ProductId = productId })).ToList();
-            
-            var categoryPathResults = await connection.QueryAsync<ProdCategoryPathRow>(ProductQueries.GetProductCategoriesPaths, new { ProductId = productId });
-            var categoryPaths = categoryPathResults
-                .Where(row => row.PathId.HasValue && row.Id.HasValue) // Ensure PathId and Id are not null
-                .GroupBy(row => row.PathId.Value)
-                .Select(group => group.Select(row => new CategoryPath
-                {
-                    Id = row.Id.Value,
-                    Name = row.Name
-                }).ToList())
-                .ToList();
+            var categoryPaths = await GetProductCategoriesPath(productId);
             
             // Check for an active sale
-            var sale = await connection.QuerySingleOrDefaultAsync<SaleEntity>(ProductQueries.GetActiveSale, new 
+            var saleEntity = await connection.QuerySingleOrDefaultAsync<SaleEntity>(ProductQueries.GetActiveSale, new 
             { 
                 ProductId = productId, 
                 CurrentDate = DateTime.UtcNow 
@@ -89,16 +80,19 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
             if (product.Price.HasValue)
             {
                 //if there is a sale on the product
-                if (sale is { SalePrice: not null })
+                if (saleEntity is { Price: not null })
                 {
-                    productDetail.IsOnSale = true;
-                    productDetail.Price = CalculatePackagingPrices(sale.SalePrice.Value, size);
+                    productDetail.SaleInfo = new SaleInfo();
+                    productDetail.SaleInfo = SetSaleInfo(saleEntity);
+                    
+                    //which price to use?
+                    productDetail.Price = CalculatePakPalPrices(saleEntity.Price.Value, size);
                 }
                 else //if there is no sale
                 {
                     var discountedPrice = PricingHelper.CalculateDiscount(product.Price.Value, discount);
-                    productDetail.Price = CalculatePackagingPrices(discountedPrice, size);
-                    productDetail.IsOnSale = false;
+                    productDetail.Price = CalculatePakPalPrices(discountedPrice, size);
+                    productDetail.SaleInfo.IsActive = false;
                 }
             }
             else
@@ -112,6 +106,51 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
         {
             Log.Error(ex, "An error occurred while fetching product details"); throw;
         }
+    }
+
+    public async Task<ProductDetailsDto?> GetByIdWithDetailsForVp(int productId, string role)
+    {
+        try
+        {
+            var product = await connection.QuerySingleOrDefaultAsync<Product>(ProductQueries.GetSingleWithDetails, new { ProductId = productId });
+            if (product == null)
+                return null;
+
+            //product.Price = null; //set to null because for VPs we don't use price from product table (populated from nivelacija.csv)
+
+            var size = await connection.QuerySingleOrDefaultAsync<Size>(ProductQueries.GetProductSizing, new { ProductId = productId });
+            var images = (await connection.QueryAsync<ImageGetDto>(ImageQueries.GetProductImages, new { ProductId = productId })).ToList();
+            var categoryPaths = await GetProductCategoriesPath(productId);
+
+            var vpPricing = await connection.QueryFirstOrDefaultAsync<VpPriceDetails>(ProductQueries.GetSingleProductPricesForVP, new { ProductId = productId, Role = role });
+            
+            var productDetail = mapper.Map<ProductDetailsDto>(product);
+            
+            productDetail.Size = size;
+            productDetail.Images = [.. images];
+            productDetail.CategoryPaths = categoryPaths;
+            productDetail.VpPrice = SetVpPrice(vpPricing, size);
+            productDetail.Price = CalculatePakPalPrices(product.Price.Value, size);
+            
+            //TODO: what to do with sales for VP users???
+            
+            return productDetail;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "An error occurred while fetching product details"); throw;
+        }    
+    }
+
+    private static VpPrice SetVpPrice(VpPriceDetails? vpPricing, Size? size)
+    {
+        return new VpPrice
+        {
+            PakUnitPrice = vpPricing.PakPrice,
+            PalUnitPrice = vpPricing.PalPrice,
+            PakPrice = vpPricing.PakPrice * decimal.Parse(size.Pak),
+            PalPrice = vpPricing.PalPrice * decimal.Parse(size.Pal)
+        };
     }
 
     public async Task<IEnumerable<ProductBasicInfoDto>> GetProductsBasicInfoByCategory(int categoryId)
@@ -298,7 +337,7 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
     }
 
     #region ExtensionsMethods
-    private static Price CalculatePackagingPrices(decimal unitPrice, Size? productSize)
+    private static Price CalculatePakPalPrices(decimal unitPrice, Size? productSize)
     {
         decimal? pakPrice = null;
         decimal? palPrice = null;
@@ -320,9 +359,35 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
             Pal = palPrice
         };
     }
-
+    
+    private static SaleInfo SetSaleInfo(SaleEntity sale)
+    {
+        return new SaleInfo
+        {
+            IsActive = true,
+            Price = sale.Price,
+            StartDate = sale.StartDate,
+            EndDate = sale.EndDate
+        };
+    }
+    
     public async Task<bool> ProductExists(int productId) 
         => await connection.ExecuteScalarAsync<bool>(ProductQueries.CheckIfProductExists, new { ProductId = productId });
 
+    private async Task<List<List<CategoryPath>>> GetProductCategoriesPath(int productId)
+    {
+        var categoryPathResults = await connection.QueryAsync<ProdCategoryPathRow>(ProductQueries.GetProductCategoriesPaths, new { ProductId = productId });
+        var categoryPaths = categoryPathResults
+            .Where(row => row is { PathId: not null, Id: not null }) // Ensure PathId and Id are not null
+            .GroupBy(row => row.PathId.Value)
+            .Select(group => group.Select(row => new CategoryPath
+            {
+                Id = row.Id.Value,
+                Name = row.Name
+            }).ToList())
+            .ToList();
+        return categoryPaths;
+    }
+    
     #endregion ExtensionMethods
 }

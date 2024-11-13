@@ -134,7 +134,7 @@ public class CategoryRepository(IDbConnection connection) : ICategoryRepository
                 var saleRecord = new SaleEntity()
                 {
                     ProductId = product.Id,
-                    SalePrice = salePrice,
+                    Price = salePrice,
                     StartDate = request.StartDate,
                     EndDate = request.EndDate,
                     IsActive = true

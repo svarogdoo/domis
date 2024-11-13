@@ -12,12 +12,12 @@ public static class AdminEndpoints
         var group = routes.MapGroup("/api/admin").WithTags("Admin");
 
         group.MapGet("/users", async (IAdminService adminService) =>
-            {
-                var users = await adminService.GetUsers();
-                return Results.Ok(users);
-            })
-            .WithDescription("Get all users (id, username & role).");
-        // .RequireAuthorization("Administrator");
+        {
+            var users = await adminService.GetUsers();
+            return Results.Ok(users);
+        })
+        .WithDescription("Get all users (id, username & role).")
+        .RequireAuthorization("Admin");
 
         group.MapPost("/promote-to-admin", async ([FromBody] string userId, IAdminService adminService) =>
             {
@@ -27,7 +27,7 @@ public static class AdminEndpoints
                     : Results.Ok("User promoted to admin successfully.");
             })
             .WithDescription("Promote user to admin role.");
-        // .RequireAuthorization("Administrator");
+        // .RequireAuthorization("Admin");
 
         group.MapGet("/user/{userId}", async (string userId, IAdminService adminService) =>
             {
@@ -37,7 +37,7 @@ public static class AdminEndpoints
                     : Results.NotFound("User not found.");
             })
             .WithDescription("Get user by ID.");
-        // .RequireAuthorization("Administrator");
+        // .RequireAuthorization("Admin");
 
         group.MapGet("/roles", async (IAdminService adminService) =>
             {
@@ -45,7 +45,7 @@ public static class AdminEndpoints
                 return Results.Ok(roles);
             })
             .WithDescription("Get all roles.");
-        // .RequireAuthorization("Administrator");
+        // .RequireAuthorization("Admin");
 
         group.MapPut("/roles/discount", async ([FromBody] RoleDiscountRequest request, IAdminService adminService) =>
             {
@@ -55,7 +55,7 @@ public static class AdminEndpoints
                     : Results.BadRequest($"Failed to update role: {request.RoleName}.");
             })
             .WithDescription("Update role discount.");
-        // .RequireAuthorization("Administrator");
+        // .RequireAuthorization("Admin");
 
         group.MapPost("/user-role/{userId}",
                 async (string userId, [FromBody] RoleRequest request, IAdminService adminService) =>
@@ -66,7 +66,7 @@ public static class AdminEndpoints
                         : Results.BadRequest($"Failed to promote user to {request.Role.RoleName()}.");
                 })
             .WithDescription("Add user to a role.");
-        // .RequireAuthorization("Administrator");
+        // .RequireAuthorization("Admin");
 
         group.MapPut("/user-role/{userId}",
                 async (string userId, [FromBody] RoleRequest request, IAdminService adminService) =>
@@ -77,7 +77,7 @@ public static class AdminEndpoints
                         : Results.BadRequest($"Failed to remove {request.Role.RoleName()} role from user.");
                 })
             .WithDescription("Remove user from a role.");
-        // .RequireAuthorization("Administrator");
+        // .RequireAuthorization("Admin");
 
         group.MapGet("/orders", async (IAdminService adminService) =>
             {
@@ -85,7 +85,7 @@ public static class AdminEndpoints
                 return Results.Ok(response);
             })
             .WithDescription("Gets all orders in the system.");
-        // .RequireAuthorization("Administrator");
+        // .RequireAuthorization("Admin");
 
         group.MapPut("/orders/status",
                 async ([FromBody] UpdateOrderStatusRequest request, IOrderService orderService) =>
@@ -95,7 +95,7 @@ public static class AdminEndpoints
                     return Results.Ok(new UpdateOrderResponse(response));
                 })
             .WithDescription("Update order status(1-New, 2-In Progress, 3-Sent, 4-Completed, 5-Canceled)");
-        // .RequireAuthorization("Administrator");
+        // .RequireAuthorization("Admin");
 
         group.MapPost("/product/sale", async ([FromBody] ProductSaleRequest request, IProductService productService) =>
         {
@@ -112,7 +112,7 @@ public static class AdminEndpoints
             }
         })
         .WithDescription("Put a product on sale.");
-        // .RequireAuthorization("Administrator");
+        // .RequireAuthorization("Admin");
         
         group.MapPost("/category/sale", async ([FromBody] CategorySaleRequest request, ICategoryService categoryService) =>
         {
@@ -127,7 +127,7 @@ public static class AdminEndpoints
             }
         })
         .WithDescription("Put products within category on sale. If some products are already on sale separately, they will not be put on sale and will be returned for admin to decide what to do.");
-        // .RequireAuthorization("Administrator");
+        // .RequireAuthorization("Admin");
 
         group.MapPost("/product/category", async ([FromBody] AssignProductToCategoryRequest request, IProductService productService) =>
         {
@@ -137,6 +137,6 @@ public static class AdminEndpoints
                 : Results.BadRequest("Failed to update product category.");
         })
         .WithDescription("Assign or update a category for a product.");
-        // .RequireAuthorization("Administrator");
+        // .RequireAuthorization("Admin");
     }
 }

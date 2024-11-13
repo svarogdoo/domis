@@ -18,7 +18,7 @@ public class Product
     public int? Sku { get; set; }
 
     [Column("price")]
-    public decimal? Price { get; init; }
+    public decimal? Price { get; set; }
 
     [Column("stock")]
     public decimal? Stock { get; init; }
