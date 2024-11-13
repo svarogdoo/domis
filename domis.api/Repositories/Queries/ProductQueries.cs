@@ -35,7 +35,7 @@ public static class ProductQueries
             MAX(CASE WHEN pp.packaging_type = 'pal' THEN pp.price END) AS PalPrice,
             MAX(CASE WHEN pp.packaging_type = 'pak' THEN pp.price END) AS PakPrice
         FROM domis.product_pricing pp
-        WHERE pp.product_id = @ProductId
+        WHERE pp.product_id = ANY(@ProductIds)  -- Use ANY for array comparison
           AND pp.user_type = @Role
           AND pp.packaging_type IN ('pak', 'pal')
         GROUP BY pp.product_id;
@@ -123,51 +123,57 @@ public static class ProductQueries
 
 
     public const string GetAllByCategoryWithPagination = @"
-            WITH RECURSIVE CategoryHierarchy AS (
-                -- Anchor member: Start with the given category
-                SELECT id
-                FROM domis.category
-                WHERE id = @CategoryId
+        WITH RECURSIVE CategoryHierarchy AS (
+            -- Anchor member: Start with the given category
+            SELECT id
+            FROM domis.category
+            WHERE id = @CategoryId
 
-                UNION ALL
+            UNION ALL
 
-                -- Recursive member: Join to get all subcategories
-                SELECT c.id
-                FROM domis.category c
-                INNER JOIN CategoryHierarchy ch ON c.parent_category_id = ch.id
-            ),
-            ProductImages AS (
-                -- Get Featured image for each product
-                SELECT
-                    pi.product_id AS ProductId,
-                    i.blob_url AS FeaturedImageUrl
-                FROM domis.product_image pi
-                JOIN domis.image i ON pi.image_id = i.id
-                JOIN domis.image_type it ON pi.image_type_id = it.id
-                WHERE it.image_type_name = 'Featured'
-            ),
-            ProductsWithImages AS (
-                -- Combine products with their Featured images
-                SELECT
-                    p.Id as Id,
-                    p.product_name AS Name,
-                    p.sku AS Sku,
-                    p.price AS Price,
-                    p.stock AS Stock,
-                    p.active AS IsActive,
-                    pi.FeaturedImageUrl,
-                    pqt.id AS QuantityType
-                FROM domis.product p
-                INNER JOIN domis.product_category pc ON p.id = pc.product_id
-                INNER JOIN CategoryHierarchy ch ON pc.category_id = ch.id
-                LEFT JOIN ProductImages pi ON p.id = pi.ProductId
-                LEFT JOIN domis.product_quantity_type pqt ON p.quantity_type_id = pqt.id
-                WHERE p.active = true -- filter to include only active products
-            )
-            SELECT *
-            FROM ProductsWithImages
-            ORDER BY Name -- Ensure you have a column to order by
-            OFFSET @Offset LIMIT @Limit;"
+            -- Recursive member: Join to get all subcategories
+            SELECT c.id
+            FROM domis.category c
+            INNER JOIN CategoryHierarchy ch ON c.parent_category_id = ch.id
+        ),
+        ProductImages AS (
+            -- Get Featured image for each product
+            SELECT
+                pi.product_id AS ProductId,
+                i.blob_url AS FeaturedImageUrl
+            FROM domis.product_image pi
+            JOIN domis.image i ON pi.image_id = i.id
+            JOIN domis.image_type it ON pi.image_type_id = it.id
+            WHERE it.image_type_name = 'Featured'
+        ),
+        ProductsWithImages AS (
+            -- Combine products with their Featured images
+            SELECT
+                p.Id as Id,
+                p.product_name AS Name,
+                p.sku AS Sku,
+                p.price AS Price,
+                p.stock AS Stock,
+                p.active AS IsActive,
+                pi.FeaturedImageUrl,
+                pqt.id AS QuantityType,
+                -- Sale Info, use LEFT JOIN to get NULLs if no sale exists
+                s.sale_price AS SalePrice,
+                s.start_date AS StartDate,
+                s.end_date AS EndDate,
+                s.is_active AS IsActive
+            FROM domis.product p
+            INNER JOIN domis.product_category pc ON p.id = pc.product_id
+            INNER JOIN CategoryHierarchy ch ON pc.category_id = ch.id
+            LEFT JOIN ProductImages pi ON p.id = pi.ProductId
+            LEFT JOIN domis.product_quantity_type pqt ON p.quantity_type_id = pqt.id
+            LEFT JOIN domis.sales s ON p.id = s.product_id AND s.is_active = TRUE -- Sale Info, but LEFT JOIN to allow NULLs if no active sale
+            WHERE p.active = true -- filter to include only active products
+        )
+        SELECT *
+        FROM ProductsWithImages
+        ORDER BY Name -- Ensure you have a column to order by
+        OFFSET @Offset LIMIT @Limit;"
     ;
 
     public const string GetById = @"

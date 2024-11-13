@@ -29,15 +29,14 @@ public class ProductService(IProductRepository repository, ICategoryRepository c
     public async Task<ProductDetailsDto?> GetByIdWithDetails(int id, UserEntity? user)
     {
         var discount = await priceHelpers.GetDiscount(user);
-        var isVp = await priceHelpers.IsUserVp(user);
-
+        
         var role = user is not null
             ? await userRepo.GetUserRoleAsync(user.Id)
-            : "User";
+            : Roles.User.RoleName();
         
-        var productDetails = role is "User" or "Admin"
+        var productDetails = role == Roles.User.RoleName() || role == Roles.Admin.RoleName()
             ? await repository.GetByIdWithDetails(id, discount)
-            : await repository.GetByIdWithDetailsForVp(id, role);
+            : await repository.GetByIdWithDetailsForVp(id, role ?? Roles.User.RoleName());
 
         return productDetails;
     }

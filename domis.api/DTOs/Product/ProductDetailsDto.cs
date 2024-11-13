@@ -19,7 +19,7 @@ public class ProductDetailsDto
     public string? FeaturedImageUrl { get; set; }
     public List<ImageGetDto> Images { get; set; } = [];
     public IEnumerable<IEnumerable<CategoryPath>> CategoryPaths { get; set; } = [];
-    public SaleInfo SaleInfo { get; set; }
+    public SaleInfo? SaleInfo { get; set; }
     public Attributes? Attributes { get; set; }
     // ---------------------------------
     // public int? QuantityType { get; set; }
@@ -72,7 +72,7 @@ public class Size
 public class SaleInfo
 {
     public bool IsActive { get; set; }
-    public decimal? Price { get; set; }
+    public decimal? SalePrice { get; set; }
     public DateTime? StartDate { get; set; }
     public DateTime? EndDate { get; set; }
 }
