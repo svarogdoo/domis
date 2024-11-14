@@ -146,10 +146,26 @@ public static class ProductQueries
             JOIN domis.image_type it ON pi.image_type_id = it.id
             WHERE it.image_type_name = 'Featured'
         ),
-        ProductsWithImages AS (
-            -- Combine products with their Featured images
+        LatestSale AS (
+            -- Select only the most recent active sale per product
             SELECT
-                p.Id as Id,
+                s.product_id,
+                s.sale_price,
+                s.start_date,
+                s.end_date,
+                s.is_active
+            FROM domis.sales s
+            WHERE s.is_active = TRUE
+              AND s.start_date = (
+                  SELECT MAX(s2.start_date)
+                  FROM domis.sales s2
+                  WHERE s2.product_id = s.product_id AND s2.is_active = TRUE
+              )
+        ),
+        ProductsWithImages AS (
+            -- Combine products with their Featured images and latest sale
+            SELECT DISTINCT ON (p.Id)
+                p.Id AS Id,
                 p.product_name AS Name,
                 p.sku AS Sku,
                 p.price AS Price,
@@ -157,23 +173,24 @@ public static class ProductQueries
                 p.active AS IsActive,
                 pi.FeaturedImageUrl,
                 pqt.id AS QuantityType,
-                -- Sale Info, use LEFT JOIN to get NULLs if no sale exists
-                s.sale_price AS SalePrice,
-                s.start_date AS StartDate,
-                s.end_date AS EndDate,
-                s.is_active AS IsActive
+                -- Sale Info from LatestSale CTE
+                ls.sale_price AS SalePrice,
+                ls.start_date AS StartDate,
+                ls.end_date AS EndDate,
+                ls.is_active AS IsActive
             FROM domis.product p
             INNER JOIN domis.product_category pc ON p.id = pc.product_id
             INNER JOIN CategoryHierarchy ch ON pc.category_id = ch.id
             LEFT JOIN ProductImages pi ON p.id = pi.ProductId
             LEFT JOIN domis.product_quantity_type pqt ON p.quantity_type_id = pqt.id
-            LEFT JOIN domis.sales s ON p.id = s.product_id AND s.is_active = TRUE -- Sale Info, but LEFT JOIN to allow NULLs if no active sale
-            WHERE p.active = true -- filter to include only active products
+            LEFT JOIN LatestSale ls ON p.id = ls.product_id -- Join to LatestSale instead of domis.sales
+            WHERE p.active = TRUE -- filter to include only active products
         )
         SELECT *
         FROM ProductsWithImages
         ORDER BY Name -- Ensure you have a column to order by
-        OFFSET @Offset LIMIT @Limit;"
+        OFFSET @Offset LIMIT @Limit;
+        "
     ;
 
     public const string GetById = @"
