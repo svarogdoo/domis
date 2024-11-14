@@ -9,14 +9,14 @@ public class ProductPreviewDto
     public string? Name { get; set; }
     public int Sku { get; set; }
     public decimal Price { get; set; }
+    public decimal? VpPrice { get; set; }
     public decimal Stock { get; set; }
     public string? FeaturedImageUrl { get; set; }
     public string? Description { get; set; }
     public ProductQuantityType? QuantityType{ get; set; }
-    
-    // New properties for sale information
-    public bool IsOnSale { get; set; }
-    public decimal? SalePrice { get; set; }
-    public DateTime? SaleStartDate { get; set; }
-    public DateTime? SaleEndDate { get; set; }
+    public SaleInfo? SaleInfo { get; set; }
+    // public bool IsOnSale { get; set; }
+    // public decimal? SalePrice { get; set; }
+    // public DateTime? SaleStartDate { get; set; }
+    // public DateTime? SaleEndDate { get; set; }
 }

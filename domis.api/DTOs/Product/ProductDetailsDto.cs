@@ -19,20 +19,17 @@ public class ProductDetailsDto
     public string? FeaturedImageUrl { get; set; }
     public List<ImageGetDto> Images { get; set; } = [];
     public IEnumerable<IEnumerable<CategoryPath>> CategoryPaths { get; set; } = [];
-    public SaleInfo SaleInfo { get; set; }
-    // public bool IsOnSale { get; set; }
-    // public decimal? SalePrice { get; set; }
-    // public DateTime? SaleStartDate { get; set; }
-    // public DateTime? SaleEndDate { get; set; }
+    public SaleInfo? SaleInfo { get; set; }
+    public Attributes? Attributes { get; set; }
     // ---------------------------------
-    public int? QuantityType { get; set; }
-    public string? Title { get; set; }
-    public decimal? Width { get; set; }
-    public decimal? Height { get; set; }
-    public decimal? Depth { get; set; }
-    public decimal? Length { get; set; }
-    public decimal? Thickness { get; set; }
-    public decimal? Weight { get; set; }
+    // public int? QuantityType { get; set; }
+    // public string? Title { get; set; }
+    // public decimal? Width { get; set; }
+    // public decimal? Height { get; set; }
+    // public decimal? Depth { get; set; }
+    // public decimal? Length { get; set; }
+    // public decimal? Thickness { get; set; }
+    // public decimal? Weight { get; set; }
 }
 
 public class Price
@@ -75,7 +72,19 @@ public class Size
 public class SaleInfo
 {
     public bool IsActive { get; set; }
-    public decimal? Price { get; set; }
+    public decimal? SalePrice { get; set; }
     public DateTime? StartDate { get; set; }
     public DateTime? EndDate { get; set; }
+}
+
+public class Attributes
+{    
+    public int? QuantityType { get; set; }
+    public string? Title { get; set; }
+    public decimal? Width { get; set; }
+    public decimal? Height { get; set; }
+    public decimal? Depth { get; set; }
+    public decimal? Length { get; set; }
+    public decimal? Thickness { get; set; }
+    public decimal? Weight { get; set; }
 }

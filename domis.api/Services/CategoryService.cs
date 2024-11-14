@@ -17,7 +17,7 @@ public interface ICategoryService
     Task<IEnumerable<ProductDetailsDto>> PutCategoryOnSale(CategorySaleRequest request);
 }
 
-public class CategoryService(ICategoryRepository repository, IProductRepository productRepo, IPriceHelpers priceHelpers) : ICategoryService
+public class CategoryService(ICategoryRepository repository, IProductRepository productRepo, IPriceHelpers priceHelpers, IUserRepository userRepo) : ICategoryService
 {
     public async Task<IEnumerable<CategoryMenuDto>?> GetAll()
     {
@@ -33,8 +33,12 @@ public class CategoryService(ICategoryRepository repository, IProductRepository 
     public async Task<CategoryWithProductsDto?> GetCategoryProducts(int categoryId, PageOptions options, UserEntity? user)
     {
         var discount = await priceHelpers.GetDiscount(user);
-
-        return await repository.GetCategoryProducts(categoryId, options, discount);
+        
+        var role = user is not null
+            ? await userRepo.GetUserRoleAsync(user.Id)
+            : Roles.User.RoleName();
+        
+        return await repository.GetCategoryProducts(categoryId, options, discount, role ?? Roles.User.RoleName());
     }
 
     public async Task<IEnumerable<ProductDetailsDto>> PutCategoryOnSale(CategorySaleRequest request)

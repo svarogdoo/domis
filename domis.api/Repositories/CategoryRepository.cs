@@ -15,7 +15,7 @@ public interface ICategoryRepository
 
     //probably no need for this one
     Task<Category?> GetById(int id);
-    Task<CategoryWithProductsDto?> GetCategoryProducts(int categoryId, PageOptions options, decimal discount);
+    Task<CategoryWithProductsDto?> GetCategoryProducts(int categoryId, PageOptions options, decimal discount, string role);
     Task<bool> CategoryExists(int categoryId);
     Task<IEnumerable<SaleEntity>> PutCategoryOnSale(CategorySaleRequest request);
 }
@@ -64,36 +64,63 @@ public class CategoryRepository(IDbConnection connection) : ICategoryRepository
         return product;
     }
 
-    public async Task<CategoryWithProductsDto?> GetCategoryProducts(int categoryId, PageOptions options, decimal discount = 0)
+    public async Task<CategoryWithProductsDto?> GetCategoryProducts(int categoryId, PageOptions options, decimal discount = 0, string role = "User")
     {
         try
         {
             var offset = (options.PageNumber - 1) * options.PageSize;
 
-            var categoryParams = new { CategoryId = categoryId };
-            var category = await connection.QuerySingleOrDefaultAsync<CategoryBasicInfoDto>(CategoryQueries.GetCategoryById, categoryParams);
+            var category = await connection.QuerySingleOrDefaultAsync<CategoryBasicInfoDto>(CategoryQueries.GetCategoryById, new { CategoryId = categoryId });
             
             if (category is null)
                 return null;
             
             category.Paths = await GetCategoryPath(categoryId);
+            var productsDb = await connection.QueryAsync<ProductPreviewDto, SaleInfo, ProductPreviewDto>(
+                ProductQueries.GetAllByCategoryWithPagination,
+                (product, saleInfo) =>
+                {
+                    product.SaleInfo = saleInfo is null || !saleInfo.IsActive 
+                        ? null
+                        : saleInfo;
+                    return product;
+                },
+                param: new { CategoryId = categoryId, Offset = offset, Limit = options.PageSize },
+                splitOn: "SalePrice"
+            );
+            var products = productsDb.ToList();
             
-            var productParams = new { CategoryId = categoryId, Offset = offset, Limit = options.PageSize };
-            var products = await connection.QueryAsync<ProductPreviewDto>(ProductQueries.GetAllByCategoryWithPagination, productParams);
+            var productIds = products.Select(p => p.Id).ToArray();
+            
+            var vpPrices = role == Roles.User.RoleName() || role == Roles.Admin.RoleName()
+                ? null
+                : (await connection.QueryAsync<VpPriceDetails>(ProductQueries.GetSingleProductPricesForVP, new { ProductIds = productIds, Role = role })).ToList();
 
-            var result = new CategoryWithProductsDto
+            if (vpPrices == null) //returning products without vp pricing info
+            {
+                return new CategoryWithProductsDto
+                {
+                    Category = category,
+                    Products = products.ToList()
+                };  
+            }
+            
+            foreach (var product in products) //returning products for vp users with vp pricing info
+            {
+                //product.Price = PricingHelper.CalculateDiscount(product.Price, discount);
+                var vpPricing = vpPrices.FirstOrDefault(vp => vp.ProductId == product.Id);
+                if (vpPricing is null) continue;
+                
+                //TODO: currently setting Sale to null for VP users, decide what to do
+                product.SaleInfo = null;
+                product.VpPrice = vpPricing.PakPrice;
+            }
+
+            return new CategoryWithProductsDto
             {
                 Category = category,
-                Products = products.Select(product => new ProductPreviewDto
-                {
-                    Id = product.Id,
-                    Name = product.Name,
-                    Price = PricingHelper.CalculateDiscount(product.Price, discount)
-                }).ToList()
+                Products = products.ToList()
             };
-
-
-            return result;
         }
         catch (Exception ex)
         {
@@ -134,7 +161,7 @@ public class CategoryRepository(IDbConnection connection) : ICategoryRepository
                 var saleRecord = new SaleEntity()
                 {
                     ProductId = product.Id,
-                    Price = salePrice,
+                    SalePrice = salePrice,
                     StartDate = request.StartDate,
                     EndDate = request.EndDate,
                     IsActive = true

@@ -76,23 +76,23 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
             productDetail.Size = size;
             productDetail.Images = [.. images];
             productDetail.CategoryPaths = categoryPaths;
+            productDetail.SaleInfo = new SaleInfo();
             
             if (product.Price.HasValue)
             {
                 //if there is a sale on the product
-                if (saleEntity is { Price: not null })
+                if (saleEntity is { SalePrice: not null })
                 {
-                    productDetail.SaleInfo = new SaleInfo();
                     productDetail.SaleInfo = SetSaleInfo(saleEntity);
                     
                     //which price to use?
-                    productDetail.Price = CalculatePakPalPrices(saleEntity.Price.Value, size);
+                    productDetail.Price = CalculatePakPalPrices(saleEntity.SalePrice.Value, size);
                 }
                 else //if there is no sale
                 {
                     var discountedPrice = PricingHelper.CalculateDiscount(product.Price.Value, discount);
                     productDetail.Price = CalculatePakPalPrices(discountedPrice, size);
-                    productDetail.SaleInfo.IsActive = false;
+                    productDetail.SaleInfo = null;
                 }
             }
             else
@@ -117,12 +117,10 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
                 return null;
 
             //product.Price = null; //set to null because for VPs we don't use price from product table (populated from nivelacija.csv)
-
             var size = await connection.QuerySingleOrDefaultAsync<Size>(ProductQueries.GetProductSizing, new { ProductId = productId });
             var images = (await connection.QueryAsync<ImageGetDto>(ImageQueries.GetProductImages, new { ProductId = productId })).ToList();
             var categoryPaths = await GetProductCategoriesPath(productId);
-
-            var vpPricing = await connection.QueryFirstOrDefaultAsync<VpPriceDetails>(ProductQueries.GetSingleProductPricesForVP, new { ProductId = productId, Role = role });
+            var vpPricing = await connection.QueryFirstOrDefaultAsync<VpPriceDetails>(ProductQueries.GetSingleProductPricesForVP, new { ProductIds = new List<int>{productId}, Role = role });
             
             var productDetail = mapper.Map<ProductDetailsDto>(product);
             
@@ -130,7 +128,7 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
             productDetail.Images = [.. images];
             productDetail.CategoryPaths = categoryPaths;
             productDetail.VpPrice = SetVpPrice(vpPricing, size);
-            productDetail.Price = CalculatePakPalPrices(product.Price.Value, size);
+            productDetail.Price = CalculatePakPalPrices(product.Price, size);
             
             //TODO: what to do with sales for VP users???
             
@@ -144,14 +142,29 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
 
     private static VpPrice SetVpPrice(VpPriceDetails? vpPricing, Size? size)
     {
+        if (vpPricing == null || size == null)
+        {
+            return new VpPrice
+            {
+                PakUnitPrice = vpPricing?.PakPrice,
+                PalUnitPrice = vpPricing?.PalPrice,
+                PakPrice = null,
+                PalPrice = null
+            };
+        }
+
+        var pakSize = string.IsNullOrEmpty(size.Pak) ? (decimal?)null : decimal.Parse(size.Pak);
+        var palSize = string.IsNullOrEmpty(size.Pal) ? (decimal?)null : decimal.Parse(size.Pal);
+
         return new VpPrice
         {
             PakUnitPrice = vpPricing.PakPrice,
             PalUnitPrice = vpPricing.PalPrice,
-            PakPrice = vpPricing.PakPrice * decimal.Parse(size.Pak),
-            PalPrice = vpPricing.PalPrice * decimal.Parse(size.Pal)
+            PakPrice = pakSize.HasValue ? vpPricing?.PakPrice * pakSize.Value : null,
+            PalPrice = palSize.HasValue ? vpPricing?.PalPrice * palSize.Value : null
         };
     }
+
 
     public async Task<IEnumerable<ProductBasicInfoDto>> GetProductsBasicInfoByCategory(int categoryId)
     {
@@ -337,8 +350,11 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
     }
 
     #region ExtensionsMethods
-    private static Price CalculatePakPalPrices(decimal unitPrice, Size? productSize)
+    private static Price? CalculatePakPalPrices(decimal? unitPrice, Size? productSize)
     {
+        if (unitPrice is null)
+            return null;
+        
         decimal? pakPrice = null;
         decimal? palPrice = null;
 
@@ -365,7 +381,7 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
         return new SaleInfo
         {
             IsActive = true,
-            Price = sale.Price,
+            SalePrice = sale.SalePrice,
             StartDate = sale.StartDate,
             EndDate = sale.EndDate
         };
@@ -378,7 +394,7 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
     {
         var categoryPathResults = await connection.QueryAsync<ProdCategoryPathRow>(ProductQueries.GetProductCategoriesPaths, new { ProductId = productId });
         var categoryPaths = categoryPathResults
-            .Where(row => row is { PathId: not null, Id: not null }) // Ensure PathId and Id are not null
+            .Where(row => row is { PathId: not null, Id: not null }) // Ensure PathId and ID are not null
             .GroupBy(row => row.PathId.Value)
             .Select(group => group.Select(row => new CategoryPath
             {
