@@ -79,5 +79,18 @@ public static class UserEndpoints
         })
         .RequireAuthorization()
         .WithDescription("Gets roles of a logged in user.");
+        
+        group.MapGet("/role", async (HttpContext http, IUserService userService) =>
+        {
+            var userId = http.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (userId is null) return Results.Unauthorized();
+
+            var role = await userService.Role(userId);
+
+            return Results.Ok(role);
+        })
+        .RequireAuthorization()
+        .WithDescription("Gets a highest role of a logged in user.");
     }
 }
