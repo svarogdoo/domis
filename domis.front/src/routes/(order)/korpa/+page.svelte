@@ -8,8 +8,6 @@
   let cartProducts: Array<CartProduct> | undefined = [];
   let totalCartPrice: number | undefined;
 
-  console.info($cart);
-
   $: cartProducts = $cart?.items;
   $: totalCartPrice = $cart?.totalCartPrice;
 </script>

@@ -20,8 +20,6 @@
   let totalPrice: number = 0;
   let quantityTypeString: string;
 
-  console.info(product);
-
   $: if (quantityType) {
     quantityTypeString = mapQuantityTypeToString(quantityType);
   }

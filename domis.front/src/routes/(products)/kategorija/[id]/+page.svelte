@@ -12,7 +12,7 @@
   let loadMoreTrigger: HTMLElement;
   let loading = false;
 
-  let pageNumber = 1;
+  let pageNumber = 2;
   let pageSize = 18;
 
   $: products = data.props.products;
@@ -46,9 +46,23 @@
       pageNumber,
       pageSize
     );
-    products = [...products, ...newItems.products];
+
+    products = filterDuplicates(newItems);
+
     loading = false;
     pageNumber++;
+    sortProducts(sortType);
+  }
+
+  function filterDuplicates(items: CategoryData) {
+    const productMap = new Map(products.map((item) => [item.id, item]));
+    for (const item of items.products) {
+      if (!productMap.has(item.id)) {
+        productMap.set(item.id, item);
+      }
+    }
+
+    return Array.from(productMap.values());
   }
 
   onMount(() => {
@@ -112,7 +126,7 @@
     </div>
   </div>
   <div class="w-full grid grid-cols-2 lg:grid-cols-3 gap-x-2 gap-y-4">
-    {#each products as product}
+    {#each products as product (product.id)}
       <ProductCard {product} />
     {/each}
   </div>

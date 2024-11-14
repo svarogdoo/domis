@@ -2,7 +2,12 @@ import { get } from "svelte/store";
 import { API_URL } from "../config";
 import { userStore } from "../stores/user";
 
+let svelteKitFetch: typeof fetch = fetch; // resolves warning
 let headers: { [key: string]: string } = {};
+
+export function initFetch(fetch: typeof window.fetch) {
+  svelteKitFetch = fetch;
+}
 
 export const setAuthToken = (token: string | null) => {
   if (token) {
@@ -13,14 +18,14 @@ export const setAuthToken = (token: string | null) => {
 };
 
 export async function fetchData<T>(url: string, method?: string): Promise<T> {
-  return fetch(url, {
+  return svelteKitFetch(url, {
     method,
     headers,
   }).then(handleResponse);
 }
 
 export async function putDataWithJsonBody(url: string, json: string) {
-  return fetch(url, {
+  return svelteKitFetch(url, {
     method: "put",
     body: json,
     headers: {
@@ -31,7 +36,7 @@ export async function putDataWithJsonBody(url: string, json: string) {
 }
 
 export async function deleteData(url: string) {
-  return fetch(url, {
+  return svelteKitFetch(url, {
     method: "delete",
     headers,
   }).then(handleResponse);
@@ -42,7 +47,7 @@ export async function fetchDataWithJsonBody<T>(
   method: string,
   json: string
 ): Promise<T> {
-  return fetch(url, {
+  return svelteKitFetch(url, {
     method,
     body: json,
     headers: {
@@ -86,7 +91,7 @@ async function handleTokenExpired(responseStatus: number) {
   var user = get(userStore);
 
   if (responseStatus === 401 && user.refreshToken) {
-    const result = await fetch(`${API_URL}/refresh`, {
+    const result = await svelteKitFetch(`${API_URL}/refresh`, {
       method: "POST",
       body: JSON.stringify({ refreshToken: user.refreshToken }),
       headers: {
