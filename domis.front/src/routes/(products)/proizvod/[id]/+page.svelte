@@ -3,31 +3,29 @@
     formatPrice,
     formatToTwoDecimals,
   } from "../../../../helpers/numberFormatter";
-  import fallbackImage from "$lib/assets/backup.jpg";
   import SurfaceQuantity from "./SurfaceQuantity.svelte";
   import { mapQuantityTypeToString, QuantityType } from "../../../../enums";
   import { handleImageError } from "../../../../helpers/imageFallback";
   import { getCurrencyString } from "../../../../helpers/stringFormatter";
-  import { productService } from "../../../../services/product-service";
+  import { userStore } from "../../../../stores/user";
 
   export let data;
 
   $: product = data.props.product;
+  $: productPrice = data.props.productPrice;
 
   let quantityType: QuantityType = QuantityType.Piece;
   let quantityTypeString = mapQuantityTypeToString(quantityType);
-  let featuredImage = fallbackImage;
   let isExtraChecked = false;
   let lastCategoryPath: CategoryPath | undefined;
 
-  // TODO: Galeriju uraditi
-  $: if (product?.images) {
-    let imageUrl = product?.images.find((x) => x.type === "Featured")?.url;
-    if (imageUrl) featuredImage = imageUrl;
-  }
-
   $: if (product?.categoryPaths) {
     lastCategoryPath = product.categoryPaths[0].at(-1);
+  }
+
+  $: if (product?.attributes?.quantityType) {
+    quantityType = product.attributes.quantityType;
+    quantityTypeString = mapQuantityTypeToString(quantityType);
   }
 </script>
 
@@ -60,7 +58,7 @@
     >
       <div class="w-4/5">
         <img
-          src={featuredImage}
+          src={product?.featuredImageUrl}
           alt={product?.name}
           on:error={handleImageError}
           class="w-full h-auto aspect-square object-cover rounded-lg"
@@ -86,43 +84,56 @@
           <p class="text-gray-400 font-thin">SKU:{product.sku}</p>
         </div>
         <!-- Pricing -->
-        <div
-          class="flex flex-col px-3 py-3 gap-y-2 tracking-wide font-extralight border-b border-gray-400"
-        >
-          {#if product?.price?.perUnit}
-            <p class="text-xs lg:text-sm">
-              {getCurrencyString()}
-              <span class="font-light text-domis-dark text-sm lg:text-lg px-2"
-                >{formatPrice(product?.price.perUnit)}</span
-              >
-              po {quantityTypeString}
-            </p>
-          {/if}
-          {#if product?.price?.perBox && product?.size?.box}
-            <p class="text-xs lg:text-sm">
-              {getCurrencyString()}
-              <span class="font-light text-domis-dark text-sm lg:text-lg px-2"
-                >{formatPrice(product?.price.perBox)}</span
-              >
-              po paketu ({product?.size.box}
-              {quantityTypeString})
-            </p>
-          {/if}
-          {#if product?.price?.perPallet && product?.size?.pallet}
-            <p class="text-xs lg:text-sm">
-              {getCurrencyString()}
-              <span class="font-light text-domis-dark text-sm lg:text-lg px-2"
-                >{formatPrice(product?.price.perPallet)}</span
-              >
-              po paleti ({product?.size.pallet}
-              {quantityTypeString} | {formatToTwoDecimals(
-                product?.size?.pallet / product?.size?.box
-              )} paketa)
-            </p>
-          {/if}
+        <div class="w-full flex flex-col relative">
+          <p
+            class="absolute top-0 right-0 text-end font-light mt-2 text-green-700 tracking-wider"
+          >
+            {product.stock}
+            <span class="text-domis-accent">na zalihama</span>
+          </p>
+          <div
+            class="flex flex-col px-3 py-3 gap-y-2 tracking-wide font-extralight border-b border-gray-400"
+          >
+            {#if productPrice?.perUnit}
+              <p class="text-xs lg:text-sm">
+                {getCurrencyString()}
+                <span class="font-light text-domis-dark text-sm lg:text-lg px-2"
+                  >{formatPrice(productPrice.perUnit)}</span
+                >
+                po {quantityTypeString}
+              </p>
+            {/if}
+            {#if productPrice?.perBox && product?.size?.box}
+              <p class="text-xs lg:text-sm">
+                {getCurrencyString()}
+                <span class="font-light text-domis-dark text-sm lg:text-lg px-2"
+                  >{formatPrice(productPrice.perBox)}</span
+                >
+                po paketu ({product?.size.box}
+                {quantityTypeString})
+              </p>
+            {/if}
+            {#if userStore.isUserVP() && productPrice?.perPallet && product?.size?.pallet}
+              <p class="text-xs lg:text-sm">
+                {getCurrencyString()}
+                <span class="font-light text-domis-dark text-sm lg:text-lg px-2"
+                  >{formatPrice(productPrice.perPallet)}</span
+                >
+                po paleti ({product?.size.pallet}
+                {quantityTypeString} | {formatToTwoDecimals(
+                  product?.size?.pallet / product?.size?.box
+                )} paketa)
+              </p>
+            {/if}
+          </div>
         </div>
 
-        <SurfaceQuantity bind:isExtraChecked {product} {quantityType} />
+        <SurfaceQuantity
+          bind:isExtraChecked
+          {product}
+          {quantityType}
+          {productPrice}
+        />
       </div>
     </div>
   </section>

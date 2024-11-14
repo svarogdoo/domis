@@ -98,6 +98,7 @@ declare global {
     name: string;
     sku: string;
     price: number;
+    vpPrice: number;
     stock: number;
     quantityType?: QuantityType;
     featuredImageUrl?: string;
@@ -109,27 +110,20 @@ declare global {
     description?: string;
     sku: number;
     price: ProductPricing;
-    size: ProductSizing;
+    vpPrice: ProductPricing;
     stock: number;
+    size: ProductSizing;
     featuredImageUrl: string;
     images: Array<Image>; // ne slati za put
     categoryPaths: Array<Array<CategoryPath>>;
-    title?: string;
-    width?: number;
-    height?: number;
-    depth?: number;
-    length?: number;
-    thickness?: number;
-    weight?: number;
-    isItemType?: boolean;
-    isSurfaceType?: boolean;
+    attributes: ProductAttributes;
     isActive?: boolean;
-    quantityType?: QuantityType;
   }
   interface ProductPricing {
     perUnit?: number;
     perBox?: number;
     perPallet?: number;
+    perPalletUnit?: number;
   }
   interface ProductSizing {
     box: number;
@@ -143,6 +137,16 @@ declare global {
   interface CategoryPath {
     id: number;
     name: string;
+  }
+  interface ProductAttributes {
+    quantityType?: QuantityType;
+    title?: string;
+    width?: number;
+    height?: number;
+    depth?: number;
+    length?: number;
+    thickness?: number;
+    weight?: number;
   }
 
   interface SearchResult {

@@ -1,21 +1,26 @@
 <script lang="ts">
   import backup from "$lib/assets/backup.jpg";
+  import { onMount } from "svelte";
   import { mapQuantityTypeToString } from "../../../../enums";
   import { handleImageError } from "../../../../helpers/imageFallback";
   import { formatPrice } from "../../../../helpers/numberFormatter";
   import { getCurrencyString } from "../../../../helpers/stringFormatter";
+  import { userStore } from "../../../../stores/user";
 
   export let product: CategoryProduct;
   let featuredImage = backup;
   let quantityTypeString: string;
+  let productPrice: number;
 
-  $: if (product?.featuredImageUrl) {
-    featuredImage = product.featuredImageUrl;
-  }
+  onMount(() => {
+    if (userStore.isUserVP()) productPrice = product.vpPrice;
+    else productPrice = product.price;
 
-  $: if (product?.quantityType) {
-    quantityTypeString = mapQuantityTypeToString(product.quantityType);
-  }
+    featuredImage = product.featuredImageUrl ?? backup;
+    quantityTypeString = product.quantityType
+      ? mapQuantityTypeToString(product.quantityType)
+      : "";
+  });
 </script>
 
 <a
@@ -42,7 +47,7 @@
     </div>
     <div class="flex flex-col flex-grow gap-y-2 mt-2 justify-end items-center">
       <div class="flex items-center gap-x-1">
-        <p class="lg:text-xl">{formatPrice(product.price)}</p>
+        <p class="lg:text-xl">{formatPrice(productPrice)}</p>
         <p class="text-xs lg:text-sm text-gray-800 font-thin">
           {getCurrencyString()}
         </p>

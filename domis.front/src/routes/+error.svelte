@@ -1,9 +1,9 @@
 <script>
-  import notFoundImage from "$lib/assets/not-found.webp";
+  import notFoundImage from "$lib/assets/test.webp";
 </script>
 
-<div class="flex flex-col lg:flex-row gap-x-2 justify-center items-center">
-  <img src={notFoundImage} alt="not found" class="w-60 h-60" />
+<div class="flex flex-col gap-x-2 justify-center items-center">
+  <img src={notFoundImage} alt="not found" class="w-auto h-96" />
 
   <!-- Optional 404 Message -->
   <div

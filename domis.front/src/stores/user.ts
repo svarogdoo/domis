@@ -57,13 +57,7 @@ const createUserStore = () => {
       const refreshToken = loginResponse.refreshToken;
 
       const userProfile = await this.getProfile();
-      const userRoleRes = await userService.getUserRole();
-      let userRole = userInitialState.userRole;
-      console.info(userRoleRes, "role");
-
-      if (userRoleRes?.length > 0) {
-        userRole = userRoleRes[0];
-      }
+      const userRole = await userService.getUserRole();
 
       setUser(userProfile, token, refreshToken, userRole);
       cart.loginUser();

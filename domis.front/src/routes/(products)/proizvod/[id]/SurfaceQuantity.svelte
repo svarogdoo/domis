@@ -13,11 +13,14 @@
   export let product: Product;
   export let isExtraChecked: boolean;
   export let quantityType: QuantityType;
+  export let productPrice: ProductPricing;
 
   let boxInput: number = 0;
   let amountInput: number = 0;
   let totalPrice: number = 0;
   let quantityTypeString: string;
+
+  console.info(product);
 
   $: if (quantityType) {
     quantityTypeString = mapQuantityTypeToString(quantityType);
@@ -52,21 +55,22 @@
   }
 
   function setTotalPrice() {
-    if (product.price.perBox)
-      if (product.size.pallet && product.price.perPallet) {
+    if (productPrice.perBox)
+      if (product.size.pallet && productPrice.perPallet) {
         const boxesPerPallet = product.size.pallet / product.size.box;
         const palletNumber = Math.floor(boxInput / boxesPerPallet);
         const remainingBoxes = boxInput % boxesPerPallet;
 
         totalPrice =
           palletNumber > 0
-            ? palletNumber * product.price.perPallet +
-              remainingBoxes * product.price.perBox
-            : boxInput * product.price.perBox;
+            ? palletNumber * productPrice.perPallet +
+              remainingBoxes * productPrice.perBox
+            : boxInput * productPrice.perBox;
       } else {
-        totalPrice = boxInput * product.price.perBox;
+        totalPrice = boxInput * productPrice.perBox;
       }
-    if (product.price.perUnit) totalPrice = amountInput * product.price.perUnit;
+    else if (productPrice.perUnit)
+      totalPrice = amountInput * productPrice.perUnit;
   }
 
   function addItemToCart() {

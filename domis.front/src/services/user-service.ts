@@ -82,7 +82,7 @@ async function getUserOrders() {
 }
 
 async function getUserRole() {
-  return await fetchData<Array<string>>(`${API_URL}/api/user/roles`, "GET");
+  return await fetchData<string>(`${API_URL}/api/user/role`, "GET");
 }
 
 export const userService = {
