@@ -55,7 +55,7 @@ public static class CartEndpoints
             try
             {
                 var user = await userManager.GetUserAsync(http.User);
-
+                
                 var response = await cartService.CreateCartItem(request.CartId, request!.ProductId, request!.Quantity, user);
                 return response == null
                     ? Results.BadRequest("This product does not exist.")
@@ -73,9 +73,11 @@ public static class CartEndpoints
             }
         }).WithDescription("Create new cart item");
         
-        group.MapPut("/cart-item-quantity", async ([FromBody]UpdateCartItemRequest request, ICartService cartService) =>
-        {
-            var response = await cartService.UpdateCartItemQuantity(request.cartItemId, request.quantity);
+        group.MapPut("/cart-item-quantity", async ([FromBody]UpdateCartItemRequest request, ICartService cartService, HttpContext http, UserManager<UserEntity> userManager) =>
+        {                
+            var user = await userManager.GetUserAsync(http.User);
+
+            var response = await cartService.UpdateCartItemQuantity(request.cartItemId, request.quantity, user);
 
             return Results.Ok(new UpdateCartItemResponse(response));
         }).WithDescription("Update cart item quantity");

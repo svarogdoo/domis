@@ -12,14 +12,13 @@ public interface ICartService
     Task<int> CreateCart(string? userId);
     Task<bool> UpdateCartStatus(int cartId, int statusId);
     Task<int?> CreateCartItem(int? cartId, int productId, decimal quantity, UserEntity? user);
-    Task<bool> UpdateCartItemQuantity(int cartItemId, decimal quantity);
+    Task<bool> UpdateCartItemQuantity(int cartItemId, decimal quantity, UserEntity? user);
     Task<bool> DeleteCartItem(int cartItemId);
     Task<bool> DeleteCart(int cartId);
     Task<CartDto?> GetCart(UserEntity? user, int? cartId);
-
     Task<bool> SetCartUserId(int cartId, string userId);
 }
-public class CartService(ICartRepository cartRepository, IPriceHelpers priceHelpers) : ICartService
+public class CartService(ICartRepository cartRepository, IUserRepository userRepo, IPriceHelpers priceHelpers) : ICartService
 
 {
     public async Task<IEnumerable<OrderStatusDto>?> GetAllOrderStatuses() => 
@@ -33,13 +32,21 @@ public class CartService(ICartRepository cartRepository, IPriceHelpers priceHelp
 
     public async Task<int?> CreateCartItem(int? cartId, int productId, decimal quantity, UserEntity? user)
     {
-        var discount = await priceHelpers.GetDiscount(user);
-
-        return await cartRepository.CreateCartItemAsync(cartId, productId, quantity, user?.Id, discount);
+        var role = user is not null
+            ? await userRepo.GetUserRoleAsync(user.Id)
+            : Roles.User.RoleName();
+        
+        return await cartRepository.CreateCartItemAsync(cartId, productId, quantity, user?.Id, role ?? Roles.User.RoleName());
     }
 
-    public async Task<bool> UpdateCartItemQuantity(int cartItemId, decimal quantity) => 
-        await cartRepository.UpdateCartItemQuantityAsync(cartItemId, quantity);
+    public async Task<bool> UpdateCartItemQuantity(int cartItemId, decimal quantity, UserEntity? user)
+    {        
+        var role = user is not null
+            ? await userRepo.GetUserRoleAsync(user.Id)
+            : Roles.User.RoleName();
+        
+        return await cartRepository.UpdateCartItemQuantityAsync(cartItemId, quantity, role ?? Roles.User.RoleName());
+    }
 
     public async Task<bool> DeleteCartItem(int cartItemId) => 
         await cartRepository.DeleteCartItemAsync(cartItemId);
