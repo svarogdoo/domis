@@ -86,8 +86,4 @@
   .order-card {
     box-shadow: 0px 4px 18px 2.25px rgba(0, 0, 0, 0.18);
   }
-
-  button {
-    letter-spacing: 0.24em;
-  }
 </style>

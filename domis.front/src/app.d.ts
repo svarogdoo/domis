@@ -254,6 +254,16 @@ declare global {
     googleMapPin?: string;
     optionalInfo?: string;
   }
+
+  interface AdminUser {
+    userId: number;
+    firstName: string;
+    lastName: string;
+    email: string;
+    role: string;
+    roles: Array<string>;
+    userName: string;
+  }
 }
 
 export {};

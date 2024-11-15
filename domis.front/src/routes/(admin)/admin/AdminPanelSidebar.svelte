@@ -25,12 +25,6 @@
   >
     Korisnici
   </a>
-  <a
-    href="kategorije"
-    class="w-full py-3 flex items-center justify-center hover:bg-gray-100 border-b border-gray-600"
-  >
-    Kategorije
-  </a>
   <li
     class="w-full py-3 flex items-center justify-center hover:bg-gray-100 border-b border-gray-600"
   >
