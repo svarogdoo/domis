@@ -12,12 +12,13 @@
   import { handleImageError } from "../../../../helpers/imageFallback";
 
   let selectedCategoryId: string;
+  let selectedProductId: number = 0;
 
   let snackbarMessage: string;
   let isSnackbarSuccess: boolean;
 
   let productsList: Array<Product>;
-  let selectedProduct: Product;
+  let selectedProduct: Product | null = null;
   let title: string;
   let description: string = "";
   let height: string;
@@ -39,26 +40,43 @@
   };
 
   $: if (selectedCategoryId) {
+    selectedProductId = 0;
     setProducts();
   }
 
-  async function setSelectedProduct(value: Product) {
-    selectedProduct = await getProduct(value.id);
-    title = selectedProduct.title ? selectedProduct.title : "";
+  async function setSelectedProduct(value: number) {
+    if (value === undefined) return;
+    selectedProduct = await getProduct(value);
+
+    title = selectedProduct.attributes.title
+      ? selectedProduct.attributes.title
+      : "";
     description = selectedProduct.description
       ? selectedProduct.description
       : "";
-    height = selectedProduct.height ? `${selectedProduct.height}` : "";
-    width = selectedProduct.width ? `${selectedProduct.width}` : "";
-    depth = selectedProduct.depth ? `${selectedProduct.depth}` : "";
-    length = selectedProduct.length ? `${selectedProduct.length}` : "";
-    thickness = selectedProduct.thickness ? `${selectedProduct.thickness}` : "";
-    weight = selectedProduct.weight ? `${selectedProduct.weight}` : "";
+    height = selectedProduct.attributes.height
+      ? `${selectedProduct.attributes.height}`
+      : "";
+    width = selectedProduct.attributes.width
+      ? `${selectedProduct.attributes.width}`
+      : "";
+    depth = selectedProduct.attributes.depth
+      ? `${selectedProduct.attributes.depth}`
+      : "";
+    length = selectedProduct.attributes.length
+      ? `${selectedProduct.attributes.length}`
+      : "";
+    thickness = selectedProduct.attributes.thickness
+      ? `${selectedProduct.attributes.thickness}`
+      : "";
+    weight = selectedProduct.attributes.weight
+      ? `${selectedProduct.attributes.weight}`
+      : "";
     quantityType =
-      selectedProduct.quantityType === undefined ||
-      selectedProduct.quantityType === QuantityType.None
+      selectedProduct.attributes.quantityType === undefined ||
+      selectedProduct.attributes.quantityType === QuantityType.None
         ? QuantityType.Piece
-        : selectedProduct.quantityType;
+        : selectedProduct.attributes.quantityType;
     isActive =
       selectedProduct.isActive !== undefined ? selectedProduct.isActive : true;
   }
@@ -143,39 +161,38 @@
   }
 </script>
 
-<div class="flex w-full px-12">
-  <div class="flex flex-col w-1/5 broder-r border-r">
-    <ul>
+<div class="flex flex-col w-full px-12 gap-y-6">
+  <div class="flex gap-x-8">
+    <div class="w-60">
       <AdminCategoryList bind:selectedCategoryId />
-    </ul>
-  </div>
-  {#if productsList}
-    <ul
-      class="flex flex-col w-1/5 border-r overflow-y-scroll max-h-fit font-light gap-y-2"
-    >
-      {#each productsList as product}
-        <button
-          on:click={() => setSelectedProduct(product)}
-          type="button"
-          class="hover:bg-blue-500 hover:text-white px-2 rounded-lg text-left"
+    </div>
+    {#if productsList}
+      <div class="flex flex-col gap-y-2 relative w-60">
+        <h2 class="font-bold">Proizvodi</h2>
+        <select
+          bind:value={selectedProductId}
+          on:change={() => setSelectedProduct(selectedProductId)}
+          class="block w-full border rounded-lg px-2 py-1 bg-white text-left font-light"
         >
-          {product.name}
-        </button>
-      {/each}
-    </ul>
-  {/if}
-  {#if !selectedProduct}
-    <h2 class="mt-4 text-xl ml-12 font-light">
-      Odaberite kategoriju a potom proizvod iz liste s leve strane
-    </h2>
-  {:else}
-    <div class="relative w-3/5 flex flex-col ml-12">
+          <option disabled value={0}>Izaberite proizvod</option>
+          {#each productsList as product}
+            <option value={product.id}>
+              {product.name}
+            </option>
+          {/each}
+        </select>
+      </div>
+    {/if}
+  </div>
+
+  {#if selectedProduct}
+    <div class="relative w-full flex flex-col ml-12">
       <div class="flex justify-between gap-x-4">
         <div class="flex flex-col">
           <h2 class="mt-4 text-xl" placeholder="Postojeći naziv proizvoda">
             {selectedProduct.name}
           </h2>
-          <p class="mt-12 text-lg">Kako popuniti polja?</p>
+          <p class="mt-4 text-lg">Kako popuniti polja?</p>
           <p class="text-md font-light mt-4">
             <span class="font-semibold">Naslov:</span> Unesite naslov bez imena
             kategorije. Primer -

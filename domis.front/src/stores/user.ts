@@ -11,7 +11,7 @@ const createUserStore = () => {
     user: null,
     token: null,
     refreshToken: null,
-    userRole: "test",
+    userRole: "Guest",
   };
   const { subscribe, set, update } = writable<UserState>(userInitialState);
 
