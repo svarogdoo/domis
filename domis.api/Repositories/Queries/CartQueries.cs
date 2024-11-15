@@ -165,9 +165,14 @@ public static class CartQueries
     ;
     
     public const string GetCartItemProductIdAndQuantity = @"
-        SELECT quantity AS CurrentQuantity, product_id AS ProductId
-        FROM domis.cart_item
-        WHERE id = @CartItemId;
+        SELECT 
+            CurrentQuantity, 
+            ProductId,
+            CASE WHEN EXISTS (SELECT 1 FROM CartItems WHERE CartItemId = @CartItemId) THEN 1 ELSE 0 END AS Exists
+        FROM 
+            CartItems 
+        WHERE 
+            CartItemId = @CartItemId;
     ";
     
     public const string SetCartUserId = @"

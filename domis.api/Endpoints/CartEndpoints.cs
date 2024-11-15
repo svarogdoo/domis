@@ -16,7 +16,7 @@ public static class CartEndpoints
         
         group.MapGet("/cart-status", async (ICartService cartService) =>
         {
-            var response = await cartService.GetAllOrderStatuses();
+            var response = await cartService.AllOrderStatuses();
 
             return Results.Ok(response);
         }).WithDescription("Get all cart statuses");
@@ -96,7 +96,7 @@ public static class CartEndpoints
             //TODO: decide what do we give priority to: cartId or user
             var user = await userManager.GetUserAsync(http.User);
 
-            var cart = await cartService.GetCart(user, cartId);
+            var cart = await cartService.Cart(user, cartId);
             
             if (user is null && cartId is null) return Results.BadRequest();
 

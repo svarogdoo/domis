@@ -8,21 +8,21 @@ namespace domis.api.Services;
 
 public interface ICartService
 {
-    Task<IEnumerable<OrderStatusDto>?> GetAllOrderStatuses();
+    Task<IEnumerable<OrderStatusDto>?> AllOrderStatuses();
     Task<int> CreateCart(string? userId);
     Task<bool> UpdateCartStatus(int cartId, int statusId);
     Task<int?> CreateCartItem(int? cartId, int productId, decimal quantity, UserEntity? user);
     Task<bool> UpdateCartItemQuantity(int cartItemId, decimal quantity, UserEntity? user);
     Task<bool> DeleteCartItem(int cartItemId);
     Task<bool> DeleteCart(int cartId);
-    Task<CartDto?> GetCart(UserEntity? user, int? cartId);
+    Task<CartDto?> Cart(UserEntity? user, int? cartId);
     Task<bool> SetCartUserId(int cartId, string userId);
 }
 public class CartService(ICartRepository cartRepository, IUserRepository userRepo, IPriceHelpers priceHelpers) : ICartService
 
 {
-    public async Task<IEnumerable<OrderStatusDto>?> GetAllOrderStatuses() => 
-        await cartRepository.GetAllOrderStatuses();
+    public async Task<IEnumerable<OrderStatusDto>?> AllOrderStatuses() => 
+        await cartRepository.AllOrderStatuses();
 
     public async Task<int> CreateCart(string? userId) =>
         await cartRepository.CreateCartAsync(userId);
@@ -57,6 +57,6 @@ public class CartService(ICartRepository cartRepository, IUserRepository userRep
     public async Task<bool> SetCartUserId(int cartId, string userId)
         => await cartRepository.SetCartUserId(cartId, userId);
 
-    public async Task<CartDto?> GetCart(UserEntity? user, int? cartId) 
-        => await cartRepository.GetCart(user?.Id, cartId);
+    public async Task<CartDto?> Cart(UserEntity? user, int? cartId) 
+        => await cartRepository.Cart(user?.Id, cartId);
 }

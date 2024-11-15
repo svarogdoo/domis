@@ -14,19 +14,19 @@ namespace domis.api.Repositories;
 
 public interface ICartRepository
 {
-    Task<IEnumerable<OrderStatusDto>?> GetAllOrderStatuses();
+    Task<IEnumerable<OrderStatusDto>?> AllOrderStatuses();
     Task<int> CreateCartAsync(string? userId);
     Task<bool> UpdateCartStatusAsync(int cartId, int statusId);
-    Task<int?> CreateCartItemAsync(int? cartId, int productId, decimal quantity, string? userId, string role, decimal discount = 0);
+    Task<int?> CreateCartItemAsync(int? cartId, int productId, decimal addedQuantity, string? userId, string role, decimal discount = 0);
     Task<bool> UpdateCartItemQuantityAsync(int cartItemId, decimal addedQuantity, string role);
     Task<bool> DeleteCartItemAsync(int cartItemId);
     Task<bool> DeleteCartAsync(int cartId);
-    Task<CartDto?> GetCart(string? userId, int? cartId);
+    Task<CartDto?> Cart(string? userId, int? cartId);
     Task<bool> SetCartUserId(int cartId, string userId);
 }
 public class CartRepository(IDbConnection connection) : ICartRepository
 {
-    public async Task<IEnumerable<OrderStatusDto>?> GetAllOrderStatuses()
+    public async Task<IEnumerable<OrderStatusDto>?> AllOrderStatuses()
     {
         try
         {
@@ -86,7 +86,7 @@ public class CartRepository(IDbConnection connection) : ICartRepository
         }
     }
     
-    public async Task<int?> CreateCartItemAsync(int? cartId, int productId, decimal quantity, string? userId, string role, decimal discount = 0)
+    public async Task<int?> CreateCartItemAsync(int? cartId, int productId, decimal addedQuantity, string? userId, string role, decimal discount = 0)
     {
         try
         {
@@ -95,15 +95,20 @@ public class CartRepository(IDbConnection connection) : ICartRepository
 
             var productExists = await connection.ExecuteScalarAsync<bool>(ProductQueries.CheckIfProductExists, new { ProductId = productId });
             if (!productExists) throw new NotFoundException($"Product with ID {productId} does not exist.");
-            
-            var palSize = await GetPalSize(productId);
 
-            // Check if the product exists in the cart
+            var sizing = await GetProductSizing(productId);
+            var pakSize = await GetPakSize(sizing);
+            
+            if (addedQuantity % pakSize != 0)
+                throw new ArgumentException($"Quantity {addedQuantity} must be in iterations of the pak size {pakSize}.");
+            
+            var palSize = await GetPalSize(sizing);
+
             var cartItemExists = await connection.ExecuteScalarAsync<bool>(CartQueries.CheckIfProductExistsInCart, new { CartId = cartId, ProductId = productId });
 
             return cartItemExists 
-                ? await UpdateExistingCartItem(cartId, productId, quantity, role, palSize) 
-                : await AddNewCartItem(cartId, productId, quantity, role, palSize);
+                ? await UpdateExistingCartItem(cartId, productId, addedQuantity, role, palSize) 
+                : await AddNewCartItem(cartId, productId, addedQuantity, role, palSize);
         }
         catch (Exception ex)
         {
@@ -116,13 +121,21 @@ public class CartRepository(IDbConnection connection) : ICartRepository
     {
         try
         {
-            var ci = await connection.QueryFirstOrDefaultAsync<(decimal CurrentQuantity, int ProductId)>(
+            var ci = await connection.QueryFirstOrDefaultAsync<(decimal CurrentQuantity, int ProductId, bool Exists)>(
                 CartQueries.GetCartItemProductIdAndQuantity,
                 new { CartItemId = cartItemId }
             );
             
+            if (!ci.Exists)
+                throw new NotFoundException($"Cart item with ID {cartItemId} does not exist.");
+            
+            var sizing = await GetProductSizing(ci.ProductId);
+            var pakSize = await GetPakSize(sizing);
+            if (addedQuantity % pakSize != 0)
+                throw new ArgumentException($"Quantity {addedQuantity} must be in iterations of the pak size {pakSize}.");
+            
             var totalQ = ci.CurrentQuantity + addedQuantity;
-            var palSize = await GetPalSize(ci.ProductId);
+            var palSize = await GetPalSize(sizing);
             
             var rowsAffected = await connection.ExecuteAsync(CartQueries.UpdateCartItemQuantityAndPrice, new
             {
@@ -196,7 +209,7 @@ public class CartRepository(IDbConnection connection) : ICartRepository
         throw new NotImplementedException();
     }
 
-    public async Task<CartDto?> GetCart(string? userId = null, int? cartId = null)
+    public async Task<CartDto?> Cart(string? userId = null, int? cartId = null)
     {
         try
         {
@@ -223,7 +236,7 @@ public class CartRepository(IDbConnection connection) : ICartRepository
                 if (!cartDictionary.TryGetValue(cart.CartId, out var currentCart))
                 {
                     currentCart = cart;
-                    currentCart.Items = new List<CartItemDto>(); // Initialize the Items list properly
+                    currentCart.Items = []; // Initialize the Items list properly
                     cartDictionary.Add(currentCart.CartId, currentCart);
                 }
 
@@ -344,17 +357,29 @@ public class CartRepository(IDbConnection connection) : ICartRepository
             ? priceVp.PalPrice 
             : priceVp.PakPrice;
     }
-    
-    private async Task<decimal?> GetPalSize(int productId)
+
+    private async Task<Size?> GetProductSizing(int productId) 
+        => await connection.QuerySingleOrDefaultAsync<Size>(ProductQueries.GetProductSizing, new { ProductId = productId });
+
+    private Task<decimal?> GetPalSize(Size? size)
     {
-        var size = await connection.QuerySingleOrDefaultAsync<Size>(ProductQueries.GetProductSizing, new { ProductId = productId });
-        
         decimal? palSize = null;
         if (!string.IsNullOrEmpty(size?.Pal) && decimal.TryParse(size.Pal, out var palValue))
         {
             palSize = palValue;
         }
 
-        return palSize;
+        return Task.FromResult(palSize);
+    }
+    
+    private Task<decimal?> GetPakSize(Size? size)
+    {
+        decimal? pakSize = null;
+        if (!string.IsNullOrEmpty(size?.Pak) && decimal.TryParse(size.Pak, out var pakValue))
+        {
+            pakSize = pakValue;
+        }
+
+        return Task.FromResult(pakSize);
     }
 }
