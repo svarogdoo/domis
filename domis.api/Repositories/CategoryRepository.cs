@@ -94,7 +94,7 @@ public class CategoryRepository(IDbConnection connection) : ICategoryRepository
             
             var vpPrices = role == Roles.User.RoleName() || role == Roles.Admin.RoleName()
                 ? null
-                : (await connection.QueryAsync<VpPriceDetails>(ProductQueries.GetSingleProductPricesForVP, new { ProductIds = productIds, Role = role })).ToList();
+                : (await connection.QueryAsync<VpPriceDetails>(ProductQueries.GetProductPricesForVPMultiple, new { ProductIds = productIds, Role = role })).ToList();
 
             if (vpPrices == null) //returning products without vp pricing info
             {

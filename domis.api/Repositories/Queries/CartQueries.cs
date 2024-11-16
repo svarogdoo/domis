@@ -31,6 +31,11 @@ public static class CartQueries
                 SET quantity = @Quantity, modified_at = @ModifiedAt
                 WHERE id = @CartItemId;";
     
+    public const string UpdateCartItemQuantityAndPrice = @"
+                UPDATE domis.cart_item
+                SET quantity = @Quantity, modified_at = @ModifiedAt, price = @Price
+                WHERE id = @CartItemId;";
+    
     public const string DeleteCartItem = @"
                 DELETE FROM domis.cart_item
                 WHERE id = @CartItemId;";
@@ -116,11 +121,20 @@ public static class CartQueries
         FROM domis.cart_item 
         WHERE cart_id = @CartId AND product_id = @ProductId;";
 
-    public const string UpdateQuantityBasedOnCartAndProduct = @"
+    public const string UpdateCIQuantityByCartAndProduct = @"
         UPDATE domis.cart_item 
         SET quantity = @Quantity, modified_at = @ModifiedAt
         WHERE cart_id = @CartId AND product_id = @ProductId
         RETURNING Id;";
+    
+    public const string UpdateCIPriceAndQuantityByCartAndProduct = @"
+        UPDATE domis.cart_item 
+        SET quantity = @Quantity, 
+            price = @Price, 
+            modified_at = @ModifiedAt
+        WHERE cart_id = @CartId AND product_id = @ProductId
+        RETURNING Id;";
+
 
     public const string GetCartItemsWithProductPriceByCartId = @"
         SELECT 
@@ -138,12 +152,29 @@ public static class CartQueries
         WHERE 
             ci.cart_id = @CartId;";
 
-    public const string GetCartItemQuantity = @"
+    public const string GetCIQuantityByCartAndProduct = @"
         SELECT quantity AS Quantity 
         FROM domis.cart_item 
         WHERE cart_id = @CartId AND product_id = @ProductId;"
     ;
-
+    
+    public const string GetCartItemQuantity = @"
+        SELECT quantity AS Quantity 
+        FROM domis.cart_item 
+        WHERE id = @CartItemId;"
+    ;
+    
+    public const string GetCartItemProductIdAndQuantity = @"
+        SELECT 
+            CurrentQuantity, 
+            ProductId,
+            CASE WHEN EXISTS (SELECT 1 FROM CartItems WHERE CartItemId = @CartItemId) THEN 1 ELSE 0 END AS Exists
+        FROM 
+            CartItems 
+        WHERE 
+            CartItemId = @CartItemId;
+    ";
+    
     public const string SetCartUserId = @"
         UPDATE domis.cart
         SET user_id = @UserId

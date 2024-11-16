@@ -8,22 +8,21 @@ namespace domis.api.Services;
 
 public interface ICartService
 {
-    Task<IEnumerable<OrderStatusDto>?> GetAllOrderStatuses();
+    Task<IEnumerable<OrderStatusDto>?> AllOrderStatuses();
     Task<int> CreateCart(string? userId);
     Task<bool> UpdateCartStatus(int cartId, int statusId);
     Task<int?> CreateCartItem(int? cartId, int productId, decimal quantity, UserEntity? user);
-    Task<bool> UpdateCartItemQuantity(int cartItemId, decimal quantity);
+    Task<bool> UpdateCartItemQuantity(int cartItemId, decimal quantity, UserEntity? user);
     Task<bool> DeleteCartItem(int cartItemId);
     Task<bool> DeleteCart(int cartId);
-    Task<CartDto?> GetCart(UserEntity? user, int? cartId);
-
+    Task<CartDto?> Cart(UserEntity? user, int? cartId);
     Task<bool> SetCartUserId(int cartId, string userId);
 }
-public class CartService(ICartRepository cartRepository, IPriceHelpers priceHelpers) : ICartService
+public class CartService(ICartRepository cartRepository, IUserRepository userRepo, IPriceHelpers priceHelpers) : ICartService
 
 {
-    public async Task<IEnumerable<OrderStatusDto>?> GetAllOrderStatuses() => 
-        await cartRepository.GetAllOrderStatuses();
+    public async Task<IEnumerable<OrderStatusDto>?> AllOrderStatuses() => 
+        await cartRepository.AllOrderStatuses();
 
     public async Task<int> CreateCart(string? userId) =>
         await cartRepository.CreateCartAsync(userId);
@@ -33,13 +32,21 @@ public class CartService(ICartRepository cartRepository, IPriceHelpers priceHelp
 
     public async Task<int?> CreateCartItem(int? cartId, int productId, decimal quantity, UserEntity? user)
     {
-        var discount = await priceHelpers.GetDiscount(user);
-
-        return await cartRepository.CreateCartItemAsync(cartId, productId, quantity, user?.Id, discount);
+        var role = user is not null
+            ? await userRepo.GetUserRoleAsync(user.Id)
+            : Roles.User.RoleName();
+        
+        return await cartRepository.CreateCartItemAsync(cartId, productId, quantity, user?.Id, role ?? Roles.User.RoleName());
     }
 
-    public async Task<bool> UpdateCartItemQuantity(int cartItemId, decimal quantity) => 
-        await cartRepository.UpdateCartItemQuantityAsync(cartItemId, quantity);
+    public async Task<bool> UpdateCartItemQuantity(int cartItemId, decimal quantity, UserEntity? user)
+    {        
+        var role = user is not null
+            ? await userRepo.GetUserRoleAsync(user.Id)
+            : Roles.User.RoleName();
+        
+        return await cartRepository.UpdateCartItemQuantityAsync(cartItemId, quantity, role ?? Roles.User.RoleName());
+    }
 
     public async Task<bool> DeleteCartItem(int cartItemId) => 
         await cartRepository.DeleteCartItemAsync(cartItemId);
@@ -50,6 +57,6 @@ public class CartService(ICartRepository cartRepository, IPriceHelpers priceHelp
     public async Task<bool> SetCartUserId(int cartId, string userId)
         => await cartRepository.SetCartUserId(cartId, userId);
 
-    public async Task<CartDto?> GetCart(UserEntity? user, int? cartId) 
-        => await cartRepository.GetCart(user?.Id, cartId);
+    public async Task<CartDto?> Cart(UserEntity? user, int? cartId) 
+        => await cartRepository.Cart(user?.Id, cartId);
 }

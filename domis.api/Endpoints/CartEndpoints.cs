@@ -16,7 +16,7 @@ public static class CartEndpoints
         
         group.MapGet("/cart-status", async (ICartService cartService) =>
         {
-            var response = await cartService.GetAllOrderStatuses();
+            var response = await cartService.AllOrderStatuses();
 
             return Results.Ok(response);
         }).WithDescription("Get all cart statuses");
@@ -55,7 +55,7 @@ public static class CartEndpoints
             try
             {
                 var user = await userManager.GetUserAsync(http.User);
-
+                
                 var response = await cartService.CreateCartItem(request.CartId, request!.ProductId, request!.Quantity, user);
                 return response == null
                     ? Results.BadRequest("This product does not exist.")
@@ -73,9 +73,11 @@ public static class CartEndpoints
             }
         }).WithDescription("Create new cart item");
         
-        group.MapPut("/cart-item-quantity", async ([FromBody]UpdateCartItemRequest request, ICartService cartService) =>
-        {
-            var response = await cartService.UpdateCartItemQuantity(request.cartItemId, request.quantity);
+        group.MapPut("/cart-item-quantity", async ([FromBody]UpdateCartItemRequest request, ICartService cartService, HttpContext http, UserManager<UserEntity> userManager) =>
+        {                
+            var user = await userManager.GetUserAsync(http.User);
+
+            var response = await cartService.UpdateCartItemQuantity(request.cartItemId, request.quantity, user);
 
             return Results.Ok(new UpdateCartItemResponse(response));
         }).WithDescription("Update cart item quantity");
@@ -94,7 +96,7 @@ public static class CartEndpoints
             //TODO: decide what do we give priority to: cartId or user
             var user = await userManager.GetUserAsync(http.User);
 
-            var cart = await cartService.GetCart(user, cartId);
+            var cart = await cartService.Cart(user, cartId);
             
             if (user is null && cartId is null) return Results.BadRequest();
 

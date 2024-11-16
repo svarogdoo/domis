@@ -120,7 +120,7 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
             var size = await connection.QuerySingleOrDefaultAsync<Size>(ProductQueries.GetProductSizing, new { ProductId = productId });
             var images = (await connection.QueryAsync<ImageGetDto>(ImageQueries.GetProductImages, new { ProductId = productId })).ToList();
             var categoryPaths = await GetProductCategoriesPath(productId);
-            var vpPricing = await connection.QueryFirstOrDefaultAsync<VpPriceDetails>(ProductQueries.GetSingleProductPricesForVP, new { ProductIds = new List<int>{productId}, Role = role });
+            var vpPricing = await connection.QueryFirstOrDefaultAsync<VpPriceDetails>(ProductQueries.GetProductPricesForVPMultiple, new { ProductIds = new List<int>{productId}, Role = role });
             
             var productDetail = mapper.Map<ProductDetailsDto>(product);
             
