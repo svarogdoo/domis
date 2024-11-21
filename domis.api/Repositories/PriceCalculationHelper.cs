@@ -9,55 +9,6 @@ namespace domis.api.Repositories;
 
 public class PriceCalculationHelper(IDbConnection connection)
 {
-    public async Task<int?> AddNewCartItem(int? cartId, int productId, decimal quantity, string role, decimal? palSize)
-    {
-        var price = await GetPriceBasedOnRoleAndQuantity(productId, role, quantity, palSize);
-        
-        var parameters = new
-        {
-            CartId = cartId,
-            ProductId = productId,
-            Quantity = quantity,
-            Price = price,
-            CreatedAt = DateTime.UtcNow,
-            ModifiedAt = DateTime.UtcNow
-        };
-
-        await connection.ExecuteScalarAsync<int>(CartQueries.CreateCartItem, parameters);
-        return cartId;
-    }
-
-    public async Task<int?> UpdateExistingCartItem(int? cartId, int productId, decimal addedQuantity, string role, decimal? palSize)
-    {
-        var currentQuantity = await connection.ExecuteScalarAsync<decimal>(CartQueries.GetCIQuantityByCartAndProduct, new { CartId = cartId, ProductId = productId });
-
-        var totalQ = addedQuantity + currentQuantity;
-        
-        if (totalQ < palSize)
-        {
-            await connection.ExecuteScalarAsync<int>(CartQueries.UpdateCIQuantityByCartAndProduct, new
-            {
-                CartId = cartId,
-                ProductId = productId,
-                Quantity = totalQ,
-                ModifiedAt = DateTime.UtcNow
-            });
-        }
-        else
-        {
-            await connection.ExecuteScalarAsync<int>(CartQueries.UpdateCIPriceAndQuantityByCartAndProduct, new
-            {
-                CartId = cartId,
-                ProductId = productId,
-                Quantity = totalQ,
-                Price = GetPriceBasedOnRoleAndQuantity(productId, role, totalQ, palSize),
-                ModifiedAt = DateTime.UtcNow
-            });
-        }
-
-        return cartId;
-    }
-    
     public async Task<decimal?> GetPriceBasedOnRoleAndQuantity(int productId, string userRole, decimal quantity, decimal? palSize)
     {
         try

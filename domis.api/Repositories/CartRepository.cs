@@ -104,8 +104,8 @@ public class CartRepository(IDbConnection connection, PriceCalculationHelper hel
             var cartItemExists = await connection.ExecuteScalarAsync<bool>(CartQueries.CheckIfProductExistsInCart, new { CartId = cartId, ProductId = productId });
 
             return cartItemExists 
-                ? await helper.UpdateExistingCartItem(cartId, productId, addedQuantity, role, palSize) 
-                : await helper.AddNewCartItem(cartId, productId, addedQuantity, role, palSize);
+                ? await UpdateExistingCartItem(cartId, productId, addedQuantity, role, palSize) 
+                : await AddNewCartItem(cartId, productId, addedQuantity, role, palSize);
         }
         catch (Exception ex)
         {
@@ -263,4 +263,55 @@ public class CartRepository(IDbConnection connection, PriceCalculationHelper hel
             throw;
         }
     }
+
+    #region ExtensionMethods
+    private async Task<int?> AddNewCartItem(int? cartId, int productId, decimal quantity, string role, decimal? palSize)
+    {
+        var price = await helper.GetPriceBasedOnRoleAndQuantity(productId, role, quantity, palSize);
+        
+        var parameters = new
+        {
+            CartId = cartId,
+            ProductId = productId,
+            Quantity = quantity,
+            Price = price,
+            CreatedAt = DateTime.UtcNow,
+            ModifiedAt = DateTime.UtcNow
+        };
+
+        await connection.ExecuteScalarAsync<int>(CartQueries.CreateCartItem, parameters);
+        return cartId;
+    }
+
+    private async Task<int?> UpdateExistingCartItem(int? cartId, int productId, decimal addedQuantity, string role, decimal? palSize)
+    {
+        var currentQuantity = await connection.ExecuteScalarAsync<decimal>(CartQueries.GetCIQuantityByCartAndProduct, new { CartId = cartId, ProductId = productId });
+
+        var totalQ = addedQuantity + currentQuantity;
+        
+        if (totalQ < palSize)
+        {
+            await connection.ExecuteScalarAsync<int>(CartQueries.UpdateCIQuantityByCartAndProduct, new
+            {
+                CartId = cartId,
+                ProductId = productId,
+                Quantity = totalQ,
+                ModifiedAt = DateTime.UtcNow
+            });
+        }
+        else
+        {
+            await connection.ExecuteScalarAsync<int>(CartQueries.UpdateCIPriceAndQuantityByCartAndProduct, new
+            {
+                CartId = cartId,
+                ProductId = productId,
+                Quantity = totalQ,
+                Price = helper.GetPriceBasedOnRoleAndQuantity(productId, role, totalQ, palSize),
+                ModifiedAt = DateTime.UtcNow
+            });
+        }
+
+        return cartId;
+    }
+    #endregion
 }
