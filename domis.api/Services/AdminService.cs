@@ -60,8 +60,11 @@ public class AdminService(
             usersWithRoles.Add(new UserWithRolesDto
             {
                 UserId = user.Id,
-                UserName = user.UserName,
-                Roles = roles.ToList()
+                UserName = user.UserName ?? string.Empty,
+                Roles = roles.ToList(),
+                Role = roles.FirstOrDefault() ?? string.Empty,
+                FirstName = user.FirstName,
+                LastName = user.LastName
             });
         }
 
