@@ -49,14 +49,8 @@ declare global {
     county?: string;
     email: string;
     phoneNumber?: string;
+    companyData?: CompanyData;
   }
-  interface UserWholesaleProfileDto extends UserProfileDto {
-    companyName?: string;
-    pib?: string;
-    companyFirstName: string;
-    companyLastName: string;
-  }
-  type UserProfileResponse = UserProfileDto | UserWholesaleProfileDto;
 
   interface UserProfileUpdateRequest {
     firstName: string;
@@ -264,7 +258,6 @@ declare global {
     lastName: string;
     email: string;
     role: string;
-    roles: Array<string>;
     userName: string;
   }
 }

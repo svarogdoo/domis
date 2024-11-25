@@ -15,14 +15,14 @@
   }
 </script>
 
-<div class="flex flex-col w-full px-12">
+<div class="flex flex-col px-12">
   {#if users?.length && users.length > 0}
     <table class="table table-hover">
       <thead class="w-full bg-domis-dark text-white">
-        <th class="text-start">Ime</th>
-        <th class="text-start">Prezime</th>
-        <th class="text-start">Email</th>
-        <th class="text-start">Tip</th>
+        <th class="text-start w-40">Ime</th>
+        <th class="text-start w-40">Prezime</th>
+        <th class="text-start w-40">Email</th>
+        <th class="text-start w-40">Tip</th>
       </thead>
       <tbody class="divide-y divide-gray-200">
         {#each users as user (user.userId)}

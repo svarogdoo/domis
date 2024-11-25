@@ -15,10 +15,14 @@
   let county = "";
   let email = "";
   let phoneNumber = "";
+
+  let isCompany = false;
   let companyName = "";
-  let pib = "";
+  let companyNumber = "";
   let companyFirstName = "";
   let companyLastName = "";
+
+  let userRole: string | undefined;
 
   $: if ($userStore.user && !isUserDataPopulated) {
     firstName = $userStore.user.firstName ?? "";
@@ -31,13 +35,14 @@
     county = $userStore.user.county ?? "";
     email = $userStore.user.email ?? "";
     phoneNumber = $userStore.user.phoneNumber ?? "";
-    companyName =
-      ($userStore.user as UserWholesaleProfileDto).companyName ?? "";
-    pib = ($userStore.user as UserWholesaleProfileDto).pib ?? "";
-    companyFirstName =
-      ($userStore.user as UserWholesaleProfileDto).companyFirstName ?? "";
-    companyLastName =
-      ($userStore.user as UserWholesaleProfileDto).companyLastName ?? "";
+    companyName = $userStore.user.company?.companyName ?? "";
+    companyNumber = $userStore.user.company?.companyNumber ?? "";
+    companyFirstName = $userStore.user.company?.companyFirstName ?? "";
+    companyLastName = $userStore.user.company?.companyLastName ?? "";
+
+    if (userStore.isUserVP()) userRole = $userStore.userRole;
+
+    if ($userStore.user.company) isCompany = true;
 
     isUserDataPopulated = true;
   }
@@ -54,7 +59,7 @@
       county: county,
       phoneNumber: phoneNumber,
       ...(companyName && { companyName: companyName }), // Add company data only if not empty
-      ...(pib && { pib: pib }),
+      ...(companyNumber && { companyNumber: companyNumber }),
       ...(companyFirstName && { companyFirstName: companyFirstName }),
       ...(companyLastName && { companyLastName: companyLastName }),
     };
@@ -67,6 +72,12 @@
   <h1 class="text-2xl">Korisnički profil</h1>
   <div class="flex flex-col gap-y-4">
     {#if isUserDataPopulated}
+      {#if userRole}
+        <p class="mb-4">
+          <span class="font-semibold">Tip korisnika:</span>
+          {userRole}
+        </p>
+      {/if}
       <div class="flex gap-x-4">
         <strong>Email:</strong>
         <div>{email}</div>
@@ -145,89 +156,120 @@
         </div>
       </div>
 
-      <div class="flex flex-col gap-y-2 mt-4">
-        <p class="text-lg font-light">Podaci za pravna lica</p>
-        <div
-          class="flex flex-col gap-y-4 p-4 border border-gray-300 rounded-lg"
-        >
-          <div class="flex flex-col gap-y-4 lg:flex-row gap-x-12">
-            <InputString
-              bind:value={companyName}
-              title="Podaci kompanije"
-              placeholder="Firma d.o.o."
-              width={"64"}
-            />
-            <InputString
-              bind:value={pib}
-              title="Matični broj"
-              placeholder=""
-              width={"32"}
-            />
-          </div>
-          <button
-            on:click={() => (isSameUser = !isSameUser)}
-            class="relative flex mt-4 gap-x-2 items-center"
+      <button
+        on:click={() => (isCompany = !isCompany)}
+        class="relative flex mt-4 gap-x-2 items-center"
+      >
+        <input
+          type="checkbox"
+          class="appearance-none h-5 w-5 cursor-pointer rounded-md border border-green-700 checked:bg-green-700"
+          checked={isCompany}
+        />
+        <span class="absolute text-white left-0.5">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-3.5 w-3.5"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            stroke="currentColor"
+            stroke-width="1"
           >
-            <input
-              type="checkbox"
-              class="appearance-none h-5 w-5 cursor-pointer rounded-md border border-green-700 checked:bg-green-700"
-              checked={isSameUser}
-            />
-            <span class="absolute text-white left-0.5">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-3.5 w-3.5"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                stroke="currentColor"
-                stroke-width="1"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                  clip-rule="evenodd"
-                ></path>
-              </svg>
-            </span>
-            <p
-              class="text-green-700 pt-1 text-sm font-extralight tracking-wider"
+            <path
+              fill-rule="evenodd"
+              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+              clip-rule="evenodd"
+            ></path>
+          </svg>
+        </span>
+        <p class="text-green-700 pt-1 text-sm font-extralight tracking-wider">
+          Postavi podatke za pravna lica
+        </p>
+      </button>
+      {#if isCompany}
+        <div class="flex flex-col gap-y-2 mt-4">
+          <p class="text-lg font-light">Podaci za pravna lica</p>
+          <div
+            class="flex flex-col gap-y-4 p-4 border border-gray-300 rounded-lg"
+          >
+            <div class="flex flex-col gap-y-4 lg:flex-row gap-x-12">
+              <InputString
+                bind:value={companyName}
+                title="Podaci kompanije"
+                placeholder="Firma d.o.o."
+                width={"64"}
+              />
+              <InputString
+                bind:value={companyNumber}
+                title="Matični broj"
+                placeholder=""
+                width={"32"}
+              />
+            </div>
+            <button
+              on:click={() => (isSameUser = !isSameUser)}
+              class="relative flex mt-4 gap-x-2 items-center"
             >
-              Podaci korisnika su podaci poručioca
-            </p>
-          </button>
-          <div class="flex flex-col gap-y-4 lg:flex-row gap-x-12">
-            {#if isSameUser}
-              <InputString
-                bind:value={firstName}
-                title="Ime"
-                placeholder="Petar"
-                width={"48"}
-                isReadOnly={isSameUser}
+              <input
+                type="checkbox"
+                class="appearance-none h-5 w-5 cursor-pointer rounded-md border border-green-700 checked:bg-green-700"
+                checked={isSameUser}
               />
-              <InputString
-                bind:value={lastName}
-                title="Prezime"
-                placeholder="Petrović"
-                width={"48"}
-                isReadOnly={isSameUser}
-              />
-            {:else}
-              <InputString
-                bind:value={companyFirstName}
-                title="Ime"
-                placeholder="Petar"
-                width={"48"}
-              />
-              <InputString
-                bind:value={companyLastName}
-                title="Prezime"
-                placeholder="Petrović"
-                width={"48"}
-              />
-            {/if}
+              <span class="absolute text-white left-0.5">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-3.5 w-3.5"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  stroke="currentColor"
+                  stroke-width="1"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clip-rule="evenodd"
+                  ></path>
+                </svg>
+              </span>
+              <p
+                class="text-green-700 pt-1 text-sm font-extralight tracking-wider"
+              >
+                Podaci korisnika su podaci poručioca
+              </p>
+            </button>
+            <div class="flex flex-col gap-y-4 lg:flex-row gap-x-12">
+              {#if isSameUser}
+                <InputString
+                  bind:value={firstName}
+                  title="Ime"
+                  placeholder="Petar"
+                  width={"48"}
+                  isReadOnly={isSameUser}
+                />
+                <InputString
+                  bind:value={lastName}
+                  title="Prezime"
+                  placeholder="Petrović"
+                  width={"48"}
+                  isReadOnly={isSameUser}
+                />
+              {:else}
+                <InputString
+                  bind:value={companyFirstName}
+                  title="Ime"
+                  placeholder="Petar"
+                  width={"48"}
+                />
+                <InputString
+                  bind:value={companyLastName}
+                  title="Prezime"
+                  placeholder="Petrović"
+                  width={"48"}
+                />
+              {/if}
+            </div>
           </div>
         </div>
-      </div>
+      {/if}
 
       <button
         on:click={updateProfile}
@@ -235,8 +277,6 @@
       >
         Sačuvaj promene
       </button>
-    {:else}
-      <p>učitavanje...</p>
     {/if}
   </div>
 </section>

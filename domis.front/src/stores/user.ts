@@ -16,7 +16,7 @@ const createUserStore = () => {
   const { subscribe, set, update } = writable<UserState>(userInitialState);
 
   const setUser = (
-    user: UserProfileResponse,
+    user: UserProfileDto,
     token: string,
     refreshToken: string,
     userRole: string

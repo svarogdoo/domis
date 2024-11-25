@@ -7,7 +7,6 @@
   let loggedIn = false;
   let initials = "";
   let user: UserState;
-  let isUserAdmin = false;
 
   $: userStore.subscribe((value) => {
     user = value;
@@ -62,6 +61,11 @@
     >
       {#if loggedIn}
         <ul>
+          {#if userStore.isUserVP()}
+            <p class="text-xs text-start mb-2 pt-1 pr-1 text-domis-primary">
+              {$userStore.userRole}
+            </p>
+          {/if}
           {#if userStore.isUserAdmin()}
             <UserDropdownItem href="/admin/proizvodi" text="Proizvodi" />
             <UserDropdownItem href="/admin/korisnici" text="Korisnici" />
