@@ -6,6 +6,7 @@
   export let isRequired: boolean = false;
   export let width: string;
   export let prefix: string = "";
+  export let isReadOnly: boolean = false;
 </script>
 
 <div class="flex flex-col">
@@ -26,9 +27,10 @@
         name="value"
         id="value"
         class="block w-full font-light tracking-wider rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-300 focus:ring-inset focus:ring-blue-600 text-md leading-6 placeholder:font-light
-              {prefix ? 'pl-16' : 'pl-3'}"
+              {prefix ? 'pl-16' : 'pl-3'} disabled:text-gray-400"
         {placeholder}
         bind:value
+        disabled={isReadOnly}
       />
     </div>
   </div>

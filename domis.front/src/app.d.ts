@@ -52,6 +52,9 @@ declare global {
   }
   interface UserWholesaleProfileDto extends UserProfileDto {
     companyName?: string;
+    pib?: string;
+    companyFirstName: string;
+    companyLastName: string;
   }
   type UserProfileResponse = UserProfileDto | UserWholesaleProfileDto;
 
