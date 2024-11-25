@@ -45,9 +45,12 @@ public static class ProductEndpoints
                     ? Results.NotFound(new { Message = $"Product with ID {product.Id} not found or update failed." })
                     : Results.Ok(response);
             }
-            catch (PostgresException ex) when (ex.SqlState == "23503") // Foreign key violation
+            catch (PostgresException ex) when (ex.SqlState == "23503")
             {
-                return Results.BadRequest(new { Message = "Invalid quantity type ID provided. Please check and try again." });
+                return Results.BadRequest(new
+                {
+                    Message = "Invalid quantity type ID provided. Please check and try again."
+                });
             }
             catch (Exception ex)
             {
