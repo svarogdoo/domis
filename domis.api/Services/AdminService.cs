@@ -104,7 +104,7 @@ public class AdminService(
     public async Task<bool> AddRoleToUser(string userId, Roles role)
     {
         var user = await userManager.FindByIdAsync(userId);
-        if (user == null) 
+        if (user == null)
             return false;
 
         var roleName = role.RoleName();
@@ -112,30 +112,21 @@ public class AdminService(
             return false;
 
         var userRoles = await userManager.GetRolesAsync(user);
+
         if (userRoles.Contains(roleName))
             return true;
 
+        //clear out the old user roles, we want to keep it: single user - single role
+        foreach (var userRole in userRoles)
+        {
+            await userManager.RemoveFromRoleAsync(user, userRole);
+        }
+
         var result = await userManager.AddToRoleAsync(user, roleName);
+
         return result.Succeeded;
     }
 
-    public async Task<bool> RemoveRoleFromUser(string userId, Roles role)
-    {
-        var user = await userManager.FindByIdAsync(userId);
-        if (user == null) 
-            return false;
-
-        var roleName = role.RoleName();
-        if (!await roleManager.RoleExistsAsync(roleName))
-            return false;
-
-        var userRoles = await userManager.GetRolesAsync(user);
-        if (!userRoles.Contains(roleName))
-            return false;
-
-        var result = await userManager.RemoveFromRoleAsync(user, roleName);
-        return result.Succeeded;
-    }
 
     public async Task<IEnumerable<OrderDetailsDto>> Orders() 
         => await orderRepository.GetOrders();
