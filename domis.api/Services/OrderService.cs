@@ -21,39 +21,47 @@ public interface IOrderService
 
     Task<IEnumerable<UserOrderDto>> GetOrdersByUser(string userId);
 }
-public class OrderService(IOrderRepository orderRepository, IPriceHelpers priceHelpers, ICustomEmailSender<UserEntity> emailSender) : IOrderService
+public class OrderService(
+    IOrderRepository orderRepo, 
+    IUserRepository userRepo,
+    IPriceHelpers priceHelpers, 
+    ICustomEmailSender<UserEntity> emailSender) : IOrderService
 {
     public async Task<IEnumerable<PaymentStatusDto>?> GetAllPaymentStatuses() => 
-        await orderRepository.GetAllPaymentStatuses();
+        await orderRepo.GetAllPaymentStatuses();
 
     public async Task<IEnumerable<OrderStatusDto>?> GetAllOrderStatuses() => 
-        await orderRepository.GetAllOrderStatuses();
+        await orderRepo.GetAllOrderStatuses();
 
     public async Task<IEnumerable<PaymentVendorTypeDto>?> GetAllPaymentVendorTypes() => 
-        await orderRepository.GetAllPaymentVendorTypes();
+        await orderRepo.GetAllPaymentVendorTypes();
 
 
     public async Task<int> CreateOrderShipping(OrderShippingDto orderShipping) =>
-        await orderRepository.CreateOrderShipping(orderShipping);
+        await orderRepo.CreateOrderShipping(orderShipping);
 
 
     public async Task<bool> UpdateOrderShipping(int id, OrderShippingDto orderShipping) => 
-        await orderRepository.UpdateOrderShipping(id, orderShipping);
+        await orderRepo.UpdateOrderShipping(id, orderShipping);
 
 
     public async Task<OrderShippingDto?> GetOrderShippingById(int id) =>
-        await orderRepository.GetOrderShippingById(id);
+        await orderRepo.GetOrderShippingById(id);
 
 
     public async Task<bool> DeleteOrderShippingById(int id) =>
-        await orderRepository.DeleteOrderShippingById(id);
+        await orderRepo.DeleteOrderShippingById(id);
 
 
     public async Task<int> CreateOrderFromCart(CreateOrderRequest createOrder, UserEntity? user)
     {
         var discount = await priceHelpers.GetDiscount(user);
 
-        var order =  await orderRepository.CreateOrderFromCartAsync(createOrder, discount);
+        var role = user is not null
+            ? await userRepo.GetUserRoleAsync(user.Id)
+            : Roles.User.RoleName();
+        
+        var order =  await orderRepo.CreateOrderFromCartAsync(createOrder, role ?? Roles.User.RoleName(), discount);
 
         await emailSender.SendOrderConfirmationAsync(user?.Email ?? order.Shipping!.Email, order);
 
@@ -61,11 +69,11 @@ public class OrderService(IOrderRepository orderRepository, IPriceHelpers priceH
     }
 
     public async Task<bool> UpdateOrderStatus(int orderId, int statusId) => 
-        await orderRepository.UpdateOrderStatusAsync(orderId, statusId);
+        await orderRepo.UpdateOrderStatusAsync(orderId, statusId);
 
     public async Task<OrderDetailsDto?> GetOrderDetailsById(int orderId) => 
-        await orderRepository.GetOrderDetailsByIdAsync(orderId);
+        await orderRepo.GetOrderDetailsByIdAsync(orderId);
 
     public async Task<IEnumerable<UserOrderDto>> GetOrdersByUser(string userId)
-        => await orderRepository.GetOrdersByUser(userId);
+        => await orderRepo.GetOrdersByUser(userId);
 }

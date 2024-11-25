@@ -90,8 +90,8 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
                 }
                 else //if there is no sale
                 {
-                    var discountedPrice = PricingHelper.CalculateDiscount(product.Price.Value, discount);
-                    productDetail.Price = CalculatePakPalPrices(discountedPrice, size);
+                    //var discountedPrice = PricingHelper.CalculateDiscount(product.Price.Value, discount);
+                    productDetail.Price = CalculatePakPalPrices(product.Price.Value, size);
                     productDetail.SaleInfo = null;
                 }
             }
