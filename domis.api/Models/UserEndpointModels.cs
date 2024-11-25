@@ -27,7 +27,7 @@ public record ProfileUpdateRequest(
     string? Country,
     string? County,
     string? PhoneNumber,
-    string? CompanyName
+    CompanyInfo? CompanyInfo
 );
 
 public record LoginWithCartRequest(

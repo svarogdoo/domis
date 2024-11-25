@@ -26,31 +26,30 @@ public class UserRepository(UserManager<UserEntity> userManager) : IUserReposito
 
         var roles = await userManager.GetRolesAsync(idUser);
 
-        if (roles.Contains(Roles.VP1.RoleName()) || roles.Contains(Roles.VP2.RoleName()) ||
-        roles.Contains(Roles.VP3.RoleName()) || roles.Contains(Roles.VP4.RoleName()))
+        if (roles.Contains(Roles.VP1.RoleName()) || roles.Contains(Roles.VP2.RoleName()) 
+            || roles.Contains(Roles.VP3.RoleName())  || roles.Contains(Roles.VP4.RoleName()))
         {
             return new UserWholesaleProfileDto(
                 idUser.FirstName!, idUser.LastName!, 
                 idUser.AddressLine, idUser.Apartment, idUser.City, idUser.PostalCode, idUser.Country, idUser.County, 
-                idUser.Email, idUser.PhoneNumber, idUser.CompanyName
+                idUser.Email, idUser.PhoneNumber, idUser.CompanyInfo
             );
         }
 
         return new UserProfileDto(
             idUser.FirstName!, idUser.LastName!, 
             idUser.AddressLine, idUser.Apartment, idUser.City, idUser.PostalCode, idUser.Country, idUser.County, 
-            idUser.Email, idUser.PhoneNumber
+            idUser.Email, idUser.PhoneNumber, idUser.CompanyInfo
         );
     }
 
+    //TODO: do we need?
     public async Task<bool> UpdateUserAddressAsync(string id, string address)
     {
         var user = await userManager.FindByIdAsync(id);
 
         if (user == null) return false;
-
-        user.Address = address;
-
+        
         var result = await userManager.UpdateAsync(user);
 
         return result.Succeeded;
@@ -93,7 +92,7 @@ public class UserRepository(UserManager<UserEntity> userManager) : IUserReposito
         user.County = updated.County ?? user.County;
         user.Apartment = updated.Apartment ?? user.Apartment;
         user.PhoneNumber = updated.PhoneNumber ?? user.PhoneNumber;
-
+        user.CompanyInfo = updated.CompanyInfo ?? user.CompanyInfo;
         var result = await userManager.UpdateAsync(user);
 
         return result.Succeeded;
