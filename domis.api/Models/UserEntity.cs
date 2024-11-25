@@ -6,13 +6,18 @@ public class UserEntity : IdentityUser
 {
     public string? FirstName { get; set; }
     public string? LastName { get; set; }
-    public string? CompanyName { get; set; }
     public string? Country { get; set; }
     public string? County { get; set; }
     public string? City { get; set; }
     public string? AddressLine { get; set; }
     public string? Apartment { get; set; }
     public string? PostalCode { get; set; }
-    [Obsolete("UserEntity.Address not in use.")]
-    public string? Address { get; set; } //TODO: delete from the UserEntity model
+    public CompanyInfo? CompanyInfo { get; set; } 
+}
+
+public class CompanyInfo
+{
+    public required int Id { get; set; }
+    public string? Name { get; set; }
+    public long? Number { get; set; }
 }
