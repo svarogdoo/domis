@@ -276,6 +276,23 @@ public static class ProductQueries
         WHERE id = @ProductId;
     ";
     
+    public const string GetProductEffectivePrice = @"
+        SELECT 
+            COALESCE(
+                (SELECT sale_price
+                 FROM domis.sales
+                 WHERE product_id = @ProductId 
+                   AND is_active = TRUE
+                   AND start_date <= CURRENT_DATE 
+                   AND end_date >= CURRENT_DATE
+                 LIMIT 1), 
+                (SELECT price 
+                 FROM domis.product
+                 WHERE id = @ProductId)
+            ) AS EffectivePrice;
+    ";
+
+    
     public const string InsertSale = @"
         INSERT INTO domis.sales (product_id, sale_price, start_date, end_date, is_active) 
         VALUES (@ProductId, @SalePrice, @StartDate, @EndDate, @IsActive)

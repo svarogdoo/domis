@@ -2,10 +2,7 @@ using System.Data;
 using Dapper;
 using domis.api.Common;
 using domis.api.DTOs.Cart;
-using domis.api.DTOs.Image;
 using domis.api.DTOs.Order;
-using domis.api.DTOs.Product;
-using domis.api.Models;
 using domis.api.Repositories.Helpers;
 using domis.api.Repositories.Queries;
 using Serilog;
@@ -24,7 +21,7 @@ public interface ICartRepository
     Task<CartDto?> Cart(string? userId, int? cartId);
     Task<bool> SetCartUserId(int cartId, string userId);
 }
-public class CartRepository(IDbConnection connection) : ICartRepository
+public class CartRepository(IDbConnection connection, PriceCalculationHelper helper) : ICartRepository
 {
     public async Task<IEnumerable<OrderStatusDto>?> AllOrderStatuses()
     {
@@ -96,13 +93,13 @@ public class CartRepository(IDbConnection connection) : ICartRepository
             var productExists = await connection.ExecuteScalarAsync<bool>(ProductQueries.CheckIfProductExists, new { ProductId = productId });
             if (!productExists) throw new NotFoundException($"Product with ID {productId} does not exist.");
 
-            var sizing = await GetProductSizing(productId);
-            var pakSize = await GetPakSize(sizing);
+            var sizing = await helper.GetProductSizing(productId);
+            var pakSize = helper.PakSizeAsNumber(sizing);
             
             if (addedQuantity % pakSize != 0)
-                throw new ArgumentException($"Quantity {addedQuantity} must be in iterations of the pak size {pakSize}.");
+                throw new ArgumentException($"Quantity - {addedQuantity} must be in increments of the pak size - {pakSize}.");
             
-            var palSize = await GetPalSize(sizing);
+            var palSize = helper.PalSizeAsNumber(sizing);
 
             var cartItemExists = await connection.ExecuteScalarAsync<bool>(CartQueries.CheckIfProductExistsInCart, new { CartId = cartId, ProductId = productId });
 
@@ -129,20 +126,20 @@ public class CartRepository(IDbConnection connection) : ICartRepository
             if (!ci.Exists)
                 throw new NotFoundException($"Cart item with ID {cartItemId} does not exist.");
             
-            var sizing = await GetProductSizing(ci.ProductId);
-            var pakSize = await GetPakSize(sizing);
+            var sizing = await helper.GetProductSizing(ci.ProductId);
+            var pakSize = helper.PakSizeAsNumber(sizing);
             if (addedQuantity % pakSize != 0)
-                throw new ArgumentException($"Quantity {addedQuantity} must be in iterations of the pak size {pakSize}.");
+                throw new ArgumentException($"Quantity {addedQuantity} must be in increments of the pak size {pakSize}.");
             
             var totalQ = ci.CurrentQuantity + addedQuantity;
-            var palSize = await GetPalSize(sizing);
+            var palSize = helper.PalSizeAsNumber(sizing);
             
             var rowsAffected = await connection.ExecuteAsync(CartQueries.UpdateCartItemQuantityAndPrice, new
             {
                 CartItemId = cartItemId,
                 Quantity = totalQ,
                 ModifiedAt = DateTime.UtcNow,
-                Price = await GetPriceBasedOnRoleAndQuantity(ci.ProductId, role, totalQ, palSize)
+                Price = await helper.GetPriceBasedOnRoleAndQuantity(ci.ProductId, role, totalQ, palSize)
             });
 
             return rowsAffected > 0;
@@ -229,33 +226,33 @@ public class CartRepository(IDbConnection connection) : ICartRepository
                 parameters = new { CartId = cartId };
             }
 
-            var result = await connection.QueryAsync<CartDto, CartItemDto, ProductCartDetailsDto, string, string, CartDto>(
-            query,
-            (cart, item, product, image, status) =>
-            {
-                if (!cartDictionary.TryGetValue(cart.CartId, out var currentCart))
+            await connection.QueryAsync<CartDto, CartItemDto, ProductCartDetailsDto, string, string, CartDto>(
+                query,
+                (cart, item, product, image, status) =>
                 {
-                    currentCart = cart;
-                    currentCart.Items = []; // Initialize the Items list properly
-                    cartDictionary.Add(currentCart.CartId, currentCart);
-                }
+                    if (!cartDictionary.TryGetValue(cart.CartId, out var currentCart))
+                    {
+                        currentCart = cart;
+                        currentCart.Items = []; // Initialize the Items list properly
+                        cartDictionary.Add(currentCart.CartId, currentCart);
+                    }
 
-                if (item is not null
-                    && currentCart.Items.Find(i => i.CartItemId == item.CartItemId) == null)
-                {
-                    item.ProductDetails = product;
-                    item.ProductDetails.Image = image;
-                    item.CartItemPrice = item.CartItemPrice;
-                    //item.ProductDetails.Price = PricingHelper.CalculateDiscount(item.ProductDetails.Price, discount);
-                    currentCart.Items.Add(item);
-                }
+                    if (item is not null
+                        && currentCart.Items.Find(i => i.CartItemId == item.CartItemId) == null)
+                    {
+                        item.ProductDetails = product;
+                        item.ProductDetails.Image = image;
+                        item.CartItemPrice = item.CartItemPrice;
+                        //item.ProductDetails.Price = PricingHelper.CalculateDiscount(item.ProductDetails.Price, discount);
+                        currentCart.Items.Add(item);
+                    }
 
-                currentCart.Status = status; // Assign the status to the cart
+                    currentCart.Status = status; // Assign the status to the cart
 
-                return currentCart;
-            },
-            parameters,
-            splitOn: "CartItemId, Name, Url, Status"
+                    return currentCart;
+                },
+                parameters,
+                splitOn: "CartItemId, Name, Url, Status"
             );
 
             return cartDictionary.Values.FirstOrDefault();
@@ -266,10 +263,11 @@ public class CartRepository(IDbConnection connection) : ICartRepository
             throw;
         }
     }
-    
+
+    #region ExtensionMethods
     private async Task<int?> AddNewCartItem(int? cartId, int productId, decimal quantity, string role, decimal? palSize)
     {
-        var price = await GetPriceBasedOnRoleAndQuantity(productId, role, quantity, palSize);
+        var price = await helper.GetPriceBasedOnRoleAndQuantity(productId, role, quantity, palSize);
         
         var parameters = new
         {
@@ -308,78 +306,12 @@ public class CartRepository(IDbConnection connection) : ICartRepository
                 CartId = cartId,
                 ProductId = productId,
                 Quantity = totalQ,
-                Price = GetPriceBasedOnRoleAndQuantity(productId, role, totalQ, palSize),
+                Price = helper.GetPriceBasedOnRoleAndQuantity(productId, role, totalQ, palSize),
                 ModifiedAt = DateTime.UtcNow
             });
         }
 
         return cartId;
     }
-    
-    private async Task<decimal?> GetPriceBasedOnRoleAndQuantity(int productId, string userRole, decimal quantity, decimal? palSize)
-    {
-        try
-        {
-            return userRole switch
-            {
-                "User" or "Admin" => await GetProductPriceRegular(productId),
-                "VP1" or "VP2" or "VP3" or "VP4" => await GetProductPriceVp(productId, userRole, quantity, palSize),
-                _ => throw new NotSupportedException($"Role '{userRole}' is not supported.")
-            };
-        }
-        catch (Exception ex)
-        {
-            Log.Error(ex, $"An error occurred while retrieving price for product ID {productId} and role {userRole}: {ex.Message}");
-            throw;
-        }
-    }
-    
-    private async Task<decimal> GetProductPriceRegular(int productId)
-    {
-        var priceRegular =  await connection.ExecuteScalarAsync<decimal>(ProductQueries.GetProductPrice,
-            new { ProductId = productId });
-
-        return priceRegular;
-    }
-
-    private async Task<decimal?> GetProductPriceVp(int productId, string role, decimal quantity, decimal? palSize)
-    {
-        var priceVp = await connection.QueryFirstOrDefaultAsync<VpPriceDetails>(
-            ProductQueries.GetSingleProductPricesForVP, 
-            new { ProductId = productId, Role = role }
-        );
-
-        if (priceVp is null) return null;
-        
-        if (!palSize.HasValue) return priceVp.PakPrice;
-        
-        return quantity >= palSize 
-            ? priceVp.PalPrice 
-            : priceVp.PakPrice;
-    }
-
-    private async Task<Size?> GetProductSizing(int productId) 
-        => await connection.QuerySingleOrDefaultAsync<Size>(ProductQueries.GetProductSizing, new { ProductId = productId });
-
-    private Task<decimal?> GetPalSize(Size? size)
-    {
-        decimal? palSize = null;
-        if (!string.IsNullOrEmpty(size?.Pal) && decimal.TryParse(size.Pal, out var palValue))
-        {
-            palSize = palValue;
-        }
-
-        return Task.FromResult(palSize);
-    }
-    
-    private Task<decimal?> GetPakSize(Size? size)
-    {
-        decimal? pakSize = null;
-        if (!string.IsNullOrEmpty(size?.Pak) && decimal.TryParse(size.Pak, out var pakValue))
-        {
-            pakSize = pakValue;
-        }
-
-        return Task.FromResult(pakSize);
-    }
+    #endregion
 }

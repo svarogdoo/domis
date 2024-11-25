@@ -113,7 +113,9 @@ public static class Configuration
 
         //builder.Services.AddTransient<IEmailSender, EmailSender>();
         builder.Services.AddTransient<ICustomEmailSender<UserEntity>, CustomEmailSender>();
+        
         builder.Services.AddScoped<IPriceHelpers, PriceHelpers>();
+        builder.Services.AddScoped<PriceCalculationHelper>();
     }
 
     public static void RegisterMiddlewares(this WebApplication app)
