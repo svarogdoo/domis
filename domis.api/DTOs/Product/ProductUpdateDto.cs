@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+// ReSharper disable All
 
 namespace domis.api.DTOs.Product;
 

@@ -1,10 +1,12 @@
 ﻿using domis.api.DTOs.Common;
+using domis.api.DTOs.Image;
 using domis.api.DTOs.Product;
 using domis.api.Models;
 using domis.api.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
+using Serilog;
 
 namespace domis.api.Endpoints;
 
@@ -56,7 +58,6 @@ public static class ProductEndpoints
             {
                 return Results.Problem(ex.Message);
             }
-            
         }).WithDescription("update product");
         //TODO: require authorization (Admin)
 

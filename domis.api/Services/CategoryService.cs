@@ -36,9 +36,9 @@ public class CategoryService(ICategoryRepository repository, IProductRepository 
         
         var role = user is not null
             ? await userRepo.GetUserRoleAsync(user.Id)
-            : Roles.User.RoleName();
+            : Roles.User.GetName();
         
-        return await repository.GetCategoryProducts(categoryId, options, discount, role ?? Roles.User.RoleName());
+        return await repository.GetCategoryProducts(categoryId, options, discount, role ?? Roles.User.GetName());
     }
 
     public async Task<IEnumerable<ProductDetailsDto>> PutCategoryOnSale(CategorySaleRequest request)

@@ -1,6 +1,6 @@
 namespace domis.api.Models;
 
-public record RoleRequest(Roles Role);
+public record RoleRequest(string Role);
 
 public record RoleDiscountRequest(string RoleName, decimal Discount);
 

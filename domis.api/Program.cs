@@ -17,6 +17,7 @@ app.RegisterLocationEndpoints();
 app.RegisterOrderEndpoints();
 app.RegisterUserEndpoints();
 app.RegisterAdminEndpoints();
+app.RegisterImageEndpoints();
 
 app.Run();
 

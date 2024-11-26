@@ -74,7 +74,6 @@ public static class Configuration
         builder.Services.AddScoped<IValidator<CreateCartItemRequest>, CreateCartItemRequestValidator>();
         //builder.Services.AddValidatorsFromAssemblyContaining<CreateCartItemRequestValidator>();
 
-
         builder.Services.AddScoped<IProductService, ProductService>();
         builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
@@ -98,6 +97,13 @@ public static class Configuration
         builder.Services.AddScoped<IUserRepository, UserRepository>();
 
         builder.Services.AddScoped<IAdminService, AdminService>();
+
+        builder.Services.AddScoped<IImageService, ImageService>();
+        builder.Services.AddScoped<IImageRepository, ImageRepository>();
+
+        //TODO: do we need?
+        //builder.Services.AddHttpClient<ISyncService, SyncService>();
+        // builder.Services.AddScoped<IAzureBlobService, AzureBlobService>();
 
         builder.Services.AddSingleton<SmtpClient>(serviceProvider =>
         {
