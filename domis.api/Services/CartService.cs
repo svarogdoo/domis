@@ -34,18 +34,18 @@ public class CartService(ICartRepository cartRepository, IUserRepository userRep
     {
         var role = user is not null
             ? await userRepo.GetUserRoleAsync(user.Id)
-            : Roles.User.RoleName();
+            : Roles.User.GetName();
         
-        return await cartRepository.CreateCartItemAsync(cartId, productId, quantity, user?.Id, role ?? Roles.User.RoleName());
+        return await cartRepository.CreateCartItemAsync(cartId, productId, quantity, user?.Id, role ?? Roles.User.GetName());
     }
 
     public async Task<bool> UpdateCartItemQuantity(int cartItemId, decimal quantity, UserEntity? user)
     {        
         var role = user is not null
             ? await userRepo.GetUserRoleAsync(user.Id)
-            : Roles.User.RoleName();
+            : Roles.User.GetName();
         
-        return await cartRepository.UpdateCartItemQuantityAsync(cartItemId, quantity, role ?? Roles.User.RoleName());
+        return await cartRepository.UpdateCartItemQuantityAsync(cartItemId, quantity, role ?? Roles.User.GetName());
     }
 
     public async Task<bool> DeleteCartItem(int cartItemId) => 

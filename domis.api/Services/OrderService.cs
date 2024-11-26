@@ -59,9 +59,9 @@ public class OrderService(
 
         var role = user is not null
             ? await userRepo.GetUserRoleAsync(user.Id)
-            : Roles.User.RoleName();
+            : Roles.User.GetName();
         
-        var order =  await orderRepo.CreateOrderFromCartAsync(createOrder, role ?? Roles.User.RoleName(), discount);
+        var order =  await orderRepo.CreateOrderFromCartAsync(createOrder, role ?? Roles.User.GetName(), discount);
 
         await emailSender.SendOrderConfirmationAsync(user?.Email ?? order.Shipping!.Email, order);
 

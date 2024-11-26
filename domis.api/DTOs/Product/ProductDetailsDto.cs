@@ -21,15 +21,6 @@ public class ProductDetailsDto
     public IEnumerable<IEnumerable<CategoryPath>> CategoryPaths { get; set; } = [];
     public SaleInfo? SaleInfo { get; set; }
     public Attributes? Attributes { get; set; }
-    // ---------------------------------
-    // public int? QuantityType { get; set; }
-    // public string? Title { get; set; }
-    // public decimal? Width { get; set; }
-    // public decimal? Height { get; set; }
-    // public decimal? Depth { get; set; }
-    // public decimal? Length { get; set; }
-    // public decimal? Thickness { get; set; }
-    // public decimal? Weight { get; set; }
 }
 
 public class Price
@@ -58,7 +49,6 @@ public class VpPrice
     [JsonPropertyName("perPallet")]
     public decimal? PalPrice { get; set; }
 }
-
 
 public class Size
 {
