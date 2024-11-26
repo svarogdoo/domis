@@ -253,7 +253,7 @@ declare global {
   }
 
   interface AdminUser {
-    userId: number;
+    userId: string;
     firstName: string;
     lastName: string;
     email: string;

@@ -2,16 +2,46 @@
   import { onMount } from "svelte";
   import { getAdminUsers } from "../../../../services/admin-service";
   import AdminUserItem from "./AdminUserItem.svelte";
+  import Snackbar from "../../../../components/Snackbar.svelte";
 
   let users: Array<AdminUser>;
+  let snackbarMessage: string;
+  let isSnackbarSuccess: boolean;
 
   onMount(() => {
     setAdminUsers();
   });
 
+  function showSnackbar() {
+    var snackbar = document.getElementById("snackbar");
+    if (snackbar) {
+      snackbar.style.display = "flex";
+      setTimeout(function () {
+        if (snackbar) snackbar.style.display = "none";
+      }, 3000); // Close after 3s
+    }
+  }
+
   async function setAdminUsers() {
-    users = await getAdminUsers();
-    console.info(users);
+    const tempUsers = await getAdminUsers();
+    users = tempUsers.sort((a, b) => {
+      if (a.userName < b.userName) return -1;
+      if (a.userName > b.userName) return 1;
+      return 0;
+    });
+  }
+
+  async function handleSave(event: any) {
+    if (event?.detail?.success) {
+      snackbarMessage = "Uspešno sačuvana rola korisnika!";
+      isSnackbarSuccess = true;
+      await setAdminUsers();
+    } else {
+      snackbarMessage = "Greška pri čuvanju role korisnika!";
+      isSnackbarSuccess = false;
+    }
+
+    showSnackbar();
   }
 </script>
 
@@ -22,15 +52,16 @@
         <th class="text-start w-40">Ime</th>
         <th class="text-start w-40">Prezime</th>
         <th class="text-start w-40">Email</th>
-        <th class="text-start w-40">Tip</th>
+        <th class="text-start w-32">Tip</th>
       </thead>
       <tbody class="divide-y divide-gray-200">
         {#each users as user (user.userId)}
-          <AdminUserItem bind:user />
+          <AdminUserItem bind:user on:save={handleSave} />
         {/each}
       </tbody>
     </table>
   {/if}
+  <Snackbar message={snackbarMessage} isSuccess={isSnackbarSuccess} />
 </div>
 
 <style>

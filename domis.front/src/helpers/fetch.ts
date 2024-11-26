@@ -32,7 +32,11 @@ export async function putDataWithJsonBody(url: string, json: string) {
       "Content-Type": "application/json",
       ...headers,
     },
-  }).then(handleResponse);
+  })
+    .then(handleResponse)
+    .catch((error) => {
+      throw error;
+    });
 }
 
 export async function deleteData(url: string) {

@@ -122,7 +122,7 @@
 
   async function submit() {
     let res = await putProduct({
-      id: selectedProduct.id,
+      id: selectedProduct?.id,
       title: title,
       description: description,
       width: Number.parseInt(width),
