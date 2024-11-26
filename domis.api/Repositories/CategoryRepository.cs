@@ -92,7 +92,7 @@ public class CategoryRepository(IDbConnection connection) : ICategoryRepository
             
             var productIds = products.Select(p => p.Id).ToArray();
             
-            var vpPrices = role == Roles.User.RoleName() || role == Roles.Admin.RoleName()
+            var vpPrices = role == Roles.User.GetName() || role == Roles.Admin.GetName()
                 ? null
                 : (await connection.QueryAsync<VpPriceDetails>(ProductQueries.GetProductPricesForVPMultiple, new { ProductIds = productIds, Role = role })).ToList();
 

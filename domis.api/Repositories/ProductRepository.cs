@@ -31,7 +31,7 @@ public interface IProductRepository
     Task<IEnumerable<SearchResultDto>> SearchProducts(string query, int? pageNumber, int? pageSize);
     Task<bool> PutProductsOnSale(ProductSaleRequest request);
     Task<bool> AssignProductToCategory(AssignProductToCategoryRequest request);
-    Task<bool> ProductExists(int productId);
+    Task<bool> ProductExists(int productId); 
 }
 
 public class ProductRepository(IDbConnection connection, IMapper mapper) : IProductRepository
@@ -220,18 +220,10 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
                 product.QuantityType
             });
 
-            if (affectedRows == 0)
-            {
-                Log.Warning("Update failed. No rows were affected for ProductId {ProductId}", product.Id);
-                return null;
-            }
-
-            //var updatedProduct = await connection.QuerySingleOrDefaultAsync<ProductCompleteDetailsDto>(ProductQueries.GetSingleWithDetails, new { ProductId = product.Id });
-
-            var updatedProduct = await GetByIdWithDetails(product.Id);
-
-            //var updatedProduct = await connection.QuerySingleOrDefaultAsync<ProductEditDto>(ProductQueries.GetById, new { ProductId = product.Id });
-            return updatedProduct;
+            if (affectedRows != 0) return await GetByIdWithDetails(product.Id);
+            
+            Log.Warning("Update failed. No rows were affected for ProductId {ProductId}", product.Id);
+            return null;
         }
         catch (PostgresException ex) when (ex.SqlState == "23503") // Foreign Key Violation 
         {

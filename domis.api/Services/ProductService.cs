@@ -1,5 +1,6 @@
 ﻿using domis.api.Common;
 using domis.api.DTOs.Common;
+using domis.api.DTOs.Image;
 using domis.api.DTOs.Product;
 using domis.api.Models;
 using domis.api.Repositories;
@@ -32,11 +33,11 @@ public class ProductService(IProductRepository repository, ICategoryRepository c
         
         var role = user is not null
             ? await userRepo.GetUserRoleAsync(user.Id)
-            : Roles.User.RoleName();
+            : Roles.User.GetName();
         
-        var productDetails = role == Roles.User.RoleName() || role == Roles.Admin.RoleName()
+        var productDetails = role == Roles.User.GetName() || role == Roles.Admin.GetName()
             ? await repository.GetByIdWithDetails(id, discount)
-            : await repository.GetByIdWithDetailsForVp(id, role ?? Roles.User.RoleName());
+            : await repository.GetByIdWithDetailsForVp(id, role ?? Roles.User.GetName());
 
         return productDetails;
     }

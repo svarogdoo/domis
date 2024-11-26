@@ -30,14 +30,14 @@ public class AdminService(
         var user = await userManager.FindByIdAsync(userId);
         if (user == null) return null;
 
-        if (!await roleManager.RoleExistsAsync(Roles.Admin.RoleName()))
+        if (!await roleManager.RoleExistsAsync(Roles.Admin.GetName()))
             return null;
 
         var userRoles = await userManager.GetRolesAsync(user);
-        if (userRoles.Contains(Roles.User.RoleName()))
-            await userManager.RemoveFromRoleAsync(user, Roles.User.RoleName());
+        if (userRoles.Contains(Roles.User.GetName()))
+            await userManager.RemoveFromRoleAsync(user, Roles.User.GetName());
 
-        var result = await userManager.AddToRoleAsync(user, Roles.Admin.RoleName());
+        var result = await userManager.AddToRoleAsync(user, Roles.Admin.GetName());
         if (!result.Succeeded)
             return null;
 
@@ -107,7 +107,7 @@ public class AdminService(
         if (user == null)
             return false;
 
-        var roleName = role.RoleName();
+        var roleName = role.GetName();
         if (!await roleManager.RoleExistsAsync(roleName))
             return false;
 
@@ -134,16 +134,19 @@ public class AdminService(
         if (user == null) 
             return false;
 
-        var roleName = role.RoleName();
+        var roleName = role.GetName();
         if (!await roleManager.RoleExistsAsync(roleName))
             return false;
-        
 
         var userRoles = await userManager.GetRolesAsync(user);
         if (!userRoles.Contains(roleName))
             return false;
 
         var result = await userManager.RemoveFromRoleAsync(user, roleName);
+        
+        if (result.Succeeded)         //default to 'User' role
+            await userManager.AddToRoleAsync(user, Roles.User.GetName());
+        
         return result.Succeeded;
     }
 

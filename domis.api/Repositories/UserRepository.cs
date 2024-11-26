@@ -26,8 +26,8 @@ public class UserRepository(UserManager<UserEntity> userManager) : IUserReposito
 
         var roles = await userManager.GetRolesAsync(idUser);
 
-        if (roles.Contains(Roles.VP1.RoleName()) || roles.Contains(Roles.VP2.RoleName()) 
-            || roles.Contains(Roles.VP3.RoleName())  || roles.Contains(Roles.VP4.RoleName()))
+        if (roles.Contains(Roles.VP1.GetName()) || roles.Contains(Roles.VP2.GetName()) 
+            || roles.Contains(Roles.VP3.GetName())  || roles.Contains(Roles.VP4.GetName()))
         {
             return new UserWholesaleProfileDto(
                 idUser.FirstName!, idUser.LastName!, 
