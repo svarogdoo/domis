@@ -8,6 +8,7 @@
   import { handleImageError } from "../../../../helpers/imageFallback";
   import { getCurrencyString } from "../../../../helpers/stringFormatter";
   import { userStore } from "../../../../stores/user";
+  import MobileGallery from "./MobileGallery.svelte";
 
   export let data;
 
@@ -54,16 +55,20 @@
     {/if}
     <p class="text-sm"></p>
     <div
-      class="w-full flex flex-col items-center lg:flex-row lg:items-start gap-x-12 gap-y-4"
+      class="w-full flex flex-col items-center lg:flex-row lg:items-start gap-x-12 gap-y-4 cursor-pointer"
     >
-      <div class="w-4/5">
-        <img
-          src={product?.featuredImageUrl}
-          alt={product?.name}
-          on:error={handleImageError}
-          class="w-full h-auto aspect-square object-cover rounded-lg"
-        />
+      <div class="w-full flex lg:hidden">
+        <!-- TODO: pass array of images -->
+        <!-- TODO: Dekstop Gallery -->
+        <MobileGallery />
       </div>
+
+      <!-- <img
+        src={product?.featuredImageUrl}
+        alt={product?.name}
+        on:error={handleImageError}
+        class="w-full h-auto aspect-square object-cover rounded-lg"
+      /> -->
       <div class="w-full px-2 flex flex-col justify-start">
         <!-- Title -->
         <div
@@ -122,7 +127,8 @@
                 po paleti ({product?.size.pallet}
                 {quantityTypeString} | {formatToTwoDecimals(
                   product?.size?.pallet / product?.size?.box
-                )} paketa | cena komada {getCurrencyString()} {formatToTwoDecimals(productPrice.perPalletUnit)})
+                )} paketa | cena komada {getCurrencyString()}
+                {formatToTwoDecimals(productPrice.perPalletUnit)})
               </p>
             {/if}
           </div>
