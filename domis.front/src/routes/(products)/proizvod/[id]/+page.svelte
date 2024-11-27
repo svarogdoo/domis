@@ -113,7 +113,7 @@
                 {quantityTypeString})
               </p>
             {/if}
-            {#if userStore.isUserVP() && productPrice?.perPallet && product?.size?.pallet}
+            {#if userStore.isUserVP() && productPrice?.perPallet && product?.size?.pallet && productPrice?.perPalletUnit}
               <p class="text-xs lg:text-sm">
                 {getCurrencyString()}
                 <span class="font-light text-domis-dark text-sm lg:text-lg px-2"
@@ -122,7 +122,7 @@
                 po paleti ({product?.size.pallet}
                 {quantityTypeString} | {formatToTwoDecimals(
                   product?.size?.pallet / product?.size?.box
-                )} paketa)
+                )} paketa | cena komada {getCurrencyString()} {formatToTwoDecimals(productPrice.perPalletUnit)})
               </p>
             {/if}
           </div>
