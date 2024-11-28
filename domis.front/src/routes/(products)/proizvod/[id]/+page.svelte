@@ -91,10 +91,11 @@
         <!-- Pricing -->
         <div class="w-full flex flex-col relative">
           <p
-            class="absolute top-0 right-0 text-end font-light mt-2 text-green-700 tracking-wider"
+            class="absolute top-0 right-0 text-end font-light mt-2 text-green-700 tracking-wider text-sm lg:text-lg"
           >
             {product.stock}
-            <span class="text-domis-accent">na zalihama</span>
+            <span class="text-domis-accent text-xs lg:text-sm">na zalihama</span
+            >
           </p>
           <div
             class="flex flex-col px-3 py-3 gap-y-2 tracking-wide font-extralight border-b border-gray-400"

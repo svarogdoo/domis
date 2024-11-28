@@ -50,8 +50,10 @@
     <p class="text-wrap pr-4">{item.productDetails.name}</p>
   </td>
   <td class="w-44 text-center"
-    >{item.cartItemPrice}
-    <span class="font-light text-sm">{getCurrencyString()}</span></td
+    ><p>
+      {formatPrice(item.cartItemPrice)}
+      <span class="font-light text-sm">{getCurrencyString()}</span>
+    </p></td
   >
   <td class="w-36">
     <div class="flex justify-center items-center gap-x-2">
