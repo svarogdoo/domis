@@ -9,6 +9,7 @@
   import { getCurrencyString } from "../../../../helpers/stringFormatter";
   import { userStore } from "../../../../stores/user";
   import SlidingGallery from "./SlidingGallery.svelte";
+  import GridGallery from "./GridGallery.svelte";
 
   export let data;
 
@@ -61,14 +62,7 @@
         class="w-full hidden lg:grid gap-3
         {product?.images.length === 1 ? 'grid-cols-1' : 'grid-cols-2'}"
       >
-        {#each product.images as image}
-          <img
-            src={image.url}
-            alt={product?.name}
-            on:error={handleImageError}
-            class="w-full h-auto aspect-square object-cover rounded-lg"
-          />
-        {/each}
+        <GridGallery images={product.images} />
       </div>
       <div class="w-full flex lg:hidden">
         <SlidingGallery images={product.images} />

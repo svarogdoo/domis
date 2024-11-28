@@ -3,13 +3,23 @@
   import { handleImageError } from "../../../../helpers/imageFallback";
 
   export let images: Array<Image>;
+  export let selectedImageUrl: string | undefined = undefined;
 
-  let currentIndex = 0;
+  let currentIndex = calculateIndex();
   let startX = 0; // Starting touch position
   let currentTranslate = 0; // Current translation of the slider
   let prevTranslate = 0; // Translation before the gesture
   let isDragging = false; // Flag to check if dragging is active
   let isTransitioning = false; // Flag to enable smooth animation
+
+  function calculateIndex() {
+    if (!selectedImageUrl) return 0;
+
+    let index = images.findIndex((image) => image.url === selectedImageUrl);
+    console.info(index);
+
+    return index >= 0 ? index : 0;
+  }
 
   const slideTo = (index: number) => {
     isTransitioning = true; // Enable transition
@@ -75,7 +85,7 @@
         src={image.url}
         on:error={handleImageError}
         alt="Photo {currentIndex + 1}"
-        class="min-w-full object-cover h-auto aspect-square"
+        class="min-w-full object-cover h-auto aspect-square lg:rounded-lg"
       />
     {/each}
   </div>
@@ -84,7 +94,7 @@
   {#if currentIndex != 0}
     <button
       on:click={() => slideTo(currentIndex - 1)}
-      class="absolute top-1/2 -translate-y-1/2 left-0 bg-white py-2 pr-1 shadow-lg hover:bg-gray-200"
+      class="absolute top-1/2 -translate-y-1/2 left-0 bg-white py-2 pr-1 lg:py-4 lg:pr-2 shadow-lg hover:bg-gray-200"
     >
       <img src={arrow} alt="&rarr;" class="rotate-90" />
     </button>
@@ -94,7 +104,7 @@
   {#if currentIndex != images.length - 1}
     <button
       on:click={() => slideTo(currentIndex + 1)}
-      class="absolute top-1/2 -translate-y-1/2 right-0 bg-white py-2 pl-1 shadow-lg hover:bg-gray-200"
+      class="absolute top-1/2 -translate-y-1/2 right-0 bg-white py-2 pl-1 lg:py-4 lg:pl-2 shadow-lg hover:bg-gray-200"
     >
       <img src={arrow} alt="&rarr;" class="-rotate-90" />
     </button>
