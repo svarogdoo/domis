@@ -112,3 +112,26 @@ export function getOrderStatusColor(orderStatus: OrderStatus): string {
       return "bg-red-200";
   }
 }
+
+// Sort types
+export enum SortType {
+  None = 0,
+  PriceAsc = 1,
+  PriceDesc = 2,
+  NameAsc = 3,
+  NameDesc = 4,
+}
+export function mapSortTypeToString(sortType: SortType): string {
+  switch (sortType) {
+    case SortType.PriceAsc:
+      return "Cena rastuće";
+    case SortType.PriceDesc:
+      return "Cena opadajuće";
+    case SortType.NameAsc:
+      return "Naziv rastuće";
+    case SortType.NameDesc:
+      return "Naziv opadajuće";
+    case SortType.None:
+      return "Bez sortiranja";
+  }
+}

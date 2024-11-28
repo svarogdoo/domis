@@ -1,6 +1,7 @@
 import { fetchData } from "../helpers/fetch";
 import { categories } from "../stores/categories";
 import { API_URL } from "../config";
+import type { SortType } from "../enums";
 
 export function getCategories() {
   try {
@@ -13,11 +14,13 @@ export function getCategories() {
 export function getCategoryProducts(
   id: number,
   pageNumber?: number,
-  pageSize?: number
+  pageSize?: number,
+  sortType?: SortType
 ) {
   let queryParams = new URLSearchParams();
   if (pageNumber) queryParams.append("pageNumber", pageNumber.toString());
   if (pageSize) queryParams.append("pageSize", pageSize.toString());
+  if (sortType) queryParams.append("sort", sortType.toString());
 
   const url = `${API_URL}/api/categories/${id}/products?${queryParams.toString()}`;
 

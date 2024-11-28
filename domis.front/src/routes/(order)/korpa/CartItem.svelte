@@ -47,7 +47,9 @@
     <p class="text-sm text-gray-400 font-light">
       SKU: {item.productDetails.sku}
     </p>
-    <p class="text-wrap pr-4">{item.productDetails.name}</p>
+    <a href="/proizvod/{item.productId}" class="text-wrap pr-4"
+      >{item.productDetails.name}</a
+    >
   </td>
   <td class="w-44 text-center"
     ><p>

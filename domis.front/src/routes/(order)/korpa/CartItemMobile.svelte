@@ -46,7 +46,9 @@
         <p class="text-sm text-gray-400 font-light">
           SKU: {item.productDetails.sku}
         </p>
-        <p class="text-sm text-wrap pr-4">{item.productDetails.name}</p>
+        <a href="/proizvod/{item.productId}" class="text-sm text-wrap pr-4"
+          >{item.productDetails.name}</a
+        >
         <div class="flex gap-x-4 items-center">
           <p>
             <span class="font-light text-sm">Cena: </span>

@@ -178,6 +178,47 @@
       </div>
     {/if}
   </div>
+
+  <!-- Mobile search -->
+  <div class="w-full flex lg:hidden justify-center px-2 mb-2">
+    <div class="relative w-full flex items-center">
+      <input
+        class="pl-4 py-1 rounded-lg font-extralight border bg-domis-light border-gray-300 placeholder:text-gray-500 placeholder:text-sm placeholder:tracking-wide w-full"
+        type="text"
+        id="search-field"
+        placeholder="Upišite ime ili šifru proizvoda"
+        autocomplete="off"
+        bind:value={searchTerm}
+        on:input={debounceSearch}
+      />
+      <div
+        class="absolute right-0 flex items-center justify-center h-full bg-domis-dark w-10 rounded-lg"
+      >
+        <img src={searchIcon} alt="search" class="w-4 h-auto" />
+      </div>
+
+      {#if isDropdownOpen && searchResults.length > 0}
+        <ul
+          class="absolute top-full left-0 w-full bg-white border border-gray-300 rounded-md mt-1 z-50"
+        >
+          {#each searchResults as item}
+            <li
+              id="search-option"
+              class="px-2 py-1 hover:bg-gray-100 cursor-pointer"
+            >
+              <button on:click={() => handleSearchOptionClick(item)}>
+                {#if item.type === "Category"}
+                  <strong>{item.name}</strong>
+                {:else if item.type === "Product"}
+                  {item.name} ({item.sku})
+                {/if}
+              </button>
+            </li>
+          {/each}
+        </ul>
+      {/if}
+    </div>
+  </div>
 </header>
 
 <style>

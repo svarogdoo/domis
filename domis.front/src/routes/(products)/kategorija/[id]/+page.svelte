@@ -2,13 +2,14 @@
   import ProductCard from "./CategoryProductCard.svelte";
   import { getCategoryProducts } from "../../../../services/category-service";
   import { onMount } from "svelte";
+  import { mapSortTypeToString, SortType } from "../../../../enums";
 
   export let data;
 
   let categoryDetails: CategoryDetails;
   let products: Array<CategoryProduct> = [];
   let isOpen = false;
-  let sortType = "low-to-high";
+  let sortType: SortType = SortType.NameAsc;
   let loadMoreTrigger: HTMLElement;
   let loading = false;
 
@@ -17,26 +18,17 @@
 
   $: products = data.props.products;
   $: categoryDetails = data.props.category;
-  $: sortProducts(sortType);
 
   function toggleDropdown() {
     isOpen = !isOpen;
   }
 
-  function sortProducts(sortType: string) {
-    let sortedProducts = products.sort((a, b) => {
-      if (sortType === "high-to-low") {
-        return b.price - a.price;
-      } else {
-        return a.price - b.price;
-      }
-    });
-    products = sortedProducts;
-  }
-
-  function setSortType(value: string) {
+  function setSortType(value: SortType) {
+    pageNumber = 1;
+    products = [];
     sortType = value;
     isOpen = false;
+    loadMore();
   }
 
   async function loadMore() {
@@ -44,14 +36,14 @@
     const newItems = await getCategoryProducts(
       Number.parseInt(categoryDetails.id),
       pageNumber,
-      pageSize
+      pageSize,
+      sortType
     );
 
     products = filterDuplicates(newItems);
 
     loading = false;
     pageNumber++;
-    sortProducts(sortType);
   }
 
   function filterDuplicates(items: CategoryData) {
@@ -101,7 +93,7 @@
           <p
             class="ring-1 rounded-lg ring-gray-500 px-2 lg:px-4 py-1 lg:py-2 font-light"
           >
-            {sortType === "low-to-high" ? "Cena rastuće" : "Cena opadajuće"}
+            {mapSortTypeToString(sortType)}
           </p>
         </button>
       </div>
@@ -110,16 +102,28 @@
           class="absolute z-10 right-0 mt-12 w-40 rounded-md shadow-lg bg-white ring-1 ring-domis-dark ring-opacity-5 focus:outline-none"
         >
           <button
-            on:click={() => setSortType("low-to-high")}
+            on:click={() => setSortType(SortType.PriceAsc)}
             class="w-full text-right py-3 px-3 hover:bg-gray-700 hover:text-white rounded-lg"
           >
             Cena rastuće
           </button>
           <button
-            on:click={() => setSortType("high-to-low")}
+            on:click={() => setSortType(SortType.PriceDesc)}
             class="w-full text-right py-3 px-3 hover:bg-gray-700 hover:text-white rounded-lg"
           >
             Cena opadajuće
+          </button>
+          <button
+            on:click={() => setSortType(SortType.NameAsc)}
+            class="w-full text-right py-3 px-3 hover:bg-gray-700 hover:text-white rounded-lg"
+          >
+            Naziv rastuće
+          </button>
+          <button
+            on:click={() => setSortType(SortType.NameDesc)}
+            class="w-full text-right py-3 px-3 hover:bg-gray-700 hover:text-white rounded-lg"
+          >
+            Naziv opadajuće
           </button>
         </ul>
       {/if}
