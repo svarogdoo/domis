@@ -1,11 +1,12 @@
 ﻿using Dapper;
-using domis.api.Common;
 using domis.api.DTOs.Category;
 using domis.api.DTOs.Product;
 using domis.api.Models;
 using domis.api.Repositories.Helpers;
 using Serilog;
 using System.Data;
+using domis.api.Common;
+using domis.api.Models.Enums;
 
 namespace domis.api.Repositories;
 
@@ -76,51 +77,38 @@ public class CategoryRepository(IDbConnection connection) : ICategoryRepository
                 return null;
             
             category.Paths = await GetCategoryPath(categoryId);
+            
+            var query = GenerateQueryWithOrderByAndPagination(options);
+                    
             var productsDb = await connection.QueryAsync<ProductPreviewDto, SaleInfo, ProductPreviewDto>(
-                ProductQueries.GetAllByCategoryWithPagination,
+                query,
                 (product, saleInfo) =>
                 {
+                    // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
                     product.SaleInfo = saleInfo is null || !saleInfo.IsActive 
                         ? null
                         : saleInfo;
                     return product;
                 },
-                param: new { CategoryId = categoryId, Offset = offset, Limit = options.PageSize },
+                param: new { CategoryId = categoryId, Offset = offset, Limit = options.PageSize},
                 splitOn: "SalePrice"
             );
+            
             var products = productsDb.ToList();
             
-            var productIds = products.Select(p => p.Id).ToArray();
-            
-            var vpPrices = role == Roles.User.GetName() || role == Roles.Admin.GetName()
-                ? null
-                : (await connection.QueryAsync<VpPriceDetails>(ProductQueries.GetProductPricesForVPMultiple, new { ProductIds = productIds, Role = role })).ToList();
+            var isVpView = role != Roles.User.GetName() && role != Roles.Admin.GetName();
 
-            if (vpPrices == null) //returning products without vp pricing info
+            if (!isVpView) //regular users
             {
                 return new CategoryWithProductsDto
                 {
                     Category = category,
                     Products = products.ToList()
-                };  
+                };
             }
             
-            foreach (var product in products) //returning products for vp users with vp pricing info
-            {
-                //product.Price = PricingHelper.CalculateDiscount(product.Price, discount);
-                var vpPricing = vpPrices.FirstOrDefault(vp => vp.ProductId == product.Id);
-                if (vpPricing is null) continue;
-                
-                //TODO: currently setting Sale to null for VP users, decide what to do
-                product.SaleInfo = null;
-                product.VpPrice = vpPricing.PakPrice;
-            }
-
-            return new CategoryWithProductsDto
-            {
-                Category = category,
-                Products = products.ToList()
-            };
+            //else -> return vp users products view
+            return await GetProductsWithVpPricing(role, products, category);
         }
         catch (Exception ex)
         {
@@ -187,4 +175,34 @@ public class CategoryRepository(IDbConnection connection) : ICategoryRepository
 
     private async Task<IEnumerable<CategoryPath>> GetCategoryPath(int categoryId) 
         => await connection.QueryAsync<CategoryPath>(CategoryQueries.GetCategoryPath, new { CategoryId = categoryId });
+    
+    private async Task<CategoryWithProductsDto?> GetProductsWithVpPricing(string role, List<ProductPreviewDto> products, CategoryBasicInfoDto category)
+    {            
+        var productIds = products.Select(p => p.Id).ToArray();
+
+        var vpPrices = (await connection.QueryAsync<VpPriceDetails>(ProductQueries.GetProductPricesForVPMultiple, new { ProductIds = productIds, Role = role })).ToList();
+
+        foreach (var product in products)
+        {
+            //product.Price = PricingHelper.CalculateDiscount(product.Price, discount);
+            var vpPricing = vpPrices.FirstOrDefault(vp => vp.ProductId == product.Id);
+            if (vpPricing is null) continue;
+            
+            //TODO: currently setting Sale to null for VP users, decide what to do
+            product.SaleInfo = null;
+            product.VpPrice = vpPricing.PakPrice;
+        }
+            
+        return new CategoryWithProductsDto
+        {
+            Category = category,
+            Products = products.ToList()
+        };
+    }
+    
+    private static string GenerateQueryWithOrderByAndPagination(PageOptions options) 
+        => $@"
+            {ProductQueries.GetAllFromCategory}
+            ORDER BY {StaticHelper.GetOrderByClause(options.Sort)}
+            OFFSET @Offset LIMIT @Limit;";
 }

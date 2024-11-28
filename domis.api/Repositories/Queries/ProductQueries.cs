@@ -133,7 +133,7 @@ public static class ProductQueries
     ";
 
 
-    public const string GetAllByCategoryWithPagination = @"
+    public const string GetAllFromCategory = @"
         WITH RECURSIVE CategoryHierarchy AS (
             -- Anchor member: Start with the given category
             SELECT id
@@ -198,11 +198,7 @@ public static class ProductQueries
             WHERE p.active = TRUE -- filter to include only active products
         )
         SELECT *
-        FROM ProductsWithImages
-        ORDER BY Name -- Ensure you have a column to order by
-        OFFSET @Offset LIMIT @Limit;
-        "
-    ;
+        FROM ProductsWithImages";
 
     public const string GetById = @"
             SELECT
