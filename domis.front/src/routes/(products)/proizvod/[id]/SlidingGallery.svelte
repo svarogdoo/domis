@@ -1,12 +1,8 @@
 <script lang="ts">
   import arrow from "$lib/icons/dropdown.svg";
+  import { handleImageError } from "../../../../helpers/imageFallback";
 
-  let photos = [
-    "http://localhost:5173/src/lib/assets/backup.jpg",
-    "http://localhost:5173/src/lib/assets/backup.jpg",
-    "http://localhost:5173/src/lib/assets/backup.jpg",
-    "http://localhost:5173/src/lib/assets/backup.jpg",
-  ];
+  export let images: Array<Image>;
 
   let currentIndex = 0;
   let startX = 0; // Starting touch position
@@ -17,7 +13,7 @@
 
   const slideTo = (index: number) => {
     isTransitioning = true; // Enable transition
-    currentIndex = Math.max(0, Math.min(index, photos.length - 1));
+    currentIndex = Math.max(0, Math.min(index, images.length - 1));
     currentTranslate = -currentIndex * 100;
     prevTranslate = currentTranslate;
 
@@ -52,7 +48,7 @@
     if (delta > 0.3) {
       currentIndex = Math.max(currentIndex - 1, 0);
     } else if (delta < -0.3) {
-      currentIndex = Math.min(currentIndex + 1, photos.length - 1);
+      currentIndex = Math.min(currentIndex + 1, images.length - 1);
     }
 
     // Snap to the closest slide
@@ -74,9 +70,10 @@
       ? 'none'
       : 'transform 0.3s ease-in-out'};"
   >
-    {#each photos as photo}
+    {#each images as image}
       <img
-        src={photo}
+        src={image.url}
+        on:error={handleImageError}
         alt="Photo {currentIndex + 1}"
         class="min-w-full object-cover h-auto aspect-square"
       />
@@ -94,7 +91,7 @@
   {/if}
 
   <!-- Right Button -->
-  {#if currentIndex != photos.length - 1}
+  {#if currentIndex != images.length - 1}
     <button
       on:click={() => slideTo(currentIndex + 1)}
       class="absolute top-1/2 -translate-y-1/2 right-0 bg-white py-2 pl-1 shadow-lg hover:bg-gray-200"

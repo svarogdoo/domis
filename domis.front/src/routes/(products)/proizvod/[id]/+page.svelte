@@ -8,7 +8,7 @@
   import { handleImageError } from "../../../../helpers/imageFallback";
   import { getCurrencyString } from "../../../../helpers/stringFormatter";
   import { userStore } from "../../../../stores/user";
-  import MobileGallery from "./MobileGallery.svelte";
+  import SlidingGallery from "./SlidingGallery.svelte";
 
   export let data;
 
@@ -57,18 +57,23 @@
     <div
       class="w-full flex flex-col items-center lg:flex-row lg:items-start gap-x-12 gap-y-4 cursor-pointer"
     >
+      <div
+        class="w-full hidden lg:grid gap-3
+        {product?.images.length === 1 ? 'grid-cols-1' : 'grid-cols-2'}"
+      >
+        {#each product.images as image}
+          <img
+            src={image.url}
+            alt={product?.name}
+            on:error={handleImageError}
+            class="w-full h-auto aspect-square object-cover rounded-lg"
+          />
+        {/each}
+      </div>
       <div class="w-full flex lg:hidden">
-        <!-- TODO: pass array of images -->
-        <!-- TODO: Dekstop Gallery -->
-        <MobileGallery />
+        <SlidingGallery images={product.images} />
       </div>
 
-      <!-- <img
-        src={product?.featuredImageUrl}
-        alt={product?.name}
-        on:error={handleImageError}
-        class="w-full h-auto aspect-square object-cover rounded-lg"
-      /> -->
       <div class="w-full px-2 flex flex-col justify-start">
         <!-- Title -->
         <div

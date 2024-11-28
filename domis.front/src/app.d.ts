@@ -176,7 +176,6 @@ declare global {
     sku: number;
     name: string;
     image: string;
-    // price: number;
     quantityType: QuantityType;
   }
   interface CartProductDto {
