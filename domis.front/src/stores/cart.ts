@@ -51,13 +51,11 @@ function createCart() {
     add: async (product: CartProductDto) => {
       product.cartId = getCartId();
       const cartItemResponse = await addCartItem(product);
-      update((currentCart) => ({
-        ...currentCart,
-        cartId: cartItemResponse.cartId || currentCart?.cartId,
-      }));
 
       await cart.get();
       setLocalStorageCartId();
+
+      return cartItemResponse;
     },
     remove: async (cartItemId: number) => {
       await removeCartItem(cartItemId);

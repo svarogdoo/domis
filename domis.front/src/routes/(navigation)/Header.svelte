@@ -132,7 +132,7 @@
           <UserDropdown />
         </li>
         <li
-          class="relative h-8 w-8 lg:h-10 lg:w-10"
+          class="relative group h-8 w-8 lg:h-10 lg:w-10"
           aria-current={$page.url.pathname === "/shop" ? "page" : undefined}
         >
           <a href="/korpa">
@@ -140,7 +140,7 @@
           </a>
           {#if cartProducts && cartProducts?.length > 0}
             <div
-              class="absolute top-0 right-0 text-center text-white text-sm rounded-full h-5 w-5 bg-domis-primary"
+              class="absolute top-0 right-0 text-center text-white text-sm rounded-full h-5 w-5 bg-domis-primary group-hover:bg-blue-500"
             >
               {cartProducts.length}
             </div>

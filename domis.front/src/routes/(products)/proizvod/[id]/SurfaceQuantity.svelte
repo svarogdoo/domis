@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Snackbar from "../../../../components/Snackbar.svelte";
   import { mapQuantityTypeToString, QuantityType } from "../../../../enums";
   import {
     formatPrice,
@@ -15,16 +16,21 @@
   export let quantityType: QuantityType;
   export let productPrice: ProductPricing;
 
+  let snackbarMessage: string;
+  let isSnackbarSuccess: boolean;
+
   let boxInput: number = 0;
   let amountInput: number = 0;
   let totalPrice: number = 0;
   let quantityTypeString: string;
+  let disabledAddButton = true;
 
   $: if (quantityType) {
     quantityTypeString = mapQuantityTypeToString(quantityType);
   }
 
-  $: if (boxInput) {
+  $: if (boxInput > 0) {
+    disabledAddButton = false;
     setTotalPrice();
   }
 
@@ -71,15 +77,37 @@
       totalPrice = amountInput * productPrice.perUnit;
   }
 
-  function addItemToCart() {
+  function showSnackbar() {
+    var snackbar = document.getElementById("snackbar");
+    if (snackbar) {
+      snackbar.style.display = "flex";
+      setTimeout(function () {
+        if (snackbar) snackbar.style.display = "none";
+      }, 3000); // Close after 3s
+    }
+  }
+
+  async function addItemToCart() {
     if (amountInput === 0) return;
+
+    disabledAddButton = true;
 
     let cartProduct: CartProductDto = {
       productId: product.id,
       quantity: quantityType === QuantityType.Piece ? amountInput : boxInput,
     };
 
-    cart.add(cartProduct);
+    let res = await cart.add(cartProduct);
+    disabledAddButton = false;
+
+    if (res) {
+      snackbarMessage = "Dodali ste proizvod u korpu!";
+      isSnackbarSuccess = true;
+    } else {
+      snackbarMessage = "Greška pri dodavanju proizvoda u korpu!";
+      isSnackbarSuccess = false;
+    }
+    showSnackbar();
   }
 </script>
 
@@ -169,7 +197,10 @@
   </div>
   <button
     on:click={addItemToCart}
-    class="bg-domis-dark mt-2 text-white py-3 uppercase tracking-widest hover:bg-gray-700"
+    disabled={disabledAddButton}
+    class="bg-domis-dark mt-2 text-white py-3 uppercase tracking-widest hover:bg-gray-700 disabled:bg-gray-400"
     >Dodaj u korpu</button
   >
+
+  <Snackbar message={snackbarMessage} isSuccess={isSnackbarSuccess} />
 </div>

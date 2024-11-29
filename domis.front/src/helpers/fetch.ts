@@ -58,7 +58,11 @@ export async function fetchDataWithJsonBody<T>(
       "Content-Type": "application/json",
       ...headers,
     },
-  }).then(handleResponse);
+  })
+    .then(handleResponse)
+    .catch((error) => {
+      throw error;
+    });
 }
 
 async function handleResponse(res: Response) {
