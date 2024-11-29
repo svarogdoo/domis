@@ -1,6 +1,7 @@
 <script lang="ts">
   import { page } from "$app/stores";
   import { categories } from "../../../../stores/categories";
+  import arrowIcon from "$lib/icons/dropdown.svg";
 
   interface UnwrappedCategory {
     name: string;
@@ -10,6 +11,7 @@
 
   let categoriesList: Array<UnwrappedCategory>;
   let selectedCategory: Category | undefined;
+  let selectedParentCategory: Category | null;
 
   // Get the category ID from the route
   $: $page.params.id && fetchSelectedCategory($page.params.id);
@@ -21,6 +23,8 @@
       if (selectedCategory?.subcategories)
         categoriesList = flattenCategories(selectedCategory.subcategories);
       else categoriesList = [];
+      if (selectedCategory)
+        selectedParentCategory = findParentCategory(value, id);
     });
   }
 
@@ -61,12 +65,45 @@
     categories.forEach((category) => unwrap(category, 1));
     return result;
   }
+
+  function findParentCategory(
+    categories: Category[],
+    targetId: string,
+    parent: Category | null = null
+  ): Category | null {
+    for (const category of categories) {
+      if (category.id == targetId) {
+        return parent; // Return the parent if the current category matches the targetId
+      }
+
+      if (category.subcategories) {
+        const result = findParentCategory(
+          category.subcategories,
+          targetId,
+          category
+        );
+        if (result) {
+          return result; // Return the parent if found in subcategories
+        }
+      }
+    }
+
+    return null; // Return null if no match is found
+  }
 </script>
 
 <aside class="w-full h-full flex flex-col gap-y-4">
   {#if selectedCategory}
     <h2 class="font-bold text-lg">Kategorije</h2>
     <ul class="flex flex-col gap-y-2">
+      {#if selectedParentCategory}
+        <a href="/kategorija/{selectedParentCategory.id}">
+          <div class="flex items-center gap-x-2 mb-4 italic">
+            <img src={arrowIcon} alt="<-" class="h-1.5 w-auto rotate-90" />
+            <p>{selectedParentCategory.name}</p>
+          </div>
+        </a>
+      {/if}
       <a href="/kategorija/{selectedCategory.id}">{selectedCategory.name}</a>
 
       {#each categoriesList as category}
