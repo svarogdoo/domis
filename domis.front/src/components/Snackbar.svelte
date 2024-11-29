@@ -11,7 +11,7 @@
   id="snackbar"
   class="{isSuccess
     ? 'bg-green-600'
-    : 'bg-red-600'}  text-white py-4 px-8 rounded-md fixed bottom-4 right-4 flex justify-between items-center"
+    : 'bg-red-600'} text-white py-4 px-8 rounded-md fixed bottom-4 right-4 left-4 lg:left-auto flex justify-between items-center"
   style="display: none;"
 >
   <p>{message}</p>
