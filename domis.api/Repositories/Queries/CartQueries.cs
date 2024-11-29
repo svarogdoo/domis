@@ -80,7 +80,8 @@ public static class CartQueries
             LEFT JOIN 
                 domis.image i ON pi.image_id = i.id
             WHERE 
-                (pi.image_type_id is null or pi.image_type_id = 1) AND c.id = @CartId;";
+                (pi.image_type_id is null or pi.image_type_id = 1) AND c.id = @CartId
+           ORDER BY p.product_name;";
 
     public const string GetCartByUserId = @"
         SELECT 
@@ -113,7 +114,8 @@ public static class CartQueries
         LEFT JOIN 
             domis.image i ON pi.image_id = i.id
         WHERE 
-            (pi.image_type_id IS NULL OR pi.image_type_id = 1) AND c.user_id = @UserId;";
+            (pi.image_type_id IS NULL OR pi.image_type_id = 1) AND c.user_id = @UserId
+        ORDER BY p.product_name;";
 
 
     public const string CheckIfProductExistsInCart = @"
@@ -150,7 +152,8 @@ public static class CartQueries
         JOIN 
             domis.product p ON ci.product_id = p.id
         WHERE 
-            ci.cart_id = @CartId;";
+            ci.cart_id = @CartId
+        ORDER BY p.product_name;";
 
     public const string GetCIQuantityByCartAndProduct = @"
         SELECT quantity AS Quantity 
@@ -166,13 +169,13 @@ public static class CartQueries
     
     public const string GetCartItemProductIdAndQuantity = @"
         SELECT 
-            CurrentQuantity, 
-            ProductId,
-            CASE WHEN EXISTS (SELECT 1 FROM CartItems WHERE CartItemId = @CartItemId) THEN 1 ELSE 0 END AS Exists
+            quantity AS CurrentQuantity, 
+            product_id AS ProductId,
+            CASE WHEN EXISTS (SELECT 1 FROM domis.cart_item WHERE id = @CartItemId) THEN 1 ELSE 0 END AS Exists
         FROM 
-            CartItems 
+            domis.cart_item 
         WHERE 
-            CartItemId = @CartItemId;
+            id = @CartItemId;
     ";
     
     public const string SetCartUserId = @"
