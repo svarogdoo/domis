@@ -238,7 +238,7 @@
         <InputString
           bind:value={phoneNumber}
           title="Broj telefona"
-          placeholder="60224455221"
+          placeholder="602244552"
           error={errors?.phoneNumber}
           isRequired={true}
           width={"48"}

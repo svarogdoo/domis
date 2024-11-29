@@ -128,6 +128,10 @@ const createUserStore = () => {
         get(userStore).userRole === USER_ROLES.VP4
       );
     },
+
+    getUserData() {
+      return get(userStore).user;
+    },
   };
 };
 

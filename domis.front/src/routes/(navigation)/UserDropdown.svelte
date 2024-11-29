@@ -73,6 +73,7 @@
           {:else}
             <UserDropdownItem href="/profil" text="Profil" />
             <UserDropdownItem href="/porudzbine" text="Porudžbine" />
+            <UserDropdownItem href="/adrese" text="Adrese" />
           {/if}
           <li class="border-t">
             <button

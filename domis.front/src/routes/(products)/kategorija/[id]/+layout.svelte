@@ -1,11 +1,5 @@
 <script>
-  import { onMount } from "svelte";
-  import { setCategories } from "../../../../services/category-service";
   import Sidebar from "./Sidebar.svelte";
-
-  onMount(() => {
-    setCategories();
-  });
 </script>
 
 <div class="product-search">

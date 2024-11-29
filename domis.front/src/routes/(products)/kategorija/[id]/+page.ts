@@ -1,8 +1,13 @@
 import { SortType } from "../../../../enums.js";
-import { getCategoryProducts } from "../../../../services/category-service.js";
+import {
+  getCategoryProducts,
+  setCategories,
+} from "../../../../services/category-service.js";
 
 export async function load({ params, url, parent }) {
   await parent();
+
+  setCategories();
 
   const categoryId = params.id;
   const pageNumber = url.searchParams.get("strana") || "1";

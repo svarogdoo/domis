@@ -1,26 +1,13 @@
 <script lang="ts">
-  import { onMount } from "svelte";
-  import { userService } from "../../../../services/user-service";
   import OrderRow from "./OrderRow.svelte";
   import OrderRowMobile from "./OrderRowMobile.svelte";
-  import { userStore } from "../../../../stores/user";
 
-  let orders: Array<UserOrder> = [];
-
-  $: if ($userStore.token) {
-    if (orders.length === 0) setOrders();
-  }
-
-  onMount(async () => {
-    if ($userStore.isAuthenticated) await setOrders();
-  });
-
-  async function setOrders() {
-    orders = await userService.getUserOrders();
-  }
+  export let data;
+  let orders = data.props.orders;
 </script>
 
-<section class="w-full">
+<section class="w-full flex flex-col gap-y-8">
+  <h1 class="text-2xl">Porudžbine</h1>
   {#if orders && orders.length > 0}
     <table class="hidden lg:table w-full table-hover">
       <thead class="w-full bg-domis-dark text-white">
@@ -47,6 +34,8 @@
         {/each}
       </tbody>
     </table>
+  {:else}
+    <div>Trenutno nemate porudžbina</div>
   {/if}
 </section>
 
