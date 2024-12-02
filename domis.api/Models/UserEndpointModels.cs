@@ -23,7 +23,8 @@ public record ProfileUpdateRequest(
     string? PhoneNumber,
     ProfileCompanyUpdateRequest? CompanyInfo,
     ProfileAddressUpdateRequest? AddressInvoice,
-    ProfileAddressUpdateRequest? AddressDelivery
+    ProfileAddressUpdateRequest? AddressDelivery,
+    bool UseSameAddress
 );
 
 public record ProfileAddressUpdateRequest(
