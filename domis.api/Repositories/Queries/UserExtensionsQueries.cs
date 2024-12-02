@@ -20,7 +20,6 @@ public static class UserExtensionsQueries
             AddressType = domis.address.AddressType
         RETURNING Id;
     ";
-
     
     public const string UpsertCompany = @"
         WITH upsert AS (
@@ -28,14 +27,15 @@ public static class UserExtensionsQueries
             VALUES (@userid, @name, @number, @firstname, @lastname)
             ON CONFLICT (userid) 
             DO UPDATE SET
-                name = EXCLUDED.name,
-                number = EXCLUDED.number,
-                firstname = EXCLUDED.firstname,
-                lastname = EXCLUDED.lastname
+                name = COALESCE(EXCLUDED.name, domis.company.name),
+                number = COALESCE(EXCLUDED.number, domis.company.number),
+                firstname = COALESCE(EXCLUDED.firstname, domis.company.firstname),
+                lastname = COALESCE(EXCLUDED.lastname, domis.company.lastname)
             RETURNING id
         )
         SELECT id FROM upsert LIMIT 1;
     ";
+
     
     public const string GetAddresses = @"
         SELECT 
