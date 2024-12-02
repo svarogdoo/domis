@@ -13,7 +13,7 @@ public interface IUserRepository
     Task<string?> GetUserRoleAsync(string userId);
 }
 
-public class UserRepository(UserManager<UserEntity> userManager) : IUserRepository
+public class UserRepository(UserManager<UserEntity> userManager, AddressRepository addressRepo) : IUserRepository
 {
     private readonly List<string> _rolePriorities = ["VP4", "VP3", "VP2", "VP1", "Admin", "User"];
     
@@ -31,14 +31,12 @@ public class UserRepository(UserManager<UserEntity> userManager) : IUserReposito
         {
             return new UserWholesaleProfileDto(
                 idUser.FirstName!, idUser.LastName!, 
-                idUser.AddressLine, idUser.Apartment, idUser.City, idUser.PostalCode, idUser.Country, idUser.County, 
                 idUser.Email, idUser.PhoneNumber, idUser.CompanyInfo
             );
         }
 
         return new UserProfileDto(
             idUser.FirstName!, idUser.LastName!, 
-            idUser.AddressLine, idUser.Apartment, idUser.City, idUser.PostalCode, idUser.Country, idUser.County, 
             idUser.Email, idUser.PhoneNumber, idUser.CompanyInfo
         );
     }
@@ -85,14 +83,17 @@ public class UserRepository(UserManager<UserEntity> userManager) : IUserReposito
 
         user.FirstName = updated.FirstName ?? user.FirstName;
         user.LastName = updated.LastName ?? user.LastName;
-        user.AddressLine = updated.AddressLine ?? user.AddressLine;
-        user.City = updated.City ?? user.City;
-        user.PostalCode = updated.PostalCode ?? user.PostalCode;
-        user.Country = updated.Country ?? user.Country;
-        user.County = updated.County ?? user.County;
-        user.Apartment = updated.Apartment ?? user.Apartment;
         user.PhoneNumber = updated.PhoneNumber ?? user.PhoneNumber;
-        user.CompanyInfo = updated.CompanyInfo ?? user.CompanyInfo;
+        
+        //now update company info and two addresses
+        //user.CompanyInfo = updated.CompanyInfo ?? user.CompanyInfo;
+
+        var addressDelivery = updated.AddressDelivery;
+        var addressInvoice = updated.AddressDelivery;
+        var companyInfo = updated.CompanyInfo;
+        
+        
+        
         var result = await userManager.UpdateAsync(user);
 
         return result.Succeeded;

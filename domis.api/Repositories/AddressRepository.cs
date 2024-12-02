@@ -1,6 +1,11 @@
 namespace domis.api.Repositories;
 
-public class AddressRepository
+public interface IAddressRepository
+{
+    
+}
+
+public class AddressRepository : IAddressRepository
 {
     
 }
