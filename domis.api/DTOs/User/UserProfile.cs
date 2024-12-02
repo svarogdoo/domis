@@ -7,32 +7,50 @@ public record UserProfileDto(
     string LastName,
     string Email, 
     string? PhoneNumber, 
-    CompanyInfo? CompanyInfo, 
-    AddressEntity? AddressDelivery, 
-    AddressEntity? AddressInvoice
+    CompanyProfileDto? CompanyInfo, 
+    AddressProfileDto? AddressDelivery, 
+    AddressProfileDto? AddressInvoice
 );
 
-public interface IUserProfileDto
-{
-    string FirstName { get; }
-    string LastName { get; }
-    string Email { get; }
-    string? PhoneNumber { get; }
-    CompanyInfo? CompanyInfo { get; }
-    AddressEntity? AddressDelivery { get; }
-    AddressEntity? AddressInvoice { get; }
-}
+public record CompanyProfileDto(
+    string? Name,
+    long? Number,
+    string? FirstName,
+    string? LastName
+);
 
-public record UserProfile(
-    string FirstName, string LastName,
-    string Email, string? PhoneNumber, CompanyInfo? CompanyInfo, AddressEntity? AddressDelivery, AddressEntity? AddressInvoice
-) : IUserProfileDto;
+public record AddressProfileDto(
+    string? AddressLine,
+    string? Apartment,
+    string? City,
+    string? PostalCode,
+    string? Country,
+    string? County,
+    string? ContactPhone,
+    string? ContactPerson,
+    AddressType? AddressType
+);
 
-public record UserWholesaleProfileDto(
-    string FirstName, string LastName,
-    string Email, string? PhoneNumber, CompanyInfo? CompanyInfo, AddressEntity? AddressDelivery, AddressEntity? AddressInvoice
-) : IUserProfileDto;
-
+// public interface IUserProfileDto
+// {
+//     string FirstName { get; }
+//     string LastName { get; }
+//     string Email { get; }
+//     string? PhoneNumber { get; }
+//     CompanyEntity? CompanyInfo { get; }
+//     AddressEntity? AddressDelivery { get; }
+//     AddressEntity? AddressInvoice { get; }
+// }
+//
+// public record UserProfile(
+//     string FirstName, string LastName,
+//     string Email, string? PhoneNumber, CompanyEntity? CompanyInfo, AddressEntity? AddressDelivery, AddressEntity? AddressInvoice
+// ) : IUserProfileDto;
+//
+// public record UserWholesaleProfileDto(
+//     string FirstName, string LastName,
+//     string Email, string? PhoneNumber, CompanyEntity? CompanyInfo, AddressEntity? AddressDelivery, AddressEntity? AddressInvoice
+// ) : IUserProfileDto;
 
 //public record UserProfileDto(
 //    string FirstName, string LastName, string? AddressLine, 
