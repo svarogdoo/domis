@@ -1,25 +1,69 @@
 using System.Data;
 using Dapper;
+using domis.api.DTOs.User;
 using domis.api.Models;
+using domis.api.Repositories.Queries;
 
 namespace domis.api.Repositories;
 
-public interface IAddressRepository
+public interface IUserExtensionRepository
 {
-    Task<IEnumerable<AddressEntity>> GetUserAddressesAsync(string userId);
+    Task<IEnumerable<AddressProfileDto>> GetAddressesAsync(string userId);
     Task<bool> UpdateAddressAsync(AddressEntity address);
     Task<int> AddAddressAsync(AddressEntity address);
     Task<bool> DeleteAddressAsync(int addressId);
+    Task<CompanyProfileDto?> GetCompanyInfoAsync(string userId);
+    Task<bool> UpdateOrCreateCompanyAsync(string userId, ProfileCompanyUpdateRequest company);
+    Task<bool> UpdateOrCreateAddressAsync(string userId, ProfileAddressUpdateRequest address, string type);
 }
 
-public class AddressRepository(IDbConnection connection)  : IAddressRepository
+public class UserExtensionRepository(IDbConnection connection)  : IUserExtensionRepository
 {
-    public async Task<IEnumerable<AddressEntity>> GetUserAddressesAsync(string userId)
+    public async Task<IEnumerable<AddressProfileDto>> GetAddressesAsync(string userId)
     {
-        const string sql = "SELECT * FROM domis.address WHERE UserId = @UserId";
-        return await connection.QueryAsync<AddressEntity>(sql, new { UserId = userId });
+        return await connection.QueryAsync<AddressProfileDto>(UserExtensionsQueries.GetAddresses, new { UserId = userId });
+    }
+    
+    public async Task<CompanyProfileDto?> GetCompanyInfoAsync(string userId)
+    {
+        return await connection.QuerySingleOrDefaultAsync<CompanyProfileDto>(UserExtensionsQueries.GetCompany, new { UserId = userId });
     }
 
+    public async Task<bool> UpdateOrCreateCompanyAsync(string userId, ProfileCompanyUpdateRequest company)
+    {
+        var companyId = await connection.ExecuteScalarAsync<int>(UserExtensionsQueries.UpsertCompany, new 
+        { 
+            userid = userId,
+            company.Name,
+            company.Number,
+            company.FirstName,
+            company.LastName
+        });
+
+        return companyId > 0;
+    }
+
+
+    public async Task<bool> UpdateOrCreateAddressAsync(string userId, ProfileAddressUpdateRequest address, string addressType)
+    {
+        var addressId = await connection.ExecuteScalarAsync<int>(UserExtensionsQueries.UpsertAddress, new 
+        { 
+            UserId = userId,
+            address.Country,
+            address.County,
+            address.City,
+            address.AddressLine,
+            address.Apartment,
+            address.PostalCode,
+            address.ContactPerson,
+            address.ContactPhone,
+            AddressType = addressType
+        });
+
+        return addressId > 0;
+    }
+
+    
     public async Task<bool> UpdateAddressAsync(AddressEntity address)
     {
         const string sql = @"
@@ -44,8 +88,10 @@ public class AddressRepository(IDbConnection connection)  : IAddressRepository
         return await connection.ExecuteScalarAsync<int>(sql, address);
     }
 
-    public Task<bool> DeleteAddressAsync(int addressId)
+    public async Task<bool> DeleteAddressAsync(int addressId)
     {
-        throw new NotImplementedException();
+        const string sql = "DELETE FROM domis.address WHERE Id = @AddressId";
+        var rows = await connection.ExecuteAsync(sql, new { AddressId = addressId });
+        return rows > 0;
     }
 }

@@ -21,7 +21,7 @@ public record ProfileUpdateRequest(
     string? FirstName,
     string? LastName,
     string? PhoneNumber,
-    CompanyInfo? CompanyInfo,
+    ProfileCompanyUpdateRequest? CompanyInfo,
     ProfileAddressUpdateRequest? AddressInvoice,
     ProfileAddressUpdateRequest? AddressDelivery
 );
@@ -33,8 +33,15 @@ public record ProfileAddressUpdateRequest(
     string? PostalCode,
     string? Country,
     string? County,
-    string? ContactNumber,
+    string? ContactPhone,
     string? ContactPerson
+);
+
+public record ProfileCompanyUpdateRequest(
+    string? Name,
+    long? Number,
+    string? FirstName,
+    string? LastName
 );
 
 public record LoginWithCartRequest(

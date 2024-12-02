@@ -30,7 +30,7 @@ public static class UserEndpoints
 
             if (userId is null) return Results.Unauthorized();
 
-            var success = await userService.UpdateUserProfileAsync(userId, request);
+            var success = await userService.UpdateUserAsync(userId, request);
 
             return success 
                 ? Results.NoContent() 

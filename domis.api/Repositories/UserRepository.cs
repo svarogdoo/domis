@@ -7,7 +7,7 @@ namespace domis.api.Repositories;
 public interface IUserRepository
 {
     Task<UserProfileDto?> GetUserByIdAsync(string id);
-    Task<bool> UpdateUserProfileAsync(string id, ProfileUpdateRequest updated);
+    Task<bool> UpdateUserAsync(string id, ProfileUpdateRequest updated);
     Task<bool> UpdateUserAddressAsync(string id, string address);
     Task<IEnumerable<string>> GetUserRolesAsync(string userId);
     Task<string?> GetUserRoleAsync(string userId);
@@ -15,7 +15,7 @@ public interface IUserRepository
 
 public class UserRepository(
     UserManager<UserEntity> userManager,
-    IAddressRepository addressRepo
+    IUserExtensionRepository extensionRepo
     ) : IUserRepository
 {
     private readonly List<string> _rolePriorities = ["VP4", "VP3", "VP2", "VP1", "Admin", "User"];
@@ -27,25 +27,22 @@ public class UserRepository(
         if (idUser?.Email is null)
             return null;
 
-        var addressesDb = await addressRepo.GetUserAddressesAsync(id);
+        var addressesDb = await extensionRepo.GetAddressesAsync(id);
         var addresses = addressesDb.ToList();
+        var deliveryAddress = addresses.FirstOrDefault(a => a.AddressType == AddressType.Delivery);
+        var invoiceAddress = addresses.FirstOrDefault(a => a.AddressType == AddressType.Invoice);
 
-        var company = await GetUserCompany(id);
+        var company = await extensionRepo.GetCompanyInfoAsync(id);
         
         return new UserProfileDto(
             idUser.FirstName!,
             idUser.LastName!,
             idUser.Email,
             idUser.PhoneNumber,
-            null,
-            null,
-            null
+            company,
+            deliveryAddress,
+            invoiceAddress
         );
-    }
-
-    private async Task<CompanyInfo> GetUserCompany(string id)
-    {
-        throw new NotImplementedException();
     }
 
     //TODO: do we need?
@@ -82,7 +79,7 @@ public class UserRepository(
         return _rolePriorities.FirstOrDefault(r => roles.Contains(r));
     }
 
-    public async Task<bool> UpdateUserProfileAsync(string id, ProfileUpdateRequest updated)
+    public async Task<bool> UpdateUserAsync(string id, ProfileUpdateRequest updated)
     {
         var user = await userManager.FindByIdAsync(id);
 
@@ -95,9 +92,20 @@ public class UserRepository(
         //now update company info and two addresses
         //user.CompanyInfo = updated.CompanyInfo ?? user.CompanyInfo;
 
-        var addressDelivery = updated.AddressDelivery;
-        var addressInvoice = updated.AddressDelivery;
-        var companyInfo = updated.CompanyInfo;
+        if (updated.CompanyInfo != null)
+        {
+            await extensionRepo.UpdateOrCreateCompanyAsync(id, updated.CompanyInfo);
+        }
+        
+        if (updated.AddressDelivery != null)
+        {
+            await extensionRepo.UpdateOrCreateAddressAsync(id, updated.AddressDelivery, "Delivery");
+        }
+        
+        if (updated.AddressInvoice != null)
+        {
+            await extensionRepo.UpdateOrCreateAddressAsync(id, updated.AddressInvoice, "Invoice");
+        }
         
         var result = await userManager.UpdateAsync(user);
 

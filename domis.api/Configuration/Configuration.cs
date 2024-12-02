@@ -101,7 +101,7 @@ public static class Configuration
         builder.Services.AddScoped<IImageService, ImageService>();
         builder.Services.AddScoped<IImageRepository, ImageRepository>();
 
-        builder.Services.AddScoped<IAddressRepository, AddressRepository>();
+        builder.Services.AddScoped<IUserExtensionRepository, UserExtensionRepository>();
 
         //TODO: do we need?
         //builder.Services.AddHttpClient<ISyncService, SyncService>();
