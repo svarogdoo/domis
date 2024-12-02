@@ -1,5 +1,6 @@
 using domis.api.Common;
 using domis.api.Models;
+using domis.api.Models.Entities;
 using domis.api.Services;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;

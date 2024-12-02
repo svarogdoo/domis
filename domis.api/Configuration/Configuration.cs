@@ -4,6 +4,7 @@ using domis.api.Common;
 using domis.api.Database;
 using domis.api.Extensions;
 using domis.api.Models;
+using domis.api.Models.Entities;
 using domis.api.Repositories;
 using domis.api.Services;
 using FluentValidation;

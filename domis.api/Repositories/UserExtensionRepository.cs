@@ -2,6 +2,7 @@ using System.Data;
 using Dapper;
 using domis.api.DTOs.User;
 using domis.api.Models;
+using domis.api.Models.Entities;
 using domis.api.Repositories.Queries;
 
 namespace domis.api.Repositories;
@@ -11,7 +12,7 @@ public interface IUserExtensionRepository
     Task<IEnumerable<AddressProfileDto>> GetAddressesAsync(string userId);
     Task<bool> UpdateAddressAsync(AddressEntity address);
     Task<int> AddAddressAsync(AddressEntity address);
-    Task<bool> DeleteAddressAsync(int addressId);
+    Task<bool> DeleteAddressAsync(string userId, string addressType);
     Task<CompanyProfileDto?> GetCompanyInfoAsync(string userId);
     Task<bool> UpdateOrCreateCompanyAsync(string userId, ProfileCompanyUpdateRequest company);
     Task<bool> UpdateOrCreateAddressAsync(string userId, ProfileAddressUpdateRequest address, string type);
@@ -88,10 +89,10 @@ public class UserExtensionRepository(IDbConnection connection)  : IUserExtension
         return await connection.ExecuteScalarAsync<int>(sql, address);
     }
 
-    public async Task<bool> DeleteAddressAsync(int addressId)
+    public async Task<bool> DeleteAddressAsync(string userId, string addressType)
     {
-        const string sql = "DELETE FROM domis.address WHERE Id = @AddressId";
-        var rows = await connection.ExecuteAsync(sql, new { AddressId = addressId });
+        const string sql = "DELETE FROM domis.address WHERE userid = @UserId AND AddressType = @AddressType";
+        var rows = await connection.ExecuteAsync(sql, new { UserId = userId, AddressType = addressType });
         return rows > 0;
     }
 }

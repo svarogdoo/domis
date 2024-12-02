@@ -1,4 +1,5 @@
 ﻿using domis.api.Models;
+using domis.api.Models.Entities;
 using Microsoft.AspNetCore.Identity;
 
 namespace domis.api.Common;

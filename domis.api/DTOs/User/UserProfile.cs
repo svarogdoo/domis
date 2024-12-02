@@ -1,4 +1,5 @@
 ﻿using domis.api.Models;
+using domis.api.Models.Entities;
 
 namespace domis.api.DTOs.User;
 

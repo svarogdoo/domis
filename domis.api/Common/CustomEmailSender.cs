@@ -3,6 +3,7 @@ using SendGrid;
 using System.Text.Encodings.Web;
 using domis.api.Models;
 using domis.api.DTOs.Order;
+using domis.api.Models.Entities;
 
 namespace domis.api.Common;
 

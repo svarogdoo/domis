@@ -1,4 +1,5 @@
 ﻿using domis.api.Models;
+using domis.api.Models.Entities;
 using domis.api.Models.Enums;
 using domis.api.Services;
 using Microsoft.AspNetCore.Identity;

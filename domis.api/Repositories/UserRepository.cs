@@ -1,5 +1,6 @@
 ﻿using domis.api.DTOs.User;
 using domis.api.Models;
+using domis.api.Models.Entities;
 using Microsoft.AspNetCore.Identity;
 
 namespace domis.api.Repositories;
@@ -111,14 +112,15 @@ public class UserRepository(
         {
             if (updated.AddressInvoice != null)
             {
-                await extensionRepo.UpdateOrCreateAddressAsync(userId, updated.AddressInvoice, "Delivery");
                 await extensionRepo.UpdateOrCreateAddressAsync(userId, updated.AddressInvoice, "Invoice");
+                // await extensionRepo.UpdateOrCreateAddressAsync(userId, updated.AddressInvoice, "Invoice");
             }
             else if (updated.AddressDelivery != null)
             {
-                await extensionRepo.UpdateOrCreateAddressAsync(userId, updated.AddressDelivery, "Delivery");
                 await extensionRepo.UpdateOrCreateAddressAsync(userId, updated.AddressDelivery, "Invoice");
+                // await extensionRepo.UpdateOrCreateAddressAsync(userId, updated.AddressDelivery, "Invoice");
             }
+            await extensionRepo.DeleteAddressAsync(userId, "Delivery");
         }
         else
         {

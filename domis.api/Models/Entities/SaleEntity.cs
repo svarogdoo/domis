@@ -1,4 +1,4 @@
-namespace domis.api.Models;
+namespace domis.api.Models.Entities;
 
 public class SaleEntity
 {
