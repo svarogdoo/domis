@@ -2,6 +2,7 @@ using domis.api.Common;
 using domis.api.DTOs.Cart;
 using domis.api.DTOs.Order;
 using domis.api.Models;
+using domis.api.Models.Entities;
 using domis.api.Repositories;
 
 namespace domis.api.Services;

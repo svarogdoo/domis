@@ -8,6 +8,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using domis.api.Common;
 using domis.api.Models;
+using domis.api.Models.Entities;
 using domis.api.Services;
 using Microsoft.AspNetCore.Authentication.BearerToken;
 using Microsoft.AspNetCore.Http;

@@ -15,6 +15,7 @@ using System.Data;
 using System.Data.Common;
 using domis.api.DTOs.Category;
 using domis.api.DTOs.Common;
+using domis.api.Models.Entities;
 using ProductBasicInfoDto = domis.api.DTOs.Product.ProductBasicInfoDto;
 
 namespace domis.api.Repositories;

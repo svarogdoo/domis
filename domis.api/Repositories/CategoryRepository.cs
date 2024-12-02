@@ -6,6 +6,7 @@ using domis.api.Repositories.Helpers;
 using Serilog;
 using System.Data;
 using domis.api.Common;
+using domis.api.Models.Entities;
 using domis.api.Models.Enums;
 
 namespace domis.api.Repositories;

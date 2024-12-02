@@ -1,5 +1,6 @@
 using domis.api.DTOs.User;
 using domis.api.Models;
+using domis.api.Models.Entities;
 using domis.api.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

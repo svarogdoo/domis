@@ -3,6 +3,7 @@ using domis.api.DTOs.Common;
 using domis.api.DTOs.Image;
 using domis.api.DTOs.Product;
 using domis.api.Models;
+using domis.api.Models.Entities;
 using domis.api.Repositories;
 
 namespace domis.api.Services;
