@@ -6,39 +6,46 @@ namespace domis.api.Repositories;
 
 public interface IUserRepository
 {
-    Task<IUserProfileDto?> GetUserByIdAsync(string id);
+    Task<UserProfileDto?> GetUserByIdAsync(string id);
     Task<bool> UpdateUserProfileAsync(string id, ProfileUpdateRequest updated);
     Task<bool> UpdateUserAddressAsync(string id, string address);
     Task<IEnumerable<string>> GetUserRolesAsync(string userId);
     Task<string?> GetUserRoleAsync(string userId);
 }
 
-public class UserRepository(UserManager<UserEntity> userManager, AddressRepository addressRepo) : IUserRepository
+public class UserRepository(
+    UserManager<UserEntity> userManager,
+    IAddressRepository addressRepo
+    ) : IUserRepository
 {
     private readonly List<string> _rolePriorities = ["VP4", "VP3", "VP2", "VP1", "Admin", "User"];
     
-    public async Task<IUserProfileDto?> GetUserByIdAsync(string id)
+    public async Task<UserProfileDto?> GetUserByIdAsync(string id)
     {
         var idUser = await userManager.FindByIdAsync(id);
 
         if (idUser?.Email is null)
             return null;
 
-        var roles = await userManager.GetRolesAsync(idUser);
+        var addressesDb = await addressRepo.GetUserAddressesAsync(id);
+        var addresses = addressesDb.ToList();
 
-        if (roles.Contains(Roles.VP1.GetName()) || roles.Contains(Roles.VP2.GetName()) 
-            || roles.Contains(Roles.VP3.GetName())  || roles.Contains(Roles.VP4.GetName()))
-        {
-            return new UserWholesaleProfileDto(
-                idUser.FirstName!, idUser.LastName!, 
-                idUser.Email, idUser.PhoneNumber, idUser.CompanyInfo
-            );
-        }
-
+        var company = await GetUserCompany(id);
+        
         return new UserProfileDto(
-            idUser.FirstName!, idUser.LastName!, 
-            idUser.Email, idUser.PhoneNumber, idUser.CompanyInfo
+            idUser.FirstName!,
+            idUser.LastName!,
+            idUser.Email,
+            idUser.PhoneNumber,
+            null,
+            null,
+            null
         );
+    }
+
+    private async Task<CompanyInfo> GetUserCompany(string id)
+    {
+        throw new NotImplementedException();
     }
 
     //TODO: do we need?
@@ -91,8 +98,6 @@ public class UserRepository(UserManager<UserEntity> userManager, AddressReposito
         var addressDelivery = updated.AddressDelivery;
         var addressInvoice = updated.AddressDelivery;
         var companyInfo = updated.CompanyInfo;
-        
-        
         
         var result = await userManager.UpdateAsync(user);
 

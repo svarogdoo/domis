@@ -1,5 +1,12 @@
 namespace domis.api.Models;
 
+public enum AddressType
+{
+    Unknown,
+    Delivery,
+    Invoice
+}
+
 public class AddressEntity
 {
     public int Id { get; set; }
@@ -14,4 +21,6 @@ public class AddressEntity
 
     public string? ContactPerson { get; set; }
     public string? ContactPhone { get; set; }
+    
+    public AddressType AddressType { get; set; }
 }

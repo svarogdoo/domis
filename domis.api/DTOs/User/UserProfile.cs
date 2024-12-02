@@ -23,7 +23,7 @@ public interface IUserProfileDto
     AddressEntity? AddressInvoice { get; }
 }
 
-public record RegularUserProfileDto(
+public record UserProfile(
     string FirstName, string LastName,
     string Email, string? PhoneNumber, CompanyInfo? CompanyInfo, AddressEntity? AddressDelivery, AddressEntity? AddressInvoice
 ) : IUserProfileDto;

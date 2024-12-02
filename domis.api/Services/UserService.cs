@@ -6,7 +6,7 @@ namespace domis.api.Services;
 
 public interface IUserService
 {
-    Task<IUserProfileDto?> UserProfile(string id);
+    Task<UserProfileDto?> UserProfile(string id);
     Task<bool> UpdateUserProfileAsync(string id, ProfileUpdateRequest updateDto);
     Task<bool> UpdateUserAddressAsync(string id, string address);
     Task<IEnumerable<string>> Roles(string userId);
@@ -15,7 +15,7 @@ public interface IUserService
 
 public class UserService(IUserRepository userRepository, IOrderRepository orderRepository) : IUserService
 {
-    public async Task<IUserProfileDto?> UserProfile(string id) 
+    public async Task<UserProfileDto?> UserProfile(string id) 
         => await userRepository.GetUserByIdAsync(id);
 
     public async Task<bool> UpdateUserAddressAsync(string id, string address)
