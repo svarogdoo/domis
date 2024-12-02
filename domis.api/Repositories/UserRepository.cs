@@ -88,27 +88,49 @@ public class UserRepository(
         user.FirstName = updated.FirstName ?? user.FirstName;
         user.LastName = updated.LastName ?? user.LastName;
         user.PhoneNumber = updated.PhoneNumber ?? user.PhoneNumber;
-        
-        //now update company info and two addresses
-        //user.CompanyInfo = updated.CompanyInfo ?? user.CompanyInfo;
 
+        await SetCompany(id, updated);
+        await SetAddresses(id, updated);
+
+        var result = await userManager.UpdateAsync(user);
+
+        return result.Succeeded;
+    }
+
+    private async Task SetCompany(string id, ProfileUpdateRequest updated)
+    {
         if (updated.CompanyInfo != null)
         {
             await extensionRepo.UpdateOrCreateCompanyAsync(id, updated.CompanyInfo);
         }
-        
-        if (updated.AddressDelivery != null)
-        {
-            await extensionRepo.UpdateOrCreateAddressAsync(id, updated.AddressDelivery, "Delivery");
-        }
-        
-        if (updated.AddressInvoice != null)
-        {
-            await extensionRepo.UpdateOrCreateAddressAsync(id, updated.AddressInvoice, "Invoice");
-        }
-        
-        var result = await userManager.UpdateAsync(user);
+    }
 
-        return result.Succeeded;
+    private async Task SetAddresses(string userId, ProfileUpdateRequest updated)
+    {
+        if (updated.UseSameAddress)
+        {
+            if (updated.AddressInvoice != null)
+            {
+                await extensionRepo.UpdateOrCreateAddressAsync(userId, updated.AddressInvoice, "Delivery");
+                await extensionRepo.UpdateOrCreateAddressAsync(userId, updated.AddressInvoice, "Invoice");
+            }
+            else if (updated.AddressDelivery != null)
+            {
+                await extensionRepo.UpdateOrCreateAddressAsync(userId, updated.AddressDelivery, "Delivery");
+                await extensionRepo.UpdateOrCreateAddressAsync(userId, updated.AddressDelivery, "Invoice");
+            }
+        }
+        else
+        {
+            if (updated.AddressDelivery != null)
+            {
+                await extensionRepo.UpdateOrCreateAddressAsync(userId, updated.AddressDelivery, "Delivery");
+            }
+
+            if (updated.AddressInvoice != null)
+            {
+                await extensionRepo.UpdateOrCreateAddressAsync(userId, updated.AddressInvoice, "Invoice");
+            }
+        }
     }
 }
