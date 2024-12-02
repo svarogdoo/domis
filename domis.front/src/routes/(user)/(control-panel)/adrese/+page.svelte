@@ -18,14 +18,15 @@
     : true;
 
   async function updateProfile() {
+    console.info("here");
     const changedInvoiceFields = getUpdatedFields(
       data.props.user.addressInvoice,
       addressInvoice
     );
-    const changedDeliveryFields = getUpdatedFields(
-      data.props.user.addressDelivery,
-      addressDelivery
-    );
+    const changedDeliveryFields =
+      data.props.user.addressDelivery !== null
+        ? getUpdatedFields(data.props.user.addressDelivery, addressDelivery)
+        : addressDelivery;
 
     const changedEntity = {
       addressInvoice: changedInvoiceFields,
