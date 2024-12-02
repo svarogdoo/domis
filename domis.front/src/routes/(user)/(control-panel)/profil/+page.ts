@@ -10,7 +10,8 @@ export async function load({ parent }) {
 
   return {
     props: {
-      user: user,
+      user: user as NonNullable<typeof user>,
+      userRole: userStore.isUserVP() ? userStore.getUserRole() : null,
     },
   };
 }

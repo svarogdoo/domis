@@ -1,60 +1,47 @@
 <script lang="ts">
   import Checkbox from "../../../(navigation)/Checkbox.svelte";
   import InputString from "../../../../components/InputString.svelte";
+  import {
+    getUpdatedFields,
+    hasAnyFieldSet,
+  } from "../../../../helpers/objectHelpers";
   import { userStore } from "../../../../stores/user";
-
-  interface Address {
-    firstName: string;
-    lastName: string;
-    addressLine: string;
-    apartment: string;
-    city: string;
-    postalCode: string;
-    country: string;
-    county: string;
-    phoneNumber: string;
-  }
 
   export let data;
 
-  let isUserDataPopulated = false;
-  let userRole: string | undefined;
-  let useSameAddress = true;
+  let addressInvoice: Address = { ...data.props.user.addressInvoice };
+  let addressDelivery: Address = { ...data.props.user.addressDelivery };
 
-  let addressInvoice: Address = data.props.user;
-  let addressDelivery: Address = {
-    firstName: "",
-    lastName: "",
-    addressLine: "",
-    apartment: "",
-    city: "",
-    postalCode: "",
-    country: "",
-    county: "",
-    phoneNumber: "",
-  };
+  let phoneNumber = data.props.user.phoneNumber ?? "";
+  let useSameAddress = hasAnyFieldSet(addressDelivery, ["addressType"])
+    ? false
+    : true;
 
   async function updateProfile() {
-    console.info(addressDelivery, addressInvoice);
-    // const request = {
-    //   firstName: firstName,
-    //   lastName: lastName,
-    //   addressLine: addressLine,
-    //   apartment: apartment,
-    //   city: city,
-    //   postalCode: postalCode,
-    //   country: country,
-    //   county: county,
-    //   phoneNumber: phoneNumber,
-    // };
+    const changedInvoiceFields = getUpdatedFields(
+      data.props.user.addressInvoice,
+      addressInvoice
+    );
+    const changedDeliveryFields = getUpdatedFields(
+      data.props.user.addressDelivery,
+      addressDelivery
+    );
 
-    // await userStore.updateProfile(request);
+    const changedEntity = {
+      addressInvoice: changedInvoiceFields,
+      addressDelivery: changedDeliveryFields,
+      useSameAddress: useSameAddress,
+      phoneNumber:
+        phoneNumber !== data.props.user.phoneNumber ? phoneNumber : null,
+    };
+
+    await userStore.updateProfile(changedEntity);
   }
 </script>
 
 <section class="flex flex-col">
   <h1 class="text-2xl">Adrese</h1>
-  <div class="w-full flex gap-x-12">
+  <div class="w-full flex flex-col lg:flex-row gap-x-12">
     <!-- Za naplatu -->
     <div class="flex flex-col">
       <div class="flex flex-col gap-y-2 mt-4">
@@ -110,7 +97,7 @@
           </div>
           <div class="flex flex-col gap-y-4 lg:flex-row gap-x-12">
             <InputString
-              bind:value={addressInvoice.phoneNumber}
+              bind:value={phoneNumber}
               title="Broj telefona"
               placeholder="602244552"
               width={"48"}
@@ -176,14 +163,14 @@
           </div>
           <div class="flex flex-col gap-y-4 lg:flex-row gap-x-12">
             <InputString
-              bind:value={addressDelivery.phoneNumber}
-              title="Broj telefona"
+              bind:value={addressDelivery.contactPhone}
+              title="Kontakt telefon"
               placeholder="602244552"
               width={"48"}
               prefix="+381"
             />
             <InputString
-              bind:value={addressDelivery.firstName}
+              bind:value={addressDelivery.contactPerson}
               title="Kontakt osoba"
               placeholder="Petar Petrović"
               width={"48"}

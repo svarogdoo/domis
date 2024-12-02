@@ -82,7 +82,7 @@ const createUserStore = () => {
       return user;
     },
 
-    async updateProfile(request: UserProfileUpdateRequest) {
+    async updateProfile(request: any) {
       await userService.updateProfile(request);
       var userData = await this.getProfile();
       update((state) => ({
@@ -127,6 +127,9 @@ const createUserStore = () => {
         get(userStore).userRole === USER_ROLES.VP3 ||
         get(userStore).userRole === USER_ROLES.VP4
       );
+    },
+    getUserRole() {
+      return get(userStore).userRole;
     },
 
     getUserData() {

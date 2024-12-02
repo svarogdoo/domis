@@ -49,7 +49,33 @@ declare global {
     county?: string;
     email: string;
     phoneNumber?: string;
-    companyData?: CompanyData;
+    companyInfo?: CompanyData;
+  }
+  interface UserProfileResponse {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phoneNumber?: string;
+    companyInfo?: CompanyInfo;
+    addressInvoice: Address;
+    addressDelivery: Address;
+  }
+
+  interface Address {
+    country: string;
+    county: string;
+    city: string;
+    addressLine: string;
+    apartment: string;
+    postalCode: string;
+    contactPerson: string;
+    contactPhone: string;
+  }
+  interface CompanyInfo {
+    name: string;
+    number: string;
+    firstName: string;
+    lastName: string;
   }
 
   interface UserProfileUpdateRequest {
