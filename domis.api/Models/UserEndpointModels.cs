@@ -20,14 +20,21 @@ public record LoginRequest (
 public record ProfileUpdateRequest(
     string? FirstName,
     string? LastName,
+    string? PhoneNumber,
+    CompanyInfo? CompanyInfo,
+    ProfileAddressUpdateRequest? AddressInvoice,
+    ProfileAddressUpdateRequest? AddressDelivery
+);
+
+public record ProfileAddressUpdateRequest(
     string? AddressLine,
     string? Apartment,
     string? City,
     string? PostalCode,
     string? Country,
     string? County,
-    string? PhoneNumber,
-    CompanyInfo? CompanyInfo
+    string? ContactNumber,
+    string? ContactPerson
 );
 
 public record LoginWithCartRequest(
