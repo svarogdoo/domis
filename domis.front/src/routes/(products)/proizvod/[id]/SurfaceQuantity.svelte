@@ -145,7 +145,7 @@
     {/if}
   </div>
   <!-- Checkbox -->
-  {#if quantityType !== QuantityType.Piece}
+  {#if quantityType !== QuantityType.Piece && quantityType !== QuantityType.None}
     <button
       on:click={handleExtraClicked}
       class="relative flex mt-4 gap-x-2 items-center"
