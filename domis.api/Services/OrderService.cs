@@ -25,7 +25,6 @@ public interface IOrderService
 public class OrderService(
     IOrderRepository orderRepo, 
     IUserRepository userRepo,
-    IPriceHelpers priceHelpers, 
     ICustomEmailSender<UserEntity> emailSender) : IOrderService
 {
     public async Task<IEnumerable<PaymentStatusDto>?> GetAllPaymentStatuses() => 
@@ -56,7 +55,8 @@ public class OrderService(
 
     public async Task<int> CreateOrderFromCart(CreateOrderRequest createOrder, UserEntity? user)
     {
-        var discount = await priceHelpers.GetDiscount(user);
+        //var discount = await priceHelpers.GetDiscount(user);
+        const int discount = 0;
 
         var role = user is not null
             ? await userRepo.GetUserRoleAsync(user.Id)

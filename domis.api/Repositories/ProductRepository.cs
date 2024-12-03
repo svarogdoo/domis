@@ -69,7 +69,7 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
             var saleEntity = await connection.QuerySingleOrDefaultAsync<SaleEntity>(ProductQueries.GetActiveSale, new 
             { 
                 ProductId = productId, 
-                CurrentDate = DateTime.UtcNow 
+                CurrentDate = DateTimeHelper.BelgradeNow
             });
             
             var productDetail = mapper.Map<ProductDetailsDto>(product);

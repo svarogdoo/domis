@@ -154,6 +154,7 @@ public class OrderRepository(IDbConnection connection, PriceCalculationHelper he
     {
         connection.Open();
         using var transaction = connection.BeginTransaction();
+        
         try
         {
             var cartItems = (await connection.QueryAsync<CartItemWithPriceDto>(
@@ -208,7 +209,7 @@ public class OrderRepository(IDbConnection connection, PriceCalculationHelper he
         foreach (var cartItem in cartItems)
         {
             var sizing = await helper.GetProductSizing(cartItem.ProductId);
-            var palSize = helper.PalSizeAsNumber(sizing);
+            var palSize = PriceCalculationHelper.PalSizeAsNumber(sizing);
             var expectedPrice = await helper.GetPriceBasedOnRoleAndQuantity(
                 cartItem.ProductId, userRole, cartItem.Quantity, palSize);
 
@@ -217,7 +218,7 @@ public class OrderRepository(IDbConnection connection, PriceCalculationHelper he
             
             // Log or notify about the price change, if necessary
             Log.Information($"Price mismatch for product ID {cartItem.ProductId}: Expected price {expectedPrice}, but found {cartItem.ProductPrice}");
-            cartItem.ProductPrice = (decimal)expectedPrice;
+            if (expectedPrice != null) cartItem.ProductPrice = (decimal)expectedPrice;
         }
     }
 
@@ -240,7 +241,7 @@ public class OrderRepository(IDbConnection connection, PriceCalculationHelper he
             createOrder.PaymentVendorTypeId,
             PaymentAmount = totalAmount,
             createOrder.Comment,
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTimeHelper.BelgradeNow
         }, transaction);
     }
     
@@ -250,7 +251,7 @@ public class OrderRepository(IDbConnection connection, PriceCalculationHelper he
         {
             OrderId = orderId,
             CartId = cartId,
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTimeHelper.BelgradeNow
         }, transaction);
     }
     

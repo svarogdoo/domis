@@ -123,7 +123,7 @@ public static class Configuration
         //builder.Services.AddTransient<IEmailSender, EmailSender>();
         builder.Services.AddTransient<ICustomEmailSender<UserEntity>, CustomEmailSender>();
         
-        builder.Services.AddScoped<IPriceHelpers, PriceHelpers>();
+        //Ebuilder.Services.AddScoped<IPriceHelpers, PriceHelpers>();
         builder.Services.AddScoped<PriceCalculationHelper>();
     }
 

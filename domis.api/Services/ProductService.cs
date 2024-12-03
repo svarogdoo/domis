@@ -20,7 +20,10 @@ public interface IProductService
     Task<bool> AssignProductToCategory(AssignProductToCategoryRequest request);
 }
 
-public class ProductService(IProductRepository repository, ICategoryRepository categoryRepo, IUserRepository userRepo, IPriceHelpers priceHelpers) : IProductService
+public class ProductService(
+    IProductRepository repository, 
+    ICategoryRepository categoryRepo, 
+    IUserRepository userRepo) : IProductService
 {
     public async Task<IEnumerable<ProductPreviewDto>> GetAll()
         => await repository.GetAll();
@@ -30,7 +33,8 @@ public class ProductService(IProductRepository repository, ICategoryRepository c
 
     public async Task<ProductDetailsDto?> GetByIdWithDetails(int id, UserEntity? user)
     {
-        var discount = await priceHelpers.GetDiscount(user);
+        // var discount = await priceHelpers.GetDiscount(user);
+        const int discount = 0;
         
         var role = user is not null
             ? await userRepo.GetUserRoleAsync(user.Id)
