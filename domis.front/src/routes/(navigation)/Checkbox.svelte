@@ -11,6 +11,7 @@
     type="checkbox"
     class="appearance-none h-5 w-5 cursor-pointer rounded-md border border-green-700 checked:bg-green-700"
     checked={show}
+    on:click
   />
   <span class="absolute text-white left-0.5">
     <svg

@@ -7,6 +7,7 @@
   export let data;
 
   let user = { ...data.props.user };
+
   let companyInfo = data.props.user.companyInfo
     ? { ...data.props.user.companyInfo }
     : { name: "", number: "", firstName: "", lastName: "" };

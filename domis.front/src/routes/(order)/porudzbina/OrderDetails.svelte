@@ -27,14 +27,20 @@
   async function handleSubmit() {
     let checkoutFormData = onClick();
     if (checkoutFormData) {
-      const shippingResponse = await saveShippingDetails(
-        checkoutFormData.shippingDetails
+      const shippingInvoiceResponse = await saveShippingDetails(
+        checkoutFormData.shippingInvoiceDetails
       );
-      if (shippingResponse) {
+
+      const shippingDeliveryResponse = checkoutFormData.shippingDeliveryDetails
+        ? await saveShippingDetails(checkoutFormData.shippingDeliveryDetails)
+        : null;
+
+      if (shippingInvoiceResponse) {
         const order: Order = {
           cartId: cartId,
           paymentStatusId: 1,
-          orderShippingId: shippingResponse.orderShippingId,
+          orderShippingId: shippingInvoiceResponse.orderShippingId,
+          //orderDeliveryShippingId: shippingDeliveryResponse.orderShippingId,
           paymentVendorTypeId: paymentVendor,
           comment: checkoutFormData.comment,
         };

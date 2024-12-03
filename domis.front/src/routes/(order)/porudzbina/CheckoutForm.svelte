@@ -1,261 +1,451 @@
 <script lang="ts">
+  import Checkbox from "../../(navigation)/Checkbox.svelte";
   import InputString from "../../../components/InputString.svelte";
-  import { userStore } from "../../../stores/user";
+  import { AddressType } from "../../../enums";
 
   export const validate: () => CheckoutFormData | null = validateForm;
+  export let userInitial: UserProfileResponse;
 
-  let isUserDataPopulated = false;
+  let user = { ...userInitial };
+  let companyInfo = user.companyInfo
+    ? { ...user.companyInfo }
+    : { name: "", number: "", firstName: "", lastName: "" };
 
-  let name = "";
-  let lastName = "";
-  let companyName = "";
-  const country = "Srbija"; // Readonly field
-  let city = "";
-  let apartment = "";
-  let address = "";
-  let county = "";
-  let postalCode = "";
-  let email = "";
-  let phoneNumber = "";
   let specialNotes = "";
+  let showCompany = false;
+  let isSameUser =
+    user.firstName === companyInfo.firstName &&
+    user.lastName === companyInfo.lastName
+      ? true
+      : false;
 
-  $: if ($userStore.user && !isUserDataPopulated) {
-    name = $userStore.user.firstName ?? "";
-    lastName = $userStore.user.lastName ?? "";
-    city = $userStore.user.city ?? "";
-    address = $userStore.user.addressLine ?? "";
-    apartment = $userStore.user.apartment ?? "";
-    county = $userStore.user.county ?? "";
-    postalCode = $userStore.user.postalCode ?? "";
-    email = $userStore.user.email ?? "";
-    phoneNumber = $userStore.user.phoneNumber ?? "";
-
-    isUserDataPopulated = true;
-  }
-
-  // Form errors
-  let errors = {
+  let errorsInit = {
     name: "",
     lastName: "",
-    city: "",
-    address: "",
-    apartment: "",
-    postalCode: "",
     email: "",
     phoneNumber: "",
-    county: "",
+    addressInvoice: {
+      city: "",
+      addressLine: "",
+      apartment: "",
+      postalCode: "",
+      county: "",
+    },
+    addressDelivery: {
+      city: "",
+      addressLine: "",
+      apartment: "",
+      postalCode: "",
+      county: "",
+      contactPerson: "",
+      contactPhone: "",
+    },
   };
+
+  // Form errors
+  let errors = { ...errorsInit };
 
   function validateForm(): CheckoutFormData | null {
     let valid = true;
 
     // Reset errors
-    errors = {
-      name: "",
-      lastName: "",
-      city: "",
-      address: "",
-      apartment: "",
-      postalCode: "",
-      email: "",
-      phoneNumber: "",
-      county: "",
-    };
+    errors = { ...errorsInit };
 
-    if (!name.trim()) {
+    if (!user.firstName.trim()) {
       errors.name = "Ime je obavezno polje";
       valid = false;
     }
 
-    if (!lastName.trim()) {
+    if (!user.lastName.trim()) {
       errors.lastName = "Prezime je obavezno polje";
       valid = false;
     }
 
-    if (!city.trim()) {
-      errors.city = "Grad je obavezno polje";
+    if (!user.addressInvoice.city?.trim()) {
+      errors.addressInvoice.city = "Grad je obavezno polje";
       valid = false;
     }
 
-    if (!address.trim()) {
-      errors.address = "Ulica i broj su neophodni";
+    if (!user.addressInvoice.addressLine?.trim()) {
+      errors.addressInvoice.addressLine = "Ulica i broj su neophodni";
       valid = false;
     }
 
-    if (!postalCode.trim()) {
-      errors.postalCode = "Poštanski broj je obavezan";
+    if (!user.addressInvoice.postalCode?.trim()) {
+      errors.addressInvoice.postalCode = "Poštanski broj je obavezan";
       valid = false;
     }
 
     const emailPattern = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
-    if (!email.match(emailPattern)) {
+    if (!user.email?.match(emailPattern)) {
       errors.email = "Nispravna vrednost email-a";
       valid = false;
     }
 
     const phonePattern = /^6\d{7,8}$/;
-    if (!phoneNumber.match(phonePattern)) {
+    if (!user.phoneNumber?.match(phonePattern)) {
       errors.phoneNumber = "Neispravna vrednost broja telefona";
       valid = false;
     }
 
+    if (!user.useSameAddress) {
+      console.info("yaaa");
+      if (!user.addressDelivery.city?.trim()) {
+        errors.addressDelivery.city = "Grad je obavezno polje";
+        console.info(errors);
+        valid = false;
+      }
+
+      if (!user.addressDelivery.addressLine?.trim()) {
+        errors.addressDelivery.addressLine = "Ulica i broj su neophodni";
+        valid = false;
+      }
+
+      if (!user.addressDelivery.postalCode?.trim()) {
+        errors.addressDelivery.postalCode = "Poštanski broj je obavezan";
+        valid = false;
+      }
+
+      if (!user.addressDelivery.contactPerson?.trim()) {
+        errors.addressDelivery.contactPerson = "Kontakt osoba je obavezna";
+        valid = false;
+      }
+
+      if (!user.addressDelivery.contactPhone?.match(phonePattern)) {
+        errors.addressDelivery.contactPhone =
+          "Neispravna vrednost broja telefona";
+        valid = false;
+      }
+    }
+
     if (valid) {
-      const shippingDetails: ShippingDetails = {
-        firstName: name,
-        lastName: lastName,
-        companyName: companyName,
+      const shippingInvoiceDetails: ShippingDetails = {
+        firstName: user.firstName,
+        lastName: user.lastName,
+        phoneNumber: user.phoneNumber,
         countryId: 1, // hardcode to Serbia
-        city: city,
-        address: address,
-        county: county,
-        apartment: apartment,
-        postalCode: postalCode,
-        phoneNumber: phoneNumber,
-        email: email,
+        city: user.addressInvoice.city,
+        address: user.addressInvoice.addressLine,
+        county: user.addressInvoice.county,
+        apartment: user.addressInvoice.apartment,
+        postalCode: user.addressInvoice.postalCode,
+        email: user.email,
+        companyInfo: companyInfo,
+        addressType: AddressType.Invoice,
       };
+
+      if (!showCompany) shippingInvoiceDetails.companyInfo = undefined;
+
+      const shippingDeliveryDetails: ShippingDetails | null =
+        user.useSameAddress
+          ? null
+          : {
+              countryId: 1, // hardcode to Serbia
+              city: user.addressDelivery.city,
+              address: user.addressDelivery.addressLine,
+              county: user.addressDelivery.county,
+              apartment: user.addressDelivery.apartment,
+              postalCode: user.addressDelivery.postalCode,
+              contactPerson: user.addressDelivery.contactPerson,
+              contactPhone: user.addressDelivery.contactPhone,
+              addressType: AddressType.Delivery,
+            };
+
       return {
-        shippingDetails: shippingDetails,
+        shippingInvoiceDetails: shippingInvoiceDetails,
+        shippingDeliveryDetails: shippingDeliveryDetails,
         comment: specialNotes,
       };
     } else return null;
   }
 </script>
 
-<form class="flex flex-col w-full space-y-4 py-4 lg:p-4">
-  <div class="flex flex-col gap-y-4 lg:gap-y-6">
-    <h2
-      class="text-xl tracking-wide border-b border-gray-400 pb-2 border-b-0.5"
-    >
-      Detalji za naplatu
-    </h2>
-    <div class="flex flex-col gap-y-4 lg:flex-row gap-x-12">
-      <!-- Name -->
-      <InputString
-        bind:value={name}
-        title="Ime"
-        placeholder="Petar"
-        error={errors?.name}
-        isRequired={true}
-        width={"64"}
-      />
+<form class="flex flex-col w-full space-y-4 lg:p-4" on:submit|preventDefault>
+  <div class="flex flex-col gap-x-4">
+    <div class="flex flex-col gap-y-2">
+      <h2 class="text-lg font-light">
+        Detalji za naplatu {#if user.useSameAddress}
+          <span>i isporuku</span>
+        {/if}
+      </h2>
+      <div class="flex flex-col gap-y-4 p-4 border border-gray-300 rounded-lg">
+        <div class="flex flex-col gap-y-4 lg:flex-row gap-x-4">
+          <!-- Name -->
+          <InputString
+            bind:value={user.firstName}
+            title="Ime"
+            placeholder="Petar"
+            error={errors?.name}
+            isRequired={true}
+            width={"40"}
+          />
 
-      <!-- Last Name -->
-      <InputString
-        bind:value={lastName}
-        title="Prezime"
-        placeholder="Petrović"
-        error={errors?.lastName}
-        isRequired={true}
-        width={"64"}
-      />
-    </div>
+          <!-- Last Name -->
+          <InputString
+            bind:value={user.lastName}
+            title="Prezime"
+            placeholder="Petrović"
+            error={errors?.lastName}
+            isRequired={true}
+            width={"40"}
+          />
+          <!-- Email -->
+          <InputString
+            bind:value={user.email}
+            title="Email"
+            placeholder="kompanija@gmail.com"
+            error={errors?.email}
+            isRequired={true}
+            width={"64"}
+          />
+          <!-- Phone number -->
+          <div class="relative">
+            <InputString
+              bind:value={user.phoneNumber}
+              title="Broj telefona"
+              placeholder="602244552"
+              error={errors?.phoneNumber}
+              isRequired={true}
+              width={"48"}
+              prefix="+381"
+            />
+          </div>
+        </div>
 
-    <!-- Company Name (Optional) -->
-    <InputString
-      bind:value={companyName}
-      title="Naziv kompanije"
-      placeholder="Kompanija d.o.o"
-      isRequired={false}
-      width={"80"}
-    />
-    <div class="flex flex-col gap-y-4 lg:flex-row gap-x-12">
-      <!-- Country (Readonly) -->
-      <div class="flex flex-col gap-y-2">
-        <label for="country">Zemlja</label>
-        <input
-          id="country"
-          type="text"
-          class="block w-32 bg-gray-50 rounded-md border-0 py-1.5 pl-3 text-gray-900 ring-1 ring-inset ring-gray-300 font-light text-md leading-6"
-          value={country}
-          readonly
-          disabled
+        <div class="flex flex-col gap-y-4 lg:flex-row gap-x-4">
+          <!-- Country (Readonly) -->
+          <div class="flex flex-col gap-y-2">
+            <label for="country">Zemlja</label>
+            <input
+              id="country"
+              type="text"
+              class="block w-32 bg-gray-50 rounded-md border-0 py-1.5 pl-3 text-gray-900 ring-1 ring-inset ring-gray-300 font-light text-md leading-6"
+              value={user.addressInvoice.country}
+              readonly
+              disabled
+            />
+          </div>
+          <!-- Postal Code -->
+          <InputString
+            bind:value={user.addressInvoice.postalCode}
+            title="Poštanski broj"
+            placeholder="11000"
+            error={errors?.addressInvoice.postalCode}
+            isRequired={true}
+            width={"32"}
+          />
+          <!-- City -->
+          <InputString
+            bind:value={user.addressInvoice.city}
+            title="Grad"
+            placeholder="Novi Sad"
+            error={errors?.addressInvoice.city}
+            isRequired={true}
+            width={"48"}
+          />
+        </div>
+
+        <div class="flex flex-col gap-y-4 lg:flex-row gap-x-4">
+          <!-- County -->
+          <InputString
+            bind:value={user.addressInvoice.county}
+            title="Opština"
+            placeholder="Palilula"
+            width={"48"}
+          />
+          <!-- Street and Number -->
+          <InputString
+            bind:value={user.addressInvoice.addressLine}
+            title="Ulica i broj"
+            placeholder="Kneza Miloša 23"
+            error={errors?.addressInvoice.addressLine}
+            isRequired={true}
+            width={"64"}
+          />
+          <!-- Apartment -->
+          <InputString
+            bind:value={user.addressInvoice.apartment}
+            title="Broj stana"
+            placeholder="5"
+            isRequired={false}
+            width={"24"}
+          />
+        </div>
+
+        <Checkbox
+          bind:show={showCompany}
+          title="Postavi podatke za pravna lica"
         />
+        {#if showCompany}
+          <div class="flex flex-col gap-y-2 mt-4">
+            <p class="text-lg font-light">Podaci za pravna lica</p>
+            <div
+              class="flex flex-col gap-y-4 p-4 border border-gray-300 rounded-lg"
+            >
+              <div class="flex flex-col gap-y-4 lg:flex-row gap-x-12">
+                <InputString
+                  bind:value={companyInfo.name}
+                  title="Podaci kompanije"
+                  placeholder="Firma d.o.o."
+                  width={"64"}
+                />
+                <InputString
+                  bind:value={companyInfo.number}
+                  title="PIB"
+                  placeholder=""
+                  width={"32"}
+                />
+              </div>
+
+              <Checkbox
+                bind:show={isSameUser}
+                title="Korisnik je odgovorno lice"
+              />
+              <div class="flex flex-col gap-y-4 lg:flex-row gap-x-12">
+                {#if isSameUser}
+                  <InputString
+                    bind:value={user.firstName}
+                    title="Ime"
+                    placeholder="Petar"
+                    width={"48"}
+                    isReadOnly={isSameUser}
+                  />
+                  <InputString
+                    bind:value={user.lastName}
+                    title="Prezime"
+                    placeholder="Petrović"
+                    width={"48"}
+                    isReadOnly={isSameUser}
+                  />
+                {:else}
+                  <InputString
+                    bind:value={companyInfo.firstName}
+                    title="Ime"
+                    placeholder="Petar"
+                    width={"48"}
+                  />
+                  <InputString
+                    bind:value={companyInfo.lastName}
+                    title="Prezime"
+                    placeholder="Petrović"
+                    width={"48"}
+                  />
+                {/if}
+              </div>
+            </div>
+          </div>
+        {/if}
       </div>
-
-      <!-- City -->
-      <InputString
-        bind:value={city}
-        title="Grad"
-        placeholder="Novi Sad"
-        error={errors?.city}
-        isRequired={true}
-        width={"64"}
+      <Checkbox
+        bind:show={user.useSameAddress}
+        title="Koristi istu adresu za naplatu i isporuku"
       />
     </div>
+    {#if !user.useSameAddress}
+      <div class="flex flex-col gap-y-2 mt-6">
+        <h2 class="text-lg font-light">Detalji za isporuku</h2>
 
-    <div class="flex flex-col gap-y-4 lg:flex-row gap-x-12">
-      <!-- Postal Code -->
-      <InputString
-        bind:value={postalCode}
-        title="Poštanski broj"
-        placeholder="11000"
-        error={errors?.postalCode}
-        isRequired={true}
-        width={"32"}
-      />
+        <div
+          class="flex flex-col gap-y-4 p-4 border border-gray-300 rounded-lg"
+        >
+          <div class="flex flex-col gap-y-4 lg:flex-row gap-x-4">
+            <!-- Country (Readonly) -->
+            <div class="flex flex-col gap-y-2">
+              <label for="country">Zemlja</label>
+              <input
+                id="country"
+                type="text"
+                class="block w-32 bg-gray-50 rounded-md border-0 py-1.5 pl-3 text-gray-900 ring-1 ring-inset ring-gray-300 font-light text-md leading-6"
+                value={user.addressDelivery.country}
+                readonly
+                disabled
+              />
+            </div>
+            <!-- Postal Code -->
+            <InputString
+              bind:value={user.addressDelivery.postalCode}
+              title="Poštanski broj"
+              placeholder="11000"
+              error={errors?.addressDelivery.postalCode}
+              isRequired={true}
+              width={"32"}
+            />
+            <!-- City -->
+            <InputString
+              bind:value={user.addressDelivery.city}
+              title="Grad"
+              placeholder="Novi Sad"
+              error={errors?.addressDelivery.city}
+              isRequired={true}
+              width={"64"}
+            />
+          </div>
 
-      <!-- County -->
-      <InputString
-        bind:value={county}
-        title="Opština"
-        placeholder="Palilula"
-        width={"64"}
-      />
-    </div>
+          <div class="flex flex-col gap-y-4 lg:flex-row gap-x-4">
+            <!-- County -->
+            <InputString
+              bind:value={user.addressDelivery.county}
+              title="Opština"
+              placeholder="Palilula"
+              width={"64"}
+            />
+            <!-- Street and Number -->
+            <InputString
+              bind:value={user.addressDelivery.addressLine}
+              title="Ulica i broj"
+              placeholder="Kneza Miloša 23"
+              error={errors?.addressDelivery.addressLine}
+              isRequired={true}
+              width={"64"}
+            />
+            <!-- Apartment -->
+            <InputString
+              bind:value={user.addressDelivery.apartment}
+              title="Broj stana"
+              placeholder="5"
+              isRequired={false}
+              width={"24"}
+            />
+          </div>
 
-    <div class="flex flex-col gap-y-4 lg:flex-row gap-x-12">
-      <!-- Street and Number -->
-      <InputString
-        bind:value={address}
-        title="Ulica i broj"
-        placeholder="Kneza Miloša 23"
-        error={errors?.address}
-        isRequired={true}
-        width={"64"}
-      />
-      <!-- Apartment -->
-      <InputString
-        bind:value={apartment}
-        title="Broj stana"
-        placeholder="5"
-        isRequired={false}
-        width={"24"}
-      />
-    </div>
-
-    <div class="flex flex-col gap-y-4 lg:flex-row gap-x-12">
-      <!-- Email -->
-      <InputString
-        bind:value={email}
-        title="Email"
-        placeholder="kompanija@gmail.com"
-        error={errors?.email}
-        isRequired={true}
-        width={"80"}
-      />
-      <!-- Phone number -->
-      <div class="relative">
-        <InputString
-          bind:value={phoneNumber}
-          title="Broj telefona"
-          placeholder="602244552"
-          error={errors?.phoneNumber}
-          isRequired={true}
-          width={"48"}
-          prefix="+381"
-        />
+          <div class="flex flex-col gap-y-4 lg:flex-row gap-x-4">
+            <!-- Contact person -->
+            <InputString
+              bind:value={user.addressDelivery.contactPerson}
+              title="Kontakt osoba"
+              placeholder="Petar Petrović"
+              error={errors?.addressDelivery.contactPerson}
+              isRequired={true}
+              width={"48"}
+            />
+            <!-- Contact phone number -->
+            <div class="relative">
+              <InputString
+                bind:value={user.addressDelivery.contactPhone}
+                title="Broj telefona"
+                placeholder="602244552"
+                error={errors?.addressDelivery.contactPhone}
+                isRequired={true}
+                width={"48"}
+                prefix="+381"
+              />
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
+    {/if}
 
-    <!-- Special Notes (Optional) -->
-    <div class="flex flex-col gap-y-2 mt-4">
-      <label for="special-notes">Napomene o narudžbini</label>
-      <textarea
-        id="special-notes"
-        class="block w-full rounded-md border-0 py-1.5 pl-3 font-light text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-inset focus:ring-blue-600 text-md leading-6"
-        bind:value={specialNotes}
-        placeholder="Posebne napomene o narudžbini ili isporuci."
-      ></textarea>
+    <div class="flex flex-col gap-y-4">
+      <!-- Special Notes (Optional) -->
+      <div class="flex flex-col gap-y-2 my-4">
+        <label for="special-notes">Napomene o narudžbini</label>
+        <textarea
+          id="special-notes"
+          class="block w-full rounded-md border-0 py-1.5 pl-3 font-light text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-inset focus:ring-blue-600 text-md leading-6"
+          bind:value={specialNotes}
+          placeholder="Posebne napomene o narudžbini ili isporuci."
+        ></textarea>
+      </div>
     </div>
   </div>
 </form>

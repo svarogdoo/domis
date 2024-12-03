@@ -135,3 +135,9 @@ export function mapSortTypeToString(sortType: SortType): string {
       return "Bez sortiranja";
   }
 }
+
+export enum AddressType {
+  None,
+  Invoice,
+  Delivery,
+}

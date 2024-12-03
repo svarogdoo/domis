@@ -55,10 +55,11 @@ declare global {
     firstName: string;
     lastName: string;
     email: string;
-    phoneNumber?: string;
+    phoneNumber: string;
     companyInfo?: CompanyInfo;
     addressInvoice: Address;
     addressDelivery: Address;
+    useSameAddress: boolean;
   }
 
   interface Address {
@@ -218,21 +219,25 @@ declare global {
   }
 
   interface CheckoutFormData {
-    shippingDetails: ShippingDetails;
+    shippingInvoiceDetails: ShippingDetails;
+    shippingDeliveryDetails: ShippingDetails | null;
     comment: string;
   }
   interface ShippingDetails {
-    firstName: string;
-    lastName: string;
-    companyName: string;
+    firstName?: string;
+    lastName?: string;
+    phoneNumber?: string;
+    email?: string;
+    companyInfo?: CompanyInfo;
     countryId: number;
     city: string;
     address: string;
     apartment: string;
     county: string;
     postalCode: string;
-    phoneNumber: string;
-    email: string;
+    contactPhone?: string;
+    contactPerson?: string;
+    addressType: AddressType;
   }
   interface ShippingResponse {
     orderShippingId: number;
