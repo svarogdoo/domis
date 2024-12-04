@@ -13,7 +13,7 @@
   }
 </script>
 
-{#each images as image (image.url)}
+{#each images as image, index (index)}
   <button on:click={() => handleShowSlidingGallery(image)}>
     <img
       src={image.url}

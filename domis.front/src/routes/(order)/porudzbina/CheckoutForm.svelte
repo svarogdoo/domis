@@ -24,32 +24,36 @@
     lastName: "",
     email: "",
     phoneNumber: "",
-    addressInvoice: {
-      city: "",
-      addressLine: "",
-      apartment: "",
-      postalCode: "",
-      county: "",
-    },
-    addressDelivery: {
-      city: "",
-      addressLine: "",
-      apartment: "",
-      postalCode: "",
-      county: "",
-      contactPerson: "",
-      contactPhone: "",
-    },
+  };
+  let errorsInvoiceInit = {
+    city: "",
+    addressLine: "",
+    apartment: "",
+    postalCode: "",
+    county: "",
+  };
+  let errorsDeliveryInit = {
+    city: "",
+    addressLine: "",
+    apartment: "",
+    postalCode: "",
+    county: "",
+    contactPerson: "",
+    contactPhone: "",
   };
 
   // Form errors
   let errors = { ...errorsInit };
+  let errorsInvoice = { ...errorsInvoiceInit };
+  let errorsDelivery = { ...errorsDeliveryInit };
 
   function validateForm(): CheckoutFormData | null {
     let valid = true;
 
     // Reset errors
     errors = { ...errorsInit };
+    errorsInvoice = { ...errorsInvoiceInit };
+    errorsDelivery = { ...errorsDeliveryInit };
 
     if (!user.firstName.trim()) {
       errors.name = "Ime je obavezno polje";
@@ -62,17 +66,17 @@
     }
 
     if (!user.addressInvoice.city?.trim()) {
-      errors.addressInvoice.city = "Grad je obavezno polje";
+      errorsInvoice.city = "Grad je obavezno polje";
       valid = false;
     }
 
     if (!user.addressInvoice.addressLine?.trim()) {
-      errors.addressInvoice.addressLine = "Ulica i broj su neophodni";
+      errorsInvoice.addressLine = "Ulica i broj su neophodni";
       valid = false;
     }
 
     if (!user.addressInvoice.postalCode?.trim()) {
-      errors.addressInvoice.postalCode = "Poštanski broj je obavezan";
+      errorsInvoice.postalCode = "Poštanski broj je obavezan";
       valid = false;
     }
 
@@ -90,28 +94,27 @@
 
     if (!user.useSameAddress) {
       if (!user.addressDelivery.city?.trim()) {
-        errors.addressDelivery.city = "Grad je obavezno polje";
+        errorsDelivery.city = "Grad je obavezno polje";
         valid = false;
       }
 
       if (!user.addressDelivery.addressLine?.trim()) {
-        errors.addressDelivery.addressLine = "Ulica i broj su neophodni";
+        errorsDelivery.addressLine = "Ulica i broj su neophodni";
         valid = false;
       }
 
       if (!user.addressDelivery.postalCode?.trim()) {
-        errors.addressDelivery.postalCode = "Poštanski broj je obavezan";
+        errorsDelivery.postalCode = "Poštanski broj je obavezan";
         valid = false;
       }
 
       if (!user.addressDelivery.contactPerson?.trim()) {
-        errors.addressDelivery.contactPerson = "Kontakt osoba je obavezna";
+        errorsDelivery.contactPerson = "Kontakt osoba je obavezna";
         valid = false;
       }
 
       if (!user.addressDelivery.contactPhone?.match(phonePattern)) {
-        errors.addressDelivery.contactPhone =
-          "Neispravna vrednost broja telefona";
+        errorsDelivery.contactPhone = "Neispravna vrednost broja telefona";
         valid = false;
       }
     }
@@ -167,7 +170,7 @@
         {/if}
       </h2>
       <div class="flex flex-col gap-y-4 p-4 border border-gray-300 rounded-lg">
-        <div class="flex flex-col gap-y-4 lg:flex-row gap-x-4">
+        <div class="flex flex-wrap gap-y-4 flex-row gap-x-4">
           <!-- Name -->
           <InputString
             bind:value={user.firstName}
@@ -210,7 +213,7 @@
           </div>
         </div>
 
-        <div class="flex flex-col gap-y-4 lg:flex-row gap-x-4">
+        <div class="flex flex-wrap gap-y-4 flex-row gap-x-4">
           <!-- Country (Readonly) -->
           <div class="flex flex-col gap-y-2">
             <label for="country">Zemlja</label>
@@ -228,7 +231,7 @@
             bind:value={user.addressInvoice.postalCode}
             title="Poštanski broj"
             placeholder="11000"
-            error={errors?.addressInvoice.postalCode}
+            error={errorsInvoice?.postalCode}
             isRequired={true}
             width={"32"}
           />
@@ -237,13 +240,13 @@
             bind:value={user.addressInvoice.city}
             title="Grad"
             placeholder="Novi Sad"
-            error={errors?.addressInvoice.city}
+            error={errorsInvoice?.city}
             isRequired={true}
             width={"48"}
           />
         </div>
 
-        <div class="flex flex-col gap-y-4 lg:flex-row gap-x-4">
+        <div class="flex flex-wrap gap-y-4 flex-row gap-x-4">
           <!-- County -->
           <InputString
             bind:value={user.addressInvoice.county}
@@ -256,7 +259,7 @@
             bind:value={user.addressInvoice.addressLine}
             title="Ulica i broj"
             placeholder="Kneza Miloša 23"
-            error={errors?.addressInvoice.addressLine}
+            error={errorsInvoice?.addressLine}
             isRequired={true}
             width={"64"}
           />
@@ -280,7 +283,7 @@
             <div
               class="flex flex-col gap-y-4 p-4 border border-gray-300 rounded-lg"
             >
-              <div class="flex flex-col gap-y-4 lg:flex-row gap-x-12">
+              <div class="flex flex-wrap gap-y-4 flex-row gap-x-12">
                 <InputString
                   bind:value={companyInfo.name}
                   title="Podaci kompanije"
@@ -299,7 +302,7 @@
                 bind:show={isSameUser}
                 title="Korisnik je odgovorno lice"
               />
-              <div class="flex flex-col gap-y-4 lg:flex-row gap-x-12">
+              <div class="flex flex-wrap gap-y-4 flex-row gap-x-12">
                 {#if isSameUser}
                   <InputString
                     bind:value={user.firstName}
@@ -346,7 +349,7 @@
         <div
           class="flex flex-col gap-y-4 p-4 border border-gray-300 rounded-lg"
         >
-          <div class="flex flex-col gap-y-4 lg:flex-row gap-x-4">
+          <div class="flex flex-wrap gap-y-4 flex-row gap-x-4">
             <!-- Country (Readonly) -->
             <div class="flex flex-col gap-y-2">
               <label for="country">Zemlja</label>
@@ -364,7 +367,7 @@
               bind:value={user.addressDelivery.postalCode}
               title="Poštanski broj"
               placeholder="11000"
-              error={errors?.addressDelivery.postalCode}
+              error={errorsDelivery?.postalCode}
               isRequired={true}
               width={"32"}
             />
@@ -373,13 +376,13 @@
               bind:value={user.addressDelivery.city}
               title="Grad"
               placeholder="Novi Sad"
-              error={errors?.addressDelivery.city}
+              error={errorsDelivery?.city}
               isRequired={true}
               width={"64"}
             />
           </div>
 
-          <div class="flex flex-col gap-y-4 lg:flex-row gap-x-4">
+          <div class="flex flex-wrap gap-y-4 flex-row gap-x-4">
             <!-- County -->
             <InputString
               bind:value={user.addressDelivery.county}
@@ -392,7 +395,7 @@
               bind:value={user.addressDelivery.addressLine}
               title="Ulica i broj"
               placeholder="Kneza Miloša 23"
-              error={errors?.addressDelivery.addressLine}
+              error={errorsDelivery?.addressLine}
               isRequired={true}
               width={"64"}
             />
@@ -406,13 +409,13 @@
             />
           </div>
 
-          <div class="flex flex-col gap-y-4 lg:flex-row gap-x-4">
+          <div class="flex flex-wrap gap-y-4 flex-row gap-x-4">
             <!-- Contact person -->
             <InputString
               bind:value={user.addressDelivery.contactPerson}
               title="Kontakt osoba"
               placeholder="Petar Petrović"
-              error={errors?.addressDelivery.contactPerson}
+              error={errorsDelivery?.contactPerson}
               isRequired={true}
               width={"48"}
             />
@@ -422,7 +425,7 @@
                 bind:value={user.addressDelivery.contactPhone}
                 title="Broj telefona"
                 placeholder="602244552"
-                error={errors?.addressDelivery.contactPhone}
+                error={errorsDelivery?.contactPhone}
                 isRequired={true}
                 width={"48"}
                 prefix="+381"

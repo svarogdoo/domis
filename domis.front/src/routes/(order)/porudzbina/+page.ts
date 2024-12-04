@@ -35,6 +35,12 @@ export async function load({ parent }) {
       lastName: "",
     };
 
+  if (user.addressInvoice === null) user.addressInvoice = initAddress;
+  if (user.addressDelivery === null) {
+    user.addressDelivery = initAddress;
+    user.useSameAddress = true;
+  }
+
   return {
     props: {
       user: user,

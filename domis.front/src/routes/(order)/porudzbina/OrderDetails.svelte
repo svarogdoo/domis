@@ -138,7 +138,7 @@
   >
     <input
       type="checkbox"
-      class="appearance-none h-5 w-5 cursor-pointer rounded-md border border-gray-700 checked:bg-gray-700"
+      class="appearance-none min-h-5 min-w-5 cursor-pointer rounded-md border border-gray-700 checked:bg-gray-700"
       checked={isTermsAccepted}
     />
     <span class="absolute text-white left-0.5">

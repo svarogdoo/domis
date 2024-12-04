@@ -65,9 +65,11 @@ function createCart() {
       await updateCartItem({ cartItemId: cartItemId, quantity: quantity });
       await cart.get();
     },
-    reset: () => {
+    reset: async () => {
       removeCartFromLocalStorage();
       set(null);
+      await cart.get();
+      setLocalStorageCartId();
     },
   };
 }
