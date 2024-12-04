@@ -151,7 +151,7 @@ declare global {
   }
   interface ProductSizing {
     box: number;
-    pallet: number;
+    pallet: number | null;
   }
   interface ProductBasicInfo {
     id: number;

@@ -12,6 +12,12 @@ export async function load({ params, parent }) {
   if (userStore.isUserVP()) productPrice = product.vpPrice;
   else productPrice = product.price;
 
+  if (product.size === null)
+    product.size = {
+      box: 1,
+      pallet: null,
+    };
+
   return {
     props: {
       product,
