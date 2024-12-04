@@ -387,11 +387,11 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
     {
         var categoryPathResults = await connection.QueryAsync<ProdCategoryPathRow>(ProductQueries.GetProductCategoriesPaths, new { ProductId = productId });
         var categoryPaths = categoryPathResults
-            .Where(row => row is { PathId: not null, Id: not null }) // Ensure PathId and ID are not null
-            .GroupBy(row => row.PathId.Value)
+            .Where(row => row is { PathId: not null, Id: not null })
+            .GroupBy(row => row.PathId!.Value)
             .Select(group => group.Select(row => new CategoryPath
             {
-                Id = row.Id.Value,
+                Id = row.Id!.Value,
                 Name = row.Name
             }).ToList())
             .ToList();

@@ -14,7 +14,7 @@ public class OrderDetailsDto
     public List<OrderItemDto> OrderItems { get; set; } = new List<OrderItemDto>();
 }
 
-public class OrderStatusDetailsDto
+public record OrderStatusDetailsDto
 {
     public int OrderStatusId { get; set; }
     public string OrderStatusName { get; set; }

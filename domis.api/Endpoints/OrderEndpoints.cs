@@ -34,20 +34,20 @@ public static class OrderEndpoints
             return Results.Ok(response);
         }).WithDescription("Get all payment vendors");
 
-        group.MapPost("/shipping", async ([FromBody] OrderShippingDto request, IOrderService orderService) =>
+        group.MapPost("/shipping", async ([FromBody] CreateOrderShippingRequest request, IOrderService orderService) =>
         {
             var response = await orderService.CreateOrderShipping(request);
-
-            return Results.Ok(new CreateOrderShippingResponse(response));
+                
+            return Results.Ok(response);
         }).WithDescription("Create new order shipping");
-
+        
         group.MapPut("/shipping/{id:int}",
-            async ([FromRoute] int id, [FromBody] OrderShippingDto request, IOrderService orderService) =>
-            {
-                var response = await orderService.UpdateOrderShipping(id, request);
+        async ([FromRoute] int id, [FromBody] OrderShippingDto request, IOrderService orderService) =>
+        {
+            var response = await orderService.UpdateOrderShipping(id, request);
 
-                return Results.Ok(new UpdateOrderShippingResponse(response));
-            }).WithDescription("Update order shipping");
+            return Results.Ok(new UpdateOrderShippingResponse(response));
+        }).WithDescription("Update order shipping");
 
         group.MapGet("/shipping/{id:int}", async ([FromRoute] int id, IOrderService orderService) =>
         {

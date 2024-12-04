@@ -24,50 +24,68 @@ public static class OrderQueries
                 domis.payment_vendor_type;";
     
     public const string CreateOrderShipping = @"
-            INSERT INTO domis.order_shipping (
-                first_name,
-                last_name,
-                company_name,
-                country_id,
-                city,
-                address,
-                apartment,
-                county,
-                postal_code,
-                phone_number,
-                email
-            ) 
-            VALUES (
-                @FirstName,
-                @LastName,
-                @CompanyName,
-                @CountryId,
-                @City,
-                @Address,
-                @Apartment,
-                @County,
-                @PostalCode,
-                @PhoneNumber,
-                @Email
-            )
-            RETURNING id;";
-    
+        INSERT INTO domis.order_shipping (
+            first_name,
+            last_name,
+            company_name,
+            company_number,
+            company_firstname,
+            company_lastname,
+            country_id,
+            city,
+            address,
+            apartment,
+            county,
+            postal_code,
+            phone_number,
+            email,
+            contact_phone,
+            contact_person,
+            address_type
+        ) 
+        VALUES (
+            @FirstName,
+            @LastName,
+            @CompanyName,
+            @CompanyNumber,
+            @CompanyFirstName,
+            @CompanyLastName,
+            @CountryId,
+            @City,
+            @Address,
+            @Apartment,
+            @County,
+            @PostalCode,
+            @PhoneNumber,
+            @Email,
+            @ContactPhone,
+            @ContactPerson,
+            @AddressType
+        )
+        RETURNING id;";
+        
     public const string UpdateOrderShipping = @"
-            UPDATE domis.order_shipping
-            SET
-                first_name = @FirstName,
-                last_name = @LastName,
-                company_name = @CompanyName,
-                country_id = @CountryId,
-                city = @City,
-                address = @Address,
-                apartment = @Apartment,
-                county = @County,
-                postal_code = @PostalCode,
-                phone_number = @PhoneNumber,
-                email = @Email
-            WHERE 
-                id = @Id;";
+        UPDATE domis.order_shipping
+        SET
+            first_name = @FirstName,
+            last_name = @LastName,
+            company_name = @CompanyName,
+            country_id = @CountryId,
+            city = @City,
+            address = @Address,
+            apartment = @Apartment,
+            county = @County,
+            postal_code = @PostalCode,
+            phone_number = @PhoneNumber,
+            email = @Email,
+            company_number = @CompanyNumber,  -- new column
+            company_first_name = @CompanyFirstName,  -- new column
+            company_last_name = @CompanyLastName,  -- new column
+            contact_phone = @ContactPhone,  -- new column
+            contact_person = @ContactPerson,  -- new column
+            address_type = @AddressType  -- new column
+        WHERE 
+            id = @Id;";
     
     public const string GetOrderShipping = @"
             SELECT 
@@ -96,19 +114,22 @@ public static class OrderQueries
             WHERE id = @Id;";
     
     public const string CreateOrder = @"
-                INSERT INTO domis.order (user_id, status_id, order_shipping_id, payment_status_id, payment_vendor_type_id, payment_amount, comment, created_at)
-                SELECT 
-                    c.user_id,
-                    1, -- assuming 1 is the status ID for a new order
-                    @OrderShippingId,
-                    @PaymentStatusId,
-                    @PaymentVendorTypeId,
-                    @PaymentAmount,
-                    '',
-                    @CreatedAt
-                FROM domis.cart c
-                WHERE c.id = @CartId
-                RETURNING id;";
+        INSERT INTO domis.order 
+        (user_id, status_id, payment_status_id, payment_vendor_type_id, payment_amount, comment, created_at, order_shipping_id, delivery_order_shipping_id)
+        SELECT 
+            c.user_id,
+            1, -- assuming 1 is the status ID for a new order
+            @PaymentStatusId,
+            @PaymentVendorTypeId,
+            @PaymentAmount,
+            @Comment,
+            @CreatedAt,
+            @InvoiceOrderShippingId,
+            @DeliveryOrderShippingId
+        FROM domis.cart c
+        WHERE c.id = @CartId
+        RETURNING id;";
+
 
     public const string CreateOrderItems = @"
         INSERT INTO domis.order_item (order_id, product_id, quantity, order_item_amount, created_at)

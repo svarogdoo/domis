@@ -18,9 +18,9 @@ public interface IOrderRepository
     Task<int> CreateOrderShipping(OrderShippingDto orderShipping);
     Task<bool> UpdateOrderShipping(int id, OrderShippingDto orderShipping);
     Task<OrderShippingDto?> GetOrderShippingById(int id);
+    Task<IEnumerable<OrderShippingDto>?> GetOrderShippingListById(int id);
     Task<bool> DeleteOrderShippingById(int id);
     Task<OrderConfirmationDto> CreateOrderFromCartAsync(CreateOrderRequest createOrder, string role, decimal discount);
-
     Task<bool> UpdateOrderStatusAsync(int orderId, int statusId);
     Task<OrderDetailsDto?> GetOrderDetailsByIdAsync(int orderId);
     Task<IEnumerable<UserOrderDto>> GetOrdersByUser(string userId);
@@ -89,7 +89,7 @@ public class OrderRepository(IDbConnection connection, PriceCalculationHelper he
         {
             Log.Error(ex, $"An error occurred while creating order shipping: {ex.Message}");
             throw;
-        }
+        }    
     }
     
     public async Task<bool> UpdateOrderShipping(int id, OrderShippingDto orderShipping)
@@ -109,8 +109,15 @@ public class OrderRepository(IDbConnection connection, PriceCalculationHelper he
                 orderShipping.County,
                 orderShipping.PostalCode,
                 orderShipping.PhoneNumber,
-                orderShipping.Email
+                orderShipping.Email,
+                orderShipping.CompanyNumber,
+                orderShipping.CompanyFirstName,
+                orderShipping.CompanyLastName,
+                orderShipping.ContactPhone,
+                orderShipping.ContactPerson,
+                orderShipping.AddressType
             });
+
 
             return rowsAffected > 0; 
         }
@@ -133,7 +140,19 @@ public class OrderRepository(IDbConnection connection, PriceCalculationHelper he
             throw;
         }
     }
-    
+
+    public async Task<IEnumerable<OrderShippingDto>?> GetOrderShippingListById(int id)
+    {
+        try
+        {
+            return await connection.QueryAsync<OrderShippingWithCountryDto>(OrderQueries.GetOrderShipping, new { Id = id });
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, $"An error occurred while fetching order shipping with ID {id}: {ex.Message}");
+            throw;
+        }    }
+
     public async Task<bool> DeleteOrderShippingById(int id)
     {
         try
@@ -186,7 +205,10 @@ public class OrderRepository(IDbConnection connection, PriceCalculationHelper he
                 OrderId = orderId,
                 OrderItems = orderItems.ToList(),
                 TotalPrice = totalAmount,
-                Shipping = await GetOrderShippingById(createOrder.OrderShippingId)
+                InvoiceAddress = await GetOrderShippingById(createOrder.InvoiceOrderShippingId),
+                DeliveryAddress = createOrder.DeliveryOrderShippingId.HasValue 
+                    ? await GetOrderShippingById(createOrder.DeliveryOrderShippingId.Value) 
+                    : null
             };
         }
         catch (Exception ex)
@@ -236,7 +258,8 @@ public class OrderRepository(IDbConnection connection, PriceCalculationHelper he
         return await connection.QuerySingleAsync<int>(OrderQueries.CreateOrder, new
         {
             createOrder.CartId,
-            createOrder.OrderShippingId,
+            createOrder.InvoiceOrderShippingId,
+            createOrder.DeliveryOrderShippingId,
             createOrder.PaymentStatusId,
             createOrder.PaymentVendorTypeId,
             PaymentAmount = totalAmount,
