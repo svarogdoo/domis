@@ -9,7 +9,8 @@ public class OrderDetailsDto
     public string? Comment { get; set; }
     public DateTime OrderCreatedAt { get; set; }
     public OrderStatusDetailsDto OrderStatus { get; set; }
-    public OrderShippingDetailsDto? OrderShipping { get; set; }
+    public OrderShippingDetailsDto? InvoiceOrderShipping { get; set; }
+    public OrderShippingDetailsDto? DeliveryOrderShipping { get; set; }
     public PaymentDetailsDto PaymentDetails { get; set; }
     public List<OrderItemDto> OrderItems { get; set; } = new List<OrderItemDto>();
 }

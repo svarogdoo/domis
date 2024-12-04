@@ -121,7 +121,7 @@ public static class OrderQueries
     
     public const string CreateOrder = @"
         INSERT INTO domis.order 
-        (user_id, status_id, payment_status_id, payment_vendor_type_id, payment_amount, comment, created_at, order_shipping_id, delivery_order_shipping_id)
+        (user_id, status_id, payment_status_id, payment_vendor_type_id, payment_amount, comment, created_at, invoice_order_shipping_id, delivery_order_shipping_id)
         SELECT 
             c.user_id,
             1, -- assuming 1 is the status ID for a new order

@@ -7,6 +7,7 @@ using domis.api.Models;
 using domis.api.Repositories.Queries;
 using MailKit.Search;
 using Serilog;
+// ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
 
 namespace domis.api.Repositories;
 
@@ -327,7 +328,7 @@ public class OrderRepository(IDbConnection connection, PriceCalculationHelper he
                         {
                             orderDetails = order;
                             orderDetails.OrderStatus = orderStatus;
-                            orderDetails.OrderShipping = orderShipping;
+                            orderDetails.InvoiceOrderShipping = orderShipping;
                             orderDetails.PaymentDetails = paymentDetails;
                         }
 
@@ -423,7 +424,7 @@ public class OrderRepository(IDbConnection connection, PriceCalculationHelper he
                         {
                             orderDetails = order;
                             orderDetails.OrderStatus = orderStatus;
-                            orderDetails.OrderShipping = orderShipping;
+                            orderDetails.InvoiceOrderShipping = orderShipping;
                             orderDetails.PaymentDetails = paymentDetails;
                             orderDetails.OrderItems = new List<OrderItemDto>();
                             orderDictionary.Add(order.OrderId, orderDetails);
