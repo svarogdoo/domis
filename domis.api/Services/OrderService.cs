@@ -11,7 +11,7 @@ public interface IOrderService
     Task<IEnumerable<PaymentStatusDto>?> GetAllPaymentStatuses();
     Task<IEnumerable<OrderStatusDto>?> GetAllOrderStatuses();
     Task<IEnumerable<PaymentVendorTypeDto>?> GetAllPaymentVendorTypes();
-    Task<(int InvoiceId, int? DeliveryId)> CreateOrderShipping(CreateOrderShippingRequest request);
+    Task<CreateOrderShippingResponse> CreateOrderShipping(CreateOrderShippingRequest request);
     Task<bool> UpdateOrderShipping(int id, OrderShippingDto orderShipping);
     Task<OrderShippingDto?> GetOrderShippingById(int id);
     Task<bool> DeleteOrderShippingById(int id);
@@ -34,7 +34,7 @@ public class OrderService(
     public async Task<IEnumerable<PaymentVendorTypeDto>?> GetAllPaymentVendorTypes() => 
         await orderRepo.GetAllPaymentVendorTypes();
 
-    public async Task<(int InvoiceId, int? DeliveryId)> CreateOrderShipping(CreateOrderShippingRequest request)
+    public async Task<CreateOrderShippingResponse> CreateOrderShipping(CreateOrderShippingRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
 
@@ -49,7 +49,7 @@ public class OrderService(
 
         var invoiceId = await orderRepo.CreateOrderShipping(invoiceShippingDto);
 
-        return (invoiceId, deliveryId);
+        return new CreateOrderShippingResponse(invoiceId, deliveryId);
     }
 
     public async Task<bool> UpdateOrderShipping(int id, OrderShippingDto orderShipping) => 

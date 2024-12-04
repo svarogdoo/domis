@@ -10,6 +10,7 @@ public record CreateOrderShippingRequest(
     AddressShippingDto? AddressDelivery,
     CompanyProfileDto? CompanyInfo
 );
+public record CreateOrderShippingResponse(int invoiceId, int? deliveryId);
 
 public record AddressShippingDto(
     string FirstName,
