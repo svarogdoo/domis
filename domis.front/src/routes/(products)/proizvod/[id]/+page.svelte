@@ -5,7 +5,6 @@
   } from "../../../../helpers/numberFormatter";
   import SurfaceQuantity from "./SurfaceQuantity.svelte";
   import { mapQuantityTypeToString, QuantityType } from "../../../../enums";
-  import { handleImageError } from "../../../../helpers/imageFallback";
   import { getCurrencyString } from "../../../../helpers/stringFormatter";
   import { userStore } from "../../../../stores/user";
   import SlidingGallery from "./SlidingGallery.svelte";

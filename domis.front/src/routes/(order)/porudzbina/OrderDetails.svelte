@@ -12,6 +12,8 @@
 
   export let onClick: () => CheckoutFormData | null;
 
+  let disabledOrderButton = false;
+
   let cartId: number;
   let cartItems: Array<CartProduct> = [];
   let totalCartPrice: number;
@@ -25,22 +27,22 @@
   }
 
   async function handleSubmit() {
+    disabledOrderButton = true;
+
     let checkoutFormData = onClick();
     if (checkoutFormData) {
-      const shippingInvoiceResponse = await saveShippingDetails(
-        checkoutFormData.shippingInvoiceDetails
-      );
+      const shippingDetailsResponse = await saveShippingDetails({
+        addressInvoice: checkoutFormData.addressInvoice,
+        addressDelivery: checkoutFormData.addressDelivery,
+        companyInfo: checkoutFormData.companyInfo,
+      });
 
-      const shippingDeliveryResponse = checkoutFormData.shippingDeliveryDetails
-        ? await saveShippingDetails(checkoutFormData.shippingDeliveryDetails)
-        : null;
-
-      if (shippingInvoiceResponse) {
+      if (shippingDetailsResponse) {
         const order: Order = {
           cartId: cartId,
           paymentStatusId: 1,
-          orderShippingId: shippingInvoiceResponse.orderShippingId,
-          //orderDeliveryShippingId: shippingDeliveryResponse.orderShippingId,
+          invoiceOrderShippingId: shippingDetailsResponse.invoiceId,
+          deliveryOrderShippingId: shippingDetailsResponse.deliveryId,
           paymentVendorTypeId: paymentVendor,
           comment: checkoutFormData.comment,
         };
@@ -55,6 +57,8 @@
         }
       }
     }
+
+    disabledOrderButton = false;
   }
 
   const unsubscribe = cart.subscribe((value) => {
@@ -163,7 +167,7 @@
   <button
     on:click={handleSubmit}
     class="text-light bg-domis-dark text-white py-2 px-4 rounded-lg text-center tracking-widest hover:bg-gray-600 disabled:bg-gray-400"
-    disabled={!isTermsAccepted}
+    disabled={!isTermsAccepted || disabledOrderButton}
   >
     NARUČI
   </button>

@@ -5,21 +5,20 @@
   import Snackbar from "../../../../components/Snackbar.svelte";
 
   let users: Array<AdminUser>;
+
   let snackbarMessage: string;
   let isSnackbarSuccess: boolean;
+  let showSnackbar = false;
 
   onMount(() => {
     setAdminUsers();
   });
 
-  function showSnackbar() {
-    var snackbar = document.getElementById("snackbar");
-    if (snackbar) {
-      snackbar.style.display = "flex";
-      setTimeout(function () {
-        if (snackbar) snackbar.style.display = "none";
-      }, 3000); // Close after 3s
-    }
+  function handleShowSnackbar() {
+    showSnackbar = true;
+    setTimeout(function () {
+      showSnackbar = false;
+    }, 3000); // Close after 3s
   }
 
   async function setAdminUsers() {
@@ -41,7 +40,7 @@
       isSnackbarSuccess = false;
     }
 
-    showSnackbar();
+    handleShowSnackbar();
   }
 </script>
 
@@ -61,7 +60,11 @@
       </tbody>
     </table>
   {/if}
-  <Snackbar message={snackbarMessage} isSuccess={isSnackbarSuccess} />
+  <Snackbar
+    message={snackbarMessage}
+    isSuccess={isSnackbarSuccess}
+    {showSnackbar}
+  />
 </div>
 
 <style>

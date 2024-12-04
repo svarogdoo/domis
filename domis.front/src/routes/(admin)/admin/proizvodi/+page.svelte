@@ -16,6 +16,7 @@
 
   let snackbarMessage: string;
   let isSnackbarSuccess: boolean;
+  let showSnackbar = false;
 
   let productsList: Array<Product>;
   let selectedProduct: Product | null = null;
@@ -110,14 +111,11 @@
     } else errors.weight = "";
   }
 
-  function showSnackbar() {
-    var snackbar = document.getElementById("snackbar");
-    if (snackbar) {
-      snackbar.style.display = "flex";
-      setTimeout(function () {
-        if (snackbar) snackbar.style.display = "none";
-      }, 3000); // Close after 3s
-    }
+  function handleShowSnackbar() {
+    showSnackbar = true;
+    setTimeout(function () {
+      showSnackbar = false;
+    }, 3000); // Close after 3s
   }
 
   async function submit() {
@@ -141,7 +139,7 @@
       snackbarMessage = "Greška pri čuvanju proizvoda!";
       isSnackbarSuccess = false;
     }
-    showSnackbar();
+    handleShowSnackbar();
   }
 
   function validateAndSubmit(event: Event) {
@@ -303,7 +301,11 @@
           >
         </div>
       </form>
-      <Snackbar message={snackbarMessage} isSuccess={isSnackbarSuccess} />
+      <Snackbar
+        message={snackbarMessage}
+        isSuccess={isSnackbarSuccess}
+        {showSnackbar}
+      />
     </div>
   {/if}
 </div>

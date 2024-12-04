@@ -18,7 +18,6 @@
     : true;
 
   async function updateProfile() {
-    console.info("here");
     const changedInvoiceFields = getUpdatedFields(
       data.props.user.addressInvoice,
       addressInvoice

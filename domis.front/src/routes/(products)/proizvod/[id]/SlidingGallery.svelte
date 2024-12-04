@@ -16,7 +16,6 @@
     if (!selectedImageUrl) return 0;
 
     let index = images.findIndex((image) => image.url === selectedImageUrl);
-    console.info(index);
 
     return index >= 0 ? index : 0;
   }

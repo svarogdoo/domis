@@ -219,8 +219,9 @@ declare global {
   }
 
   interface CheckoutFormData {
-    shippingInvoiceDetails: ShippingDetails;
-    shippingDeliveryDetails: ShippingDetails | null;
+    addressInvoice: ShippingDetails;
+    addressDelivery: ShippingDetails | null;
+    companyInfo: CompanyInfo | null;
     comment: string;
   }
   interface ShippingDetails {
@@ -231,7 +232,7 @@ declare global {
     companyInfo?: CompanyInfo;
     countryId: number;
     city: string;
-    address: string;
+    addressLine: string;
     apartment: string;
     county: string;
     postalCode: string;
@@ -239,14 +240,21 @@ declare global {
     contactPerson?: string;
     addressType: AddressType;
   }
+  interface ShippingDetailsRequest {
+    addressInvoice: ShippingDetails;
+    addressDelivery: ShippingDetails | null;
+    companyInfo: CompanyInfo | null;
+  }
   interface ShippingResponse {
-    orderShippingId: number;
+    invoiceId: number;
+    deliveryId: number | null;
   }
 
   interface Order {
     cartId: number;
     paymentStatusId;
-    orderShippingId: number;
+    invoiceOrderShippingId: number;
+    deliveryOrderShippingId: number | null;
     paymentVendorTypeId;
     comment: string;
   }

@@ -18,6 +18,7 @@
 
   let snackbarMessage: string;
   let isSnackbarSuccess: boolean;
+  let showSnackbar = false;
 
   let boxInput: number = 0;
   let amountInput: number = 0;
@@ -77,14 +78,11 @@
       totalPrice = amountInput * productPrice.perUnit;
   }
 
-  function showSnackbar() {
-    var snackbar = document.getElementById("snackbar");
-    if (snackbar) {
-      snackbar.style.display = "flex";
-      setTimeout(function () {
-        if (snackbar) snackbar.style.display = "none";
-      }, 3000); // Close after 3s
-    }
+  function handleShowSnackbar() {
+    showSnackbar = true;
+    setTimeout(function () {
+      showSnackbar = false;
+    }, 3000); // Close after 3s
   }
 
   async function addItemToCart() {
@@ -107,7 +105,7 @@
       snackbarMessage = "Greška pri dodavanju proizvoda u korpu!";
       isSnackbarSuccess = false;
     }
-    showSnackbar();
+    handleShowSnackbar();
   }
 </script>
 
@@ -202,5 +200,9 @@
     >Dodaj u korpu</button
   >
 
-  <Snackbar message={snackbarMessage} isSuccess={isSnackbarSuccess} />
+  <Snackbar
+    message={snackbarMessage}
+    isSuccess={isSnackbarSuccess}
+    {showSnackbar}
+  />
 </div>

@@ -7,7 +7,7 @@
   export let userInitial: UserProfileResponse;
 
   let user = { ...userInitial };
-  let companyInfo = user.companyInfo
+  let companyInfo: CompanyInfo | null = user.companyInfo
     ? { ...user.companyInfo }
     : { name: "", number: "", firstName: "", lastName: "" };
 
@@ -89,10 +89,8 @@
     }
 
     if (!user.useSameAddress) {
-      console.info("yaaa");
       if (!user.addressDelivery.city?.trim()) {
         errors.addressDelivery.city = "Grad je obavezno polje";
-        console.info(errors);
         valid = false;
       }
 
@@ -122,19 +120,18 @@
       const shippingInvoiceDetails: ShippingDetails = {
         firstName: user.firstName,
         lastName: user.lastName,
-        phoneNumber: user.phoneNumber,
+        phoneNumber: `+381${user.phoneNumber}`,
         countryId: 1, // hardcode to Serbia
         city: user.addressInvoice.city,
-        address: user.addressInvoice.addressLine,
+        addressLine: user.addressInvoice.addressLine,
         county: user.addressInvoice.county,
         apartment: user.addressInvoice.apartment,
         postalCode: user.addressInvoice.postalCode,
         email: user.email,
-        companyInfo: companyInfo,
         addressType: AddressType.Invoice,
       };
 
-      if (!showCompany) shippingInvoiceDetails.companyInfo = undefined;
+      if (!showCompany) companyInfo = null;
 
       const shippingDeliveryDetails: ShippingDetails | null =
         user.useSameAddress
@@ -142,18 +139,19 @@
           : {
               countryId: 1, // hardcode to Serbia
               city: user.addressDelivery.city,
-              address: user.addressDelivery.addressLine,
+              addressLine: user.addressDelivery.addressLine,
               county: user.addressDelivery.county,
               apartment: user.addressDelivery.apartment,
               postalCode: user.addressDelivery.postalCode,
               contactPerson: user.addressDelivery.contactPerson,
-              contactPhone: user.addressDelivery.contactPhone,
+              contactPhone: `+381${user.addressDelivery.contactPhone}`,
               addressType: AddressType.Delivery,
             };
 
       return {
-        shippingInvoiceDetails: shippingInvoiceDetails,
-        shippingDeliveryDetails: shippingDeliveryDetails,
+        addressInvoice: shippingInvoiceDetails,
+        addressDelivery: shippingDeliveryDetails,
+        companyInfo: companyInfo,
         comment: specialNotes,
       };
     } else return null;

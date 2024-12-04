@@ -1,7 +1,7 @@
 import { API_URL } from "../config";
 import { fetchDataWithJsonBody } from "../helpers/fetch";
 
-export function saveShippingDetails(shippingDetails: ShippingDetails) {
+export function saveShippingDetails(shippingDetails: ShippingDetailsRequest) {
   try {
     return fetchDataWithJsonBody<ShippingResponse>(
       `${API_URL}/api/order/shipping`,
@@ -14,13 +14,9 @@ export function saveShippingDetails(shippingDetails: ShippingDetails) {
 }
 
 export function saveOrder(order: Order) {
-  try {
-    return fetchDataWithJsonBody<OrderResponse>(
-      `${API_URL}/api/order`,
-      "post",
-      JSON.stringify(order)
-    );
-  } catch {
-    return null;
-  }
+  return fetchDataWithJsonBody<OrderResponse>(
+    `${API_URL}/api/order`,
+    "post",
+    JSON.stringify(order)
+  ).catch(() => false);
 }
