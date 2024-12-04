@@ -184,7 +184,7 @@ public class OrderRepository(IDbConnection connection, PriceCalculationHelper he
             }, transaction))
             .ToList();
             
-            ValidateCartItems(role, cartItems, helper);
+            // ValidateCartItems(role, cartItems, helper);
 
             var totalAmount = CalculateTotalAmount(cartItems, discount);
             
@@ -256,17 +256,27 @@ public class OrderRepository(IDbConnection connection, PriceCalculationHelper he
     
     private async Task<int> CreateOrderAsync(CreateOrderRequest createOrder, decimal totalAmount, IDbTransaction transaction)
     {
-        return await connection.QuerySingleAsync<int>(OrderQueries.CreateOrder, new
+        try
         {
-            createOrder.CartId,
-            createOrder.InvoiceOrderShippingId,
-            createOrder.DeliveryOrderShippingId,
-            createOrder.PaymentStatusId,
-            createOrder.PaymentVendorTypeId,
-            PaymentAmount = totalAmount,
-            createOrder.Comment,
-            CreatedAt = DateTimeHelper.BelgradeNow
-        }, transaction);
+            var result = await connection.QuerySingleAsync<int>(OrderQueries.CreateOrder, new
+            {
+                createOrder.CartId,
+                createOrder.InvoiceOrderShippingId,
+                createOrder.DeliveryOrderShippingId,
+                createOrder.PaymentStatusId,
+                createOrder.PaymentVendorTypeId,
+                PaymentAmount = totalAmount,
+                createOrder.Comment,
+                CreatedAt = DateTimeHelper.BelgradeNow
+            }, transaction);
+
+            return result;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, $"An error occurred while creating an order: {ex.Message}");
+            throw;
+        }
     }
     
     private async Task CreateOrderItemsAsync(int orderId, int cartId, IDbTransaction transaction)
