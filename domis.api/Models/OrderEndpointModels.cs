@@ -3,7 +3,6 @@ using domis.api.Models.Entities;
 
 namespace domis.api.Models;
 
-public record CreateOrderShippingResponse(int OrderShippingId);
 public record UpdateOrderShippingResponse(bool Updated);
 public record DeleteOrderShippingResponse(bool Deleted);
 public record CreateOrderShippingRequest(

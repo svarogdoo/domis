@@ -63,52 +63,58 @@ public static class OrderQueries
             @AddressType
         )
         RETURNING id;";
-        
+    
     public const string UpdateOrderShipping = @"
         UPDATE domis.order_shipping
         SET
-            first_name = @FirstName,
-            last_name = @LastName,
-            company_name = @CompanyName,
-            country_id = @CountryId,
-            city = @City,
-            address = @Address,
-            apartment = @Apartment,
-            county = @County,
-            postal_code = @PostalCode,
-            phone_number = @PhoneNumber,
-            email = @Email,
-            company_number = @CompanyNumber,  -- new column
-            company_first_name = @CompanyFirstName,  -- new column
-            company_last_name = @CompanyLastName,  -- new column
-            contact_phone = @ContactPhone,  -- new column
-            contact_person = @ContactPerson,  -- new column
-            address_type = @AddressType  -- new column
+            first_name = COALESCE(@FirstName, first_name),
+            last_name = COALESCE(@LastName, last_name),
+            company_name = COALESCE(@CompanyName, company_name),
+            country_id = COALESCE(@CountryId, country_id),
+            city = COALESCE(@City, city),
+            address = COALESCE(@Address, address),
+            apartment = COALESCE(@Apartment, apartment),
+            county = COALESCE(@County, county),
+            postal_code = COALESCE(@PostalCode, postal_code),
+            phone_number = COALESCE(@PhoneNumber, phone_number),
+            email = COALESCE(@Email, email),
+            company_number = COALESCE(@CompanyNumber, company_number),
+            company_firstname = COALESCE(@CompanyFirstName, company_firstname),
+            company_lastname = COALESCE(@CompanyLastName, company_lastname),
+            contact_phone = COALESCE(@ContactPhone, contact_phone),
+            contact_person = COALESCE(@ContactPerson, contact_person),
+            address_type = COALESCE(@AddressType, address_type)
         WHERE 
             id = @Id;";
     
     public const string GetOrderShipping = @"
-            SELECT 
-                os.id AS Id,
-                os.first_name AS FirstName,
-                os.last_name AS LastName,
-                os.company_name AS CompanyName,
-                os.country_id AS CountryId,
-                os.city AS City,
-                os.address AS Address,
-                os.apartment AS Apartment,
-                os.county AS County,
-                os.postal_code AS PostalCode,
-                os.phone_number AS PhoneNumber,
-                os.email AS Email,
-                c.country_name AS CountryName
-            FROM 
-                domis.order_shipping os
-            INNER JOIN 
-                domis.country c ON os.country_id = c.id
-            WHERE 
-                os.id = @Id;";
-    
+        SELECT 
+            os.id AS Id,
+            os.first_name AS FirstName,
+            os.last_name AS LastName,
+            os.company_name AS CompanyName,
+            os.country_id AS CountryId,
+            os.city AS City,
+            os.address AS Address,
+            os.apartment AS Apartment,
+            os.county AS County,
+            os.postal_code AS PostalCode,
+            os.phone_number AS PhoneNumber,
+            os.email AS Email,
+            os.company_number AS CompanyNumber,
+            os.company_firstname AS CompanyFirstName,
+            os.company_lastname AS CompanyLastName,
+            os.contact_phone AS ContactPhone,
+            os.contact_person AS ContactPerson,
+            os.address_type AS AddressType,
+            c.country_name AS CountryName
+        FROM 
+            domis.order_shipping os
+        INNER JOIN 
+            domis.country c ON os.country_id = c.id
+        WHERE 
+            os.id = @Id;";
+        
     public const string DeleteOrderShipping= @"
             DELETE FROM domis.order_shipping
             WHERE id = @Id;";

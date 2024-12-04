@@ -97,6 +97,7 @@ public class OrderService(
             Apartment = request.AddressDelivery.Apartment,
             County = request.AddressDelivery.County,
             PostalCode = request.AddressDelivery.PostalCode,
+            CountryId = 1,
             PhoneNumber = request.AddressDelivery.PhoneNumber,
             Email = request.AddressDelivery.Email,
             AddressType = AddressType.Delivery.ToString(),
@@ -117,6 +118,7 @@ public class OrderService(
             Apartment = request.AddressInvoice.Apartment,
             County = request.AddressInvoice.County,
             PostalCode = request.AddressInvoice.PostalCode,
+            CountryId = 1,
             PhoneNumber = request.AddressInvoice.PhoneNumber,
             Email = request.AddressInvoice.Email,
             AddressType = AddressType.Invoice.ToString()
