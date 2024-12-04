@@ -18,3 +18,12 @@ public static class StaticHelper
         return SortMappings.TryGetValue(sort, out var orderBy) ? orderBy : "Name ASC";
     }
 }
+
+public static class DateTimeHelper
+{
+    public static TimeZoneInfo BelgradeTimeZone { get; } =
+        TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time");
+
+    public static DateTime BelgradeNow { get; } =
+        TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, BelgradeTimeZone);
+}

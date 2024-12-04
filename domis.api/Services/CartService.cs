@@ -19,7 +19,7 @@ public interface ICartService
     Task<CartDto?> Cart(UserEntity? user, int? cartId);
     Task<bool> SetCartUserId(int cartId, string userId);
 }
-public class CartService(ICartRepository cartRepository, IUserRepository userRepo, IPriceHelpers priceHelpers) : ICartService
+public class CartService(ICartRepository cartRepository, IUserRepository userRepo) : ICartService
 
 {
     public async Task<IEnumerable<OrderStatusDto>?> AllOrderStatuses() => 
@@ -58,6 +58,12 @@ public class CartService(ICartRepository cartRepository, IUserRepository userRep
     public async Task<bool> SetCartUserId(int cartId, string userId)
         => await cartRepository.SetCartUserId(cartId, userId);
 
-    public async Task<CartDto?> Cart(UserEntity? user, int? cartId) 
-        => await cartRepository.Cart(user?.Id, cartId);
+    public async Task<CartDto?> Cart(UserEntity? user, int? cartId)
+    {
+        var role = user is not null
+            ? await userRepo.GetUserRoleAsync(user.Id)
+            : Roles.User.GetName();
+        
+        return await cartRepository.Cart(role ?? Roles.User.GetName(), user?.Id, cartId);
+    }
 }

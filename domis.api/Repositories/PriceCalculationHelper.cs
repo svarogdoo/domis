@@ -29,7 +29,8 @@ public class PriceCalculationHelper(IDbConnection connection)
     
     private async Task<decimal> GetProductPriceRegular(int productId)
     {
-        
+        //Regular users don't get discount on quantity (they don't have pallets)
+        //but there is check to see if product is on sale (query)
         var effectivePrice = await connection.ExecuteScalarAsync<decimal>(ProductQueries.GetProductEffectivePrice,
         new { ProductId = productId });
          
@@ -38,6 +39,7 @@ public class PriceCalculationHelper(IDbConnection connection)
 
     private async Task<decimal?> GetProductPriceVp(int productId, string role, decimal quantity, decimal? palSize)
     {
+        //vp users don't have products on sale (if you want to include, update query or this method)
         var priceVp = await connection.QueryFirstOrDefaultAsync<VpPriceDetails>(
             ProductQueries.GetSingleProductPricesForVP, 
             new { ProductId = productId, Role = role }
@@ -55,7 +57,7 @@ public class PriceCalculationHelper(IDbConnection connection)
     public async Task<Size?> GetProductSizing(int productId) 
         => await connection.QuerySingleOrDefaultAsync<Size>(ProductQueries.GetProductSizing, new { ProductId = productId });
     
-    public decimal? PalSizeAsNumber(Size? size)
+    public static decimal? PalSizeAsNumber(Size? size)
     {
         if (string.IsNullOrEmpty(size?.Pal)) 
             return null;
@@ -65,7 +67,7 @@ public class PriceCalculationHelper(IDbConnection connection)
             : null;
     }
     
-    public decimal? PakSizeAsNumber(Size? size)
+    public static decimal? PakSizeAsNumber(Size? size)
     {
         if (string.IsNullOrEmpty(size?.Pak)) 
             return null;

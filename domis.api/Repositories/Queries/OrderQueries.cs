@@ -24,91 +24,118 @@ public static class OrderQueries
                 domis.payment_vendor_type;";
     
     public const string CreateOrderShipping = @"
-            INSERT INTO domis.order_shipping (
-                first_name,
-                last_name,
-                company_name,
-                country_id,
-                city,
-                address,
-                apartment,
-                county,
-                postal_code,
-                phone_number,
-                email
-            ) 
-            VALUES (
-                @FirstName,
-                @LastName,
-                @CompanyName,
-                @CountryId,
-                @City,
-                @Address,
-                @Apartment,
-                @County,
-                @PostalCode,
-                @PhoneNumber,
-                @Email
-            )
-            RETURNING id;";
+        INSERT INTO domis.order_shipping (
+            first_name,
+            last_name,
+            company_name,
+            company_number,
+            company_firstname,
+            company_lastname,
+            country_id,
+            city,
+            address,
+            apartment,
+            county,
+            postal_code,
+            phone_number,
+            email,
+            contact_phone,
+            contact_person,
+            address_type
+        ) 
+        VALUES (
+            @FirstName,
+            @LastName,
+            @CompanyName,
+            @CompanyNumber,
+            @CompanyFirstName,
+            @CompanyLastName,
+            @CountryId,
+            @City,
+            @Address,
+            @Apartment,
+            @County,
+            @PostalCode,
+            @PhoneNumber,
+            @Email,
+            @ContactPhone,
+            @ContactPerson,
+            @AddressType
+        )
+        RETURNING id;";
     
     public const string UpdateOrderShipping = @"
-            UPDATE domis.order_shipping
-            SET
-                first_name = @FirstName,
-                last_name = @LastName,
-                company_name = @CompanyName,
-                country_id = @CountryId,
-                city = @City,
-                address = @Address,
-                apartment = @Apartment,
-                county = @County,
-                postal_code = @PostalCode,
-                phone_number = @PhoneNumber,
-                email = @Email
-            WHERE 
-                id = @Id;";
+        UPDATE domis.order_shipping
+        SET
+            first_name = COALESCE(@FirstName, first_name),
+            last_name = COALESCE(@LastName, last_name),
+            company_name = COALESCE(@CompanyName, company_name),
+            country_id = COALESCE(@CountryId, country_id),
+            city = COALESCE(@City, city),
+            address = COALESCE(@Address, address),
+            apartment = COALESCE(@Apartment, apartment),
+            county = COALESCE(@County, county),
+            postal_code = COALESCE(@PostalCode, postal_code),
+            phone_number = COALESCE(@PhoneNumber, phone_number),
+            email = COALESCE(@Email, email),
+            company_number = COALESCE(@CompanyNumber, company_number),
+            company_firstname = COALESCE(@CompanyFirstName, company_firstname),
+            company_lastname = COALESCE(@CompanyLastName, company_lastname),
+            contact_phone = COALESCE(@ContactPhone, contact_phone),
+            contact_person = COALESCE(@ContactPerson, contact_person),
+            address_type = COALESCE(@AddressType, address_type)
+        WHERE 
+            id = @Id;";
     
     public const string GetOrderShipping = @"
-            SELECT 
-                os.id AS Id,
-                os.first_name AS FirstName,
-                os.last_name AS LastName,
-                os.company_name AS CompanyName,
-                os.country_id AS CountryId,
-                os.city AS City,
-                os.address AS Address,
-                os.apartment AS Apartment,
-                os.county AS County,
-                os.postal_code AS PostalCode,
-                os.phone_number AS PhoneNumber,
-                os.email AS Email,
-                c.country_name AS CountryName
-            FROM 
-                domis.order_shipping os
-            INNER JOIN 
-                domis.country c ON os.country_id = c.id
-            WHERE 
-                os.id = @Id;";
-    
+        SELECT 
+            os.id AS Id,
+            os.first_name AS FirstName,
+            os.last_name AS LastName,
+            os.company_name AS CompanyName,
+            os.country_id AS CountryId,
+            os.city AS City,
+            os.address AS Address,
+            os.apartment AS Apartment,
+            os.county AS County,
+            os.postal_code AS PostalCode,
+            os.phone_number AS PhoneNumber,
+            os.email AS Email,
+            os.company_number AS CompanyNumber,
+            os.company_firstname AS CompanyFirstName,
+            os.company_lastname AS CompanyLastName,
+            os.contact_phone AS ContactPhone,
+            os.contact_person AS ContactPerson,
+            os.address_type AS AddressType,
+            c.country_name AS CountryName
+        FROM 
+            domis.order_shipping os
+        INNER JOIN 
+            domis.country c ON os.country_id = c.id
+        WHERE 
+            os.id = @Id;";
+        
     public const string DeleteOrderShipping= @"
             DELETE FROM domis.order_shipping
             WHERE id = @Id;";
     
     public const string CreateOrder = @"
-                INSERT INTO domis.order (user_id, status_id, order_shipping_id, payment_status_id, payment_vendor_type_id, payment_amount, comment, created_at)
-                SELECT 
-                    c.user_id,
-                    1, -- assuming 1 is the status ID for a new order
-                    @OrderShippingId,
-                    @PaymentStatusId,
-                    @PaymentVendorTypeId,
-                    @PaymentAmount,
-                    '',
-                    @CreatedAt
-                FROM domis.cart c
-                WHERE c.id = @CartId
-                RETURNING id;";
+        INSERT INTO domis.order 
+        (user_id, status_id, payment_status_id, payment_vendor_type_id, payment_amount, comment, created_at, invoice_order_shipping_id, delivery_order_shipping_id)
+        SELECT 
+            c.user_id,
+            1, -- assuming 1 is the status ID for a new order
+            @PaymentStatusId,
+            @PaymentVendorTypeId,
+            @PaymentAmount,
+            @Comment,
+            @CreatedAt,
+            @InvoiceOrderShippingId,
+            @DeliveryOrderShippingId
+        FROM domis.cart c
+        WHERE c.id = @CartId
+        RETURNING id;";
+
 
     public const string CreateOrderItems = @"
         INSERT INTO domis.order_item (order_id, product_id, quantity, order_item_amount, created_at)

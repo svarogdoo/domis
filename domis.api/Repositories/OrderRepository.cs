@@ -7,6 +7,7 @@ using domis.api.Models;
 using domis.api.Repositories.Queries;
 using MailKit.Search;
 using Serilog;
+// ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
 
 namespace domis.api.Repositories;
 
@@ -18,9 +19,9 @@ public interface IOrderRepository
     Task<int> CreateOrderShipping(OrderShippingDto orderShipping);
     Task<bool> UpdateOrderShipping(int id, OrderShippingDto orderShipping);
     Task<OrderShippingDto?> GetOrderShippingById(int id);
+    Task<IEnumerable<OrderShippingDto>?> GetOrderShippingListById(int id);
     Task<bool> DeleteOrderShippingById(int id);
     Task<OrderConfirmationDto> CreateOrderFromCartAsync(CreateOrderRequest createOrder, string role, decimal discount);
-
     Task<bool> UpdateOrderStatusAsync(int orderId, int statusId);
     Task<OrderDetailsDto?> GetOrderDetailsByIdAsync(int orderId);
     Task<IEnumerable<UserOrderDto>> GetOrdersByUser(string userId);
@@ -89,7 +90,7 @@ public class OrderRepository(IDbConnection connection, PriceCalculationHelper he
         {
             Log.Error(ex, $"An error occurred while creating order shipping: {ex.Message}");
             throw;
-        }
+        }    
     }
     
     public async Task<bool> UpdateOrderShipping(int id, OrderShippingDto orderShipping)
@@ -109,8 +110,15 @@ public class OrderRepository(IDbConnection connection, PriceCalculationHelper he
                 orderShipping.County,
                 orderShipping.PostalCode,
                 orderShipping.PhoneNumber,
-                orderShipping.Email
+                orderShipping.Email,
+                orderShipping.CompanyNumber,
+                orderShipping.CompanyFirstName,
+                orderShipping.CompanyLastName,
+                orderShipping.ContactPhone,
+                orderShipping.ContactPerson,
+                orderShipping.AddressType
             });
+
 
             return rowsAffected > 0; 
         }
@@ -133,7 +141,19 @@ public class OrderRepository(IDbConnection connection, PriceCalculationHelper he
             throw;
         }
     }
-    
+
+    public async Task<IEnumerable<OrderShippingDto>?> GetOrderShippingListById(int id)
+    {
+        try
+        {
+            return await connection.QueryAsync<OrderShippingWithCountryDto>(OrderQueries.GetOrderShipping, new { Id = id });
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, $"An error occurred while fetching order shipping with ID {id}: {ex.Message}");
+            throw;
+        }    }
+
     public async Task<bool> DeleteOrderShippingById(int id)
     {
         try
@@ -154,6 +174,7 @@ public class OrderRepository(IDbConnection connection, PriceCalculationHelper he
     {
         connection.Open();
         using var transaction = connection.BeginTransaction();
+        
         try
         {
             var cartItems = (await connection.QueryAsync<CartItemWithPriceDto>(
@@ -185,7 +206,10 @@ public class OrderRepository(IDbConnection connection, PriceCalculationHelper he
                 OrderId = orderId,
                 OrderItems = orderItems.ToList(),
                 TotalPrice = totalAmount,
-                Shipping = await GetOrderShippingById(createOrder.OrderShippingId)
+                InvoiceAddress = await GetOrderShippingById(createOrder.InvoiceOrderShippingId),
+                DeliveryAddress = createOrder.DeliveryOrderShippingId.HasValue 
+                    ? await GetOrderShippingById(createOrder.DeliveryOrderShippingId.Value) 
+                    : null
             };
         }
         catch (Exception ex)
@@ -208,7 +232,7 @@ public class OrderRepository(IDbConnection connection, PriceCalculationHelper he
         foreach (var cartItem in cartItems)
         {
             var sizing = await helper.GetProductSizing(cartItem.ProductId);
-            var palSize = helper.PalSizeAsNumber(sizing);
+            var palSize = PriceCalculationHelper.PalSizeAsNumber(sizing);
             var expectedPrice = await helper.GetPriceBasedOnRoleAndQuantity(
                 cartItem.ProductId, userRole, cartItem.Quantity, palSize);
 
@@ -217,7 +241,7 @@ public class OrderRepository(IDbConnection connection, PriceCalculationHelper he
             
             // Log or notify about the price change, if necessary
             Log.Information($"Price mismatch for product ID {cartItem.ProductId}: Expected price {expectedPrice}, but found {cartItem.ProductPrice}");
-            cartItem.ProductPrice = (decimal)expectedPrice;
+            if (expectedPrice != null) cartItem.ProductPrice = (decimal)expectedPrice;
         }
     }
 
@@ -235,12 +259,13 @@ public class OrderRepository(IDbConnection connection, PriceCalculationHelper he
         return await connection.QuerySingleAsync<int>(OrderQueries.CreateOrder, new
         {
             createOrder.CartId,
-            createOrder.OrderShippingId,
+            createOrder.InvoiceOrderShippingId,
+            createOrder.DeliveryOrderShippingId,
             createOrder.PaymentStatusId,
             createOrder.PaymentVendorTypeId,
             PaymentAmount = totalAmount,
             createOrder.Comment,
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTimeHelper.BelgradeNow
         }, transaction);
     }
     
@@ -250,7 +275,7 @@ public class OrderRepository(IDbConnection connection, PriceCalculationHelper he
         {
             OrderId = orderId,
             CartId = cartId,
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTimeHelper.BelgradeNow
         }, transaction);
     }
     
@@ -303,7 +328,7 @@ public class OrderRepository(IDbConnection connection, PriceCalculationHelper he
                         {
                             orderDetails = order;
                             orderDetails.OrderStatus = orderStatus;
-                            orderDetails.OrderShipping = orderShipping;
+                            orderDetails.InvoiceOrderShipping = orderShipping;
                             orderDetails.PaymentDetails = paymentDetails;
                         }
 
@@ -399,7 +424,7 @@ public class OrderRepository(IDbConnection connection, PriceCalculationHelper he
                         {
                             orderDetails = order;
                             orderDetails.OrderStatus = orderStatus;
-                            orderDetails.OrderShipping = orderShipping;
+                            orderDetails.InvoiceOrderShipping = orderShipping;
                             orderDetails.PaymentDetails = paymentDetails;
                             orderDetails.OrderItems = new List<OrderItemDto>();
                             orderDictionary.Add(order.OrderId, orderDetails);

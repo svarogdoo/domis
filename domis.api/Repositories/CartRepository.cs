@@ -6,6 +6,7 @@ using domis.api.DTOs.Order;
 using domis.api.Repositories.Helpers;
 using domis.api.Repositories.Queries;
 using Serilog;
+// ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
 
 namespace domis.api.Repositories;
 
@@ -18,7 +19,7 @@ public interface ICartRepository
     Task<bool> UpdateCartItemQuantityAsync(int cartItemId, decimal newQuantity, string role);
     Task<bool> DeleteCartItemAsync(int cartItemId);
     Task<bool> DeleteCartAsync(int cartId);
-    Task<CartDto?> Cart(string? userId, int? cartId);
+    Task<CartDto?> Cart( string userRole, string? userId, int? cartId);
     Task<bool> SetCartUserId(int cartId, string userId);
 }
 public class CartRepository(IDbConnection connection, PriceCalculationHelper helper) : ICartRepository
@@ -48,7 +49,7 @@ public class CartRepository(IDbConnection connection, PriceCalculationHelper hel
             {
                 UserId = userId,
                 StatusId = 1, //Active
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, DateTimeHelper.BelgradeTimeZone)
             };
 
             var newCartId = await connection.ExecuteScalarAsync<int>(CartQueries.CreateCart, parameters);
@@ -94,12 +95,12 @@ public class CartRepository(IDbConnection connection, PriceCalculationHelper hel
             if (!productExists) throw new NotFoundException($"Product with ID {productId} does not exist.");
 
             var sizing = await helper.GetProductSizing(productId);
-            var pakSize = helper.PakSizeAsNumber(sizing);
+            var pakSize = PriceCalculationHelper.PakSizeAsNumber(sizing);
             
             // if (addedQuantity % pakSize != 0)
             //     throw new ArgumentException($"Quantity - {addedQuantity} must be in increments of the pak size - {pakSize}.");
             
-            var palSize = helper.PalSizeAsNumber(sizing);
+            var palSize = PriceCalculationHelper.PalSizeAsNumber(sizing);
 
             var cartItemExists = await connection.ExecuteScalarAsync<bool>(CartQueries.CheckIfProductExistsInCart, new { CartId = cartId, ProductId = productId });
 
@@ -133,13 +134,13 @@ public class CartRepository(IDbConnection connection, PriceCalculationHelper hel
             
             // var totalQ = ci.CurrentQuantity + addedQuantity;
             // var totalQ = newQuantity;
-            var palSize = helper.PalSizeAsNumber(sizing);
+            var palSize = PriceCalculationHelper.PalSizeAsNumber(sizing);
             
             var rowsAffected = await connection.ExecuteAsync(CartQueries.UpdateCartItemQuantityAndPrice, new
             {
                 CartItemId = cartItemId,
                 Quantity = newQuantity,
-                ModifiedAt = DateTime.UtcNow,
+                ModifiedAt = DateTimeHelper.BelgradeNow,
                 Price = await helper.GetPriceBasedOnRoleAndQuantity(ci.ProductId, role, newQuantity, palSize)
             });
 
@@ -207,28 +208,16 @@ public class CartRepository(IDbConnection connection, PriceCalculationHelper hel
         throw new NotImplementedException();
     }
 
-    public async Task<CartDto?> Cart(string? userId = null, int? cartId = null)
+    public async Task<CartDto?> Cart(string userRole, string? userId = null, int? cartId = null)
     {
         try
         {
             var cartDictionary = new Dictionary<int, CartDto>();
 
-            string query;
-            object parameters;
-
-            if (!string.IsNullOrEmpty(userId))
-            {
-                query = CartQueries.GetCartByUserId;
-                parameters = new { UserId = userId };
-            }
-            else
-            {
-                query = CartQueries.GetCartById;
-                parameters = new { CartId = cartId };
-            }
+            var (getCartQuery, getCartParams) = SetCartQueryAndParams(userId, cartId);
 
             await connection.QueryAsync<CartDto, CartItemDto, ProductCartDetailsDto, string, string, CartDto>(
-                query,
+                getCartQuery,
                 (cart, item, product, image, status) =>
                 {
                     if (!cartDictionary.TryGetValue(cart.CartId, out var currentCart))
@@ -238,25 +227,28 @@ public class CartRepository(IDbConnection connection, PriceCalculationHelper hel
                         cartDictionary.Add(currentCart.CartId, currentCart);
                     }
 
-                    if (item is not null
-                        && currentCart.Items.Find(i => i.CartItemId == item.CartItemId) == null)
+                    if (item is not null && currentCart.Items.Find(i => i.CartItemId == item.CartItemId) == null)
                     {
                         item.ProductDetails = product;
                         item.ProductDetails.Image = image;
                         item.CartItemPrice = item.CartItemPrice;
                         //item.ProductDetails.Price = PricingHelper.CalculateDiscount(item.ProductDetails.Price, discount);
+                        
                         currentCart.Items.Add(item);
                     }
 
-                    currentCart.Status = status; // Assign the status to the cart
-
+                    currentCart.Status = status;
                     return currentCart;
                 },
-                parameters,
+                getCartParams,
                 splitOn: "CartItemId, Name, Url, Status"
             );
 
-            return cartDictionary.Values.FirstOrDefault();
+            var cart = cartDictionary.Values.FirstOrDefault();
+            if (cart != null)
+                await ValidateAndUpdateCartItems(userRole, cart.Items);
+
+            return cart;
         }
         catch (Exception ex)
         {
@@ -266,6 +258,8 @@ public class CartRepository(IDbConnection connection, PriceCalculationHelper hel
     }
 
     #region ExtensionMethods
+    
+    
     private async Task<int?> AddNewCartItem(int? cartId, int productId, decimal quantity, string role, decimal? palSize)
     {
         var price = await helper.GetPriceBasedOnRoleAndQuantity(productId, role, quantity, palSize);
@@ -276,8 +270,8 @@ public class CartRepository(IDbConnection connection, PriceCalculationHelper hel
             ProductId = productId,
             Quantity = quantity,
             Price = price,
-            CreatedAt = DateTime.UtcNow,
-            ModifiedAt = DateTime.UtcNow
+            CreatedAt = DateTimeHelper.BelgradeNow,
+            ModifiedAt = DateTimeHelper.BelgradeNow
         };
 
         await connection.ExecuteScalarAsync<int>(CartQueries.CreateCartItem, parameters);
@@ -296,7 +290,7 @@ public class CartRepository(IDbConnection connection, PriceCalculationHelper hel
                 CartId = cartId,
                 ProductId = productId,
                 Quantity = totalQuantity,
-                ModifiedAt = DateTime.UtcNow
+                ModifiedAt = DateTimeHelper.BelgradeNow
             });
         }
         else
@@ -309,11 +303,53 @@ public class CartRepository(IDbConnection connection, PriceCalculationHelper hel
                 ProductId = productId,
                 Quantity = totalQuantity,
                 Price = updatedPrice,
-                ModifiedAt = DateTime.UtcNow
+                ModifiedAt = DateTimeHelper.BelgradeNow
             });
         }
 
         return cartId;
     }
+    
+    private static (string query, object parameters) SetCartQueryAndParams(string? userId, int? cartId)
+    {
+        string query;
+        object parameters;
+        if (!string.IsNullOrEmpty(userId))
+        {
+            query = CartQueries.GetCartByUserId;
+            parameters = new { UserId = userId };
+        }
+        else
+        {
+            query = CartQueries.GetCartById;
+            parameters = new { CartId = cartId };
+        }
+
+        return (query, parameters);
+    }
+    
+    private async Task ValidateAndUpdateCartItems(string userRole, List<CartItemDto> cartItems)
+    {
+        if (cartItems == null || cartItems.Count == 0)
+            throw new InvalidOperationException("Cart is empty. Cannot validate items.");
+
+        foreach (var cartItem in cartItems)
+        {
+            var sizing = await helper.GetProductSizing(cartItem.ProductId);
+            var palSize = PriceCalculationHelper.PalSizeAsNumber(sizing);
+
+            var expectedPrice = 
+                await helper.GetPriceBasedOnRoleAndQuantity(cartItem.ProductId, userRole, cartItem.Quantity, palSize);
+
+            if (expectedPrice == null || cartItem.CartItemPrice == expectedPrice) continue;
+            
+            // If the price has changed, update it
+            Log.Information($"Updating price for product ID {cartItem.ProductId}: " +
+                            $"Old Price: {cartItem.CartItemPrice}, New Price: {expectedPrice}");
+
+            cartItem.CartItemPrice = (decimal)expectedPrice;
+        }
+    }
+
     #endregion
 }

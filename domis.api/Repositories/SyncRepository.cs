@@ -2,6 +2,7 @@
 using System.Data;
 using System.Data.Common;
 using Dapper;
+using domis.api.Common;
 
 namespace domis.api.Repositories;
 public interface ISyncRepository
@@ -44,7 +45,7 @@ public class SyncRepository(IDbConnection connection) : ISyncRepository
             await connection.ExecuteAsync(insertQuery, new
             {
                 Email = email, 
-                SubscribedAt = DateTime.UtcNow
+                SubscribedAt = DateTimeHelper.BelgradeNow
             });
         
             return true;

@@ -64,13 +64,13 @@ public class CustomEmailSender(ILogger<CustomEmailSender> logger, ISendGridClien
     {
         var subject = $"Domis Enterijeri - Potvrda narudžbine #{order.OrderId}";
 
-        var shippingAddress = $"{order.Shipping?.Address}";
-        if (!string.IsNullOrWhiteSpace(order.Shipping?.Apartment))
-            shippingAddress += $", {order.Shipping.Apartment}";
-        if (!string.IsNullOrWhiteSpace(order.Shipping?.City))
-            shippingAddress += $", {order.Shipping.City}";
-        if (!string.IsNullOrWhiteSpace(order.Shipping?.PostalCode))
-            shippingAddress += $", {order.Shipping.PostalCode}";
+        var shippingAddress = $"{order.InvoiceAddress?.Address}";
+        if (!string.IsNullOrWhiteSpace(order.InvoiceAddress?.Apartment))
+            shippingAddress += $", {order.InvoiceAddress.Apartment}";
+        if (!string.IsNullOrWhiteSpace(order.InvoiceAddress?.City))
+            shippingAddress += $", {order.InvoiceAddress.City}";
+        if (!string.IsNullOrWhiteSpace(order.InvoiceAddress?.PostalCode))
+            shippingAddress += $", {order.InvoiceAddress.PostalCode}";
 
         var message = $@"
             <div style='font-family: Arial, sans-serif; color: #333;'>
@@ -90,9 +90,9 @@ public class CustomEmailSender(ILogger<CustomEmailSender> logger, ISendGridClien
                 <p style='font-weight: bold;'>Ukupna cena: {order.TotalPrice?.ToString("F2")} RSD</p>
         
                 <h2 style='border-bottom: 1px solid #ddd; padding-bottom: 5px;'>Detalji isporuke</h2>
-                <p><strong>Ime i prezime:</strong> {order.Shipping?.FirstName} {order.Shipping?.LastName}</p>
+                <p><strong>Ime i prezime:</strong> {order.InvoiceAddress?.FirstName} {order.InvoiceAddress?.LastName}</p>
                 <p><strong>Adresa:</strong> {shippingAddress}</p>
-                <p><strong>Telefon:</strong> +381 {order.Shipping?.PhoneNumber}</p>
+                <p><strong>Telefon:</strong> +381 {order.InvoiceAddress?.PhoneNumber}</p>
         
                 <p style='margin-top: 20px;'>Ukoliko imate bilo kakva pitanja, slobodno nas kontaktirajte.</p>
             

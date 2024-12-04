@@ -4,12 +4,13 @@ using Microsoft.AspNetCore.Identity;
 
 namespace domis.api.Common;
 
+[Obsolete("Currently not in use. No percentage discount based on roles.", true)]
 public interface IPriceHelpers
 {
     Task<decimal> GetDiscount(UserEntity? user);
-    Task<bool> IsUserVp(UserEntity? user);
 }
 
+[Obsolete("Currently not in use. No percentage discount based on roles.")]
 public class PriceHelpers(UserManager<UserEntity> userManager, RoleManager<Role> roleManager) : IPriceHelpers
 {
     private static readonly Dictionary<string, int> RolePriority = new()
@@ -38,14 +39,6 @@ public class PriceHelpers(UserManager<UserEntity> userManager, RoleManager<Role>
         var role = await roleManager.FindByNameAsync(userRole);
 
         return role?.Discount ?? 0;
-    }
-    
-    public async Task<bool> IsUserVp(UserEntity? user)
-    {
-        if (user is null) return false;
-
-        var roles = await userManager.GetRolesAsync(user);
-        return roles.Any(role => role.StartsWith("VP"));
     }
 }
 

@@ -1,5 +1,9 @@
+
+using System.Text.Json.Serialization;
+
 namespace domis.api.Models.Entities;
 
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum AddressType
 {
     Unknown,
