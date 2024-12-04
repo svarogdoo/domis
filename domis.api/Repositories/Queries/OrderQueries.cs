@@ -275,7 +275,7 @@ public static class OrderQueries
                 )
             ) AS Address
         FROM domis.order o
-        LEFT JOIN domis.order_shipping os ON o.order_shipping_id = os.id
+        LEFT JOIN domis.order_shipping os ON o.invoice_order_shipping_id = os.id
         WHERE o.user_id = @UserId";
 
     public const string GetOrderItemsWithPrices = @"
