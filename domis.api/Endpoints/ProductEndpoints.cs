@@ -84,5 +84,11 @@ public static class ProductEndpoints
             var products = await productService.SearchProducts(searchTerm, pageNumber, pageSize);
             return Results.Ok(products);
         });
+        
+        group.MapGet("/on-sale", async (IProductService productService) =>
+        {
+            var products = await productService.GetProductsOnSaleAsync();
+            return Results.Ok(products);
+        }).WithDescription("get products that are on sale");
     }
 }

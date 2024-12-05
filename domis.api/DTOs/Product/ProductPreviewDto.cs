@@ -15,8 +15,4 @@ public class ProductPreviewDto
     public string? Description { get; set; }
     public ProductQuantityType? QuantityType{ get; set; }
     public SaleInfo? SaleInfo { get; set; }
-    // public bool IsOnSale { get; set; }
-    // public decimal? SalePrice { get; set; }
-    // public DateTime? SaleStartDate { get; set; }
-    // public DateTime? SaleEndDate { get; set; }
 }
