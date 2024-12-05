@@ -18,7 +18,7 @@ public class SyncRepository(IDbConnection connection) : ISyncRepository
         const string sql = @"
                             SELECT id, name, address, phone_numbers AS PhoneNumbers, working_hours AS WorkingHours, 
                             image, google_map_pin AS GoogleMapPin, optional_info AS OptionalInfo 
-                            FROM domis.sales_points;";
+                            FROM domis.points_of_sale;";
 
         var salesPoints = await connection.QueryAsync<SalesPoint>(sql);
         return salesPoints;
