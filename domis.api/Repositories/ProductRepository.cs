@@ -33,6 +33,7 @@ public interface IProductRepository
     Task<bool> PutProductsOnSale(ProductSaleRequest request);
     Task<bool> AssignProductToCategory(AssignProductToCategoryRequest request);
     Task<bool> ProductExists(int productId); 
+    Task<IEnumerable<ProductPreviewDto>> GetProductsOnSaleAsync();
 }
 
 public class ProductRepository(IDbConnection connection, IMapper mapper) : IProductRepository
@@ -82,19 +83,11 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
             if (product.Price.HasValue)
             {
                 //if there is a sale on the product
-                if (saleEntity is { SalePrice: not null })
-                {
-                    productDetail.SaleInfo = SetSaleInfo(saleEntity);
+                productDetail.SaleInfo = saleEntity is { SalePrice: not null } 
+                    ? SetSaleInfo(saleEntity, size) 
+                    : null;
                     
-                    //which price to use?
-                    productDetail.Price = CalculatePakPalPrices(saleEntity.SalePrice.Value, size);
-                }
-                else //if there is no sale
-                {
-                    //var discountedPrice = PricingHelper.CalculateDiscount(product.Price.Value, discount);
-                    productDetail.Price = CalculatePakPalPrices(product.Price.Value, size);
-                    productDetail.SaleInfo = null;
-                }
+                productDetail.Price = CalculatePakPalPrices(product.Price.Value, size);
             }
             else
             {
@@ -306,8 +299,8 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
                 {
                     ProductId = productId,
                     SalePrice = salePrice,
-                    StartDate = request.StartDate,
-                    EndDate = request.EndDate,
+                    request.StartDate,
+                    request.EndDate,
                     IsActive = true
                 };
                 
@@ -369,12 +362,18 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
         };
     }
     
-    private static SaleInfo SetSaleInfo(SaleEntity sale)
+    private static SaleInfo SetSaleInfo(SaleEntity sale, Size? size)
     {
+        
+        
+        var salePricing = CalculatePakPalPrices(sale.SalePrice, size);
+        
         return new SaleInfo
         {
             IsActive = true,
             SalePrice = sale.SalePrice,
+            SalePakPrice = salePricing?.Pak,
+            SalePalPrice = salePricing?.Pal,
             StartDate = sale.StartDate,
             EndDate = sale.EndDate
         };
@@ -382,6 +381,24 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
     
     public async Task<bool> ProductExists(int productId) 
         => await connection.ExecuteScalarAsync<bool>(ProductQueries.CheckIfProductExists, new { ProductId = productId });
+
+    public async Task<IEnumerable<ProductPreviewDto>> GetProductsOnSaleAsync()
+    {
+        var productsOnSale = await connection.QueryAsync<ProductPreviewDto, SaleInfo, ProductPreviewDto>(
+            ProductQueries.GetProductsOnSale,
+            (product, saleInfo) =>
+            {
+                product.SaleInfo = saleInfo is null || !saleInfo.IsActive 
+                    ? null
+                    : saleInfo;
+                return product;
+            },
+            param: new { CurrentTime = DateTimeHelper.BelgradeNow },
+            splitOn: "IsActive"
+        );
+        
+        return productsOnSale;
+    }
 
     private async Task<List<List<CategoryPath>>> GetProductCategoriesPath(int productId)
     {
