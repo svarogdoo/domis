@@ -34,7 +34,7 @@ export function addCartItem(cartProduct: CartProductDto) {
     `${API_URL}/api/cart/cart-item`,
     "post",
     JSON.stringify(cartProductDto)
-  ).catch((error) => false);
+  ).catch((error) => null);
 }
 
 export function removeCartItem(cartItemId: number) {

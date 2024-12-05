@@ -1,4 +1,4 @@
-import { fetchData } from "../helpers/fetch";
+import { fetchData, putDataWithJsonBody } from "../helpers/fetch";
 import { API_URL } from "../config";
 
 export function getProduct(id: number) {
@@ -10,7 +10,9 @@ export function getProducts() {
 }
 
 export async function searchProductsOrCategories(searchTerm: string) {
-  const url = `${API_URL}/api/products/search?searchTerm=${encodeURIComponent(searchTerm)}`;
+  const url = `${API_URL}/api/products/search?searchTerm=${encodeURIComponent(
+    searchTerm
+  )}`;
   return fetchData<Array<SearchResult>>(url, "GET");
 }
 
@@ -46,5 +48,5 @@ export const productService = {
   getProducts,
   searchProductsOrCategories,
   putProduct,
-  getCategoryProductsBasicInfo
+  getCategoryProductsBasicInfo,
 };

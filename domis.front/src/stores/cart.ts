@@ -44,15 +44,17 @@ function createCart() {
       removeCartFromLocalStorage();
       set(null);
     },
-    get: async () => {
-      const cart = await getCart(getCartId());
-      if (cart) set(cart);
+    get: async (cartId?: number) => {
+      const cart = cartId ? await getCart(cartId) : await getCart(getCartId());
+      set(cart);
     },
     add: async (product: CartProductDto) => {
       product.cartId = getCartId();
       const cartItemResponse = await addCartItem(product);
 
-      await cart.get();
+      if (cartItemResponse && cartItemResponse.cartId)
+        cart.get(cartItemResponse.cartId);
+      else await cart.get();
       setLocalStorageCartId();
 
       return cartItemResponse;

@@ -140,7 +140,7 @@
           </a>
           {#if cartProducts && cartProducts?.length > 0}
             <div
-              class="absolute top-0 right-0 text-center text-white text-sm rounded-full h-5 w-5 bg-domis-primary group-hover:bg-blue-500"
+              class="absolute top-0 right-0 text-center cursor-pointer text-white text-sm rounded-full h-5 w-5 bg-domis-primary group-hover:bg-blue-500"
             >
               {cartProducts.length}
             </div>

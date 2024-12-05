@@ -72,7 +72,7 @@
         </div>
         <p class="mt-3">
           <span class="font-light text-sm">Ukupna cena: </span>
-          {formatPrice(item.cartItemPrice)}
+          {formatPrice(item.cartItemPrice * item.quantity)}
           <span class="font-light text-sm">{getCurrencyString()}</span>
         </p>
       </div>

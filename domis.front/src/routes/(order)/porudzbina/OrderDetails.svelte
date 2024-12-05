@@ -177,9 +177,9 @@
       bind:show={showOrderSuccessPopup}
       title="Uspešna porudžbina!"
       text="Vaša porudžbina je u obradi, uskoro ćete dobiti email konfirmacije!"
-      closeButtonText="Vratite se na početnu stranu"
+      closeButtonText="Pogledajte status porudžbine"
       isSuccess={true}
-      goTo="/"
+      goTo="/porudzbine"
     />
   {/if}
   {#if showOrderFailedPopup}
