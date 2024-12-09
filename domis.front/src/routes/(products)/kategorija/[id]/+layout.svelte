@@ -4,9 +4,9 @@
 
 <div class="product-search">
   <div class="category pt-4">
-    <div class="product-sidebar hidden lg:flex">
+    <!-- <div class="product-sidebar hidden lg:flex">
       <Sidebar />
-    </div>
+    </div> -->
     <div class="products lg:pt-2">
       <slot />
     </div>
@@ -21,7 +21,7 @@
   }
 
   .category {
-    width: 95%;
+    width: 80%;
     display: flex;
   }
 
@@ -30,7 +30,7 @@
   }
 
   .products {
-    width: 78%;
+    width: 100%;
   }
 
   @media (max-width: 1024px) {
