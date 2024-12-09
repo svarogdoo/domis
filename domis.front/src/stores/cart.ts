@@ -45,15 +45,17 @@ function createCart() {
       set(null);
     },
     get: async (cartId?: number) => {
-      const cart = cartId ? await getCart(cartId) : await getCart(getCartId());
-      set(cart);
+      const cartFetch = cartId
+        ? await getCart(cartId)
+        : await getCart(getCartId());
+      set(cartFetch);
     },
     add: async (product: CartProductDto) => {
       product.cartId = getCartId();
       const cartItemResponse = await addCartItem(product);
 
       if (cartItemResponse && cartItemResponse.cartId)
-        cart.get(cartItemResponse.cartId);
+        await cart.get(cartItemResponse.cartId);
       else await cart.get();
       setLocalStorageCartId();
 

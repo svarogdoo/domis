@@ -106,6 +106,7 @@ declare global {
   interface Category {
     id: string;
     name: string;
+    image?: string;
     subcategories?: Array<Category>;
   }
   interface CategoryData {
