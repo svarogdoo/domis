@@ -18,6 +18,7 @@ public interface IProductService
     Task<IEnumerable<SearchResultDto>> SearchProducts(string searchTerm, int? pageNumber, int? pageSize);
     Task<bool> PutProductsOnSale(ProductSaleRequest request);
     Task<bool> AssignProductToCategory(AssignProductToCategoryRequest request);
+    Task<IEnumerable<ProductPreviewDto>> GetProductsOnSaleAsync();
 }
 
 public class ProductService(
@@ -79,4 +80,7 @@ public class ProductService(
         
         return await repository.AssignProductToCategory(request);
     }
+
+    public async Task<IEnumerable<ProductPreviewDto>> GetProductsOnSaleAsync() 
+        => await repository.GetProductsOnSaleAsync();
 }
