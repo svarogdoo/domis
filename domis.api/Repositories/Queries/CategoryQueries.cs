@@ -9,7 +9,8 @@ public static class CategoryQueries
                 id AS Id,
                 parent_category_id AS ParentCategoryId,
                 category_name AS Name,
-                sort_number AS SortNumber
+                sort_number AS SortNumber,
+                image as Image
             FROM domis.category
             WHERE parent_category_id IS NULL AND active = true
             
@@ -20,7 +21,8 @@ public static class CategoryQueries
                 c.id AS Id,
                 c.parent_category_id AS ParentCategoryId,
                 c.category_name AS Name,
-                c.sort_number AS SortNumber
+                c.sort_number AS SortNumber,
+                c.image AS Image
             FROM domis.category c
             INNER JOIN CategoryHierarchy ch
                 ON c.parent_category_id = ch.Id
@@ -31,7 +33,8 @@ public static class CategoryQueries
         SELECT
             Id,
             ParentCategoryId,
-            Name
+            Name,
+            Image
         FROM CategoryHierarchy
         ORDER BY SortNumber ASC NULLS LAST, Name ASC; --sort by sort number, then by category name
     ";
