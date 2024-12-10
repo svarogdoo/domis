@@ -127,7 +127,7 @@
       </p>
     </div>
 
-    {#if quantityType !== QuantityType.Piece}
+    {#if quantityType !== QuantityType.Piece && productPrice.perBox !== null}
       <div class="relative w-1/2">
         <input
           type="number"

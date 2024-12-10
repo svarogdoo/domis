@@ -28,6 +28,8 @@
   let length: string;
   let thickness: string;
   let weight: string;
+  let box: string;
+  let pallet: string;
   let quantityType: QuantityType;
   let isActive: boolean = true;
 
@@ -38,6 +40,8 @@
     length: "",
     thickness: "",
     weight: "",
+    box: "",
+    pallet: "",
   };
 
   $: if (selectedCategoryId) {
@@ -73,6 +77,10 @@
     weight = selectedProduct.attributes.weight
       ? `${selectedProduct.attributes.weight}`
       : "";
+    box = selectedProduct.size.box ? `${selectedProduct.size.box}` : "";
+    pallet = selectedProduct.size.pallet
+      ? `${selectedProduct.size.pallet}`
+      : "";
     quantityType =
       selectedProduct.attributes.quantityType === undefined
         ? QuantityType.None
@@ -80,6 +88,7 @@
     isActive =
       selectedProduct.isActive !== undefined ? selectedProduct.isActive : true;
   }
+
   async function setProducts() {
     productsList = await getCategoryProductsBasicInfo(selectedCategoryId);
   }
@@ -108,6 +117,14 @@
     if (weight && isNaN(Number(weight))) {
       errors.weight = "Vrednost mora biti broj";
     } else errors.weight = "";
+
+    if (box && isNaN(Number(box))) {
+      errors.box = "Vrednost mora biti broj";
+    } else errors.box = "";
+
+    if (pallet && isNaN(Number(pallet))) {
+      errors.pallet = "Vrednost mora biti broj";
+    } else errors.pallet = "";
   }
 
   function handleShowSnackbar() {
@@ -127,6 +144,8 @@
       depth: Number.parseInt(depth),
       length: Number.parseInt(length),
       thickness: Number.parseInt(thickness),
+      box: box,
+      pallet: pallet,
       isActive: isActive,
       quantityType: quantityType,
     });
@@ -237,45 +256,87 @@
             value={title}
             title="Naslov"
             placeholder="Unesite naziv proizvoda u što manje reči"
+            width="96"
+            gap="12"
             error=""
           />
 
-          <Input
-            bind:value={width}
-            title="Širina"
-            placeholder="0.00"
-            error={errors?.width}
-          />
-          <Input
-            bind:value={height}
-            title="Visina"
-            placeholder="0.00"
-            error={errors?.height}
-          />
-          <Input
-            bind:value={depth}
-            title="Dubina"
-            placeholder="0.00"
-            error={errors?.depth}
-          />
-          <Input
-            bind:value={length}
-            title="Dužina"
-            placeholder="0.00"
-            error={errors?.length}
-          />
-          <Input
-            bind:value={thickness}
-            title="Debljina"
-            placeholder="0.00"
-            error={errors?.thickness}
-          />
-          <Input
-            bind:value={weight}
-            title="Težina"
-            placeholder="0.00"
-            error={errors?.weight}
-          />
+          <div class="flex gap-x-8">
+            <Input
+              bind:value={width}
+              title="Širina"
+              suffix="cm"
+              placeholder="0.00"
+              width="24"
+              gap="12"
+              error={errors?.width}
+            />
+            <Input
+              bind:value={height}
+              title="Visina"
+              suffix="cm"
+              placeholder="0.00"
+              width="24"
+              gap="12"
+              error={errors?.height}
+            />
+            <Input
+              bind:value={depth}
+              title="Dubina"
+              suffix="cm"
+              placeholder="0.00"
+              width="24"
+              gap="12"
+              error={errors?.depth}
+            />
+          </div>
+          <div class="flex gap-x-8">
+            <Input
+              bind:value={length}
+              title="Dužina"
+              suffix="cm"
+              placeholder="0.00"
+              width="24"
+              gap="12"
+              error={errors?.length}
+            />
+            <Input
+              bind:value={thickness}
+              title="Debljina"
+              suffix="cm"
+              placeholder="0.00"
+              width="24"
+              gap="12"
+              error={errors?.thickness}
+            />
+            <Input
+              bind:value={weight}
+              title="Težina"
+              suffix="g"
+              placeholder="0.00"
+              width="24"
+              gap="12"
+              error={errors?.weight}
+            />
+          </div>
+          <div class="mt-6 flex gap-x-8">
+            <Input
+              bind:value={box}
+              title="Pak"
+              placeholder="0.00"
+              width="16"
+              gap="6"
+              error={errors?.box}
+            />
+            <Input
+              bind:value={pallet}
+              title="Pal"
+              placeholder="0.00"
+              width="16"
+              gap="6"
+              error={errors?.pallet}
+            />
+          </div>
 
           <RadioButton
             options={quantityTypeOptions}

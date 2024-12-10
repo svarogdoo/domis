@@ -3,16 +3,15 @@
   export let title: string;
   export let placeholder: string;
   export let error: string;
+  export let width: string;
+  export let gap: string;
+  export let suffix: string = "";
 </script>
 
 <div class="flex flex-col">
   <div class="flex gap-x-6 items-center">
-    <p class="w-16">{title}:</p>
-    <div
-      class="{title === 'Naslov'
-        ? 'w-80'
-        : 'w-64'} relative rounded-md shadow-sm"
-    >
+    <p class="w-{gap}">{title}:</p>
+    <div class="w-{width} relative rounded-md shadow-sm">
       <input
         type="text"
         name="value"
@@ -21,11 +20,10 @@
         {placeholder}
         bind:value
       />
-      {#if title !== "Naslov" && title !== "Težina"}
-        <p class="absolute inset-y-0 right-0 flex items-center mr-2">cm</p>
-      {/if}
-      {#if title === "Težina"}
-        <p class="absolute inset-y-0 right-0 flex items-center mr-2">g</p>
+      {#if suffix}
+        <p class="absolute inset-y-0 right-0 flex items-center mr-2">
+          {suffix}
+        </p>
       {/if}
     </div>
   </div>
