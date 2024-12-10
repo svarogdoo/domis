@@ -139,6 +139,17 @@
           {quantityType}
           {productPrice}
         />
+
+        {#if product.description}
+          <div class="mt-12 flex flex-col gap-y-3">
+            <h3 class="tracking-wider font-semibold text-md lg:text-lg">
+              Opis proizvoda
+            </h3>
+            <p class="text-wrap">
+              {@html product.description.replace(/\n/g, "<br>")}
+            </p>
+          </div>
+        {/if}
       </div>
     </div>
   </section>
