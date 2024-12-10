@@ -74,9 +74,8 @@
       ? `${selectedProduct.attributes.weight}`
       : "";
     quantityType =
-      selectedProduct.attributes.quantityType === undefined ||
-      selectedProduct.attributes.quantityType === QuantityType.None
-        ? QuantityType.Piece
+      selectedProduct.attributes.quantityType === undefined
+        ? QuantityType.None
         : selectedProduct.attributes.quantityType;
     isActive =
       selectedProduct.isActive !== undefined ? selectedProduct.isActive : true;

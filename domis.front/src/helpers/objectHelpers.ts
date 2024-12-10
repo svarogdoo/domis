@@ -1,13 +1,16 @@
 export function getUpdatedFields<T extends Record<string, any>>(
-  original: T,
+  original: T | null,
   updated: T
 ): Partial<T> {
   const changedFields: Partial<T> = {};
 
+  // Treat original as an empty object if it's null
+  const baseOriginal = original || ({} as T);
+
   for (const key in updated) {
     if (
       Object.prototype.hasOwnProperty.call(updated, key) &&
-      original[key] !== updated[key]
+      baseOriginal[key] !== updated[key]
     ) {
       changedFields[key] = updated[key];
     }

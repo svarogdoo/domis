@@ -78,7 +78,10 @@ async function refreshAccessToken(
 }
 
 async function getUserOrders() {
-  return await fetchData<Array<UserOrder>>(`${API_URL}/api/user/orders`, "GET");
+  return await fetchData<Array<UserOrder>>(
+    `${API_URL}/api/user/orders`,
+    "GET"
+  ).catch(() => []);
 }
 
 async function getUserRole() {

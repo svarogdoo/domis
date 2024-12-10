@@ -7,10 +7,16 @@
   export let data;
 
   let user = { ...data.props.user };
+  let initialCompanyInfo = {
+    name: "",
+    number: "",
+    firstName: "",
+    lastName: "",
+  };
 
   let companyInfo = data.props.user.companyInfo
     ? { ...data.props.user.companyInfo }
-    : { name: "", number: "", firstName: "", lastName: "" };
+    : initialCompanyInfo;
 
   let isSameUser =
     user.firstName === companyInfo.firstName &&
@@ -28,10 +34,12 @@
 
   async function updateProfile() {
     const changedUserFields = getUpdatedFields(data.props.user, user);
-    const changedCompanyInfoFields =
+    let changedCompanyInfoFields =
       data.props.user.companyInfo === undefined
         ? companyInfo
         : getUpdatedFields(data.props.user.companyInfo, companyInfo);
+
+    if (companyInfo === initialCompanyInfo) changedCompanyInfoFields = null;
 
     const changedEntity = {
       ...changedUserFields,

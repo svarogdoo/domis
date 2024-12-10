@@ -21,7 +21,11 @@ export async function fetchData<T>(url: string, method?: string): Promise<T> {
   return svelteKitFetch(url, {
     method,
     headers,
-  }).then(handleResponse);
+  })
+    .then(handleResponse)
+    .catch((error) => {
+      throw error;
+    });
 }
 
 export async function putDataWithJsonBody(url: string, json: string) {

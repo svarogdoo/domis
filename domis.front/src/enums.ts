@@ -33,6 +33,10 @@ export function mapQuantityTypeToCartString(
 }
 export const quantityTypeOptions = [
   {
+    value: 1,
+    label: "Neodabrano",
+  },
+  {
     value: 4,
     label: "Komad",
   },
