@@ -34,6 +34,7 @@ public interface IProductRepository
     Task<bool> AssignProductToCategory(AssignProductToCategoryRequest request);
     Task<bool> ProductExists(int productId); 
     Task<IEnumerable<ProductPreviewDto>> GetProductsOnSaleAsync();
+    Task<Size?> UpdateProductSizing(int productId, Size updatedSize);
 }
 
 public class ProductRepository(IDbConnection connection, IMapper mapper) : IProductRepository
@@ -213,6 +214,9 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
                 product.Stock,
                 product.QuantityType
             });
+            
+            if (!string.IsNullOrEmpty(product.Pak) || !string.IsNullOrEmpty(product.Pal))
+                await UpdateProductSizing(product.Id, new Size {Pak = product.Pak, Pal = product.Pal});
 
             if (affectedRows != 0) return await GetByIdWithDetails(product.Id);
             
@@ -250,26 +254,14 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
 
         var offset = (pageNumber - 1) * pageSize;
 
-        const string query = @"
-            SELECT id AS Id, product_name AS Name, sku AS Sku, 'Product' AS Type
-            FROM domis.product
-            WHERE product_name ILIKE @SearchTerm OR CAST(sku AS TEXT) ILIKE @SearchTerm
-            UNION
-            SELECT id AS Id, category_name AS Name, NULL AS Sku, 'Category' AS Type
-            FROM domis.category
-            WHERE category_name ILIKE @SearchTerm
-            ORDER BY Type ASC
-            LIMIT @PageSize OFFSET @Offset
-        ";
-
         var products = await connection.QueryAsync<SearchResultDto>(
-                query,
-                new
-                {
-                    SearchTerm = "%" + searchTerm + "%",
-                    PageSize = pageSize,
-                    Offset = offset
-                });
+            ProductQueries.SearchByName,
+            new
+            {
+                SearchTerm = "%" + searchTerm + "%",
+                PageSize = pageSize,
+                Offset = offset
+            });
         
         return products;
     }
@@ -324,14 +316,7 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
 
     public async Task<bool> AssignProductToCategory(AssignProductToCategoryRequest request)
     {
-        const string query = @"
-            INSERT INTO domis.product_category (product_id, category_id)
-            VALUES (@ProductId, @CategoryId)
-            ON CONFLICT (product_id) 
-            DO UPDATE SET category_id = @CategoryId;
-        ";
-
-        var affectedRows = await connection.ExecuteAsync(query, new { request.ProductId, request.CategoryId });
+        var affectedRows = await connection.ExecuteAsync(ProductQueries.AssignProductToCategory, new { request.ProductId, request.CategoryId });
         return affectedRows > 0;
     }
 
@@ -364,8 +349,6 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
     
     private static SaleInfo SetSaleInfo(SaleEntity sale, Size? size)
     {
-        
-        
         var salePricing = CalculatePakPalPrices(sale.SalePrice, size);
         
         return new SaleInfo
@@ -398,6 +381,20 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
         );
         
         return productsOnSale;
+    }
+
+    public async Task<Size?> UpdateProductSizing(int productId, Size updatedSize)
+    {
+        var rowsAffected = await connection.ExecuteAsync(ProductQueries.UpdateProductSizing, new
+        {
+            ProductId = productId,
+            updatedSize.Pak,
+            updatedSize.Pal,
+        });
+
+        return rowsAffected > 0 
+            ? new Size { Pak = updatedSize?.Pak, Pal = updatedSize?.Pal }
+            : null;
     }
 
     private async Task<List<List<CategoryPath>>> GetProductCategoriesPath(int productId)
