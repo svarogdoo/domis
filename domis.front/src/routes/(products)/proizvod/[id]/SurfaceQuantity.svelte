@@ -31,7 +31,6 @@
   }
 
   $: if (boxInput > 0) {
-    disabledAddButton = false;
     setTotalPrice();
   }
 
@@ -60,7 +59,9 @@
   }
 
   function setTotalPrice() {
-    if (productPrice.perBox)
+    disabledAddButton = false;
+
+    if (productPrice.perBox && quantityType !== QuantityType.Piece)
       if (product.size.pallet && productPrice.perPallet) {
         const boxesPerPallet = product.size.pallet / product.size.box;
         const palletNumber = Math.floor(boxInput / boxesPerPallet);
