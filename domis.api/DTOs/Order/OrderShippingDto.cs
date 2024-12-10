@@ -15,7 +15,7 @@ public class OrderShippingDto
     
     //company info
     public string? CompanyName { get; set; }
-    public long? CompanyNumber { get; set; }
+    public string? CompanyNumber { get; set; }
     public string? CompanyFirstName { get; set; }
     public string? CompanyLastName { get; set; }
     

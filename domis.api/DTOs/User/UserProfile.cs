@@ -15,7 +15,7 @@ public record UserProfileDto(
 
 public record CompanyProfileDto(
     string? Name,
-    long? Number,
+    string? Number,
     string? FirstName,
     string? LastName
 );
