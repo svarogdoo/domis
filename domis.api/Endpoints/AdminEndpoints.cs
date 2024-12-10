@@ -1,5 +1,8 @@
+using domis.api.Common;
+using domis.api.DTOs.Product;
 using domis.api.Models;
 using domis.api.Services;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace domis.api.Endpoints;
@@ -143,5 +146,24 @@ public static class AdminEndpoints
         })
         .WithDescription("Assign or update a category for a product.");
         // .RequireAuthorization("Admin");
+        
+        group.MapPut("/products/{productId}/sizing", async (int productId, [FromBody] Size request, IProductService productService) =>
+        {
+            try
+            {
+                var updatedSize = await productService.UpdateProductSizing(productId, request);
+                return Results.Ok(updatedSize);
+            }
+            catch (NotFoundException ex)
+            {
+                return Results.BadRequest(ex.Message);
+            }
+            catch (Exception)
+            {
+                return Results.StatusCode(500);
+            }
+        })
+        .WithDescription("Update product sizing.");
+        //.RequreAuthorization("Admin");
     }
 }

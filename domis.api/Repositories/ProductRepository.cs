@@ -34,6 +34,7 @@ public interface IProductRepository
     Task<bool> AssignProductToCategory(AssignProductToCategoryRequest request);
     Task<bool> ProductExists(int productId); 
     Task<IEnumerable<ProductPreviewDto>> GetProductsOnSaleAsync();
+    Task<Size?> UpdateProductSizing(int productId, Size updatedSize);
 }
 
 public class ProductRepository(IDbConnection connection, IMapper mapper) : IProductRepository
@@ -398,6 +399,20 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
         );
         
         return productsOnSale;
+    }
+
+    public async Task<Size?> UpdateProductSizing(int productId, Size updatedSize)
+    {
+        var rowsAffected = await connection.ExecuteAsync(ProductQueries.UpdateProductSizing, new
+        {
+            ProductId = productId,
+            Pak = updatedSize?.Pak,
+            Pal = updatedSize?.Pal,
+        });
+
+        return rowsAffected > 0 
+            ? new Size { Pak = updatedSize?.Pak, Pal = updatedSize?.Pal }
+            : null;
     }
 
     private async Task<List<List<CategoryPath>>> GetProductCategoriesPath(int productId)

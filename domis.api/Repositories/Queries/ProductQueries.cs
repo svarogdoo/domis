@@ -347,26 +347,33 @@ public static class ProductQueries
         ORDER BY PathId, Level DESC;";
     
     public const string GetProductsOnSale = @"
-    SELECT 
-        p.id AS Id,
-        p.product_name AS Name,
-        p.sku AS Sku,
-        p.price AS Price,
-        p.stock AS Stock,
-        NULL AS VpPrice, 
-        NULL AS FeaturedImageUrl, 
-        p.product_description AS Description,
-        NULL AS QuantityType,
-        s.is_active AS IsActive,
-        s.sale_price AS SalePrice,
-        s.start_date AS StartDate,
-        s.end_date AS EndDate
-    FROM domis.product p
-    LEFT JOIN domis.sales s ON p.id = s.product_id
-    WHERE p.active = TRUE
-      AND s.is_active = TRUE
-      AND (s.start_date IS NULL OR s.start_date <= @CurrentTime)
-      AND (s.end_date IS NULL OR s.end_date >= @CurrentTime)
-";
+        SELECT 
+            p.id AS Id,
+            p.product_name AS Name,
+            p.sku AS Sku,
+            p.price AS Price,
+            p.stock AS Stock,
+            NULL AS VpPrice, 
+            NULL AS FeaturedImageUrl, 
+            p.product_description AS Description,
+            NULL AS QuantityType,
+            s.is_active AS IsActive,
+            s.sale_price AS SalePrice,
+            s.start_date AS StartDate,
+            s.end_date AS EndDate
+        FROM domis.product p
+        LEFT JOIN domis.sales s ON p.id = s.product_id
+        WHERE p.active = TRUE
+          AND s.is_active = TRUE
+          AND (s.start_date IS NULL OR s.start_date <= @CurrentTime)
+          AND (s.end_date IS NULL OR s.end_date >= @CurrentTime)
+    ";
 
+    public const string UpdateProductSizing = @"
+        UPDATE domis.product_packaging
+        SET
+            pak = COALESCE(@Pak, pak),
+            pal = COALESCE(@Pal, pal)
+        WHERE product_id = @ProductId;
+    ";
 }
