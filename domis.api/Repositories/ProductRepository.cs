@@ -214,6 +214,9 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
                 product.Stock,
                 product.QuantityType
             });
+            
+            if (!string.IsNullOrEmpty(product.Pak) || !string.IsNullOrEmpty(product.Pal))
+                await UpdateProductSizing(product.Id, new Size {Pak = product.Pak, Pal = product.Pal});
 
             if (affectedRows != 0) return await GetByIdWithDetails(product.Id);
             
@@ -406,8 +409,8 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
         var rowsAffected = await connection.ExecuteAsync(ProductQueries.UpdateProductSizing, new
         {
             ProductId = productId,
-            Pak = updatedSize?.Pak,
-            Pal = updatedSize?.Pal,
+            updatedSize.Pak,
+            updatedSize.Pal,
         });
 
         return rowsAffected > 0 

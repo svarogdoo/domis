@@ -48,4 +48,10 @@ public class ProductUpdateDto
     public decimal? Thickness { get; set; }
     [JsonPropertyName("quantityType")]
     public int? QuantityType { get; set; }
+    
+    //sizing
+    [JsonPropertyName("box")]
+    public string? Pak { get; set; }
+    [JsonPropertyName("pallet")]
+    public string? Pal { get; set; }
 }
