@@ -376,4 +376,23 @@ public static class ProductQueries
             pal = COALESCE(@Pal, pal)
         WHERE product_id = @ProductId;
     ";
+    
+    public const string AssignProductToCategory = @"
+        INSERT INTO domis.product_category (product_id, category_id)
+        VALUES (@ProductId, @CategoryId)
+        ON CONFLICT (product_id) 
+        DO UPDATE SET category_id = @CategoryId;
+    ";
+    
+    public const string SearchByName = @"
+        SELECT id AS Id, product_name AS Name, sku AS Sku, 'Product' AS Type
+        FROM domis.product
+        WHERE product_name ILIKE @SearchTerm OR CAST(sku AS TEXT) ILIKE @SearchTerm
+        UNION
+        SELECT id AS Id, category_name AS Name, NULL AS Sku, 'Category' AS Type
+        FROM domis.category
+        WHERE category_name ILIKE @SearchTerm
+        ORDER BY Type ASC
+        LIMIT @PageSize OFFSET @Offset
+    ";
 }
