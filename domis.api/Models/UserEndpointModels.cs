@@ -40,7 +40,7 @@ public record ProfileAddressUpdateRequest(
 
 public record ProfileCompanyUpdateRequest(
     string? Name,
-    long? Number,
+    string? Number,
     string? FirstName,
     string? LastName
 );
