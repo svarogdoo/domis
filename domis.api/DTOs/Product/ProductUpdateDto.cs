@@ -54,4 +54,7 @@ public class ProductUpdateDto
     public string? Pak { get; set; }
     [JsonPropertyName("pallet")]
     public string? Pal { get; set; }
+    
+    [JsonPropertyName("saleInfo")]
+    public SaleInfo? SaleInfo { get; set; }
 }

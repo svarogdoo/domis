@@ -136,7 +136,14 @@ public static class AdminEndpoints
         })
         .WithDescription("Put products within category on sale. If some products are already on sale separately, they will not be put on sale and will be returned for admin to decide what to do.");
         // .RequireAuthorization("Admin");
-
+        
+        group.MapDelete("/product/sale", async ([FromBody] List<int> request, IProductService productService) =>
+        {
+            var success = await productService.RemoveProductsFromSale(request);
+            Results.Ok(success);
+        })
+        .WithDescription("Assign or update a category for a product.");
+        
         group.MapPost("/product/category", async ([FromBody] AssignProductToCategoryRequest request, IProductService productService) =>
         {
             var success = await productService.AssignProductToCategory(request);

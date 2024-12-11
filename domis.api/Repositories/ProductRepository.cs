@@ -35,6 +35,7 @@ public interface IProductRepository
     Task<bool> ProductExists(int productId); 
     Task<IEnumerable<ProductPreviewDto>> GetProductsOnSaleAsync();
     Task<Size?> UpdateProductSizing(int productId, Size updatedSize);
+    Task<bool> RemoveProductsFromSale(List<int> productIds);
 }
 
 public class ProductRepository(IDbConnection connection, IMapper mapper) : IProductRepository
@@ -397,6 +398,17 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
         return rowsAffected > 0 
             ? new Size { Pak = updatedSize?.Pak, Pal = updatedSize?.Pal }
             : null;
+    }
+
+    public async Task<bool> RemoveProductsFromSale(List<int> productIds)
+    {
+        const string query = @"
+            UPDATE domis.sales
+            SET is_active = false
+            WHERE product_id = ANY(@ProductIds)";
+        
+        var affectedRows = await connection.ExecuteAsync(query, new { ProductIds = productIds });
+        return affectedRows > 0;
     }
 
     private async Task<List<List<CategoryPath>>> GetProductCategoriesPath(int productId)
