@@ -143,6 +143,7 @@ declare global {
     categoryPaths: Array<Array<CategoryPath>>;
     attributes: ProductAttributes;
     isActive?: boolean;
+    saleInfo: SaleInfo | null;
   }
   interface ProductPricing {
     perUnit?: number;
@@ -172,6 +173,14 @@ declare global {
     length?: number;
     thickness?: number;
     weight?: number;
+  }
+  interface SaleInfo {
+    isActive: boolean;
+    salePrice: number;
+    salePakPrice: number;
+    salePalPrice: number;
+    startDate: string;
+    endDate: string;
   }
 
   interface SearchResult {

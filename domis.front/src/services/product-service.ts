@@ -1,4 +1,8 @@
-import { fetchData, putDataWithJsonBody } from "../helpers/fetch";
+import {
+  fetchData,
+  fetchDataWithJsonBody,
+  putDataWithJsonBody,
+} from "../helpers/fetch";
 import { API_URL } from "../config";
 
 export function getProduct(id: number) {
@@ -41,6 +45,14 @@ export async function getCategoryProductsBasicInfo(categoryId: string) {
   return fetchData<Array<Product>>(
     `${API_URL}/api/products/basic-info?categoryId=${categoryId}`
   );
+}
+
+export async function postProductOnSale(saleInfo: any) {
+  return fetchDataWithJsonBody(
+    `${API_URL}/api/admin/product/sale`,
+    "POST",
+    JSON.stringify(saleInfo)
+  ).catch(() => false);
 }
 
 export const productService = {
