@@ -287,6 +287,8 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
                     salePrice = originalPrice - (originalPrice * request.SalePercentage!.Value / 100);
                 }
                 
+                await connection.ExecuteAsync(ProductQueries.DeactivateSale, new { ProductId = productId });
+                
                 var saleRecord = new
                 {
                     ProductId = productId,

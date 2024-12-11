@@ -395,4 +395,10 @@ public static class ProductQueries
         ORDER BY Type ASC
         LIMIT @PageSize OFFSET @Offset
     ";
+
+    public const string DeactivateSale = @"
+        UPDATE domis.sales
+        SET is_active = FALSE
+        WHERE product_id = @ProductId AND is_active = TRUE;
+    ";
 }
