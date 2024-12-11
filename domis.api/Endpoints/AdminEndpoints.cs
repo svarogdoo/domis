@@ -163,7 +163,7 @@ public static class AdminEndpoints
             }
             catch (NotFoundException ex)
             {
-                return Results.BadRequest(ex.Message);
+                return Results.NotFound(ex.Message);
             }
             catch (Exception)
             {
@@ -172,5 +172,24 @@ public static class AdminEndpoints
         })
         .WithDescription("Update product sizing.");
         //.RequreAuthorization("Admin");
+
+        group.MapGet("/product/{productId:int}/sale-history", async (int productId, IProductService productService) =>
+        {
+            try
+            {
+                var result = await productService.GetSaleHistory(productId);
+                return Results.Ok(result);
+            }
+            catch (NotFoundException ex)
+            {
+                return Results.NotFound(ex.Message);
+            }
+            catch (Exception)
+            {
+                return Results.StatusCode(500);
+            }
+        })
+        .WithDescription("Gets history of product sale (reduced prices)");
+        //.RequireAuthorization("Admin");
     }
 }

@@ -36,6 +36,7 @@ public interface IProductRepository
     Task<IEnumerable<ProductPreviewDto>> GetProductsOnSaleAsync();
     Task<Size?> UpdateProductSizing(int productId, Size updatedSize);
     Task<bool> RemoveProductsFromSale(List<int> productIds);
+    Task<IEnumerable<ProductSaleHistoryDto>> GetSaleHistory(int productId);
 }
 
 public class ProductRepository(IDbConnection connection, IMapper mapper) : IProductRepository
@@ -321,6 +322,10 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
         var affectedRows = await connection.ExecuteAsync(ProductQueries.AssignProductToCategory, new { request.ProductId, request.CategoryId });
         return affectedRows > 0;
     }
+    
+    public async Task<IEnumerable<ProductSaleHistoryDto>> GetSaleHistory(int productId) 
+        => await connection.QueryAsync<ProductSaleHistoryDto>
+            (ProductQueries.GetSaleHistory, new { productId });
 
     #region ExtensionsMethods
     private static Price? CalculatePakPalPrices(decimal? unitPrice, Size? productSize)

@@ -401,4 +401,11 @@ public static class ProductQueries
         SET is_active = FALSE
         WHERE product_id = @ProductId AND is_active = TRUE;
     ";
+
+    public const string GetSaleHistory = @"
+        SELECT sale_price as SalePrice, is_active as IsActive, start_date as StartDate, end_date as EndDate
+        FROM domis.sales
+        WHERE product_id = @ProductId
+        ORDER BY start_date DESC;
+    ";
 }
