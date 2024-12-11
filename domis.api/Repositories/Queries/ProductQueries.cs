@@ -304,8 +304,8 @@ public static class ProductQueries
         FROM domis.sales
         WHERE product_id = @ProductId 
           AND is_active = TRUE
-          --AND start_date <= @CurrentDate 
-          --AND end_date >= @CurrentDate
+          AND start_date <= @CurrentDate 
+          AND end_date >= @CurrentDate
         LIMIT 1";
     
     public static string GetProductCategoriesPaths = @"
