@@ -80,7 +80,6 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
             productDetail.Size = size;
             productDetail.Images = [.. images];
             productDetail.CategoryPaths = categoryPaths;
-            productDetail.SaleInfo = new SaleInfo();
             
             if (product.Price.HasValue)
             {
