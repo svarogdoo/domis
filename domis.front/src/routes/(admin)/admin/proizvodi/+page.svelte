@@ -34,7 +34,8 @@
 
   async function setSelectedProduct(value: number) {
     if (value === undefined) return;
-    selectedProduct = await getProduct(value);
+    selectedProduct = null;
+    selectedProduct = { ...(await getProduct(value)) };
     setSaleHistory(value);
   }
 
