@@ -294,8 +294,8 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
                 {
                     ProductId = productId,
                     SalePrice = salePrice,
-                    request.StartDate,
-                    request.EndDate,
+                    StartDate = request.StartDate.ToUniversalTime(),
+                    EndDate = request.EndDate?.ToUniversalTime(),
                     IsActive = true
                 };
                 

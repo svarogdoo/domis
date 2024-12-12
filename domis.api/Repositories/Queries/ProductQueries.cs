@@ -405,7 +405,7 @@ public static class ProductQueries
     public const string UpdateExpiredSales = @"
         UPDATE domis.sales
         SET is_active = false
-        WHERE is_active = true AND (start_date > @CurrentTime OR end_date < @CurrentTime);
+        WHERE is_active = true AND end_date < @CurrentTime;
     ";
     
     public const string GetSaleHistory = @"
