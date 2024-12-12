@@ -402,10 +402,20 @@ public static class ProductQueries
         WHERE product_id = @ProductId AND is_active = TRUE;
     ";
 
-    public const string GetSaleHistory = @"
+    public const string GetSaleHistoryAndInactivateIfExpired = @"
+        WITH updated_sales AS (
+            UPDATE domis.sales
+            SET is_active = false
+            WHERE is_active = true AND (start_date > @CurrentTime OR end_date < @CurrentTime)
+            RETURNING sale_price, is_active, start_date, end_date, product_id
+        )
+        SELECT sale_price as SalePrice, is_active as IsActive, start_date as StartDate, end_date as EndDate
+        FROM updated_sales
+        WHERE product_id = @ProductId
+        UNION ALL
         SELECT sale_price as SalePrice, is_active as IsActive, start_date as StartDate, end_date as EndDate
         FROM domis.sales
-        WHERE product_id = @ProductId
+        WHERE product_id = @ProductId AND NOT (is_active = true AND (start_date > @CurrentTime OR end_date < @CurrentTime))
         ORDER BY start_date DESC;
     ";
 }

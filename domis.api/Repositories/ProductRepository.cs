@@ -325,7 +325,11 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
     
     public async Task<IEnumerable<ProductSaleHistoryDto>> GetSaleHistory(int productId) 
         => await connection.QueryAsync<ProductSaleHistoryDto>
-            (ProductQueries.GetSaleHistory, new { productId });
+            (ProductQueries.GetSaleHistoryAndInactivateIfExpired, new
+                {
+                    productId, CurrentTime = DateTimeHelper.BelgradeNow
+                }
+            );
 
     #region ExtensionsMethods
     private static Price? CalculatePakPalPrices(decimal? unitPrice, Size? productSize)
