@@ -1,12 +1,10 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
-  import DatePicker from "../../../../components/DatePicker.svelte";
   import Snackbar from "../../../../components/Snackbar.svelte";
   import Toggle from "../../../../components/Toggle.svelte";
   import { postProductOnSale } from "../../../../services/product-service";
   import SaleHistoryItem from "./SaleHistoryItem.svelte";
   import Input from "./specifikacija/Input.svelte";
-  import DateDropdownPicker from "../../../../components/DateDropdownPicker.svelte";
   import DatePickerTwo from "../../../../components/DatePickerTwo.svelte";
 
   export let saleHistory: Array<SaleInfo> | null;
@@ -73,22 +71,9 @@
     if (endDate.getTime() < startDate.getTime()) {
       endDate = new Date(startDate.getTime());
     }
-
-    console.info(
-      "start",
-      startDate,
-      startDate.toISOString(),
-      endDate.toLocaleString()
-    );
   };
   const handleEndDateChanged = (event: CustomEvent<string>) => {
     endDate = new Date(event.detail);
-    console.info(
-      "end",
-      endDate,
-      endDate.toISOString(),
-      endDate.toLocaleString()
-    );
   };
 </script>
 
