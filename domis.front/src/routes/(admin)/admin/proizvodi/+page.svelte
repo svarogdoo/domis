@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { getProductSaleHistory } from "../../../../services/admin-service";
   import {
     getCategoryProductsBasicInfo,
     getProduct,
@@ -18,6 +19,7 @@
 
   let productsList: Array<Product>;
   let selectedProduct: Product | null = null;
+  let saleHistory: Array<SaleInfo>;
 
   let viewOption = ViewOptions.Spec;
 
@@ -33,6 +35,15 @@
   async function setSelectedProduct(value: number) {
     if (value === undefined) return;
     selectedProduct = await getProduct(value);
+    setSaleHistory(value);
+  }
+
+  async function setSaleHistory(value: number) {
+    saleHistory = await getProductSaleHistory(value);
+  }
+
+  async function handleSaveSaleHistory() {
+    if (selectedProduct) await setSaleHistory(selectedProduct.id);
   }
 </script>
 
@@ -66,28 +77,28 @@
       <div class="flex mt-8">
         <button
           on:click={() => (viewOption = ViewOptions.Spec)}
-          class="w-36 text-center tracking-wider py-3 hover:bg-gray-50 {viewOption ===
+          class="w-36 text-center tracking-wider py-3 hover:bg-gray-100 {viewOption ===
           ViewOptions.Spec
-            ? 'bg-gray-50'
+            ? 'bg-gray-100'
             : ''}">Specifikacija</button
         >
-        <!-- <button
+        <button
           on:click={() => (viewOption = ViewOptions.Sale)}
-          class="w-36 text-center tracking-wider py-3 hover:bg-gray-50 {viewOption ===
+          class="w-36 text-center tracking-wider py-3 hover:bg-gray-100 {viewOption ===
           ViewOptions.Sale
-            ? 'bg-gray-50'
+            ? 'bg-gray-100'
             : ''}">Popusti</button
-        > -->
+        >
         <!-- <button
           on:click={() => (viewOption = ViewOptions.Images)}
-          class="w-36 text-center tracking-wider py-3 hover:bg-gray-50 {viewOption ===
+          class="w-36 text-center tracking-wider py-3 hover:bg-gray-100 {viewOption ===
           ViewOptions.Images
             ? 'bg-gray-50'
             : ''}">Slike</button
         > -->
       </div>
 
-      <div class="py-4 bg-gray-50">
+      <div class="py-4 bg-gray-100">
         {#if viewOption === ViewOptions.Spec}
           <Specification
             attributes={selectedProduct.attributes}
@@ -98,7 +109,12 @@
             id={selectedProduct.id}
           />
         {:else if viewOption === ViewOptions.Sale}
-          <Sale saleInfo={selectedProduct.saleInfo} />
+          <Sale
+            on:save={handleSaveSaleHistory}
+            {saleHistory}
+            initialPrice={selectedProduct.price.perUnit}
+            productId={selectedProduct.id}
+          />
         {/if}
       </div>
     {/if}

@@ -4,6 +4,11 @@
   export let date: Date;
   export let title: string;
 
+  $: if (date) {
+    selectedDate = date.toISOString().split("T")[0];
+    selectedTime = date.toTimeString().slice(0, 5);
+  }
+
   let selectedDate: string;
   let selectedTime: string;
   let timeOptions: string[] = [];
@@ -34,7 +39,7 @@
     }
     selectedDate = now.toISOString().split("T")[0];
     selectedTime = now.toTimeString().slice(0, 5);
-    date = new Date(`${selectedDate}T${selectedTime}:00.000Z`);
+    setDateTime();
   });
 
   const validateDate = (event: Event) => {
@@ -47,6 +52,8 @@
     } else {
       selectedDate = input.value;
     }
+
+    setDateTime();
   };
 
   const validateTime = (event: Event) => {
@@ -63,7 +70,13 @@
     } else {
       selectedTime = input.value;
     }
+
+    setDateTime();
   };
+
+  function setDateTime() {
+    date = new Date(`${selectedDate}T${selectedTime}:00.000Z`);
+  }
 </script>
 
 <div class="flex flex-col gap-y-2">

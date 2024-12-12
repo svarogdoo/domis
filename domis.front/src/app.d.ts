@@ -177,8 +177,6 @@ declare global {
   interface SaleInfo {
     isActive: boolean;
     salePrice: number;
-    salePakPrice: number;
-    salePalPrice: number;
     startDate: string;
     endDate: string;
   }
