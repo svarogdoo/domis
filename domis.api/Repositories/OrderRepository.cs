@@ -267,7 +267,7 @@ public class OrderRepository(IDbConnection connection, PriceCalculationHelper he
                 createOrder.PaymentVendorTypeId,
                 PaymentAmount = totalAmount,
                 createOrder.Comment,
-                CreatedAt = DateTimeHelper.BelgradeNow
+                CreatedAt = DateTime.UtcNow
             }, transaction);
 
             return result;
@@ -285,7 +285,7 @@ public class OrderRepository(IDbConnection connection, PriceCalculationHelper he
         {
             OrderId = orderId,
             CartId = cartId,
-            CreatedAt = DateTimeHelper.BelgradeNow
+            CreatedAt = DateTime.UtcNow
         }, transaction);
     }
     

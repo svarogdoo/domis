@@ -184,9 +184,9 @@ public static class AdminEndpoints
             {
                 return Results.NotFound(ex.Message);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return Results.StatusCode(500);
+                return Results.Problem(detail: ex.Message, statusCode: 500);
             }
         })
         .WithDescription("Gets history of product sale (reduced prices)");

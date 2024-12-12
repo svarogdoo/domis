@@ -73,7 +73,7 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
             var saleEntity = await connection.QuerySingleOrDefaultAsync<SaleEntity>(ProductQueries.GetActiveSale, new 
             { 
                 ProductId = productId, 
-                CurrentDate = DateTimeHelper.BelgradeNow
+                CurrentDate = DateTime.UtcNow
             });
             
             var productDetail = mapper.Map<ProductDetailsDto>(product);
@@ -323,13 +323,17 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
         return affectedRows > 0;
     }
     
-    public async Task<IEnumerable<ProductSaleHistoryDto>> GetSaleHistory(int productId) 
-        => await connection.QueryAsync<ProductSaleHistoryDto>
-            (ProductQueries.GetSaleHistoryAndInactivateIfExpired, new
-                {
-                    productId, CurrentTime = DateTimeHelper.BelgradeNow
-                }
-            );
+    public async Task<IEnumerable<ProductSaleHistoryDto>> GetSaleHistory(int productId)
+    {
+        await connection.ExecuteAsync(ProductQueries.UpdateExpiredSales, new { CurrentTime = DateTime.UtcNow });
+        
+        return await connection.QueryAsync<ProductSaleHistoryDto>
+        (ProductQueries.GetSaleHistory, new
+            {
+                productId
+            }
+        );
+    }
 
     #region ExtensionsMethods
     private static Price? CalculatePakPalPrices(decimal? unitPrice, Size? productSize)
@@ -387,7 +391,7 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
                     : saleInfo;
                 return product;
             },
-            param: new { CurrentTime = DateTimeHelper.BelgradeNow },
+            param: new { CurrentTime = DateTime.UtcNow },
             splitOn: "IsActive"
         );
         
