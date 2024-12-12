@@ -8,25 +8,25 @@
 
 <ul class="flex flex-col w-full text-center text-lg">
   <a
-    href="proizvodi"
-    class="w-full py-3 flex items-center justify-center hover:bg-gray-100 border-b border-t border-gray-600"
+    href="/admin/proizvodi"
+    class="w-full py-3 flex items-center justify-center hover:bg-gray-100 border-b border-t border-gray-300"
   >
     Proizvodi
   </a>
   <a
-    href="porudzbine"
-    class="w-full py-3 flex items-center justify-center hover:bg-gray-100 border-b border-gray-600"
+    href="/admin/porudzbine"
+    class="w-full py-3 flex items-center justify-center hover:bg-gray-100 border-b border-gray-300"
   >
     Porudžbine
   </a>
   <a
-    href="korisnici"
-    class="w-full py-3 flex items-center justify-center hover:bg-gray-100 border-b border-gray-600"
+    href="/admin/korisnici"
+    class="w-full py-3 flex items-center justify-center hover:bg-gray-100 border-b border-gray-300"
   >
     Korisnici
   </a>
   <li
-    class="w-full py-3 flex items-center justify-center hover:bg-gray-100 border-b border-gray-600"
+    class="w-full py-3 flex items-center justify-center hover:bg-gray-100 border-b border-gray-300"
   >
     <button on:click={handleLogout}> Izloguj se </button>
   </li>

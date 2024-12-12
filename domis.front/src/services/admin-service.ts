@@ -9,7 +9,11 @@ export function updateUserRole(userId: string, role: string) {
   return putDataWithJsonBody(
     `${API_URL}/api/admin/user-role/${userId}`,
     JSON.stringify({ role: role })
-  ).catch((error) => {
-    return false;
-  });
+  ).catch((error) => false);
+}
+
+export function getProductSaleHistory(productId: number) {
+  return fetchData<Array<SaleInfo>>(
+    `${API_URL}/api/admin/product/${productId}/sale-history`
+  ).catch((error) => []);
 }

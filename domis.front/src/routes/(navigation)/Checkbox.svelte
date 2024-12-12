@@ -5,7 +5,7 @@
 
 <button
   on:click={() => (show = !show)}
-  class="relative flex mt-4 gap-x-2 items-center"
+  class="relative flex gap-x-2 items-center"
 >
   <input
     type="checkbox"
