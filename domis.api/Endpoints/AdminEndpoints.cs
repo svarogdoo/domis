@@ -136,7 +136,14 @@ public static class AdminEndpoints
         })
         .WithDescription("Put products within category on sale. If some products are already on sale separately, they will not be put on sale and will be returned for admin to decide what to do.");
         // .RequireAuthorization("Admin");
-
+        
+        group.MapDelete("/product/sale", async ([FromBody] List<int> request, IProductService productService) =>
+        {
+            var success = await productService.RemoveProductsFromSale(request);
+            Results.Ok(success);
+        })
+        .WithDescription("Assign or update a category for a product.");
+        
         group.MapPost("/product/category", async ([FromBody] AssignProductToCategoryRequest request, IProductService productService) =>
         {
             var success = await productService.AssignProductToCategory(request);
@@ -156,7 +163,7 @@ public static class AdminEndpoints
             }
             catch (NotFoundException ex)
             {
-                return Results.BadRequest(ex.Message);
+                return Results.NotFound(ex.Message);
             }
             catch (Exception)
             {
@@ -165,5 +172,24 @@ public static class AdminEndpoints
         })
         .WithDescription("Update product sizing.");
         //.RequreAuthorization("Admin");
+
+        group.MapGet("/product/{productId:int}/sale-history", async (int productId, IProductService productService) =>
+        {
+            try
+            {
+                var result = await productService.GetSaleHistory(productId);
+                return Results.Ok(result);
+            }
+            catch (NotFoundException ex)
+            {
+                return Results.NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return Results.Problem(detail: ex.Message, statusCode: 500);
+            }
+        })
+        .WithDescription("Gets history of product sale (reduced prices)");
+        //.RequireAuthorization("Admin");
     }
 }

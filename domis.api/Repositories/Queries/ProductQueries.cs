@@ -304,8 +304,8 @@ public static class ProductQueries
         FROM domis.sales
         WHERE product_id = @ProductId 
           AND is_active = TRUE
-          --AND start_date <= @CurrentDate 
-          --AND end_date >= @CurrentDate
+          AND start_date <= @CurrentDate 
+          AND end_date >= @CurrentDate
         LIMIT 1";
     
     public static string GetProductCategoriesPaths = @"
@@ -394,5 +394,24 @@ public static class ProductQueries
         WHERE category_name ILIKE @SearchTerm
         ORDER BY Type ASC
         LIMIT @PageSize OFFSET @Offset
+    ";
+
+    public const string DeactivateSale = @"
+        UPDATE domis.sales
+        SET is_active = FALSE
+        WHERE product_id = @ProductId AND is_active = TRUE;
+    ";
+
+    public const string UpdateExpiredSales = @"
+        UPDATE domis.sales
+        SET is_active = false
+        WHERE is_active = true AND (start_date > @CurrentTime OR end_date < @CurrentTime);
+    ";
+    
+    public const string GetSaleHistory = @"
+        SELECT sale_price as SalePrice, is_active as IsActive, start_date as StartDate, end_date as EndDate
+        FROM domis.sales
+        WHERE product_id = @ProductId
+        ORDER BY IsActive DESC, StartDate DESC
     ";
 }

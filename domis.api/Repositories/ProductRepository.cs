@@ -35,6 +35,8 @@ public interface IProductRepository
     Task<bool> ProductExists(int productId); 
     Task<IEnumerable<ProductPreviewDto>> GetProductsOnSaleAsync();
     Task<Size?> UpdateProductSizing(int productId, Size updatedSize);
+    Task<bool> RemoveProductsFromSale(List<int> productIds);
+    Task<IEnumerable<ProductSaleHistoryDto>> GetSaleHistory(int productId);
 }
 
 public class ProductRepository(IDbConnection connection, IMapper mapper) : IProductRepository
@@ -71,7 +73,7 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
             var saleEntity = await connection.QuerySingleOrDefaultAsync<SaleEntity>(ProductQueries.GetActiveSale, new 
             { 
                 ProductId = productId, 
-                CurrentDate = DateTimeHelper.BelgradeNow
+                CurrentDate = DateTime.UtcNow
             });
             
             var productDetail = mapper.Map<ProductDetailsDto>(product);
@@ -79,7 +81,6 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
             productDetail.Size = size;
             productDetail.Images = [.. images];
             productDetail.CategoryPaths = categoryPaths;
-            productDetail.SaleInfo = new SaleInfo();
             
             if (product.Price.HasValue)
             {
@@ -287,6 +288,8 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
                     salePrice = originalPrice - (originalPrice * request.SalePercentage!.Value / 100);
                 }
                 
+                await connection.ExecuteAsync(ProductQueries.DeactivateSale, new { ProductId = productId });
+                
                 var saleRecord = new
                 {
                     ProductId = productId,
@@ -318,6 +321,18 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
     {
         var affectedRows = await connection.ExecuteAsync(ProductQueries.AssignProductToCategory, new { request.ProductId, request.CategoryId });
         return affectedRows > 0;
+    }
+    
+    public async Task<IEnumerable<ProductSaleHistoryDto>> GetSaleHistory(int productId)
+    {
+        await connection.ExecuteAsync(ProductQueries.UpdateExpiredSales, new { CurrentTime = DateTime.UtcNow });
+        
+        return await connection.QueryAsync<ProductSaleHistoryDto>
+        (ProductQueries.GetSaleHistory, new
+            {
+                productId
+            }
+        );
     }
 
     #region ExtensionsMethods
@@ -376,7 +391,7 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
                     : saleInfo;
                 return product;
             },
-            param: new { CurrentTime = DateTimeHelper.BelgradeNow },
+            param: new { CurrentTime = DateTime.UtcNow },
             splitOn: "IsActive"
         );
         
@@ -395,6 +410,17 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
         return rowsAffected > 0 
             ? new Size { Pak = updatedSize?.Pak, Pal = updatedSize?.Pal }
             : null;
+    }
+
+    public async Task<bool> RemoveProductsFromSale(List<int> productIds)
+    {
+        const string query = @"
+            UPDATE domis.sales
+            SET is_active = false
+            WHERE product_id = ANY(@ProductIds)";
+        
+        var affectedRows = await connection.ExecuteAsync(query, new { ProductIds = productIds });
+        return affectedRows > 0;
     }
 
     private async Task<List<List<CategoryPath>>> GetProductCategoriesPath(int productId)

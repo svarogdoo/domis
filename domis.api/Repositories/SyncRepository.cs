@@ -45,7 +45,7 @@ public class SyncRepository(IDbConnection connection) : ISyncRepository
             await connection.ExecuteAsync(insertQuery, new
             {
                 Email = email, 
-                SubscribedAt = DateTimeHelper.BelgradeNow
+                SubscribedAt = DateTime.UtcNow
             });
         
             return true;

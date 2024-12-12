@@ -140,7 +140,7 @@ public class CartRepository(IDbConnection connection, PriceCalculationHelper hel
             {
                 CartItemId = cartItemId,
                 Quantity = newQuantity,
-                ModifiedAt = DateTimeHelper.BelgradeNow,
+                ModifiedAt = DateTime.UtcNow,
                 Price = await helper.GetPriceBasedOnRoleAndQuantity(ci.ProductId, role, newQuantity, palSize)
             });
 
@@ -270,8 +270,8 @@ public class CartRepository(IDbConnection connection, PriceCalculationHelper hel
             ProductId = productId,
             Quantity = quantity,
             Price = price,
-            CreatedAt = DateTimeHelper.BelgradeNow,
-            ModifiedAt = DateTimeHelper.BelgradeNow
+            CreatedAt = DateTime.UtcNow,
+            ModifiedAt = DateTime.UtcNow
         };
 
         await connection.ExecuteScalarAsync<int>(CartQueries.CreateCartItem, parameters);
@@ -290,7 +290,7 @@ public class CartRepository(IDbConnection connection, PriceCalculationHelper hel
                 CartId = cartId,
                 ProductId = productId,
                 Quantity = totalQuantity,
-                ModifiedAt = DateTimeHelper.BelgradeNow
+                ModifiedAt = DateTime.UtcNow
             });
         }
         else
@@ -303,7 +303,7 @@ public class CartRepository(IDbConnection connection, PriceCalculationHelper hel
                 ProductId = productId,
                 Quantity = totalQuantity,
                 Price = updatedPrice,
-                ModifiedAt = DateTimeHelper.BelgradeNow
+                ModifiedAt = DateTime.UtcNow
             });
         }
 

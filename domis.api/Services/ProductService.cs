@@ -17,9 +17,11 @@ public interface IProductService
     Task<IEnumerable<ProductQuantityTypeDto>> GetAllQuantityTypes();
     Task<IEnumerable<SearchResultDto>> SearchProducts(string searchTerm, int? pageNumber, int? pageSize);
     Task<bool> PutProductsOnSale(ProductSaleRequest request);
+    Task<bool> RemoveProductsFromSale(List<int> productIds);
     Task<bool> AssignProductToCategory(AssignProductToCategoryRequest request);
     Task<IEnumerable<ProductPreviewDto>> GetProductsOnSaleAsync();
     Task<Size?> UpdateProductSizing(int productId, Size updatedSizing);
+    Task<IEnumerable<ProductSaleHistoryDto>> GetSaleHistory(int productId);
 }
 
 public class ProductService(
@@ -71,6 +73,14 @@ public class ProductService(
         return await repository.PutProductsOnSale(request);
     }
 
+    public async Task<bool> RemoveProductsFromSale(List<int> productIds)
+    {
+        if (productIds.Count == 0)
+            return false;
+        
+        return await repository.RemoveProductsFromSale(productIds);
+    }
+
     public async Task<bool> AssignProductToCategory(AssignProductToCategoryRequest request)
     {
         var productExists = await repository.ProductExists(request.ProductId);
@@ -92,5 +102,14 @@ public class ProductService(
             throw new NotFoundException("Product does not exist.");
         
         return await repository.UpdateProductSizing(productId, updatedSizing);
+    }
+
+    public async Task<IEnumerable<ProductSaleHistoryDto>> GetSaleHistory(int productId)
+    {
+        var exists = await repository.ProductExists(productId);
+        if (!exists)
+            throw new NotFoundException("Product does not exist.");
+        
+        return await repository.GetSaleHistory(productId);
     }
 }
