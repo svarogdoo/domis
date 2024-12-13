@@ -48,7 +48,11 @@
     <div class="flex flex-col flex-grow gap-y-2 mt-2 justify-end items-center">
       <div class="flex gap-x-1 items-center">
         <p class="lg:text-xl {product.saleInfo ? 'text-domis-primary' : ''}">
-          {formatPrice(productPrice)}
+          {formatPrice(
+            product.saleInfo?.salePrice
+              ? product.saleInfo.salePrice
+              : productPrice
+          )}
         </p>
         <p class="text-xs lg:text-sm text-gray-800 font-thin">
           {getCurrencyString()}
@@ -58,8 +62,8 @@
             po {quantityTypeString}
           </p>
         {/if}
-        {#if product.saleInfo}
-          <p class="lg:text-sm line-through ml-2">
+        {#if product.saleInfo?.salePrice}
+          <p class="text-xs lg:text-sm line-through ml-2">
             {formatPrice(productPrice)}
           </p>
         {/if}
