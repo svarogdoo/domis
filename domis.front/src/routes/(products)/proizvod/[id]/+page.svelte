@@ -99,20 +99,46 @@
             class="flex flex-col px-3 py-3 gap-y-2 tracking-wide font-extralight border-b border-gray-400"
           >
             {#if productPrice?.perUnit}
-              <p class="text-xs lg:text-sm">
-                {getCurrencyString()}
-                <span class="font-light text-domis-dark text-sm lg:text-lg px-2"
-                  >{formatPrice(productPrice.perUnit)}</span
-                >
-                po {quantityTypeString}
-              </p>
+              <div>
+                <p class="text-xs lg:text-sm">
+                  {getCurrencyString()}
+                  <span
+                    class="font-light text-sm lg:text-lg px-2 {product.saleInfo
+                      ? 'text-domis-primary'
+                      : 'text-domis-dark'}"
+                    >{formatPrice(
+                      product.saleInfo?.salePrice
+                        ? product.saleInfo.salePrice
+                        : productPrice.perUnit
+                    )}</span
+                  >
+                  {#if product.saleInfo?.salePrice}
+                    <span class="font-light text-xs lg:text-sm line-through">
+                      {formatPrice(productPrice.perUnit)}
+                    </span>
+                  {/if}
+                  po {quantityTypeString}
+                </p>
+              </div>
             {/if}
             {#if productPrice?.perBox && product?.size?.box}
               <p class="text-xs lg:text-sm">
                 {getCurrencyString()}
-                <span class="font-light text-domis-dark text-sm lg:text-lg px-2"
-                  >{formatPrice(productPrice.perBox)}</span
+                <span
+                  class="font-light text-sm lg:text-lg px-2 {product.saleInfo
+                    ? 'text-domis-primary'
+                    : 'text-domis-dark'}"
+                  >{formatPrice(
+                    product.saleInfo?.salePrice
+                      ? product.saleInfo.salePakPrice
+                      : productPrice.perBox
+                  )}</span
                 >
+                {#if product.saleInfo?.salePakPrice}
+                  <span class="font-light text-xs lg:text-sm line-through">
+                    {formatPrice(productPrice.perBox)}
+                  </span>
+                {/if}
                 po paketu ({product?.size.box}
                 {quantityTypeString})
               </p>
