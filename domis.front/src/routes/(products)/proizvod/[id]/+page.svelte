@@ -163,7 +163,12 @@
           bind:isExtraChecked
           {product}
           {quantityType}
-          {productPrice}
+          productPrice={product.saleInfo
+            ? {
+                perUnit: product.saleInfo.salePrice,
+                perBox: product.saleInfo.salePakPrice,
+              }
+            : productPrice}
         />
 
         {#if product.description}
