@@ -5,7 +5,7 @@
   import { postProductOnSale } from "../../../../services/product-service";
   import SaleHistoryItem from "./SaleHistoryItem.svelte";
   import Input from "./specifikacija/Input.svelte";
-  import DatePickerTwo from "../../../../components/DatePickerTwo.svelte";
+  import DatePicker from "../../../../components/DatePicker.svelte";
 
   export let saleHistory: Array<SaleInfo> | null;
   export let initialPrice: number | undefined;
@@ -18,18 +18,22 @@
   let showSnackbar = false;
 
   let salePrice: number = initialPrice ?? 0;
+  let salePercentage: number;
+  let usePercentage: boolean = true;
   let startDate: Date = new Date();
   let hasSaleEndDate: boolean = true;
   let endDate: Date = new Date();
 
   let errors = {
     salePrice: "",
+    salePercentage: "",
   };
 
   async function submitSale() {
     let saleInfo = {
       productIds: [productId],
-      salePrice: salePrice,
+      salePrice: usePercentage ? null : salePrice,
+      salePercentage: usePercentage ? salePercentage : null,
       startDate: startDate.toISOString(),
       endDate: hasSaleEndDate ? endDate.toISOString() : null,
     };
@@ -83,18 +87,20 @@
     class="mt-1 mb-2 flex flex-col gap-y-6 p-2 rounded-lg bg-grey-50"
   >
     <div class="flex flex-wrap gap-y-3 items-center gap-x-6">
-      <DatePickerTwo
+      <DatePicker
         on:change={handleStartDateChanged}
         dateString={startDate.toLocaleString()}
         title="Početak akcije"
       />
-      <Toggle
-        bind:isActive={hasSaleEndDate}
-        activeText="Akcija ima kraj"
-        inActiveText="Trajno na akciji"
-      />
+      <div class="mt-4">
+        <Toggle
+          bind:isActive={hasSaleEndDate}
+          activeText="Akcija ima kraj"
+          inActiveText="Trajno na akciji"
+        />
+      </div>
       {#if hasSaleEndDate}
-        <DatePickerTwo
+        <DatePicker
           on:change={handleEndDateChanged}
           dateString={endDate.toLocaleString()}
           min={new Date(startDate).toLocaleString().split("T")[0]}
@@ -103,15 +109,31 @@
       {/if}
     </div>
     <div class="flex gap-x-6 items-center">
-      <Input
-        bind:value={salePrice}
-        type="number"
-        title="Iznos na popustu"
-        suffix="RSD"
-        placeholder="0.00"
-        width="32"
-        gap="32"
-        error={errors?.salePrice}
+      {#if usePercentage}
+        <Input
+          bind:value={salePercentage}
+          type="number"
+          suffix="%"
+          placeholder="0"
+          width="16"
+          gap="32"
+          error={errors?.salePercentage}
+        />
+      {:else}
+        <Input
+          bind:value={salePrice}
+          type="number"
+          suffix="RSD"
+          placeholder="0.00"
+          width="28"
+          gap="32"
+          error={errors?.salePrice}
+        />
+      {/if}
+      <Toggle
+        bind:isActive={usePercentage}
+        activeText="Koristi procente"
+        inActiveText="Koristi fiksnu cenu"
       />
       <button
         on:click={submitSale}

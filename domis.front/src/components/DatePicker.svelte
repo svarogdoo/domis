@@ -1,96 +1,83 @@
 <script lang="ts">
-  import { onMount } from "svelte";
+  import { createEventDispatcher, onMount } from "svelte";
 
-  export let date: Date;
+  export let dateString: string;
   export let title: string;
+  export let min: string = new Date().toLocaleString().split("T")[0];
+  let timeString: string;
 
-  $: if (date) {
-    selectedDate = date.toISOString().split("T")[0];
-    selectedTime = date.toTimeString().slice(0, 5);
-  }
-
-  let selectedDate: string;
-  let selectedTime: string;
-  let timeOptions: string[] = [];
-
-  const generateTimeOptions = (): string[] => {
-    const times: string[] = [];
-    for (let h = 0; h < 24; h++) {
-      for (let m = 0; m < 60; m += 30) {
-        const hour = h.toString().padStart(2, "0");
-        const minute = m.toString().padStart(2, "0");
-        times.push(`${hour}:${minute}`);
-      }
-    }
-    return times;
-  };
+  const dispatch = createEventDispatcher<{ change: string }>();
 
   onMount(() => {
-    timeOptions = generateTimeOptions();
-
-    // Set default to now, rounded to the nearest 30 minutes
-    const now = new Date();
-    now.setSeconds(0, 0);
-    const roundedMinutes = Math.ceil(now.getMinutes() / 30) * 30;
-    if (roundedMinutes === 60) {
-      now.setHours(now.getHours() + 1, 0, 0, 0);
-    } else {
-      now.setMinutes(roundedMinutes);
-    }
-    selectedDate = now.toISOString().split("T")[0];
-    selectedTime = now.toTimeString().slice(0, 5);
-    setDateTime();
+    setInitialValue();
   });
 
-  const validateDate = (event: Event) => {
-    const input = event.target as HTMLInputElement;
-    const chosenDate = new Date(input.value);
-    const now = new Date();
-    now.setHours(0, 0, 0, 0); // Compare only the date part
-    if (chosenDate < now) {
-      input.value = selectedDate; // Reset if invalid
+  function setInitialValue() {
+    let currentDate = new Date(dateString);
+    let currentHour = currentDate.getHours();
+    let currentMinute = currentDate.getMinutes();
+
+    // Round current minute to nearest 30-minute increment
+    if (currentMinute >= 30) {
+      currentHour++;
+      currentMinute = 0;
     } else {
-      selectedDate = input.value;
+      currentMinute = 30;
     }
 
-    setDateTime();
-  };
-
-  const validateTime = (event: Event) => {
-    const input = event.target as HTMLSelectElement;
-    const now = new Date();
-    const currentDate = new Date(selectedDate);
-
-    if (
-      currentDate.toISOString().split("T")[0] ===
-        now.toISOString().split("T")[0] &&
-      input.value < now.toTimeString().slice(0, 5)
-    ) {
-      input.value = selectedTime; // Reset if invalid
-    } else {
-      selectedTime = input.value;
-    }
-
-    setDateTime();
-  };
-
-  function setDateTime() {
-    date = new Date(`${selectedDate}T${selectedTime}:00.000Z`);
+    timeString = `${currentHour}:${currentMinute < 10 ? "00" : currentMinute}`;
+    currentDate.setMinutes(currentMinute);
+    currentDate.setHours(currentHour);
+    currentDate.setSeconds(0);
+    dateString = currentDate.toLocaleString();
+    dispatch("change", dateString);
   }
+
+  // Handle the change events for date and time
+  const handleDateChange = (e: Event) => {
+    const target = e.target as HTMLInputElement;
+    const newDate = new Date(target.value);
+
+    // Ensure that the updated date keeps the selected time
+    const [hours, minutes] = timeString
+      .split(":")
+      .map((num) => parseInt(num, 10));
+    newDate.setHours(hours, minutes, 0);
+
+    dateString = newDate.toLocaleString();
+    dispatch("change", dateString);
+  };
+
+  const handleTimeChange = (e: Event) => {
+    const target = e.target as HTMLSelectElement;
+    const [hours, minutes] = target.value
+      .split(":")
+      .map((num) => parseInt(num, 10));
+    const newDate = new Date(dateString);
+    newDate.setHours(hours, minutes, 0);
+    dateString = newDate.toLocaleString();
+    dispatch("change", dateString);
+  };
 </script>
 
-<div class="flex flex-col gap-y-2">
-  <p>{title}</p>
+<div>
+  <label for="date">{title}</label>
   <div class="flex gap-x-4">
     <input
       type="date"
-      bind:value={selectedDate}
-      min={new Date().toISOString().split("T")[0]}
-      on:change={validateDate}
+      id="date"
+      value={new Date(dateString).toISOString().split("T")[0]}
+      {min}
+      on:change={handleDateChange}
     />
-    <select bind:value={selectedTime} on:change={validateTime}>
-      {#each timeOptions as time}
-        <option value={time}>{time}</option>
+
+    <select id="time" on:change={handleTimeChange} bind:value={timeString}>
+      {#each Array(48) as _, index}
+        <option
+          value={`${Math.floor(index / 2)}:${index % 2 === 0 ? "00" : "30"}`}
+        >
+          {`${Math.floor(index / 2)}:${index % 2 === 0 ? "00" : "30"}`}
+        </option>
       {/each}
     </select>
   </div>

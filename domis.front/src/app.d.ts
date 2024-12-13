@@ -6,7 +6,6 @@ import type {
   QuantityType,
   UserRole,
 } from "./enums";
-import type CartItem from "./routes/korpa/CartItem.svelte";
 
 // for information about these interfaces
 declare global {
@@ -127,6 +126,7 @@ declare global {
     stock: number;
     quantityType?: QuantityType;
     featuredImageUrl?: string;
+    saleInfo: SaleInfo;
   }
 
   interface Product {
@@ -177,6 +177,8 @@ declare global {
   interface SaleInfo {
     isActive: boolean;
     salePrice: number;
+    salePakPrice: number;
+    salePalPrice: number;
     startDate: string;
     endDate: string;
   }

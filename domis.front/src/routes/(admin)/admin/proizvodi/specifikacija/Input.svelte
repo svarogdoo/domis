@@ -1,6 +1,6 @@
 <script lang="ts">
   export let value: string | number;
-  export let title: string;
+  export let title: string | null = null;
   export let placeholder: string;
   export let error: string;
   export let width: string;
@@ -11,7 +11,9 @@
 
 <div class="flex flex-col">
   <div class="flex gap-x-6 items-center">
-    <p class="w-{gap}">{title}:</p>
+    {#if title}
+      <p class="w-{gap}">{title}:</p>
+    {/if}
     <div class="w-{width} relative rounded-md shadow-sm">
       {#if type === "text"}
         <input
