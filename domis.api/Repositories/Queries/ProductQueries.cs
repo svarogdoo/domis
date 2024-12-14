@@ -305,7 +305,7 @@ public static class ProductQueries
         WHERE product_id = @ProductId 
           AND is_active = TRUE
           AND start_date <= @CurrentDate 
-          AND end_date >= @CurrentDate
+          AND (end_date >= @CurrentDate OR end_date IS NULL)
         LIMIT 1";
     
     public static string GetProductCategoriesPaths = @"

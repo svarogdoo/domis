@@ -61,5 +61,11 @@ public static class CategoryEndpoints
             return categories is null ? Results.NotFound() : Results.Ok(categories);
 
         }).WithDescription("get products by category");
+        
+        group.MapGet("sale/products", async (IProductService productService) =>
+        {
+            var products = await productService.GetProductsOnSaleAsync();
+            return Results.Ok(new { products });
+        }).WithDescription("get products that are on sale");
     }
 }
