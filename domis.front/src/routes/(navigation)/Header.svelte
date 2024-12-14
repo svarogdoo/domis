@@ -168,7 +168,7 @@
       <a href="/kategorija/3">Zid i dekoracije</a>
       <a href="/kategorija/688">Rasveta</a>
       <a href="/kategorija/4">Građevinski materijal i alati</a>
-      <a href="/kategorija/907" class="font-semibold text-domis-primary"
+      <a href="/kategorija/akcija" class="font-semibold text-domis-primary"
         >Akcija</a
       >
     </div>

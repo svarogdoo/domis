@@ -109,7 +109,7 @@ declare global {
     subcategories?: Array<Category>;
   }
   interface CategoryData {
-    category: CategoryDetails;
+    category?: CategoryDetails;
     products: Array<CategoryProduct>;
   }
   interface CategoryDetails {

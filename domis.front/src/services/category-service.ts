@@ -12,11 +12,12 @@ export function getCategories() {
 }
 
 export function getCategoryProducts(
-  id: number,
+  id: number | string,
   pageNumber?: number,
   pageSize?: number,
   sortType?: SortType
 ) {
+  console.info(id, "ajd");
   let queryParams = new URLSearchParams();
   if (pageNumber) queryParams.append("pageNumber", pageNumber.toString());
   if (pageSize) queryParams.append("pageSize", pageSize.toString());

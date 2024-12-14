@@ -34,7 +34,7 @@
   async function loadMore() {
     loading = true;
     const newItems = await getCategoryProducts(
-      Number.parseInt(categoryDetails.id),
+      Number.parseInt(categoryDetails?.id ? categoryDetails.id : "sale"),
       pageNumber,
       pageSize,
       sortType
@@ -81,7 +81,7 @@
 <section class="w-full flex flex-col justify-center">
   <div class="flex justify-between items-center px-4 mb-4">
     <h2 class="text-lg lg:text-2xl">
-      {categoryDetails?.name ? categoryDetails.name : ""}
+      {categoryDetails?.name ? categoryDetails.name : "Akcija"}
     </h2>
     <div class="relative flex">
       <div class="text-sm lg:text-normal">

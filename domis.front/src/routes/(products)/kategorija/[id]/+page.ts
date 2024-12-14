@@ -9,12 +9,14 @@ export async function load({ params, url, parent }) {
 
   setCategories();
 
-  const categoryId = params.id;
+  let categoryId = params.id;
   const pageNumber = url.searchParams.get("strana") || "1";
   const pageSize = url.searchParams.get("velicina") || "18";
 
+  if (categoryId === "akcija") categoryId = "sale";
+
   let categoryData = await getCategoryProducts(
-    Number.parseInt(categoryId),
+    categoryId === "sale" ? categoryId : Number.parseInt(categoryId),
     Number.parseInt(pageNumber),
     Number.parseInt(pageSize),
     SortType.NameAsc
