@@ -128,7 +128,6 @@ public class CartRepository(IDbConnection connection, PriceCalculationHelper hel
                 throw new NotFoundException($"Cart item with ID {cartItemId} does not exist.");
             
             var sizing = await helper.GetProductSizing(ci.ProductId);
-            var pakSize = decimal.Parse(sizing.Pak);
             
             // if (addedQuantity % pakSize != 0)
             //     throw new ArgumentException($"Quantity {addedQuantity} must be in increments of the pak size {pakSize}.");
@@ -136,13 +135,14 @@ public class CartRepository(IDbConnection connection, PriceCalculationHelper hel
             // var totalQ = ci.CurrentQuantity + addedQuantity;
             // var totalQ = newQuantity;
             var palSize = PriceCalculationHelper.PalSizeAsNumber(sizing);
+            var pakSize = PriceCalculationHelper.PakSizeAsNumber(sizing);
             
             var rowsAffected = await connection.ExecuteAsync(CartQueries.UpdateCartItemQuantityAndPrice, new
             {
                 CartItemId = cartItemId,
-                Quantity = newPakQuantity,
+                Quantity = newPakQuantity * pakSize,
                 ModifiedAt = DateTime.UtcNow,
-                Price = await helper.GetPriceBasedOnRoleAndQuantity(ci.ProductId, role, newPakQuantity * pakSize, palSize)
+                Price = await helper.GetPriceBasedOnRoleAndQuantity(ci.ProductId, role, (decimal)(newPakQuantity * pakSize), palSize)
             });
 
             return rowsAffected > 0;
