@@ -280,7 +280,7 @@ public static class ProductQueries
                  WHERE product_id = @ProductId 
                    AND is_active = TRUE
                    AND start_date <= CURRENT_DATE 
-                   AND end_date >= CURRENT_DATE
+                   AND (end_date IS NULL OR end_date >= CURRENT_DATE)
                  LIMIT 1), 
                 (SELECT price 
                  FROM domis.product
