@@ -354,7 +354,7 @@ public static class ProductQueries
             p.price AS Price,
             p.stock AS Stock,
             NULL AS VpPrice, 
-            NULL AS FeaturedImageUrl, 
+            i.blob_url AS FeaturedImageUrl,
             p.product_description AS Description,
             NULL AS QuantityType,
             s.is_active AS IsActive,
@@ -363,6 +363,9 @@ public static class ProductQueries
             s.end_date AS EndDate
         FROM domis.product p
         LEFT JOIN domis.sales s ON p.id = s.product_id
+        LEFT JOIN domis.product_image pi ON p.id = pi.product_id
+        LEFT JOIN domis.image i ON pi.image_id = i.id
+        LEFT JOIN domis.image_type it ON pi.image_type_id = it.id
         WHERE p.active = TRUE
           AND s.is_active = TRUE
           AND (s.start_date IS NULL OR s.start_date <= @CurrentTime)
