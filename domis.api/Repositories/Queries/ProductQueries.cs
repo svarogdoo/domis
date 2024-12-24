@@ -390,7 +390,8 @@ public static class ProductQueries
     public const string SearchByName = @"
         SELECT id AS Id, product_name AS Name, sku AS Sku, 'Product' AS Type
         FROM domis.product
-        WHERE product_name ILIKE @SearchTerm OR CAST(sku AS TEXT) ILIKE @SearchTerm
+        WHERE active = true 
+          AND (product_name ILIKE @SearchTerm OR CAST(sku AS TEXT) ILIKE @SearchTerm)
         UNION
         SELECT id AS Id, category_name AS Name, NULL AS Sku, 'Category' AS Type
         FROM domis.category
