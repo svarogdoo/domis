@@ -97,7 +97,7 @@ public static class ProductQueries
             FROM domis.product p
             INNER JOIN domis.product_category pc ON p.id = pc.product_id
             INNER JOIN CategoryHierarchy ch ON pc.category_id = ch.id
-            WHERE p.active = true -- filter to include only active products
+            --WHERE p.active = true -- filter to include only active products, ...REMOVED because only admin uses this
         )
         SELECT Id, Sku, Name
         FROM ActiveProductsInCategory
