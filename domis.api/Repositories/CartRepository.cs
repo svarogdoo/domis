@@ -233,8 +233,8 @@ public class CartRepository(IDbConnection connection, PriceCalculationHelper hel
                         item.ProductDetails = product;
                         item.ProductDetails.Image = image;
                         item.CartItemPrice = item.CartItemPrice;
-                        //item.ProductDetails.Price = PricingHelper.CalculateDiscount(item.ProductDetails.Price, discount);
                         
+                        //item.ProductDetails.Price = PricingHelper.CalculateDiscount(item.ProductDetails.Price, discount);
                         currentCart.Items.Add(item);
                     }
 
@@ -337,17 +337,25 @@ public class CartRepository(IDbConnection connection, PriceCalculationHelper hel
         {
             var sizing = await helper.GetProductSizing(cartItem.ProductId);
             var palSize = PriceCalculationHelper.PalSizeAsNumber(sizing);
+            var pakSize = PriceCalculationHelper.PakSizeAsNumber(sizing);
+
+            //set quantity to show as package
+            cartItem.Quantity = (decimal)(cartItem.Quantity / pakSize)!;
 
             var expectedPrice = 
                 await helper.GetPriceBasedOnRoleAndQuantity(cartItem.ProductId, userRole, cartItem.Quantity, palSize);
 
-            if (expectedPrice == null || cartItem.CartItemPrice == expectedPrice) continue;
+            if (expectedPrice == null || cartItem.CartItemPrice == expectedPrice)
+            {
+                cartItem.CartItemPrice = (decimal)(expectedPrice * pakSize)!;
+                continue;
+            };
             
             // If the price has changed, update it
             Log.Information($"Updating price for product ID {cartItem.ProductId}: " +
                             $"Old Price: {cartItem.CartItemPrice}, New Price: {expectedPrice}");
-
-            cartItem.CartItemPrice = (decimal)expectedPrice;
+            
+            cartItem.CartItemPrice = (decimal)(expectedPrice * pakSize)!;
         }
     }
 
