@@ -15,8 +15,8 @@ public interface ICartRepository
     Task<IEnumerable<OrderStatusDto>?> AllOrderStatuses();
     Task<int> CreateCartAsync(string? userId);
     Task<bool> UpdateCartStatusAsync(int cartId, int statusId);
-    Task<int?> CreateCartItemAsync(int? cartId, int productId, decimal addedQuantity, string? userId, string role, decimal discount = 0);
-    Task<bool> UpdateCartItemQuantityAsync(int cartItemId, decimal newQuantity, string role);
+    Task<int?> CreateCartItemAsync(int? cartId, int productId, decimal addedPakQuantity, string? userId, string role, decimal discount = 0);
+    Task<bool> UpdateCartItemQuantityAsync(int cartItemId, decimal newPakQuantity, string role);
     Task<bool> DeleteCartItemAsync(int cartItemId);
     Task<bool> DeleteCartAsync(int cartId);
     Task<CartDto?> Cart( string userRole, string? userId, int? cartId);
@@ -84,7 +84,7 @@ public class CartRepository(IDbConnection connection, PriceCalculationHelper hel
         }
     }
     
-    public async Task<int?> CreateCartItemAsync(int? cartId, int productId, decimal addedQuantity, string? userId, string role, decimal discount = 0)
+    public async Task<int?> CreateCartItemAsync(int? cartId, int productId, decimal addedPakQuantity, string? userId, string role, decimal discount = 0)
     {
         try
         {
@@ -97,16 +97,16 @@ public class CartRepository(IDbConnection connection, PriceCalculationHelper hel
             var sizing = await helper.GetProductSizing(productId);
             var pakSize = PriceCalculationHelper.PakSizeAsNumber(sizing);
             
-            // if (addedQuantity % pakSize != 0)
-            //     throw new ArgumentException($"Quantity - {addedQuantity} must be in increments of the pak size - {pakSize}.");
+            // if (addedPakQuantity % pakSize != 0 || pakSize == null)
+            //     throw new ArgumentException($"Quantity - {addedPakQuantity} must be in increments of the pak size - {pakSize}.");
             
             var palSize = PriceCalculationHelper.PalSizeAsNumber(sizing);
 
             var cartItemExists = await connection.ExecuteScalarAsync<bool>(CartQueries.CheckIfProductExistsInCart, new { CartId = cartId, ProductId = productId });
 
             return cartItemExists 
-                ? await UpdateExistingCartItem(cartId, productId, addedQuantity, role, palSize) 
-                : await AddNewCartItem(cartId, productId, addedQuantity, role, palSize);
+                ? await UpdateExistingCartItem(cartId, productId, addedPakQuantity * (decimal)pakSize!, role, palSize) 
+                : await AddNewCartItem(cartId, productId, addedPakQuantity * (decimal)pakSize!, role, palSize);
         }
         catch (Exception ex)
         {
@@ -115,7 +115,7 @@ public class CartRepository(IDbConnection connection, PriceCalculationHelper hel
         }
     }
 
-    public async Task<bool> UpdateCartItemQuantityAsync(int cartItemId, decimal newQuantity, string role)
+    public async Task<bool> UpdateCartItemQuantityAsync(int cartItemId, decimal newPakQuantity, string role)
     {
         try
         {
@@ -128,7 +128,8 @@ public class CartRepository(IDbConnection connection, PriceCalculationHelper hel
                 throw new NotFoundException($"Cart item with ID {cartItemId} does not exist.");
             
             var sizing = await helper.GetProductSizing(ci.ProductId);
-            // var pakSize = helper.PakSizeAsNumber(sizing);
+            var pakSize = decimal.Parse(sizing.Pak);
+            
             // if (addedQuantity % pakSize != 0)
             //     throw new ArgumentException($"Quantity {addedQuantity} must be in increments of the pak size {pakSize}.");
             
@@ -139,9 +140,9 @@ public class CartRepository(IDbConnection connection, PriceCalculationHelper hel
             var rowsAffected = await connection.ExecuteAsync(CartQueries.UpdateCartItemQuantityAndPrice, new
             {
                 CartItemId = cartItemId,
-                Quantity = newQuantity,
+                Quantity = newPakQuantity,
                 ModifiedAt = DateTime.UtcNow,
-                Price = await helper.GetPriceBasedOnRoleAndQuantity(ci.ProductId, role, newQuantity, palSize)
+                Price = await helper.GetPriceBasedOnRoleAndQuantity(ci.ProductId, role, newPakQuantity * pakSize, palSize)
             });
 
             return rowsAffected > 0;
@@ -256,7 +257,6 @@ public class CartRepository(IDbConnection connection, PriceCalculationHelper hel
             throw;
         }
     }
-
     #region ExtensionMethods
     
     
