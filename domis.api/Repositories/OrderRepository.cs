@@ -342,8 +342,7 @@ public class OrderRepository(IDbConnection connection, PriceCalculationHelper he
                             orderDetails.PaymentDetails = paymentDetails;
                         }
 
-                        if (orderItem != null &&
-                            orderDetails.OrderItems.Find(oi => oi.OrderItemId == orderItem.OrderItemId) == null)
+                        if (orderItem != null && orderDetails.OrderItems.Find(oi => oi.OrderItemId == orderItem.OrderItemId) == null)
                         {
                             orderItem.ProductDetails = product;
                             orderItem.ProductDetails.Url = url;
@@ -449,7 +448,7 @@ public class OrderRepository(IDbConnection connection, PriceCalculationHelper he
 
                         return orderDetails;
                     },
-                    splitOn: "OrderStatusId,OrderShippingId,PaymentStatusId,OrderItemId,ProductName,Url"
+                    splitOn: "OrderStatusId,InvoiceOrderShippingId,PaymentStatusId,OrderItemId,ProductName,Url"
                 );
 
             return orderDictionary.Values.OrderByDescending(o => o.OrderId).ToList();
