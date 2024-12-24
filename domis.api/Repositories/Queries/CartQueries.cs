@@ -63,7 +63,10 @@ public static class CartQueries
                 ci.modified_at AS CartItemModifiedAt,
                 p.product_name AS Name,
                 p.sku AS Sku,
-                p.price AS Price,  
+                CASE 
+                    WHEN p.price = ci.price THEN NULL
+                    ELSE p.price
+                END AS Price,               
                 p.quantity_type_id AS QuantityType,
                 i.blob_url AS Url,
 				s.status_name as Status
@@ -97,7 +100,10 @@ public static class CartQueries
             ci.modified_at AS CartItemModifiedAt,
             p.product_name AS Name,
             p.sku AS Sku,
-            p.price AS Price,  
+            CASE 
+                WHEN p.price = ci.price THEN NULL
+                ELSE p.price
+            END AS Price,             
             p.quantity_type_id AS QuantityType,
             i.blob_url AS Url,
             s.status_name AS Status
