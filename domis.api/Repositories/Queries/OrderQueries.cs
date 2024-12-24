@@ -215,7 +215,8 @@ public static class OrderQueries
             o.created_at AS OrderCreatedAt,
             o.status_id AS OrderStatusId,
             os.status_name AS OrderStatusName,
-            o.order_shipping_id AS OrderShippingId,
+            o.invoice_order_shipping_id AS InvoiceOrderShippingId,
+            o.delivery_order_shipping_id AS DeliveryOrderShippingId,
             osh.first_name AS ShippingFirstName,
             osh.last_name AS ShippingLastName,
             osh.company_name AS ShippingCompanyName,
@@ -246,7 +247,7 @@ public static class OrderQueries
         FROM
             domis.order o
             LEFT JOIN domis.order_status os ON o.status_id = os.id
-            LEFT JOIN domis.order_shipping osh ON o.order_shipping_id = osh.id
+            LEFT JOIN domis.order_shipping osh ON o.delivery_order_shipping_id = osh.id
             LEFT JOIN domis.country c ON osh.country_id = c.id
             LEFT JOIN domis.payment_status ps ON o.payment_status_id = ps.id
             LEFT JOIN domis.payment_vendor_type pvt ON o.payment_vendor_type_id = pvt.id
