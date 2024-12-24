@@ -96,8 +96,8 @@
       depth: depth,
       length: length,
       thickness: thickness,
-      box: box,
-      pallet: pallet,
+      box: box > 0 ? box : null,
+      pallet: pallet > 0 ? pallet : null,
       isActive: isActive,
       quantityType: quantityType,
     });
