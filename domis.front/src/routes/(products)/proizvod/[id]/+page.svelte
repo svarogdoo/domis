@@ -152,8 +152,9 @@
                 po paleti ({product?.size.pallet}
                 {quantityTypeString} | {formatToTwoDecimals(
                   product?.size?.pallet / product?.size?.box
-                )} paketa | cena komada {getCurrencyString()}
-                {formatToTwoDecimals(productPrice.perPalletUnit)})
+                )} paketa | {getCurrencyString()}
+                {formatToTwoDecimals(productPrice.perPalletUnit)}
+                po {quantityTypeString})
               </p>
             {/if}
           </div>
