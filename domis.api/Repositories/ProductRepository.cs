@@ -37,6 +37,7 @@ public interface IProductRepository
     Task<Size?> UpdateProductSizing(int productId, Size updatedSize);
     Task<bool> RemoveProductsFromSale(List<int> productIds);
     Task<IEnumerable<ProductSaleHistoryDto>> GetSaleHistory(int productId);
+    Task<bool> UpdateProductPricing(int productId, ProductPriceUpdateDto updatedPricing);
 }
 
 public class ProductRepository(IDbConnection connection, IMapper mapper) : IProductRepository
@@ -333,6 +334,79 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
                 productId
             }
         );
+    }
+
+    public async Task<bool> UpdateProductPricing(int productId, ProductPriceUpdateDto updatedPricing)
+    {
+        try
+        {
+            if (updatedPricing.RegularPrice.HasValue) 
+                await UpdateRegularPrice(productId, updatedPricing.RegularPrice);
+        
+            if (updatedPricing.VpPrices?.Count != 0 && updatedPricing.VpPrices is not null) 
+                await UpdateVpPrices(productId, updatedPricing.VpPrices);
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "An error occurred while updating product (id: ${productId}) pricing on request {updatedPricing}", productId, updatedPricing);
+            return false;
+        }
+    }
+
+    private async Task UpdateVpPrices(int productId, List<ProductVpPriceUpdateDto> updatedVpPrices)
+    {
+        foreach (var vpPrice in updatedVpPrices)
+        {
+            if (vpPrice.PakPrice.HasValue)
+            {
+                const string updatePakPriceQuery = @"
+                    UPDATE domis.product_pricing
+                    SET price = @Price
+                    WHERE product_id = @ProductId
+                      AND user_type = @UserType
+                      AND packaging_type = 'pak'";
+
+                await connection.ExecuteAsync(updatePakPriceQuery, new
+                {
+                    Price = vpPrice.PakPrice.Value,
+                    ProductId = productId,
+                    vpPrice.UserType
+                });
+            }
+
+            if (vpPrice.PalPrice.HasValue)
+            {
+                const string updatePalPriceQuery = @"
+                UPDATE domis.product_pricing
+                SET price = @Price
+                WHERE product_id = @ProductId
+                  AND user_type = @UserType
+                  AND packaging_type = 'pal'";
+
+                await connection.ExecuteAsync(updatePalPriceQuery, new
+                {
+                    Price = vpPrice.PalPrice.Value,
+                    ProductId = productId,
+                    vpPrice.UserType
+                }); 
+            }
+        }
+    }
+
+    private async Task UpdateRegularPrice(int productId, decimal? updatedRegularPrice)
+    {
+        const string updateProductQuery = @"
+            UPDATE domis.product
+            SET price = @Price
+            WHERE id = @ProductId";
+
+        await connection.ExecuteAsync(updateProductQuery, new
+        {
+            Price = updatedRegularPrice,
+            ProductId = productId
+        });
     }
 
     #region ExtensionsMethods

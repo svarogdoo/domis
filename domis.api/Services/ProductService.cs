@@ -21,6 +21,7 @@ public interface IProductService
     Task<bool> AssignProductToCategory(AssignProductToCategoryRequest request);
     Task<IEnumerable<ProductPreviewDto>> GetProductsOnSaleAsync();
     Task<Size?> UpdateProductSizing(int productId, Size updatedSizing);
+    Task<bool> UpdateProductPricing(int productId, ProductPriceUpdateDto updatedPricing);
     Task<IEnumerable<ProductSaleHistoryDto>> GetSaleHistory(int productId);
 }
 
@@ -102,6 +103,15 @@ public class ProductService(
             throw new NotFoundException("Product does not exist.");
         
         return await repository.UpdateProductSizing(productId, updatedSizing);
+    }
+
+    public async Task<bool> UpdateProductPricing(int productId, ProductPriceUpdateDto updatedPricing)
+    {
+        var exists = await repository.ProductExists(productId);
+        if (!exists)
+            throw new NotFoundException("Product does not exist.");
+
+        return await repository.UpdateProductPricing(productId, updatedPricing);
     }
 
     public async Task<IEnumerable<ProductSaleHistoryDto>> GetSaleHistory(int productId)
