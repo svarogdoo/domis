@@ -172,25 +172,26 @@ public static class AdminEndpoints
         })
         .WithDescription("Update product sizing.");
         //.RequreAuthorization("Admin");
-        
-        group.MapPut("/products/{productId:int}/pricing", async (int productId, [FromBody] ProductPriceUpdateDto request, IProductService productService) =>
-        {
-            try
-            {
-                var updatedPrice = await productService.UpdateProductPricing(productId, request);
-                return Results.Ok(updatedPrice);
-            }
-            catch (NotFoundException ex)
-            {
-                return Results.NotFound(ex.Message);
-            }
-            catch (Exception)
-            {
-                return Results.StatusCode(500);
-            }
-        })
-        .WithDescription("Update product sizing.")
-        .RequireAuthorization("Admin");
+
+        group.MapPut("/products/{productId:int}/pricing",
+                async (int productId, [FromBody] ProductPriceUpdateDto request, IProductService productService) =>
+                {
+                    try
+                    {
+                        var updatedPrice = await productService.UpdateProductPricing(productId, request);
+                        return Results.Ok(updatedPrice);
+                    }
+                    catch (NotFoundException ex)
+                    {
+                        return Results.NotFound(ex.Message);
+                    }
+                    catch (Exception)
+                    {
+                        return Results.StatusCode(500);
+                    }
+                })
+            .WithDescription("Update product sizing.");
+        // .RequireAuthorization("Admin");
 
         group.MapGet("/product/{productId:int}/sale-history", async (int productId, IProductService productService) =>
         {

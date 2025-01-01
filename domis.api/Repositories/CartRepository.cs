@@ -246,7 +246,7 @@ public class CartRepository(IDbConnection connection, PriceCalculationHelper hel
             );
 
             var cart = cartDictionary.Values.FirstOrDefault();
-            if (cart != null)
+            if (cart is { Items.Count: > 0 })
                 await ValidateAndUpdateCartItems(userRole, cart.Items);
 
             return cart;
@@ -340,13 +340,15 @@ public class CartRepository(IDbConnection connection, PriceCalculationHelper hel
             var pakSize = PriceCalculationHelper.PakSizeAsNumber(sizing);
 
             //set quantity to show as package
+            var unitsQuantity = cartItem.Quantity;
             cartItem.Quantity = (decimal)(cartItem.Quantity / pakSize)!;
 
             var expectedPrice = 
-                await helper.GetPriceBasedOnRoleAndQuantity(cartItem.ProductId, userRole, cartItem.Quantity, palSize);
+                await helper.GetPriceBasedOnRoleAndQuantity(cartItem.ProductId, userRole, unitsQuantity, palSize);
 
             if (expectedPrice == null || cartItem.CartItemPrice == expectedPrice)
             {
+                //show price per packet
                 cartItem.CartItemPrice = (decimal)(expectedPrice * pakSize)!;
                 continue;
             };
@@ -355,6 +357,7 @@ public class CartRepository(IDbConnection connection, PriceCalculationHelper hel
             Log.Information($"Updating price for product ID {cartItem.ProductId}: " +
                             $"Old Price: {cartItem.CartItemPrice}, New Price: {expectedPrice}");
             
+            //show price per packet
             cartItem.CartItemPrice = (decimal)(expectedPrice * pakSize)!;
         }
     }
