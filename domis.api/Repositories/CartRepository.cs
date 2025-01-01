@@ -339,11 +339,12 @@ public class CartRepository(IDbConnection connection, PriceAndSizeHelper helper)
         foreach (var cartItem in cartItems)
         {
             var sizing = await helper.GetProductSizing(cartItem.ProductId);
-            var palSize = PriceAndSizeHelper.PalSizeAsNumber(sizing);
-            var pakSize = PriceAndSizeHelper.PakSizeAsNumber(sizing);
             
             var expectedPrice = await helper.GetPriceBasedOnRoleAndQuantity(cartItem.ProductId, userRole, cartItem.Quantity, sizing);
 
+            //just for sale
+            cartItem.ProductDetails.Price *= PriceAndSizeHelper.PakSizeAsNumber(sizing);
+            
             if (expectedPrice == null || cartItem.CartItemPrice == expectedPrice)
                 continue;
             

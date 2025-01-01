@@ -33,7 +33,7 @@ public class PriceAndSizeHelper(IDbConnection connection)
         var effectivePrice = await connection.ExecuteScalarAsync<decimal?>(ProductQueries.GetProductEffectivePrice, new { ProductId = productId });
         var pakSize = PakSizeAsNumber(size); 
         
-        return effectivePrice * pakSize;
+        return effectivePrice * (pakSize ?? 1);
     }
 
     private async Task<decimal?> GetProductPriceVp(int productId, string role, decimal packageQuantity, Size? size)
