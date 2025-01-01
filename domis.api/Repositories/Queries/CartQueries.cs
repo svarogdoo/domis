@@ -3,9 +3,12 @@ namespace domis.api.Repositories.Queries;
 public static class CartQueries
 {
     public const string CheckIfCartExists = @"
-        SELECT EXISTS 
-        (SELECT 1 FROM domis.cart WHERE id = @CartId);"
-;
+        SELECT id
+        FROM domis.cart
+        WHERE id = @CartId OR (@CartId IS NULL AND user_id = @UserId)
+        LIMIT 1;"
+    ;
+    
     public const string GetAllCartStatuses = @"
                SELECT id AS Id, 
                status_name AS StatusName 

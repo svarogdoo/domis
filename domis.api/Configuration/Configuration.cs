@@ -124,7 +124,7 @@ public static class Configuration
         builder.Services.AddTransient<ICustomEmailSender<UserEntity>, CustomEmailSender>();
         
         //Ebuilder.Services.AddScoped<IPriceHelpers, PriceHelpers>();
-        builder.Services.AddScoped<PriceCalculationHelper>();
+        builder.Services.AddScoped<PriceAndSizeHelper>();
     }
 
     public static void RegisterMiddlewares(this WebApplication app)

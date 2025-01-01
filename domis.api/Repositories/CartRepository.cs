@@ -3,6 +3,7 @@ using Dapper;
 using domis.api.Common;
 using domis.api.DTOs.Cart;
 using domis.api.DTOs.Order;
+using domis.api.DTOs.Product;
 using domis.api.Repositories.Helpers;
 using domis.api.Repositories.Queries;
 using Serilog;
@@ -15,14 +16,14 @@ public interface ICartRepository
     Task<IEnumerable<OrderStatusDto>?> AllOrderStatuses();
     Task<int> CreateCartAsync(string? userId);
     Task<bool> UpdateCartStatusAsync(int cartId, int statusId);
-    Task<int?> CreateCartItemAsync(int? cartId, int productId, decimal addedPakQuantity, string? userId, string role, decimal discount = 0);
+    Task<int?> CreateCartItemAsync(int? cartId, int productId, decimal addedPackageQuantity, string? userId, string role, decimal discount = 0);
     Task<bool> UpdateCartItemQuantityAsync(int cartItemId, decimal newPakQuantity, string role);
     Task<bool> DeleteCartItemAsync(int cartItemId);
     Task<bool> DeleteCartAsync(int cartId);
     Task<CartDto?> Cart( string userRole, string? userId, int? cartId);
     Task<bool> SetCartUserId(int cartId, string userId);
 }
-public class CartRepository(IDbConnection connection, PriceCalculationHelper helper) : ICartRepository
+public class CartRepository(IDbConnection connection, PriceAndSizeHelper helper) : ICartRepository
 {
     public async Task<IEnumerable<OrderStatusDto>?> AllOrderStatuses()
     {
@@ -84,29 +85,33 @@ public class CartRepository(IDbConnection connection, PriceCalculationHelper hel
         }
     }
     
-    public async Task<int?> CreateCartItemAsync(int? cartId, int productId, decimal addedPakQuantity, string? userId, string role, decimal discount = 0)
+    public async Task<int?> CreateCartItemAsync(int? cartId, int productId, decimal addedPackageQuantity, string? userId, string role, decimal discount = 0)
     {
         try
         {
-            var cartExists = await connection.ExecuteScalarAsync<bool>(CartQueries.CheckIfCartExists, new { CartId = cartId });
-            if (!cartExists) cartId = await CreateCartAsync(userId);
-
+            var existingCartId = await connection.ExecuteScalarAsync<int?>(CartQueries.CheckIfCartExists, new { CartId = cartId, UserId = userId });
+            cartId = existingCartId ?? await CreateCartAsync(userId);
+            
             var productExists = await connection.ExecuteScalarAsync<bool>(ProductQueries.CheckIfProductExists, new { ProductId = productId });
             if (!productExists) throw new NotFoundException($"Product with ID {productId} does not exist.");
 
             var sizing = await helper.GetProductSizing(productId);
-            var pakSize = PriceCalculationHelper.PakSizeAsNumber(sizing);
+            // var pakSize = PriceAndSizeHelper.PakSizeAsNumber(sizing);
             
             // if (addedPakQuantity % pakSize != 0 || pakSize == null)
             //     throw new ArgumentException($"Quantity - {addedPakQuantity} must be in increments of the pak size - {pakSize}.");
             
-            var palSize = PriceCalculationHelper.PalSizeAsNumber(sizing);
+            // var palSize = PriceAndSizeHelper.PalSizeAsNumber(sizing);
 
             var cartItemExists = await connection.ExecuteScalarAsync<bool>(CartQueries.CheckIfProductExistsInCart, new { CartId = cartId, ProductId = productId });
 
-            return cartItemExists 
-                ? await UpdateExistingCartItem(cartId, productId, addedPakQuantity * (decimal)pakSize!, role, palSize) 
-                : await AddNewCartItem(cartId, productId, addedPakQuantity * (decimal)pakSize!, role, palSize);
+            return cartItemExists
+                ? await UpdateExistingCartItem(cartId, productId, addedPackageQuantity, role, sizing)
+                : await AddNewCartItem(cartId, productId, addedPackageQuantity, role, sizing);
+            
+            // return cartItemExists 
+            //     ? await UpdateExistingCartItem(cartId, productId, addedPackageQuantity * (decimal)pakSize!, role, sizing) 
+            //     : await AddNewCartItem(cartId, productId, addedPackageQuantity * (decimal)pakSize!, role, sizing);
         }
         catch (Exception ex)
         {
@@ -127,22 +132,17 @@ public class CartRepository(IDbConnection connection, PriceCalculationHelper hel
             if (!ci.Exists)
                 throw new NotFoundException($"Cart item with ID {cartItemId} does not exist.");
             
-            var sizing = await helper.GetProductSizing(ci.ProductId);
+            var size = await helper.GetProductSizing(ci.ProductId);
             
             // if (addedQuantity % pakSize != 0)
             //     throw new ArgumentException($"Quantity {addedQuantity} must be in increments of the pak size {pakSize}.");
             
-            // var totalQ = ci.CurrentQuantity + addedQuantity;
-            // var totalQ = newQuantity;
-            var palSize = PriceCalculationHelper.PalSizeAsNumber(sizing);
-            var pakSize = PriceCalculationHelper.PakSizeAsNumber(sizing);
-            
             var rowsAffected = await connection.ExecuteAsync(CartQueries.UpdateCartItemQuantityAndPrice, new
             {
                 CartItemId = cartItemId,
-                Quantity = newPakQuantity * pakSize,
+                Quantity = newPakQuantity,
                 ModifiedAt = DateTime.UtcNow,
-                Price = await helper.GetPriceBasedOnRoleAndQuantity(ci.ProductId, role, (decimal)(newPakQuantity * pakSize), palSize)
+                Price = await helper.GetPriceBasedOnRoleAndQuantity(ci.ProductId, role, newPakQuantity, size)
             });
 
             return rowsAffected > 0;
@@ -260,16 +260,16 @@ public class CartRepository(IDbConnection connection, PriceCalculationHelper hel
     #region ExtensionMethods
     
     
-    private async Task<int?> AddNewCartItem(int? cartId, int productId, decimal quantity, string role, decimal? palSize)
+    private async Task<int?> AddNewCartItem(int? cartId, int productId, decimal packageQuantity, string role, Size? size)
     {
-        var price = await helper.GetPriceBasedOnRoleAndQuantity(productId, role, quantity, palSize);
+        var pricePerPackage = await helper.GetPriceBasedOnRoleAndQuantity(productId, role, packageQuantity, size);
         
         var parameters = new
         {
             CartId = cartId,
             ProductId = productId,
-            Quantity = quantity,
-            Price = price,
+            Quantity = packageQuantity,
+            Price = pricePerPackage,
             CreatedAt = DateTime.UtcNow,
             ModifiedAt = DateTime.UtcNow
         };
@@ -278,31 +278,34 @@ public class CartRepository(IDbConnection connection, PriceCalculationHelper hel
         return cartId;
     }
 
-    private async Task<int?> UpdateExistingCartItem(int? cartId, int productId, decimal addedQuantity, string role, decimal? palSize)
+    private async Task<int?> UpdateExistingCartItem(int? cartId, int productId, decimal addedPackageQuantity, string role, Size? size)
     {
-        var currentQuantity = await connection.ExecuteScalarAsync<decimal>(CartQueries.GetCIQuantityByCartAndProduct, new { CartId = cartId, ProductId = productId });
+        var currentPackageQuantity = await connection.ExecuteScalarAsync<decimal>(CartQueries.GetCIQuantityByCartAndProduct, new { CartId = cartId, ProductId = productId });
 
-        var totalQuantity = currentQuantity + addedQuantity;
-        if (totalQuantity < palSize)
+        //ovde sad moram porediti sa brojem paketa u paleti
+        var packagesInPallet = PriceAndSizeHelper.PalSizeAsNumber(size) / PriceAndSizeHelper.PalSizeAsNumber(size);
+        
+        var totalPackageQuantity = currentPackageQuantity + addedPackageQuantity;
+        if (totalPackageQuantity < packagesInPallet)
         {
             await connection.ExecuteScalarAsync<int>(CartQueries.UpdateCIQuantityByCartAndProduct, new
             {
                 CartId = cartId,
                 ProductId = productId,
-                Quantity = totalQuantity,
+                Quantity = totalPackageQuantity,
                 ModifiedAt = DateTime.UtcNow
             });
         }
         else
         {
-            var updatedPrice = await helper.GetPriceBasedOnRoleAndQuantity(productId, role, totalQuantity, palSize);
+            var updatedPriceForPal = await helper.GetPriceBasedOnRoleAndQuantity(productId, role, totalPackageQuantity, size);
             
             await connection.ExecuteScalarAsync<int>(CartQueries.UpdateCIPriceAndQuantityByCartAndProduct, new
             {
                 CartId = cartId,
                 ProductId = productId,
-                Quantity = totalQuantity,
-                Price = updatedPrice,
+                Quantity = totalPackageQuantity,
+                Price = updatedPriceForPal,
                 ModifiedAt = DateTime.UtcNow
             });
         }
@@ -336,29 +339,17 @@ public class CartRepository(IDbConnection connection, PriceCalculationHelper hel
         foreach (var cartItem in cartItems)
         {
             var sizing = await helper.GetProductSizing(cartItem.ProductId);
-            var palSize = PriceCalculationHelper.PalSizeAsNumber(sizing);
-            var pakSize = PriceCalculationHelper.PakSizeAsNumber(sizing);
-
-            //set quantity to show as package
-            var unitsQuantity = cartItem.Quantity;
-            cartItem.Quantity = (decimal)(cartItem.Quantity / pakSize)!;
-
-            var expectedPrice = 
-                await helper.GetPriceBasedOnRoleAndQuantity(cartItem.ProductId, userRole, unitsQuantity, palSize);
+            var palSize = PriceAndSizeHelper.PalSizeAsNumber(sizing);
+            var pakSize = PriceAndSizeHelper.PakSizeAsNumber(sizing);
+            
+            var expectedPrice = await helper.GetPriceBasedOnRoleAndQuantity(cartItem.ProductId, userRole, cartItem.Quantity, sizing);
 
             if (expectedPrice == null || cartItem.CartItemPrice == expectedPrice)
-            {
-                //show price per packet
-                cartItem.CartItemPrice = (decimal)(expectedPrice * pakSize)!;
                 continue;
-            };
             
-            // If the price has changed, update it
+            cartItem.CartItemPrice = (decimal)expectedPrice;
             Log.Information($"Updating price for product ID {cartItem.ProductId}: " +
                             $"Old Price: {cartItem.CartItemPrice}, New Price: {expectedPrice}");
-            
-            //show price per packet
-            cartItem.CartItemPrice = (decimal)(expectedPrice * pakSize)!;
         }
     }
 

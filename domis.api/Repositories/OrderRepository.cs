@@ -27,7 +27,7 @@ public interface IOrderRepository
     Task<IEnumerable<UserOrderDto>> GetOrdersByUser(string userId);
     Task<IEnumerable<OrderDetailsDto>> GetOrders();
 }
-public class OrderRepository(IDbConnection connection, PriceCalculationHelper helper) : IOrderRepository
+public class OrderRepository(IDbConnection connection, PriceAndSizeHelper helper) : IOrderRepository
 {
     public async Task<IEnumerable<PaymentStatusDto>?> GetAllPaymentStatuses()
     {
@@ -232,9 +232,9 @@ public class OrderRepository(IDbConnection connection, PriceCalculationHelper he
         foreach (var cartItem in cartItems)
         {
             var sizing = await helper.GetProductSizing(cartItem.ProductId);
-            var palSize = PriceCalculationHelper.PalSizeAsNumber(sizing);
+            var palSize = PriceAndSizeHelper.PalSizeAsNumber(sizing);
             var expectedPrice = await helper.GetPriceBasedOnRoleAndQuantity(
-                cartItem.ProductId, userRole, cartItem.Quantity, palSize);
+                cartItem.ProductId, userRole, cartItem.Quantity, sizing);
 
             // If the price hasn't changed, do nothing
             if (cartItem.ProductPrice == expectedPrice) continue;
