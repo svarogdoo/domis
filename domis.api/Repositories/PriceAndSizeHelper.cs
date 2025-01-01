@@ -9,7 +9,7 @@ namespace domis.api.Repositories;
 
 public class PriceCalculationHelper(IDbConnection connection)
 {
-    public async Task<decimal?> GetPriceBasedOnRoleAndQuantity(int productId, string userRole, decimal quantity, decimal? palSize)
+    public async Task<decimal?> GetPriceBasedOnRoleAndQuantity(int productId, string userRole, decimal quantity, Size size)
     {
         try
         {
@@ -31,13 +31,12 @@ public class PriceCalculationHelper(IDbConnection connection)
     {
         //Regular users don't get discount on quantity (they don't have pallets)
         //but there is check to see if product is on sale (query)
-        var effectivePrice = await connection.ExecuteScalarAsync<decimal>(ProductQueries.GetProductEffectivePrice,
-        new { ProductId = productId });
+        var effectivePrice = await connection.ExecuteScalarAsync<decimal>(ProductQueries.GetProductEffectivePrice, new { ProductId = productId });
          
         return effectivePrice;
     }
 
-    private async Task<decimal?> GetProductPriceVp(int productId, string role, decimal quantity, decimal? palSize)
+    private async Task<decimal?> GetProductPriceVp(int productId, string role, decimal packageQuantity, decimal? palSize)
     {
         //vp users don't have products on sale (if you want to include, update query or this method)
         var priceVp = await connection.QueryFirstOrDefaultAsync<VpPriceDetails>(
@@ -49,7 +48,7 @@ public class PriceCalculationHelper(IDbConnection connection)
         
         if (!palSize.HasValue) return priceVp.PakPrice;
         
-        return quantity >= palSize 
+        return packageQuantity >= palSize 
             ? priceVp.PalPrice 
             : priceVp.PakPrice;
     }
