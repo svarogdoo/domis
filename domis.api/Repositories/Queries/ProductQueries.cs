@@ -363,7 +363,7 @@ public static class ProductQueries
             s.end_date AS EndDate
         FROM domis.product p
         LEFT JOIN domis.sales s ON p.id = s.product_id
-        LEFT JOIN domis.product_image pi ON p.id = pi.product_id
+        LEFT JOIN domis.product_image pi ON p.id = pi.product_id AND pi.image_type_id = 1
         LEFT JOIN domis.image i ON pi.image_id = i.id
         LEFT JOIN domis.image_type it ON pi.image_type_id = it.id
         WHERE p.active = TRUE
