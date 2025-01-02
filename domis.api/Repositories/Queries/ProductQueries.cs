@@ -180,8 +180,10 @@ public static class ProductQueries
                 p.product_name AS Name,
                 p.sku AS Sku,
                 p.price AS Price,
+                p.width AS Width,
+                p.height AS Height,
                 p.stock AS Stock,
-                p.active AS IsActive,
+                p.active AS ProductIsActive,
                 pi.FeaturedImageUrl,
                 pqt.id AS QuantityType,
                 -- Sale Info from LatestSale CTE
@@ -195,13 +197,6 @@ public static class ProductQueries
             LEFT JOIN ProductImages pi ON p.id = pi.ProductId
             LEFT JOIN domis.product_quantity_type pqt ON p.quantity_type_id = pqt.id
             LEFT JOIN LatestSale ls ON p.id = ls.product_id -- Join to LatestSale instead of domis.sales
-            WHERE p.active = TRUE
-                AND (@MinPrice IS NULL OR p.price >= @MinPrice)
-                AND (@MaxPrice IS NULL OR p.price <= @MaxPrice)
-                AND (@MinWidth IS NULL OR p.width >= @MinWidth)
-                AND (@MaxWidth IS NULL OR p.width <= @MaxWidth)    
-                AND (@MinHeight IS NULL OR p.height >= @MinHeight)
-                AND (@MaxHeight IS NULL OR p.height <= @MaxHeight)
         )
         SELECT *
         FROM ProductsWithImages";

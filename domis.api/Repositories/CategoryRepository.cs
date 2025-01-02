@@ -55,7 +55,7 @@ public class CategoryRepository(IDbConnection connection) : ICategoryRepository
             Log.Error(ex, "An error occurred while fetching categories"); throw;
         }
     }
-
+    
     //probably no need for this one
     public async Task<Category?> GetById(int id)
     {
@@ -81,8 +81,8 @@ public class CategoryRepository(IDbConnection connection) : ICategoryRepository
             
             category.Paths = await GetCategoryPath(categoryId);
             
-            var query = GenerateQueryWithOrderByAndPagination(options);
-                    
+            var query = GenerateQueryWithPageOptionsAndFilters(options, filters);
+
             var productsDb = await connection.QueryAsync<ProductPreviewDto, SaleInfo, ProductPreviewDto>(
                 query,
                 (product, saleInfo) =>
@@ -213,10 +213,38 @@ public class CategoryRepository(IDbConnection connection) : ICategoryRepository
             Products = products.ToList()
         };
     }
-    
-    private static string GenerateQueryWithOrderByAndPagination(PageOptions options) 
-        => $@"
-            {ProductQueries.GetAllFromCategory}
-            ORDER BY {StaticHelper.GetOrderByClause(options.Sort)}
-            OFFSET @Offset LIMIT @Limit;";
+
+    private static string GenerateQueryWithPageOptionsAndFilters(PageOptions options, ProductFilter? filters)
+    {
+        const string baseQuery = ProductQueries.GetAllFromCategory;
+        
+        var filtersList = new List<string> { "ProductIsActive = TRUE" };
+        
+        if (filters?.MinPrice is not null)
+            filtersList.Add("Price >= @MinPrice");
+
+        if (filters?.MaxPrice is not null)
+            filtersList.Add("Price <= @MaxPrice");
+        
+        if (filters?.MinHeight is not null)
+            filtersList.Add("Height >= @MinHeight");
+        
+        if (filters?.MaxHeight is not null)
+            filtersList.Add("Height <= @MaxHeight");
+
+        if (filters?.MinWidth is not null)
+            filtersList.Add("Width >= @MinWidth");
+        
+        if (filters?.MaxWidth is not null)
+            filtersList.Add("Width <= @MaxWidth");
+        
+        var whereClause = string.Join(" AND ", filtersList);
+
+        return $"""
+                {baseQuery}
+                WHERE {whereClause}
+                ORDER BY {StaticHelper.GetOrderByClause(options.Sort)}
+                OFFSET @Offset LIMIT @Limit;
+                """;
+    }
 }
