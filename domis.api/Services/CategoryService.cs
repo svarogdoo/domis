@@ -2,19 +2,20 @@
 using domis.api.Common;
 using domis.api.DTOs.Category;
 using domis.api.DTOs.Product;
+using domis.api.Endpoints.Helpers;
 using domis.api.Models;
 using domis.api.Models.Entities;
 using domis.api.Repositories;
+using PageOptions = domis.api.Models.PageOptions;
 
 namespace domis.api.Services;
 
 public interface ICategoryService
 {
     Task<IEnumerable<CategoryMenuDto>?> GetAll();
-
     //probably no need for this one
     Task<Category?> GetById(int id);
-    Task<CategoryWithProductsDto?> GetCategoryProducts(int categoryId, PageOptions options, UserEntity? user);
+    Task<CategoryWithProductsDto?> GetCategoryProducts(int categoryId, PageOptions options, UserEntity? user, ProductFilter? filters);
     Task<IEnumerable<ProductDetailsDto>> PutCategoryOnSale(CategorySaleRequest request);
 }
 
@@ -31,16 +32,16 @@ public class CategoryService(ICategoryRepository repository, IProductRepository 
         return await repository.GetById(id);
     }
 
-    public async Task<CategoryWithProductsDto?> GetCategoryProducts(int categoryId, PageOptions options, UserEntity? user)
+    public async Task<CategoryWithProductsDto?> GetCategoryProducts(int categoryId, PageOptions options, UserEntity? user, ProductFilter? filters)
     {
         //var discount = await priceHelpers.GetDiscount(user);
         const int discount = 0;
         
         var role = user is not null
-            ? await userRepo.GetUserRoleAsync(user.Id)
+            ? await userRepo.GetUserRoleAsync(user.Id) ?? Roles.User.GetName()
             : Roles.User.GetName();
         
-        return await repository.GetCategoryProducts(categoryId, options, discount, role ?? Roles.User.GetName());
+        return await repository.GetCategoryProducts(categoryId, options, filters, discount, role);
     }
 
     public async Task<IEnumerable<ProductDetailsDto>> PutCategoryOnSale(CategorySaleRequest request)

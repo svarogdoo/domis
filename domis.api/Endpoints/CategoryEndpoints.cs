@@ -1,9 +1,11 @@
-﻿using domis.api.Models;
+﻿using domis.api.Endpoints.Helpers;
+using domis.api.Models;
 using domis.api.Models.Entities;
 using domis.api.Models.Enums;
 using domis.api.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using PageOptions = domis.api.Endpoints.Helpers.PageOptions;
 
 namespace domis.api.Endpoints;
 
@@ -33,32 +35,35 @@ public static class CategoryEndpoints
         }).WithDescription("get category by id | NOT IMPLEMENTED");
 
 
-        group.MapGet("/{categoryId:int}/products", async (int categoryId, int? pageNumber, int? pageSize, int? sort, ICategoryService categoryService, HttpContext httpContext, UserManager<UserEntity> userManager) =>
+        group.MapGet("/{categoryId:int}/products", async (int categoryId, [AsParameters]PageOptions options, [AsParameters]ProductFilter filters, 
+            ICategoryService categoryService, HttpContext httpContext, UserManager<UserEntity> userManager) =>
         {
-            if (pageNumber <= 0)
+            if (options.PageNumber <= 0)
             {
                 return Results.BadRequest("Page number must be greater than 0.");
             }
 
-            if (pageSize <= 0 || pageSize > 100)
+            if (options.PageSize is <= 0 or > 100)
             {
                 return Results.BadRequest("Page size must be between 1 and 100.");
             }
 
-            var pageOptions = new PageOptions 
+            var pageOptions = new Models.PageOptions 
             { 
-                PageNumber = pageNumber ?? 1, 
-                PageSize = pageSize ?? 18,
-                Sort = sort is not null
-                    ? (SortProductEnum)sort
+                PageNumber = options.PageNumber ?? 1, 
+                PageSize = options.PageSize ?? 18,
+                Sort = options.Sort is not null
+                    ? (SortProductEnum)options.Sort
                     : SortProductEnum.NameAsc
             };
 
             var user = await userManager.GetUserAsync(httpContext.User);
 
-            var categories = await categoryService.GetCategoryProducts(categoryId, pageOptions, user);
+            var categoryWithProducts = await categoryService.GetCategoryProducts(categoryId, pageOptions, user, filters);
 
-            return categories is null ? Results.NotFound() : Results.Ok(categories);
+            return categoryWithProducts is null 
+                ? Results.NotFound() 
+                : Results.Ok(categoryWithProducts);
 
         }).WithDescription("get products by category");
         

@@ -6,8 +6,10 @@ using domis.api.Repositories.Helpers;
 using Serilog;
 using System.Data;
 using domis.api.Common;
+using domis.api.Endpoints.Helpers;
 using domis.api.Models.Entities;
 using domis.api.Models.Enums;
+using PageOptions = domis.api.Models.PageOptions;
 
 namespace domis.api.Repositories;
 
@@ -17,7 +19,7 @@ public interface ICategoryRepository
 
     //probably no need for this one
     Task<Category?> GetById(int id);
-    Task<CategoryWithProductsDto?> GetCategoryProducts(int categoryId, PageOptions options, decimal discount, string role);
+    Task<CategoryWithProductsDto?> GetCategoryProducts(int categoryId, PageOptions options, ProductFilter? filters, decimal discount, string role);
     Task<bool> CategoryExists(int categoryId);
     Task<IEnumerable<SaleEntity>> PutCategoryOnSale(CategorySaleRequest request);
 }
@@ -53,7 +55,7 @@ public class CategoryRepository(IDbConnection connection) : ICategoryRepository
             Log.Error(ex, "An error occurred while fetching categories"); throw;
         }
     }
-
+    
     //probably no need for this one
     public async Task<Category?> GetById(int id)
     {
@@ -66,7 +68,7 @@ public class CategoryRepository(IDbConnection connection) : ICategoryRepository
         return product;
     }
 
-    public async Task<CategoryWithProductsDto?> GetCategoryProducts(int categoryId, PageOptions options, decimal discount = 0, string role = "User")
+    public async Task<CategoryWithProductsDto?> GetCategoryProducts(int categoryId, PageOptions options, ProductFilter? filters, decimal discount = 0, string role = "User")
     {
         try
         {
@@ -79,8 +81,8 @@ public class CategoryRepository(IDbConnection connection) : ICategoryRepository
             
             category.Paths = await GetCategoryPath(categoryId);
             
-            var query = GenerateQueryWithOrderByAndPagination(options);
-                    
+            var query = GenerateQueryWithPageOptionsAndFilters(options, filters);
+
             var productsDb = await connection.QueryAsync<ProductPreviewDto, SaleInfo, ProductPreviewDto>(
                 query,
                 (product, saleInfo) =>
@@ -91,7 +93,18 @@ public class CategoryRepository(IDbConnection connection) : ICategoryRepository
                         : saleInfo;
                     return product;
                 },
-                param: new { CategoryId = categoryId, Offset = offset, Limit = options.PageSize},
+                param: new
+                {
+                    CategoryId = categoryId, 
+                    Offset = offset, 
+                    Limit = options.PageSize,
+                    filters?.MinPrice,
+                    filters?.MaxPrice,
+                    filters?.MinWidth,
+                    filters?.MaxWidth,
+                    filters?.MinHeight,
+                    filters?.MaxHeight,
+                },
                 splitOn: "SalePrice"
             );
             
@@ -109,7 +122,7 @@ public class CategoryRepository(IDbConnection connection) : ICategoryRepository
             }
             
             //else -> return vp users products view
-            return await GetProductsWithVpPricing(role, products, category);
+            return await EnrichProductsWithVpPricing(role, products, category);
         }
         catch (Exception ex)
         {
@@ -177,7 +190,7 @@ public class CategoryRepository(IDbConnection connection) : ICategoryRepository
     private async Task<IEnumerable<CategoryPath>> GetCategoryPath(int categoryId) 
         => await connection.QueryAsync<CategoryPath>(CategoryQueries.GetCategoryPath, new { CategoryId = categoryId });
     
-    private async Task<CategoryWithProductsDto?> GetProductsWithVpPricing(string role, List<ProductPreviewDto> products, CategoryBasicInfoDto category)
+    private async Task<CategoryWithProductsDto?> EnrichProductsWithVpPricing(string role, List<ProductPreviewDto> products, CategoryBasicInfoDto category)
     {            
         var productIds = products.Select(p => p.Id).ToArray();
 
@@ -200,10 +213,38 @@ public class CategoryRepository(IDbConnection connection) : ICategoryRepository
             Products = products.ToList()
         };
     }
-    
-    private static string GenerateQueryWithOrderByAndPagination(PageOptions options) 
-        => $@"
-            {ProductQueries.GetAllFromCategory}
-            ORDER BY {StaticHelper.GetOrderByClause(options.Sort)}
-            OFFSET @Offset LIMIT @Limit;";
+
+    private static string GenerateQueryWithPageOptionsAndFilters(PageOptions options, ProductFilter? filters)
+    {
+        const string baseQuery = ProductQueries.GetAllFromCategory;
+        
+        var filtersList = new List<string> { "ProductIsActive = TRUE" };
+        
+        if (filters?.MinPrice is not null)
+            filtersList.Add("Price >= @MinPrice");
+
+        if (filters?.MaxPrice is not null)
+            filtersList.Add("Price <= @MaxPrice");
+        
+        if (filters?.MinHeight is not null)
+            filtersList.Add("Height >= @MinHeight");
+        
+        if (filters?.MaxHeight is not null)
+            filtersList.Add("Height <= @MaxHeight");
+
+        if (filters?.MinWidth is not null)
+            filtersList.Add("Width >= @MinWidth");
+        
+        if (filters?.MaxWidth is not null)
+            filtersList.Add("Width <= @MaxWidth");
+        
+        var whereClause = string.Join(" AND ", filtersList);
+
+        return $"""
+                {baseQuery}
+                WHERE {whereClause}
+                ORDER BY {StaticHelper.GetOrderByClause(options.Sort)}
+                OFFSET @Offset LIMIT @Limit;
+                """;
+    }
 }
