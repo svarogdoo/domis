@@ -1,6 +1,5 @@
 ﻿using domis.api.Common;
 using domis.api.DTOs.Common;
-using domis.api.DTOs.Image;
 using domis.api.DTOs.Product;
 using domis.api.Models;
 using domis.api.Models.Entities;
@@ -10,6 +9,7 @@ namespace domis.api.Services;
 
 public interface IProductService
 {
+    Task<ProductDetailsDto?> AddProduct(AddProductDto product);
     Task<IEnumerable<ProductPreviewDto>> GetAll();
     Task<ProductDetailsDto?> GetByIdWithDetails(int id, UserEntity? user);
     Task<ProductDetailsDto?> Update(ProductUpdateDto product);
@@ -30,6 +30,9 @@ public class ProductService(
     ICategoryRepository categoryRepo, 
     IUserRepository userRepo) : IProductService
 {
+    public async Task<ProductDetailsDto?> AddProduct(AddProductDto product) 
+        => await repository.AddProduct(product);
+
     public async Task<IEnumerable<ProductPreviewDto>> GetAll()
         => await repository.GetAll();
 

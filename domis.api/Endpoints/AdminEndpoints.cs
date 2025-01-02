@@ -15,162 +15,169 @@ public static class AdminEndpoints
         var group = routes.MapGroup("/api/admin").WithTags("Admin");
 
         group.MapGet("/users", async (IAdminService adminService) =>
-        {
-            var users = await adminService.GetUsers();
-            return Results.Ok(users);
-        })
-        .WithDescription("Get all users (id, username & role).")
-        .RequireAuthorization("Admin");
+            {
+                var users = await adminService.GetUsers();
+                return Results.Ok(users);
+            })
+            .WithDescription("Get all users (id, username & role).")
+            .RequireAuthorization("Admin");
 
         group.MapPost("/promote-to-admin", async ([FromBody] string userId, IAdminService adminService) =>
-        {
-            var userWithRoles = await adminService.PromoteToAdmin(userId);
-            return userWithRoles is null
-                ? Results.NotFound("User not found.")
-                : Results.Ok("User promoted to admin successfully.");
-        })
-        .WithDescription("Promote user to admin role.");
+            {
+                var userWithRoles = await adminService.PromoteToAdmin(userId);
+                return userWithRoles is null
+                    ? Results.NotFound("User not found.")
+                    : Results.Ok("User promoted to admin successfully.");
+            })
+            .WithDescription("Promote user to admin role.");
         // .RequireAuthorization("Admin");
 
         group.MapGet("/user/{userId}", async (string userId, IAdminService adminService) =>
-        {
-            var userWithRole = await adminService.GetUserById(userId);
-            return userWithRole is not null
-                ? Results.Ok(userWithRole)
-                : Results.NotFound("User not found.");
-        })
-        .WithDescription("Get user by ID.");
+            {
+                var userWithRole = await adminService.GetUserById(userId);
+                return userWithRole is not null
+                    ? Results.Ok(userWithRole)
+                    : Results.NotFound("User not found.");
+            })
+            .WithDescription("Get user by ID.");
         // .RequireAuthorization("Admin");
 
         group.MapGet("/roles", async (IAdminService adminService) =>
-        {
-            var roles = await adminService.GetRoles();
-            return Results.Ok(roles);
-        })
-        .WithDescription("Get all roles.");
+            {
+                var roles = await adminService.GetRoles();
+                return Results.Ok(roles);
+            })
+            .WithDescription("Get all roles.");
         // .RequireAuthorization("Admin");
 
         group.MapPut("/roles/discount", async ([FromBody] RoleDiscountRequest request, IAdminService adminService) =>
-        {
-            var updatedRole = await adminService.UpdateRoleDiscount(request.RoleName, request.Discount);
-            return updatedRole is not null
-                ? Results.Ok(updatedRole)
-                : Results.BadRequest($"Failed to update role: {request.RoleName}.");
-        })
-        .WithDescription("Update role discount.");
+            {
+                var updatedRole = await adminService.UpdateRoleDiscount(request.RoleName, request.Discount);
+                return updatedRole is not null
+                    ? Results.Ok(updatedRole)
+                    : Results.BadRequest($"Failed to update role: {request.RoleName}.");
+            })
+            .WithDescription("Update role discount.");
         // .RequireAuthorization("Admin");
 
-        group.MapPut("/user-role/{userId}", async (string userId, [FromBody]RoleRequest request, IAdminService adminService) =>
-        {
-            if (!Enum.TryParse<Roles>(request.Role, true, out var role))
-                return Results.BadRequest($"Role '{request.Role}' is not a valid role.");
-            
-            var success = await adminService.AddRoleToUser(userId, role);
-            return success
-                ? Results.Ok($"User promoted to {role.GetName()} successfully.")
-                : Results.BadRequest($"Failed to promote user to {role.GetName()}.");
+        group.MapPut("/user-role/{userId}",
+                async (string userId, [FromBody] RoleRequest request, IAdminService adminService) =>
+                {
+                    if (!Enum.TryParse<Roles>(request.Role, true, out var role))
+                        return Results.BadRequest($"Role '{request.Role}' is not a valid role.");
 
-        })
-        .WithDescription("Add user to a role.");
+                    var success = await adminService.AddRoleToUser(userId, role);
+                    return success
+                        ? Results.Ok($"User promoted to {role.GetName()} successfully.")
+                        : Results.BadRequest($"Failed to promote user to {role.GetName()}.");
+
+                })
+            .WithDescription("Add user to a role.");
         // .RequireAuthorization("Admin");
 
-        group.MapDelete("/user-role/{userId}", async (string userId, [FromBody]RoleRequest request, IAdminService adminService) =>
-        {
-            if (!Enum.TryParse<Roles>(request.Role, true, out var role))
-                return Results.BadRequest($"Role '{request.Role}' is not a valid role.");
-            
-            var success = await adminService.RemoveRoleFromUser(userId, role);
-            return success
-                ? Results.Ok($"User no longer has the {role.GetName()} role.")
-                : Results.BadRequest($"Failed to remove {role.GetName()} role from user.");
+        group.MapDelete("/user-role/{userId}",
+                async (string userId, [FromBody] RoleRequest request, IAdminService adminService) =>
+                {
+                    if (!Enum.TryParse<Roles>(request.Role, true, out var role))
+                        return Results.BadRequest($"Role '{request.Role}' is not a valid role.");
 
-        })
-        .WithDescription("Remove user from a role.");
+                    var success = await adminService.RemoveRoleFromUser(userId, role);
+                    return success
+                        ? Results.Ok($"User no longer has the {role.GetName()} role.")
+                        : Results.BadRequest($"Failed to remove {role.GetName()} role from user.");
+
+                })
+            .WithDescription("Remove user from a role.");
         // .RequireAuthorization("Admin");
 
         group.MapGet("/orders", async (IAdminService adminService) =>
-        {
-            var response = await adminService.Orders();
-            return Results.Ok(response);
-        })
-        .WithDescription("Gets all orders in the system.");
+            {
+                var response = await adminService.Orders();
+                return Results.Ok(response);
+            })
+            .WithDescription("Gets all orders in the system.");
         // .RequireAuthorization("Admin");
 
-        group.MapPut("/orders/status", async ([FromBody] UpdateOrderStatusRequest request, IOrderService orderService) =>
-        {
-            var response = await orderService.UpdateOrderStatus(request.OrderId, request.StatusId);
+        group.MapPut("/orders/status",
+                async ([FromBody] UpdateOrderStatusRequest request, IOrderService orderService) =>
+                {
+                    var response = await orderService.UpdateOrderStatus(request.OrderId, request.StatusId);
 
-            return Results.Ok(new UpdateOrderResponse(response));
-        })
-        .WithDescription("Update order status(1-New, 2-In Progress, 3-Sent, 4-Completed, 5-Canceled)");
+                    return Results.Ok(new UpdateOrderResponse(response));
+                })
+            .WithDescription("Update order status(1-New, 2-In Progress, 3-Sent, 4-Completed, 5-Canceled)");
         // .RequireAuthorization("Admin");
 
         group.MapPost("/product/sale", async ([FromBody] ProductSaleRequest request, IProductService productService) =>
-        {
-            try
             {
-                var success = await productService.PutProductsOnSale(request);
-                return success
-                    ? Results.Ok("Product put on sale successfully.")
-                    : Results.BadRequest();
-            }
-            catch (Exception ex)
-            {
-                return Results.BadRequest(ex.Message);
-            }
-        })
-        .WithDescription("Put a product on sale.");
+                try
+                {
+                    var success = await productService.PutProductsOnSale(request);
+                    return success
+                        ? Results.Ok("Product put on sale successfully.")
+                        : Results.BadRequest();
+                }
+                catch (Exception ex)
+                {
+                    return Results.BadRequest(ex.Message);
+                }
+            })
+            .WithDescription("Put a product on sale.");
         // .RequireAuthorization("Admin");
-        
-        group.MapPost("/category/sale", async ([FromBody] CategorySaleRequest request, ICategoryService categoryService) =>
-        {
-            try
-            {
-                var result = await categoryService.PutCategoryOnSale(request);
-                return Results.Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return Results.BadRequest(ex.Message);
-            }
-        })
-        .WithDescription("Put products within category on sale. If some products are already on sale separately, they will not be put on sale and will be returned for admin to decide what to do.");
+
+        group.MapPost("/category/sale",
+                async ([FromBody] CategorySaleRequest request, ICategoryService categoryService) =>
+                {
+                    try
+                    {
+                        var result = await categoryService.PutCategoryOnSale(request);
+                        return Results.Ok(result);
+                    }
+                    catch (Exception ex)
+                    {
+                        return Results.BadRequest(ex.Message);
+                    }
+                })
+            .WithDescription(
+                "Put products within category on sale. If some products are already on sale separately, they will not be put on sale and will be returned for admin to decide what to do.");
         // .RequireAuthorization("Admin");
-        
+
         group.MapDelete("/product/sale", async ([FromBody] List<int> request, IProductService productService) =>
-        {
-            var success = await productService.RemoveProductsFromSale(request);
-            Results.Ok(success);
-        })
-        .WithDescription("Assign or update a category for a product.");
-        
-        group.MapPost("/product/category", async ([FromBody] AssignProductToCategoryRequest request, IProductService productService) =>
-        {
-            var success = await productService.AssignProductToCategory(request);
-            return success
-                ? Results.Ok("Product category updated successfully.")
-                : Results.BadRequest("Failed to update product category.");
-        })
-        .WithDescription("Assign or update a category for a product.");
+            {
+                var success = await productService.RemoveProductsFromSale(request);
+                Results.Ok(success);
+            })
+            .WithDescription("Assign or update a category for a product.");
+
+        group.MapPost("/product/category",
+                async ([FromBody] AssignProductToCategoryRequest request, IProductService productService) =>
+                {
+                    var success = await productService.AssignProductToCategory(request);
+                    return success
+                        ? Results.Ok("Product category updated successfully.")
+                        : Results.BadRequest("Failed to update product category.");
+                })
+            .WithDescription("Assign or update a category for a product.");
         // .RequireAuthorization("Admin");
-        
-        group.MapPut("/products/{productId}/sizing", async (int productId, [FromBody] Size request, IProductService productService) =>
-        {
-            try
-            {
-                var updatedSize = await productService.UpdateProductSizing(productId, request);
-                return Results.Ok(updatedSize);
-            }
-            catch (NotFoundException ex)
-            {
-                return Results.NotFound(ex.Message);
-            }
-            catch (Exception)
-            {
-                return Results.StatusCode(500);
-            }
-        })
-        .WithDescription("Update product sizing.");
+
+        group.MapPut("/products/{productId}/sizing",
+                async (int productId, [FromBody] Size request, IProductService productService) =>
+                {
+                    try
+                    {
+                        var updatedSize = await productService.UpdateProductSizing(productId, request);
+                        return Results.Ok(updatedSize);
+                    }
+                    catch (NotFoundException ex)
+                    {
+                        return Results.NotFound(ex.Message);
+                    }
+                    catch (Exception)
+                    {
+                        return Results.StatusCode(500);
+                    }
+                })
+            .WithDescription("Update product sizing.");
         //.RequreAuthorization("Admin");
 
         group.MapPut("/products/{productId:int}/pricing",
@@ -194,22 +201,36 @@ public static class AdminEndpoints
         // .RequireAuthorization("Admin");
 
         group.MapGet("/product/{productId:int}/sale-history", async (int productId, IProductService productService) =>
+            {
+                try
+                {
+                    var result = await productService.GetSaleHistory(productId);
+                    return Results.Ok(result);
+                }
+                catch (NotFoundException ex)
+                {
+                    return Results.NotFound(ex.Message);
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem(detail: ex.Message, statusCode: 500);
+                }
+            })
+            .WithDescription("Gets history of product sale (reduced prices)");
+        //.RequireAuthorization("Admin");
+
+        group.MapPost("/product", async ([FromBody] AddProductDto request, IProductService productService) =>
         {
             try
             {
-                var result = await productService.GetSaleHistory(productId);
-                return Results.Ok(result);
-            }
-            catch (NotFoundException ex)
-            {
-                return Results.NotFound(ex.Message);
+                var product = await productService.AddProduct(request);
+                return Results.Ok(product);
             }
             catch (Exception ex)
             {
                 return Results.Problem(detail: ex.Message, statusCode: 500);
             }
-        })
-        .WithDescription("Gets history of product sale (reduced prices)");
-        //.RequireAuthorization("Admin");
+        }).WithDescription("Add new product")
+        .RequireAuthorization(Roles.Admin.GetName());
     }
 }
