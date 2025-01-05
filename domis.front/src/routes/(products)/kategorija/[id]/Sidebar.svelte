@@ -2,6 +2,8 @@
   import { page } from "$app/stores";
   import { categories } from "../../../../stores/categories";
   import arrowIcon from "$lib/icons/dropdown.svg";
+  import { filters } from "./filter";
+  import Filter from "./Filter.svelte";
 
   interface UnwrappedCategory {
     name: string;
@@ -12,8 +14,6 @@
   let categoriesList: Array<UnwrappedCategory>;
   let selectedCategory: Category | undefined;
   let selectedParentCategory: Category | null;
-
-  // let filterList: Array<Filter>
 
   // Get the category ID from the route
   $: $page.params.id && fetchSelectedCategory($page.params.id);
@@ -118,4 +118,12 @@
       {/each}
     </ul>
   {/if}
+  <!-- {#if filters}
+    <h2 class="font-bold text-lg">Filteri</h2>
+    <div class="flex flex-col gap-y-6">
+      {#each filters as filter}
+        <Filter {filter} />
+      {/each}
+    </div>
+  {/if} -->
 </aside>
