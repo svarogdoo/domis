@@ -36,12 +36,11 @@ public class PriceAndSizeHelper(IDbConnection connection)
         return effectivePrice * (pakSize ?? 1);
     }
 
+    //returns price per package (can be within pallet, which means lower price)
     private async Task<decimal?> GetProductPriceVp(int productId, string role, decimal packageQuantity, Size? size)
-    {
-        //ovde vratiti cenu paketa za tu odredjenu kolicinu
+    { 
+        // * vp users don't have products on sale (if you want to include, update query or this method)
         
-        //vp users don't have products on sale (if you want to include, update query or this method)
-        //cenu po jedinici mere za paket i za paletu
         var vpPricePerUnit = await connection.QueryFirstOrDefaultAsync<VpPriceDetails>(
             ProductQueries.GetSingleProductPricesForVP, 
             new { ProductId = productId, Role = role }
@@ -58,30 +57,6 @@ public class PriceAndSizeHelper(IDbConnection connection)
         return packageQuantity >= packagesInPallet
             ? vpPricePerUnit?.PalPrice * pakSize
             : vpPricePerUnit?.PakPrice * pakSize;
-        
-        decimal? pricePerPackage;
-        if (packageQuantity >= packagesInPallet)
-        {
-            // koristi cenu za paletu
-            pricePerPackage = vpPricePerUnit?.PalPrice * pakSize;
-        }
-        else
-        {
-            // koristi cenu za paket
-            pricePerPackage = vpPricePerUnit?.PakPrice * pakSize;
-        }
-
-        return pricePerPackage;
-        
-        if (vpPricePerUnit is null) return null;
-        
-        if (!palSize.HasValue) return vpPricePerUnit.PakPrice;
-
-        // var pricePerPackage = packageQuantity >= palSize
-        //     ? vpPricePerUnit.PalPrice * packagesInPallet
-        //     : vpPricePerUnit.PakPrice * packagesInPallet;
-        //
-        // return pricePerPackage;
     }
 
     public async Task<Size?> GetProductSizing(int productId) 
