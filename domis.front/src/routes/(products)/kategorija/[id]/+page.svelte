@@ -2,6 +2,7 @@
   import ProductCard from "./CategoryProductCard.svelte";
   import { getCategoryProducts } from "../../../../services/category-service";
   import { onMount } from "svelte";
+  import { page } from "$app/stores";
   import { mapSortTypeToString, SortType } from "../../../../enums";
 
   export let data;
@@ -33,11 +34,25 @@
 
   async function loadMore() {
     loading = true;
+
+    const minPrice = $page.url.searchParams.get("minPrice") || undefined;
+    const maxPrice = $page.url.searchParams.get("maxPrice") || undefined;
+    const minWidth = $page.url.searchParams.get("minWidth") || undefined;
+    const maxWidth = $page.url.searchParams.get("maxWidth") || undefined;
+    const minHeight = $page.url.searchParams.get("minHeight") || undefined;
+    const maxHeight = $page.url.searchParams.get("maxHeight") || undefined;
+
     const newItems = await getCategoryProducts(
       Number.parseInt(categoryDetails?.id ? categoryDetails.id : "sale"),
       pageNumber,
       pageSize,
-      sortType
+      sortType,
+      minPrice,
+      maxPrice,
+      minWidth,
+      maxWidth,
+      minHeight,
+      maxHeight
     );
 
     products = filterDuplicates(newItems);

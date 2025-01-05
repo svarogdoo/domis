@@ -1,25 +1,28 @@
 import { getCurrencyString } from "../../../../helpers/stringFormatter";
 
-export const filters: Array<FilterData> = [
-  {
-    name: "price",
+interface Filter {
+  price: FilterData;
+  width: FilterData;
+  height: FilterData;
+}
+
+export const filters: Filter = {
+  price: {
     displayName: "Cena",
-    minValue: 100,
+    minValue: 0,
     maxValue: 1000,
     unit: getCurrencyString(),
   },
-  {
-    name: "width",
+  width: {
     displayName: "Širina",
-    minValue: 100,
+    minValue: 0,
     maxValue: 1000,
     unit: "cm",
   },
-  {
-    name: "height",
+  height: {
     displayName: "Visina",
-    minValue: 100,
+    minValue: 0,
     maxValue: 1000,
     unit: "cm",
   },
-];
+};

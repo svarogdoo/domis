@@ -310,7 +310,6 @@ declare global {
   }
 
   interface FilterData {
-    name: string;
     displayName: string;
     minValue: number;
     maxValue: number;

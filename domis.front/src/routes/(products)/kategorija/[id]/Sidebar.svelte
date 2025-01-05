@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { goto } from "$app/navigation";
   import { page } from "$app/stores";
   import { categories } from "../../../../stores/categories";
   import arrowIcon from "$lib/icons/dropdown.svg";
@@ -14,6 +15,21 @@
   let categoriesList: Array<UnwrappedCategory>;
   let selectedCategory: Category | undefined;
   let selectedParentCategory: Category | null;
+
+  let filterChoices = {
+    price: {
+      minPrice: filters.price.minValue,
+      maxPrice: filters.price.maxValue,
+    },
+    width: {
+      minWidth: filters.width.minValue,
+      maxWidth: filters.width.maxValue,
+    },
+    height: {
+      minHeight: filters.height.minValue,
+      maxHeight: filters.height.maxValue,
+    },
+  };
 
   // Get the category ID from the route
   $: $page.params.id && fetchSelectedCategory($page.params.id);
@@ -92,6 +108,46 @@
 
     return null; // Return null if no match is found
   }
+
+  function handlePriceFilterChange(data: any) {
+    filterChoices.price.minPrice = data.detail.start;
+    filterChoices.price.maxPrice = data.detail.end;
+  }
+  function handleWidthFilterChange(data: any) {
+    filterChoices.width.minWidth = data.detail.start;
+    filterChoices.width.maxWidth = data.detail.end;
+  }
+  function handleHeightFilterChange(data: any) {
+    filterChoices.height.minHeight = data.detail.start;
+    filterChoices.height.maxHeight = data.detail.end;
+  }
+
+  function setFilters() {
+    const url = new URL(window.location.href);
+
+    if (filterChoices.price.minPrice !== filters.price.minValue)
+      url.searchParams.set("minPrice", filterChoices.price.minPrice.toString());
+    if (filterChoices.price.maxPrice !== filters.price.maxValue)
+      url.searchParams.set("maxPrice", filterChoices.price.maxPrice.toString());
+
+    if (filterChoices.width.minWidth !== filters.width.minValue)
+      url.searchParams.set("minWidth", filterChoices.width.minWidth.toString());
+    if (filterChoices.width.maxWidth !== filters.width.maxValue)
+      url.searchParams.set("maxWidth", filterChoices.width.maxWidth.toString());
+
+    if (filterChoices.height.minHeight !== filters.height.minValue)
+      url.searchParams.set(
+        "minHeight",
+        filterChoices.height.minHeight.toString()
+      );
+    if (filterChoices.height.maxHeight !== filters.height.maxValue)
+      url.searchParams.set(
+        "maxHeight",
+        filterChoices.price.maxPrice.toString()
+      );
+
+    goto(url.pathname + url.search);
+  }
 </script>
 
 <aside class="w-full h-full flex flex-col gap-y-4">
@@ -118,12 +174,17 @@
       {/each}
     </ul>
   {/if}
-  <!-- {#if filters}
+  {#if filters}
     <h2 class="font-bold text-lg">Filteri</h2>
-    <div class="flex flex-col gap-y-6">
-      {#each filters as filter}
-        <Filter {filter} />
-      {/each}
+    <div class="flex flex-col gap-y-6 pl-2 pr-12">
+      <Filter filter={filters.price} on:change={handlePriceFilterChange} />
+      <Filter filter={filters.width} on:change={handleWidthFilterChange} />
+      <Filter filter={filters.height} on:change={handleHeightFilterChange} />
+      <button
+        on:click={setFilters}
+        class="text-light bg-domis-dark text-white py-1 px-2 rounded-lg text-center tracking-widest hover:bg-gray-600 disabled:bg-gray-400"
+        >Primeni</button
+      >
     </div>
-  {/if} -->
+  {/if}
 </aside>
