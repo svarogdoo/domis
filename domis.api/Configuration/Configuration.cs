@@ -104,7 +104,6 @@ public static class Configuration
 
         builder.Services.AddScoped<IUserExtensionRepository, UserExtensionRepository>();
 
-        //TODO: do we need?
         //builder.Services.AddHttpClient<ISyncService, SyncService>();
         // builder.Services.AddScoped<IAzureBlobService, AzureBlobService>();
 

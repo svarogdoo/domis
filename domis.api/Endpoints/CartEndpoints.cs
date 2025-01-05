@@ -94,7 +94,6 @@ public static class CartEndpoints
         group.MapGet("/", async Task<IResult> ([FromQuery] int? cartId, ICartService cartService, 
             HttpContext http, UserManager<UserEntity> userManager) =>
         {
-            //TODO: decide what do we give priority to: cartId or user
             var user = await userManager.GetUserAsync(http.User);
 
             var cart = await cartService.Cart(user, cartId);

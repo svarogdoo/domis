@@ -80,23 +80,7 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
             
             var productDetail = mapper.Map<ProductDetailsDto>(product);
             
-            productDetail.Size = size;
-            productDetail.Images = [.. images];
-            productDetail.CategoryPaths = categoryPaths;
-            
-            if (product.Price.HasValue)
-            {
-                //if there is a sale on the product
-                productDetail.SaleInfo = saleEntity is { SalePrice: not null } 
-                    ? SetSaleInfo(saleEntity, size) 
-                    : null;
-                    
-                productDetail.Price = CalculatePakPalPrices(product.Price.Value, size);
-            }
-            else
-            {
-                productDetail.Price = null;
-            }
+            MapComplexProductProperties(productDetail, size, images, categoryPaths, product.Price, saleEntity);
 
             return productDetail;
         }
@@ -518,5 +502,26 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
         return categoryPaths;
     }
     
+    private static void MapComplexProductProperties(
+        ProductDetailsDto productDetail, Size? size, List<ImageGetDto> images, List<List<CategoryPath>> categoryPaths, decimal? productPrice, SaleEntity? saleEntity)
+    {
+        productDetail.Size = size;
+        productDetail.Images = [.. images];
+        productDetail.CategoryPaths = categoryPaths;
+            
+        if (productPrice is not null)
+        {
+            //if there is a sale on the product
+            productDetail.SaleInfo = saleEntity is { SalePrice: not null } 
+                ? SetSaleInfo(saleEntity, size) 
+                : null;
+                    
+            productDetail.Price = CalculatePakPalPrices(productPrice, size);
+        }
+        else
+        {
+            productDetail.Price = null;
+        }
+    }
     #endregion ExtensionMethods
 }
