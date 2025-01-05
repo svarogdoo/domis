@@ -38,6 +38,7 @@ public interface IProductRepository
     Task<bool> RemoveProductsFromSale(List<int> productIds);
     Task<IEnumerable<ProductSaleHistoryDto>> GetSaleHistory(int productId);
     Task<bool> UpdateProductPricing(int productId, ProductPriceUpdateDto updatedPricing);
+    Task<ProductDetailsDto?> AddProduct(AddProductDto product);
 }
 
 public class ProductRepository(IDbConnection connection, IMapper mapper) : IProductRepository
@@ -353,6 +354,11 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
             Log.Error(ex, "An error occurred while updating product (id: ${productId}) pricing on request {updatedPricing}", productId, updatedPricing);
             return false;
         }
+    }
+
+    public async Task<ProductDetailsDto?> AddProduct(AddProductDto product)
+    {
+        throw new NotImplementedException();
     }
 
     private async Task UpdateVpPrices(int productId, List<ProductVpPriceUpdateDto> updatedVpPrices)
