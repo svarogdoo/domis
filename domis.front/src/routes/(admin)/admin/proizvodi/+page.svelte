@@ -6,11 +6,13 @@
   } from "../../../../services/product-service";
   import Sale from "./Sale.svelte";
   import AdminCategoryList from "./specifikacija/AdminCategoryList.svelte";
+  import Prices from "./specifikacija/Prices.svelte";
   import Specification from "./specifikacija/Specification.svelte";
 
   enum ViewOptions {
     Spec,
     Sale,
+    Prices,
     Images,
   }
 
@@ -91,11 +93,11 @@
             : ''}">Popusti</button
         >
         <!-- <button
-          on:click={() => (viewOption = ViewOptions.Images)}
+          on:click={() => (viewOption = ViewOptions.Prices)}
           class="w-36 text-center tracking-wider py-3 hover:bg-gray-100 {viewOption ===
-          ViewOptions.Images
+          ViewOptions.Prices
             ? 'bg-gray-50'
-            : ''}">Slike</button
+            : ''}">Cene</button
         > -->
       </div>
 
@@ -116,6 +118,13 @@
             initialPrice={selectedProduct.price.perUnit}
             productId={selectedProduct.id}
           />
+          <!-- {:else if viewOption === ViewOptions.Prices}
+          <Prices
+            on:save={handleSavePrices}
+            {prices}
+            initialPrice={selectedProduct.price.perUnit}
+            productId={selectedProduct.id}
+          /> -->
         {/if}
       </div>
     {/if}

@@ -13,6 +13,8 @@
   let selectedCategory: Category | undefined;
   let selectedParentCategory: Category | null;
 
+  // let filterList: Array<Filter>
+
   // Get the category ID from the route
   $: $page.params.id && fetchSelectedCategory($page.params.id);
 

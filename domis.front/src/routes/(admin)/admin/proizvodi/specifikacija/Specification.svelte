@@ -25,8 +25,8 @@
   let length = attributes.length ?? null;
   let thickness = attributes.thickness ?? null;
   let weight = attributes.weight ?? null;
-  let box = size.box ?? 0;
-  let pallet = size.pallet ?? 0;
+  let box = size?.box ?? 0;
+  let pallet = size?.pallet ?? 0;
   let quantityType =
     attributes.quantityType === undefined
       ? QuantityType.None

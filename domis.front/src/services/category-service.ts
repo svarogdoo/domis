@@ -17,7 +17,6 @@ export function getCategoryProducts(
   pageSize?: number,
   sortType?: SortType
 ) {
-  console.info(id, "ajd");
   let queryParams = new URLSearchParams();
   if (pageNumber) queryParams.append("pageNumber", pageNumber.toString());
   if (pageSize) queryParams.append("pageSize", pageSize.toString());
