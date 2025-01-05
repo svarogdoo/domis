@@ -184,7 +184,7 @@ public class OrderRepository(IDbConnection connection, PriceAndSizeHelper helper
             }, transaction))
             .ToList();
             
-            await ValidateCartItems(role, cartItems);
+            await ValidateCartItemsOnOrderCreate(role, cartItems);
 
             var totalAmount = CalculateTotalAmount(cartItems, discount);
             
@@ -224,7 +224,7 @@ public class OrderRepository(IDbConnection connection, PriceAndSizeHelper helper
         }
     }
     
-    private async Task ValidateCartItems(string userRole, List<CartItemWithPriceDto>? cartItems)
+    private async Task ValidateCartItemsOnOrderCreate(string userRole, List<CartItemWithPriceDto>? cartItems)
     {
         if (cartItems == null || cartItems.Count == 0)
             throw new InvalidOperationException("Cart is empty. Cannot create an order.");

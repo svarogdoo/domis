@@ -79,7 +79,7 @@ public static class CategoryQueries
 
     public const string CheckIfCategoryExists = @"
         SELECT EXISTS 
-        (SELECT 1 FROM domis.product WHERE id = @ProductId);
+        (SELECT 1 FROM domis.category WHERE id = @CategoryId);
     ";
 
     public const string GetCategoryPath = @"

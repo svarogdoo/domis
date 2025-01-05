@@ -38,7 +38,7 @@ public interface IProductRepository
     Task<bool> RemoveProductsFromSale(List<int> productIds);
     Task<IEnumerable<ProductSaleHistoryDto>> GetSaleHistory(int productId);
     Task<bool> UpdateProductPricing(int productId, ProductPriceUpdateDto updatedPricing);
-    Task<ProductDetailsDto?> AddProduct(AddProductDto product);
+    Task<int> CreateProduct(CreateProductRequest product);
 }
 
 public class ProductRepository(IDbConnection connection, IMapper mapper) : IProductRepository
@@ -305,7 +305,12 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
 
     public async Task<bool> AssignProductToCategory(AssignProductToCategoryRequest request)
     {
-        var affectedRows = await connection.ExecuteAsync(ProductQueries.AssignProductToCategory, new { request.ProductId, request.CategoryId });
+        var affectedRows = request.OverwriteExisting switch
+        {
+            false => await connection.ExecuteAsync(ProductQueries.AddNewProductCategoryRow, new { request.ProductId, request.CategoryId }),
+            true => await connection.ExecuteAsync(ProductQueries.OverwriteExistingProductCategoryRow, new { request.ProductId, request.CategoryId })
+        };
+
         return affectedRows > 0;
     }
     
@@ -340,9 +345,43 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
         }
     }
 
-    public async Task<ProductDetailsDto?> AddProduct(AddProductDto product)
+    public async Task<int> CreateProduct(CreateProductRequest product)
     {
-        throw new NotImplementedException();
+        try
+        {
+            // connection.Open();
+            // using var transaction = connection.BeginTransaction();
+
+            string query = @"
+                INSERT INTO domis.product (product_name, title, product_description, sku, active, quantity_type_id, width, height, weight, depth, length, thickness)
+                VALUES (@Name, @Name, @Description, @Sku, @IsActive, @QuantityType, @Width, @Height, @Weight, @Depth, @Length, @Thickness)
+                RETURNING id;
+            ";
+            
+            var productId = await connection.ExecuteScalarAsync<int>(query, new
+            {
+                product.Name,
+                product.Description,
+                product.Sku,
+                product.IsActive,
+                product.QuantityType,
+                product.Attributes?.Width,
+                product.Attributes?.Height,
+                product.Attributes?.Weight,
+                product.Attributes?.Depth,
+                product.Attributes?.Length,
+                product.Attributes?.Thickness,
+            });
+            
+            // transaction.Commit();
+
+            return productId;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "An error occurred while creating product on request {product}", product);
+            return -1;
+        }
     }
 
     private async Task UpdateVpPrices(int productId, List<ProductVpPriceUpdateDto> updatedVpPrices)

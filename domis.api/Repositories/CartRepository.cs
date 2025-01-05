@@ -330,6 +330,7 @@ public class CartRepository(IDbConnection connection, PriceAndSizeHelper helper)
         return (query, parameters);
     }
     
+    //on GET /cart
     private async Task ValidateAndUpdateCartItems(string userRole, List<CartItemDto> cartItems)
     {
         if (cartItems == null || cartItems.Count == 0)

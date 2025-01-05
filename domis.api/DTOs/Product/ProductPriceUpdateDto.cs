@@ -1,3 +1,5 @@
+using domis.api.Models;
+
 namespace domis.api.DTOs.Product;
 
 public class ProductPriceUpdateDto
@@ -8,7 +10,7 @@ public class ProductPriceUpdateDto
 
 public class ProductVpPriceUpdateDto
 {
-    public required string UserType { get; set; } //VP1-VP4
+    public required Roles UserType { get; set; } //VP1-VP4
     public decimal? PakPrice { get; set; }
     public decimal? PalPrice { get; set; }
 }
