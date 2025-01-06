@@ -10,7 +10,6 @@
   let categoryDetails: CategoryDetails;
   let products: Array<CategoryProduct> = [];
   let isOpen = false;
-  let sortType: SortType = SortType.NameAsc;
   let loadMoreTrigger: HTMLElement;
   let loading = false;
 
@@ -19,6 +18,7 @@
 
   $: products = data.props.products;
   $: categoryDetails = data.props.category;
+  $: sortType = data.props.sort;
 
   function toggleDropdown() {
     isOpen = !isOpen;
@@ -75,6 +75,7 @@
   onMount(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const pageParam = urlParams.get("strana");
+    sortType = SortType.NameAsc;
     if (pageParam) {
       pageNumber = Number(pageParam);
     }
@@ -104,7 +105,7 @@
           on:click={toggleDropdown}
           class="flex gap-x-2 font-light items-center"
         >
-          Sortiraj prema:
+          <span class="hidden lg:flex">Sortiraj prema:</span>
           <p
             class="ring-1 rounded-lg ring-gray-500 px-2 lg:px-4 py-1 lg:py-2 font-light"
           >

@@ -39,6 +39,7 @@ export async function load({ params, url, parent }) {
     props: {
       category: categoryData.category,
       products: categoryData.products,
+      sort: SortType.NameAsc,
     },
   };
 }

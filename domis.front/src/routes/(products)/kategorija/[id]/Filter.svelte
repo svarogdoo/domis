@@ -7,8 +7,8 @@
   const dispatch = createEventDispatcher<{ change: string }>();
 </script>
 
-<div class="width-full flex flex-col gap-y-4">
-  <p>{filter.displayName}</p>
+<div class="w-full flex gap-x-8 items-center">
+  <p class="mt-6">{filter.displayName}</p>
   <DoubleRangeSlider
     min={filter.minValue}
     max={filter.maxValue}

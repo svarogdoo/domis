@@ -15,7 +15,9 @@
   let categoriesList: Array<UnwrappedCategory>;
   let selectedCategory: Category | undefined;
   let selectedParentCategory: Category | null;
+  let showCategories = true;
 
+  let showFilters = false;
   let filterChoices = {
     price: {
       minPrice: filters.price.minValue,
@@ -127,64 +129,83 @@
 
     if (filterChoices.price.minPrice !== filters.price.minValue)
       url.searchParams.set("minPrice", filterChoices.price.minPrice.toString());
+    else url.searchParams.delete("minPrice");
     if (filterChoices.price.maxPrice !== filters.price.maxValue)
       url.searchParams.set("maxPrice", filterChoices.price.maxPrice.toString());
+    else url.searchParams.delete("maxPrice");
 
     if (filterChoices.width.minWidth !== filters.width.minValue)
       url.searchParams.set("minWidth", filterChoices.width.minWidth.toString());
+    else url.searchParams.delete("minWidth");
     if (filterChoices.width.maxWidth !== filters.width.maxValue)
       url.searchParams.set("maxWidth", filterChoices.width.maxWidth.toString());
+    else url.searchParams.delete("maxWidth");
 
     if (filterChoices.height.minHeight !== filters.height.minValue)
       url.searchParams.set(
         "minHeight",
         filterChoices.height.minHeight.toString()
       );
+    else url.searchParams.delete("minHeight");
     if (filterChoices.height.maxHeight !== filters.height.maxValue)
       url.searchParams.set(
         "maxHeight",
         filterChoices.price.maxPrice.toString()
       );
+    else url.searchParams.delete("maxHeight");
 
     goto(url.pathname + url.search);
   }
 </script>
 
-<aside class="w-full h-full flex flex-col gap-y-4">
+<aside class="w-full h-full flex flex-col gap-y-6">
   {#if selectedCategory}
-    <h2 class="font-bold text-lg">Kategorije</h2>
-    <ul class="flex flex-col gap-y-2">
-      {#if selectedParentCategory}
-        <a href="/kategorija/{selectedParentCategory.id}">
-          <div class="flex items-center gap-x-2 mb-4 italic">
-            <img src={arrowIcon} alt="<-" class="h-1.5 w-auto rotate-90" />
-            <p>{selectedParentCategory.name}</p>
-          </div>
-        </a>
-      {/if}
-      <a href="/kategorija/{selectedCategory.id}">{selectedCategory.name}</a>
+    <button
+      class="flex gap-x-4"
+      on:click={() => (showCategories = !showCategories)}
+    >
+      <h2 class="font-bold text-lg">Kategorije</h2>
+      <img src={arrowIcon} alt="" class="w-3 h-auto" />
+    </button>
+    {#if showCategories}
+      <ul class="flex flex-col gap-y-2">
+        {#if selectedParentCategory}
+          <a href="/kategorija/{selectedParentCategory.id}">
+            <div class="flex items-center gap-x-2 mb-4 italic">
+              <img src={arrowIcon} alt="<-" class="h-1.5 w-auto rotate-90" />
+              <p>{selectedParentCategory.name}</p>
+            </div>
+          </a>
+        {/if}
+        <a href="/kategorija/{selectedCategory.id}">{selectedCategory.name}</a>
 
-      {#each categoriesList as category}
-        <a
-          href="/kategorija/{category.id}"
-          class="text-md {category.level === 1
-            ? 'font-normal'
-            : 'font-light'} ml-{(category.level + 1) * 2}">{category.name}</a
-        >
-      {/each}
-    </ul>
+        {#each categoriesList as category}
+          <a
+            href="/kategorija/{category.id}"
+            class="text-md {category.level === 1
+              ? 'font-normal'
+              : 'font-light'} ml-{(category.level + 1) * 2}">{category.name}</a
+          >
+        {/each}
+      </ul>
+    {/if}
   {/if}
   {#if filters}
-    <h2 class="font-bold text-lg">Filteri</h2>
-    <div class="flex flex-col gap-y-6 pl-2 pr-12">
-      <Filter filter={filters.price} on:change={handlePriceFilterChange} />
-      <Filter filter={filters.width} on:change={handleWidthFilterChange} />
-      <Filter filter={filters.height} on:change={handleHeightFilterChange} />
-      <button
-        on:click={setFilters}
-        class="text-light bg-domis-dark text-white py-1 px-2 rounded-lg text-center tracking-widest hover:bg-gray-600 disabled:bg-gray-400"
-        >Primeni</button
-      >
-    </div>
+    <button class="flex gap-x-4" on:click={() => (showFilters = !showFilters)}>
+      <h2 class="font-bold text-lg">Filteri</h2>
+      <img src={arrowIcon} alt="" class="w-3 h-auto" />
+    </button>
+    {#if showFilters}
+      <div class="flex flex-col gap-y-6 pr-8">
+        <Filter filter={filters.price} on:change={handlePriceFilterChange} />
+        <Filter filter={filters.width} on:change={handleWidthFilterChange} />
+        <Filter filter={filters.height} on:change={handleHeightFilterChange} />
+        <button
+          on:click={setFilters}
+          class="text-light bg-domis-dark text-white py-1 px-2 rounded-lg text-center tracking-widest hover:bg-gray-600 disabled:bg-gray-400"
+          >Primeni</button
+        >
+      </div>
+    {/if}
   {/if}
 </aside>
