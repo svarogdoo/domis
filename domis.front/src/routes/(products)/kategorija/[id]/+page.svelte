@@ -4,14 +4,17 @@
   import { onMount } from "svelte";
   import { page } from "$app/stores";
   import { mapSortTypeToString, SortType } from "../../../../enums";
+  import filterIcon from "$lib/icons/filter.svg";
+  import Filters from "./filters/Filters.svelte";
 
   export let data;
 
   let categoryDetails: CategoryDetails;
   let products: Array<CategoryProduct> = [];
-  let isOpen = false;
+  let isSortOpen = false;
   let loadMoreTrigger: HTMLElement;
   let loading = false;
+  let isFilterOpen = false;
 
   let pageNumber = 2;
   let pageSize = 18;
@@ -21,14 +24,14 @@
   $: sortType = data.props.sort;
 
   function toggleDropdown() {
-    isOpen = !isOpen;
+    isSortOpen = !isSortOpen;
   }
 
   function setSortType(value: SortType) {
     pageNumber = 1;
     products = [];
     sortType = value;
-    isOpen = false;
+    isSortOpen = false;
     loadMore();
   }
 
@@ -99,50 +102,58 @@
     <h2 class="text-lg lg:text-2xl">
       {categoryDetails?.name ? categoryDetails.name : "Akcija"}
     </h2>
-    <div class="relative flex">
-      <div class="text-sm lg:text-normal">
-        <button
-          on:click={toggleDropdown}
-          class="flex gap-x-2 font-light items-center"
-        >
-          <span class="hidden lg:flex">Sortiraj prema:</span>
-          <p
-            class="ring-1 rounded-lg ring-gray-500 px-2 lg:px-4 py-1 lg:py-2 font-light"
+    <div class="flex gap-x-2">
+      <div class="relative flex">
+        <div class="text-sm lg:text-normal">
+          <button
+            on:click={toggleDropdown}
+            class="flex gap-x-2 font-light items-center"
           >
-            {mapSortTypeToString(sortType)}
-          </p>
-        </button>
+            <span class="hidden lg:flex">Sortiraj prema:</span>
+            <p
+              class="ring-1 rounded-lg ring-gray-500 px-2 lg:px-4 py-1 lg:py-2 font-light"
+            >
+              {mapSortTypeToString(sortType)}
+            </p>
+          </button>
+        </div>
+        {#if isSortOpen}
+          <ul
+            class="absolute z-10 right-0 mt-12 w-40 rounded-md shadow-lg bg-white ring-1 ring-domis-dark ring-opacity-5 focus:outline-none"
+          >
+            <button
+              on:click={() => setSortType(SortType.PriceAsc)}
+              class="w-full text-right py-3 px-3 hover:bg-gray-700 hover:text-white rounded-lg"
+            >
+              Cena rastuće
+            </button>
+            <button
+              on:click={() => setSortType(SortType.PriceDesc)}
+              class="w-full text-right py-3 px-3 hover:bg-gray-700 hover:text-white rounded-lg"
+            >
+              Cena opadajuće
+            </button>
+            <button
+              on:click={() => setSortType(SortType.NameAsc)}
+              class="w-full text-right py-3 px-3 hover:bg-gray-700 hover:text-white rounded-lg"
+            >
+              Naziv rastuće
+            </button>
+            <button
+              on:click={() => setSortType(SortType.NameDesc)}
+              class="w-full text-right py-3 px-3 hover:bg-gray-700 hover:text-white rounded-lg"
+            >
+              Naziv opadajuće
+            </button>
+          </ul>
+        {/if}
       </div>
-      {#if isOpen}
-        <ul
-          class="absolute z-10 right-0 mt-12 w-40 rounded-md shadow-lg bg-white ring-1 ring-domis-dark ring-opacity-5 focus:outline-none"
-        >
-          <button
-            on:click={() => setSortType(SortType.PriceAsc)}
-            class="w-full text-right py-3 px-3 hover:bg-gray-700 hover:text-white rounded-lg"
-          >
-            Cena rastuće
-          </button>
-          <button
-            on:click={() => setSortType(SortType.PriceDesc)}
-            class="w-full text-right py-3 px-3 hover:bg-gray-700 hover:text-white rounded-lg"
-          >
-            Cena opadajuće
-          </button>
-          <button
-            on:click={() => setSortType(SortType.NameAsc)}
-            class="w-full text-right py-3 px-3 hover:bg-gray-700 hover:text-white rounded-lg"
-          >
-            Naziv rastuće
-          </button>
-          <button
-            on:click={() => setSortType(SortType.NameDesc)}
-            class="w-full text-right py-3 px-3 hover:bg-gray-700 hover:text-white rounded-lg"
-          >
-            Naziv opadajuće
-          </button>
-        </ul>
-      {/if}
+      <button
+        class="flex lg:hidden ring-1 px-1 ring-gray-500 rounded-lg"
+        on:click={() => (isFilterOpen = !isFilterOpen)}
+      >
+        <img src={filterIcon} alt="" class="w-6 h-auto" />
+      </button>
     </div>
   </div>
   <div class="w-full grid grid-cols-2 lg:grid-cols-3 gap-x-2 gap-y-4">
@@ -167,5 +178,17 @@
         class="w-1.5 h-1.5 bg-domis-accent rounded-full animate-bounce animation-delay-400"
       ></div>
     </div>
+  {/if}
+
+  <!-- Mobile Filter modal -->
+  {#if isFilterOpen}
+    <button
+      class="fixed inset-0 w-full bg-black bg-opacity-50 flex items-center justify-center z-50"
+      on:click={() => (isFilterOpen = !isFilterOpen)}
+    >
+      <div class="bg-white w-full p-8">
+        <Filters />
+      </div>
+    </button>
   {/if}
 </section>

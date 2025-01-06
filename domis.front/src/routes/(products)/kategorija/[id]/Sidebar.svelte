@@ -1,10 +1,9 @@
 <script lang="ts">
-  import { goto } from "$app/navigation";
   import { page } from "$app/stores";
   import { categories } from "../../../../stores/categories";
   import arrowIcon from "$lib/icons/dropdown.svg";
   import { filters } from "./filter";
-  import Filter from "./Filter.svelte";
+  import Filters from "./filters/Filters.svelte";
 
   interface UnwrappedCategory {
     name: string;
@@ -18,20 +17,6 @@
   let showCategories = true;
 
   let showFilters = false;
-  let filterChoices = {
-    price: {
-      minPrice: filters.price.minValue,
-      maxPrice: filters.price.maxValue,
-    },
-    width: {
-      minWidth: filters.width.minValue,
-      maxWidth: filters.width.maxValue,
-    },
-    height: {
-      minHeight: filters.height.minValue,
-      maxHeight: filters.height.maxValue,
-    },
-  };
 
   // Get the category ID from the route
   $: $page.params.id && fetchSelectedCategory($page.params.id);
@@ -110,52 +95,6 @@
 
     return null; // Return null if no match is found
   }
-
-  function handlePriceFilterChange(data: any) {
-    filterChoices.price.minPrice = data.detail.start;
-    filterChoices.price.maxPrice = data.detail.end;
-  }
-  function handleWidthFilterChange(data: any) {
-    filterChoices.width.minWidth = data.detail.start;
-    filterChoices.width.maxWidth = data.detail.end;
-  }
-  function handleHeightFilterChange(data: any) {
-    filterChoices.height.minHeight = data.detail.start;
-    filterChoices.height.maxHeight = data.detail.end;
-  }
-
-  function setFilters() {
-    const url = new URL(window.location.href);
-
-    if (filterChoices.price.minPrice !== filters.price.minValue)
-      url.searchParams.set("minPrice", filterChoices.price.minPrice.toString());
-    else url.searchParams.delete("minPrice");
-    if (filterChoices.price.maxPrice !== filters.price.maxValue)
-      url.searchParams.set("maxPrice", filterChoices.price.maxPrice.toString());
-    else url.searchParams.delete("maxPrice");
-
-    if (filterChoices.width.minWidth !== filters.width.minValue)
-      url.searchParams.set("minWidth", filterChoices.width.minWidth.toString());
-    else url.searchParams.delete("minWidth");
-    if (filterChoices.width.maxWidth !== filters.width.maxValue)
-      url.searchParams.set("maxWidth", filterChoices.width.maxWidth.toString());
-    else url.searchParams.delete("maxWidth");
-
-    if (filterChoices.height.minHeight !== filters.height.minValue)
-      url.searchParams.set(
-        "minHeight",
-        filterChoices.height.minHeight.toString()
-      );
-    else url.searchParams.delete("minHeight");
-    if (filterChoices.height.maxHeight !== filters.height.maxValue)
-      url.searchParams.set(
-        "maxHeight",
-        filterChoices.price.maxPrice.toString()
-      );
-    else url.searchParams.delete("maxHeight");
-
-    goto(url.pathname + url.search);
-  }
 </script>
 
 <aside class="w-full h-full flex flex-col gap-y-6">
@@ -196,15 +135,8 @@
       <img src={arrowIcon} alt="" class="w-3 h-auto" />
     </button>
     {#if showFilters}
-      <div class="flex flex-col gap-y-6 pr-8">
-        <Filter filter={filters.price} on:change={handlePriceFilterChange} />
-        <Filter filter={filters.width} on:change={handleWidthFilterChange} />
-        <Filter filter={filters.height} on:change={handleHeightFilterChange} />
-        <button
-          on:click={setFilters}
-          class="text-light bg-domis-dark text-white py-1 px-2 rounded-lg text-center tracking-widest hover:bg-gray-600 disabled:bg-gray-400"
-          >Primeni</button
-        >
+      <div class="w-full pr-8">
+        <Filters />
       </div>
     {/if}
   {/if}

@@ -3,6 +3,8 @@
   import DoubleRangeSlider from "../../../../components/DoubleRangeSlider.svelte";
 
   export let filter: FilterData;
+  export let initMin: number;
+  export let initMax: number;
 
   const dispatch = createEventDispatcher<{ change: string }>();
 </script>
@@ -12,8 +14,8 @@
   <DoubleRangeSlider
     min={filter.minValue}
     max={filter.maxValue}
-    start={filter.minValue}
-    end={filter.maxValue}
+    start={initMin}
+    end={initMax}
     unit={filter.unit}
     on:change={(change) => dispatch("change", change.detail)}
   />
