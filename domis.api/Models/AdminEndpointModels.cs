@@ -1,3 +1,5 @@
+using domis.api.DTOs.Product;
+
 namespace domis.api.Models;
 
 public record RoleRequest(string Role);
@@ -8,4 +10,12 @@ public record ProductSaleRequest(List<int> ProductIds, decimal? SalePrice, decim
 
 public record CategorySaleRequest(int CategoryId, decimal? SalePercentage, DateTime StartDate, DateTime EndDate);
 
-public record AssignProductToCategoryRequest(int ProductId, int CategoryId);
+public record AssignProductToCategoryRequest(int ProductId, int CategoryId, bool OverwriteExisting);
+
+public record CreateProductRequest(
+    int CategoryId,
+    string Name, string Description, int Sku, bool IsActive, int QuantityType,
+    Attributes Attributes,
+    ProductPriceUpdateDto? Price,
+    Size? Size
+);

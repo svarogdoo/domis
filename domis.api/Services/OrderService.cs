@@ -72,7 +72,10 @@ public class OrderService(
         
         var order =  await orderRepo.CreateOrderFromCartAsync(createOrder, role ?? Roles.User.GetName(), discount);
 
-        await emailSender.SendOrderConfirmationAsync(user?.Email ?? order.InvoiceAddress!.Email, order);
+        var receiver = user?.Email ?? order.InvoiceAddress!.Email;
+        
+        if (receiver is not null)
+            await emailSender.SendOrderConfirmationAsync(receiver, order);
 
         return order.OrderId;
     }

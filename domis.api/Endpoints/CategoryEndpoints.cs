@@ -39,22 +39,16 @@ public static class CategoryEndpoints
             ICategoryService categoryService, HttpContext httpContext, UserManager<UserEntity> userManager) =>
         {
             if (options.PageNumber <= 0)
-            {
                 return Results.BadRequest("Page number must be greater than 0.");
-            }
 
-            if (options.PageSize is <= 0 or > 100)
-            {
-                return Results.BadRequest("Page size must be between 1 and 100.");
-            }
+            if (options.PageSize is <= 0 or > 500)
+                return Results.BadRequest("Page size must be between 1 and 500.");
 
             var pageOptions = new Models.PageOptions 
             { 
                 PageNumber = options.PageNumber ?? 1, 
                 PageSize = options.PageSize ?? 18,
-                Sort = options.Sort is not null
-                    ? (SortProductEnum)options.Sort
-                    : SortProductEnum.NameAsc
+                Sort = options.Sort ?? SortProductEnum.NameAsc
             };
 
             var user = await userManager.GetUserAsync(httpContext.User);

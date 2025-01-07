@@ -203,7 +203,6 @@ public class CartRepository(IDbConnection connection, PriceAndSizeHelper helper)
         }
     }
     
-    //TODO: do we need this? 
     public Task<bool> SetCartUserId(int cartId, string userId)
     {
         throw new NotImplementedException();
@@ -331,6 +330,7 @@ public class CartRepository(IDbConnection connection, PriceAndSizeHelper helper)
         return (query, parameters);
     }
     
+    //on GET /cart
     private async Task ValidateAndUpdateCartItems(string userRole, List<CartItemDto> cartItems)
     {
         if (cartItems == null || cartItems.Count == 0)

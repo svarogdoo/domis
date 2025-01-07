@@ -73,6 +73,8 @@ public static class Configuration
 
         builder.Services.AddFluentValidationAutoValidation();
         builder.Services.AddScoped<IValidator<CreateCartItemRequest>, CreateCartItemRequestValidator>();
+        builder.Services.AddScoped<IValidator<CreateProductRequest>, CreateProductRequestValidator>();
+
         //builder.Services.AddValidatorsFromAssemblyContaining<CreateCartItemRequestValidator>();
 
         builder.Services.AddScoped<IProductService, ProductService>();
@@ -104,7 +106,6 @@ public static class Configuration
 
         builder.Services.AddScoped<IUserExtensionRepository, UserExtensionRepository>();
 
-        //TODO: do we need?
         //builder.Services.AddHttpClient<ISyncService, SyncService>();
         // builder.Services.AddScoped<IAzureBlobService, AzureBlobService>();
 
@@ -120,10 +121,8 @@ public static class Configuration
 
         builder.Services.AddScoped<IExchangeRateRepository, ExchangeRateRepository>();
 
-        //builder.Services.AddTransient<IEmailSender, EmailSender>();
         builder.Services.AddTransient<ICustomEmailSender<UserEntity>, CustomEmailSender>();
         
-        //Ebuilder.Services.AddScoped<IPriceHelpers, PriceHelpers>();
         builder.Services.AddScoped<PriceAndSizeHelper>();
     }
 
@@ -141,7 +140,6 @@ public static class Configuration
 
         app.UseCors();
 
-        //app.MapIdentityApi<UserEntity>();
         app.MapCustomIdentityApi<UserEntity>();
 
         app.MapControllers();

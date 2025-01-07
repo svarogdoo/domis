@@ -1,4 +1,6 @@
+using domis.api.Models.Enums;
+
 namespace domis.api.Endpoints.Helpers;
 
 public record ProductFilter(decimal? MinPrice, decimal? MaxPrice, decimal? MinWidth, decimal? MaxWidth, decimal? MinHeight, decimal? MaxHeight);
-public record PageOptions(int? PageNumber, int? PageSize, int? Sort);
+public record PageOptions(int? PageNumber, int? PageSize, SortProductEnum? Sort);

@@ -9,7 +9,7 @@ namespace domis.api.Services;
 
 public interface IProductService
 {
-    Task<ProductDetailsDto?> AddProduct(AddProductDto product);
+    Task<ProductDetailsDto?> AddProduct(CreateProductRequest newProduct);
     Task<IEnumerable<ProductPreviewDto>> GetAll();
     Task<ProductDetailsDto?> GetByIdWithDetails(int id, UserEntity? user);
     Task<ProductDetailsDto?> Update(ProductUpdateDto product);
@@ -30,8 +30,26 @@ public class ProductService(
     ICategoryRepository categoryRepo, 
     IUserRepository userRepo) : IProductService
 {
-    public async Task<ProductDetailsDto?> AddProduct(AddProductDto product) 
-        => await repository.AddProduct(product);
+    public async Task<ProductDetailsDto?> AddProduct(CreateProductRequest newProduct)
+    {
+        var productId = await repository.CreateProduct(newProduct);
+
+        if (productId < 1) return null;
+        
+        var res1 = await AssignProductToCategory(new AssignProductToCategoryRequest(productId, newProduct.CategoryId, false));
+
+        if (!res1) return null;
+        
+        if (newProduct.Price is not null) //TODO: check once implemented on FE
+            await UpdateProductPricing(productId, newProduct.Price);
+        
+        if (newProduct.Size is not null) //TODO: check once implemented on FE
+            await UpdateProductSizing(productId, newProduct.Size);
+
+        var productResult = await GetByIdWithDetails(productId, null);
+        
+        return productResult;
+    }
 
     public async Task<IEnumerable<ProductPreviewDto>> GetAll()
         => await repository.GetAll();
@@ -91,7 +109,8 @@ public class ProductService(
         if (!productExists) throw new ArgumentException("Product does not exist.");
         
         var categoryExists = await categoryRepo.CategoryExists(request.CategoryId);
-        if (!categoryExists) throw new ArgumentException("Category does not exist.");
+        if (!categoryExists) 
+            throw new ArgumentException("Category does not exist.");
         
         return await repository.AssignProductToCategory(request);
     }

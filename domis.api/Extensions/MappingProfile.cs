@@ -29,7 +29,9 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.CategoryPaths, opt => opt.Ignore())
             .ForMember(dest => dest.Price, opt => opt.Ignore())
             .ForMember(dest => dest.Size, opt => opt.Ignore())
-            .ForMember(dest => dest.Attributes, opt => opt.MapFrom(src => src));
+            .ForMember(dest => dest.Attributes, opt => opt.MapFrom(src => src))
+            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => 
+                string.IsNullOrEmpty(src.Title) ? src.Name : src.Title));;
 
             
         // CreateMap<Product, ProductDetailsDto>()

@@ -23,10 +23,10 @@ public static class ProductQueries
                 p.quantity_type_id AS QuantityType,
                 i.blob_url AS FeaturedImageUrl
             FROM domis.product p
-            JOIN domis.product_image pi ON p.id = pi.product_id
-            JOIN domis.image i ON pi.image_id = i.id
-            JOIN domis.image_type it ON pi.image_type_id = it.id
-            WHERE p.id = @ProductId AND it.image_type_name = 'Featured';"
+            LEFT JOIN domis.product_image pi ON p.id = pi.product_id
+            LEFT JOIN domis.image i ON pi.image_id = i.id
+            LEFT JOIN domis.image_type it ON pi.image_type_id = it.id
+            WHERE p.id = @ProductId AND (it.image_type_name = 'Featured' OR it.image_type_name IS NULL);"
     ;
 
     public const string GetProductPricesForVPMultiple = @"
@@ -131,7 +131,6 @@ public static class ProductQueries
         SELECT Id, Price
         FROM ActiveProductsInCategory
     ";
-
 
     public const string GetAllFromCategory = @"
         WITH RECURSIVE CategoryHierarchy AS (
@@ -381,12 +380,16 @@ public static class ProductQueries
         WHERE product_id = @ProductId;
     ";
     
-    public const string AssignProductToCategory = @"
+    public const string AddNewProductCategoryRow = @"
         INSERT INTO domis.product_category (product_id, category_id)
-        VALUES (@ProductId, @CategoryId)
-        ON CONFLICT (product_id) 
-        DO UPDATE SET category_id = @CategoryId;
+        VALUES (@ProductId, @CategoryId);
     ";
+    
+    public const string OverwriteExistingProductCategoryRow = @"
+        UPDATE domis.product_category
+        SET category_id = @CategoryId
+        WHERE product_id = @ProductId;
+    ";   
     
     public const string SearchByName = @"
         SELECT id AS Id, product_name AS Name, sku AS Sku, 'Product' AS Type
