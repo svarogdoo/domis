@@ -51,12 +51,20 @@
       >{item.productDetails.name}</a
     >
   </td>
-  <td class="w-44 text-center"
-    ><p>
-      {formatPrice(item.cartItemPrice)}
-      <span class="font-light text-sm">{getCurrencyString()}</span>
-    </p></td
-  >
+  <td class="w-44 text-center">
+    <div>
+      <p>
+        {formatPrice(item.cartItemPrice)}
+        <span class="font-light text-sm">{getCurrencyString()}</span>
+      </p>
+      {#if item.productDetails.price}
+        <p class="line-through text-gray-400">
+          <span>{item.productDetails.price}</span>
+          <span class="font-light text-sm">{getCurrencyString()} </span>
+        </p>
+      {/if}
+    </div>
+  </td>
   <td class="w-36">
     <div class="flex justify-center items-center gap-x-2">
       <input
