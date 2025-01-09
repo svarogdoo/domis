@@ -1,5 +1,6 @@
 <script lang="ts">
   import arrow from "$lib/icons/dropdown.svg";
+  import { onMount } from "svelte";
   import { handleImageError } from "../../../../helpers/imageFallback";
 
   export let images: Array<Image>;
@@ -23,6 +24,7 @@
   const slideTo = (index: number) => {
     isTransitioning = true; // Enable transition
     currentIndex = Math.max(0, Math.min(index, images.length - 1));
+
     currentTranslate = -currentIndex * 100;
     prevTranslate = currentTranslate;
 
@@ -64,6 +66,10 @@
     currentTranslate = -currentIndex * 100;
     prevTranslate = currentTranslate;
   };
+
+  onMount(() => {
+    slideTo(calculateIndex());
+  });
 </script>
 
 <div
