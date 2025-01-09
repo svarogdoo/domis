@@ -2,6 +2,7 @@
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
   import { filters } from "../filter";
+  import refreshIcon from "$lib/icons/refresh.svg";
   import Filter from "../Filter.svelte";
 
   let filterChoices = {
@@ -80,9 +81,24 @@
     if (filterChoices.height.maxHeight !== filters.height.maxValue)
       url.searchParams.set(
         "maxHeight",
-        filterChoices.price.maxPrice.toString()
+        filterChoices.height.maxHeight.toString()
       );
     else url.searchParams.delete("maxHeight");
+
+    goto(url.pathname + url.search);
+  }
+
+  function clearFilters() {
+    const url = new URL(window.location.href);
+
+    url.searchParams.delete("minPrice");
+    url.searchParams.delete("maxPrice");
+
+    url.searchParams.delete("minWidth");
+    url.searchParams.delete("maxWidth");
+
+    url.searchParams.delete("minHeight");
+    url.searchParams.delete("maxHeight");
 
     goto(url.pathname + url.search);
   }
@@ -107,9 +123,16 @@
     initMax={filterChoices.height.maxHeight}
     on:change={handleHeightFilterChange}
   />
-  <button
-    on:click={setFilters}
-    class="text-light bg-domis-dark text-white py-1 px-2 rounded-lg text-center tracking-widest hover:bg-gray-600 disabled:bg-gray-400"
-    >Primeni</button
-  >
+  <div class="flex gap-x-2 w-full">
+    <button
+      on:click={setFilters}
+      class="w-full text-light bg-domis-dark text-white py-1 px-2 rounded-lg text-center tracking-widest hover:bg-gray-600 disabled:bg-gray-400"
+      >Primeni</button
+    >
+    <button
+      on:click={clearFilters}
+      class="w-12 text-light bg-domis-dark text-white py-1 px-2 rounded-lg text-center tracking-widest hover:bg-gray-600 disabled:bg-gray-400"
+      ><img src={refreshIcon} alt="" class="w-8 h-auto text-white" /></button
+    >
+  </div>
 </div>
