@@ -6,6 +6,7 @@
   import SaleHistoryItem from "./SaleHistoryItem.svelte";
   import Input from "./specifikacija/Input.svelte";
   import DatePicker from "../../../../components/DatePicker.svelte";
+  import SaleHistoryMobileItem from "./SaleHistoryMobileItem.svelte";
 
   export let saleHistory: Array<SaleInfo> | null;
   export let initialPrice: number | undefined;
@@ -81,10 +82,10 @@
   };
 </script>
 
-<div class="flex flex-col gap-y-6 px-8">
+<div class="flex flex-col gap-y-2 lg:gap-y-6 lg:px-8">
   <div
     id="sale-form"
-    class="mt-1 mb-2 flex flex-col gap-y-6 p-2 rounded-lg bg-grey-50"
+    class="mt-1 mb-2 flex flex-col gap-y-2 lg:gap-y-6 p-2 rounded-lg bg-grey-50"
   >
     <div class="flex flex-wrap gap-y-3 items-center gap-x-6">
       <DatePicker
@@ -108,7 +109,7 @@
         />
       {/if}
     </div>
-    <div class="flex gap-x-6 items-center">
+    <div class="flex flex-wrap gap-y-3 gap-x-2 lg:gap-x-6 items-center">
       {#if usePercentage}
         <Input
           bind:value={salePercentage}
@@ -145,7 +146,7 @@
   </div>
 
   {#if saleHistory && saleHistory.length > 0}
-    <table class="table table-hover">
+    <table class="hidden lg:table table-hover">
       <thead class="w-full bg-domis-dark text-white">
         <th class="text-start w-32">Cena</th>
         <th class="text-center w-32">Datum početka</th>
@@ -155,6 +156,16 @@
       <tbody class="divide-y divide-gray-200">
         {#each saleHistory as sale, index (index)}
           <SaleHistoryItem on:save={handleDeactivatedSale} {sale} />
+        {/each}
+      </tbody>
+    </table>
+    <table class="lg:hidden table table-hover">
+      <thead class="w-full bg-domis-dark text-white">
+        <th class="text-start w-32">Istorija popusta</th>
+      </thead>
+      <tbody class="divide-y divide-gray-200">
+        {#each saleHistory as sale, index (index)}
+          <SaleHistoryMobileItem on:save={handleDeactivatedSale} {sale} />
         {/each}
       </tbody>
     </table>

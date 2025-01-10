@@ -62,7 +62,7 @@
 
 <div>
   <label for="date">{title}</label>
-  <div class="flex gap-x-4">
+  <div class="flex gap-x-4 text-xs lg:text-md">
     <input
       type="date"
       id="date"
