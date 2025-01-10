@@ -51,9 +51,9 @@
 </script>
 
 <div class="flex flex-col w-full items-center">
-  <div class="flex flex-col w-4/5">
+  <div class="flex flex-col w-full lg:w-4/5">
     <!-- Product selection -->
-    <div class="flex gap-x-8">
+    <div class="flex gap-x-2 lg:gap-x-8">
       <div class="w-60">
         <AdminCategoryList bind:selectedCategoryId />
       </div>
@@ -77,24 +77,24 @@
     </div>
 
     {#if selectedProduct}
-      <div class="flex mt-8">
+      <div class="flex text-sm lg:text-md mt-8">
         <button
           on:click={() => (viewOption = ViewOptions.Spec)}
-          class="w-36 text-center tracking-wider py-3 hover:bg-gray-100 {viewOption ===
+          class="w-28 lg:w-36 text-center tracking-wider py-3 hover:bg-gray-100 {viewOption ===
           ViewOptions.Spec
             ? 'bg-gray-100'
             : ''}">Specifikacija</button
         >
         <button
           on:click={() => (viewOption = ViewOptions.Sale)}
-          class="w-36 text-center tracking-wider py-3 hover:bg-gray-100 {viewOption ===
+          class="w-28 lg:w-36 text-center tracking-wider py-3 hover:bg-gray-100 {viewOption ===
           ViewOptions.Sale
             ? 'bg-gray-100'
             : ''}">Popusti</button
         >
         <!-- <button
           on:click={() => (viewOption = ViewOptions.Prices)}
-          class="w-36 text-center tracking-wider py-3 hover:bg-gray-100 {viewOption ===
+          class="w-20 lg:w-36 text-center tracking-wider py-3 hover:bg-gray-100 {viewOption ===
           ViewOptions.Prices
             ? 'bg-gray-50'
             : ''}">Cene</button

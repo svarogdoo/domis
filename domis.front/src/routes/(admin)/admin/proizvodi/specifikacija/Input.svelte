@@ -10,9 +10,9 @@
 </script>
 
 <div class="flex flex-col">
-  <div class="flex gap-x-6 items-center">
+  <div class="flex gap-x-2 lg:gap-x-6 items-center">
     {#if title}
-      <p class="w-{gap}">{title}:</p>
+      <p class="w-{gap} text-sm lg:text-md">{title}:</p>
     {/if}
     <div class="w-{width} relative rounded-md shadow-sm">
       {#if type === "text"}
@@ -20,7 +20,7 @@
           type="text"
           name="value"
           id="value"
-          class="block w-full rounded-md border-0 py-1.5 pl-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 text-md leading-6"
+          class="block w-full rounded-md border-0 py-1.5 pl-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 text-sm lg:text-md leading-6"
           {placeholder}
           bind:value
         />
@@ -29,7 +29,7 @@
           type="number"
           name="value"
           id="value"
-          class="block w-full rounded-md border-0 py-1.5 pl-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 text-md leading-6"
+          class="block w-full rounded-md border-0 py-1.5 pl-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 text-sm lg:text-md leading-6"
           {placeholder}
           bind:value
         />
@@ -42,7 +42,7 @@
     </div>
   </div>
   {#if error}
-    <p class="mt-1 text-red-500 font-light text-sm pl-24">
+    <p class="mt-1 text-red-500 font-light text-xs lg:text-sm pl-24">
       {error}
     </p>
   {/if}

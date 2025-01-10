@@ -17,7 +17,11 @@
   id={`group-${uniqueID}`}
 >
   <div class="mb-2 cursor-default" id={`label-${uniqueID}`}>{legend}</div>
-  <div class="flex gap-x-8 {isColumn ? 'flex-col' : ''} gap-y-2">
+  <div
+    class="flex flex-wrap gap-x-4 lg:gap-x-8 {isColumn
+      ? 'flex-col'
+      : ''} gap-y-2"
+  >
     {#each options as { value, label, text }}
       <div>
         <label class="flex cursor-pointer" for={slugify(label)}>
@@ -29,7 +33,7 @@
             {value}
           />
           <div
-            class="relative w-5 h-5 border-2 border-gray-300 rounded-full flex items-center justify-center mr-3 peer-checked:border-gray-700 peer-checked:bg-gray-700"
+            class="relative w-5 h-5 border-2 border-gray-300 rounded-full flex items-center justify-center mr-1 peer-checked:border-gray-700 peer-checked:bg-gray-700"
           >
             <span class="absolute text-white left-0.5">
               <svg

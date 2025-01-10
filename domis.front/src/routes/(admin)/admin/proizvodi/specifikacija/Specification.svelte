@@ -129,11 +129,14 @@
   }
 </script>
 
-<div class="flex flex-col w-full px-12 gap-y-6">
+<div class="flex flex-col w-full px-2 lg:px-12 gap-y-6">
   <div class="relative w-full flex flex-col">
     <div class="flex justify-between">
       <div class="flex flex-col">
-        <h2 class="mt-4 text-xl" placeholder="Postojeći naziv proizvoda">
+        <h2
+          class="mt-4 mb-2 text-md lg:text-xl"
+          placeholder="Postojeći naziv proizvoda"
+        >
           {name}
         </h2>
         <Toggle
@@ -155,7 +158,7 @@
           error=""
         />
 
-        <div class="flex gap-x-8">
+        <div class="flex flex-wrap gap-y-4 gap-x-3 lg:gap-x-8">
           <Input
             bind:value={width}
             title="Širina"
@@ -184,7 +187,7 @@
             error={errors?.depth}
           />
         </div>
-        <div class="flex gap-x-8">
+        <div class="flex flex-wrap gap-y-4 gap-x-3 lg:gap-x-8">
           <Input
             bind:value={length}
             title="Dužina"
@@ -215,7 +218,7 @@
         </div>
 
         <!-- Pak and pal -->
-        <div class="mt-6 flex gap-x-8">
+        <div class="mt-6 flex gap-x-3 lg:gap-x-8">
           <Input
             bind:value={box}
             title="Pak"
@@ -252,7 +255,7 @@
         <button
           on:click={validateAndSubmit}
           type="submit"
-          class="mt-4 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-96 px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          class="mt-4 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm max-w-96 px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
           >Sačuvaj</button
         >
       </div>
