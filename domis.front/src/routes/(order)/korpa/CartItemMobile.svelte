@@ -51,7 +51,6 @@
         >
         <div class="flex gap-x-4 items-center">
           <p>
-            <span class="font-light text-sm">Cena: </span>
             {formatPrice(item.cartItemPrice)}
             <span class="font-light text-xs">{getCurrencyString()}</span>
           </p>

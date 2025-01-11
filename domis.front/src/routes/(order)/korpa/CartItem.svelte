@@ -5,6 +5,7 @@
   import { cart } from "../../../stores/cart";
   import { handleImageError } from "../../../helpers/imageFallback";
   import { getCurrencyString } from "../../../helpers/stringFormatter";
+  import { updateCartItem } from "../../../services/cart-service";
 
   export let item: CartProduct;
 
@@ -57,10 +58,10 @@
         {formatPrice(item.cartItemPrice)}
         <span class="font-light text-sm">{getCurrencyString()}</span>
       </p>
-      {#if item.productDetails.price}
-        <p class="line-through text-gray-400">
+      {#if item.productDetails.price && item.productDetails.price !== item.cartItemPrice}
+        <p class="line-through text-gray-400 text-sm">
           <span>{item.productDetails.price}</span>
-          <span class="font-light text-sm">{getCurrencyString()} </span>
+          <span class="font-light">{getCurrencyString()} </span>
         </p>
       {/if}
     </div>
