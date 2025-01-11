@@ -1,6 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
   import AdminEditUserRolePopup from "./AdminEditUserRolePopup.svelte";
+  import { getUserRoleColor } from "../../../../constants";
 
   export let user: AdminUser;
 
@@ -19,11 +20,17 @@
   <td>{user.userName ?? ""}</td>
   <td>
     <div class="flex w-full justify-between items-center">
-      <p>
-        {user.role ?? ""}
-      </p>
+      {#if user.role}
+        <p
+          class="py-2 w-20 text-center rounded-full text-md
+          {getUserRoleColor(user.role)}"
+        >
+          {user.role}
+        </p>
+      {/if}
+
       <button
-        class="hidden group-hover:block bg-blue-500 text-white text-sm px-2 py-1 rounded shadow"
+        class="ml-2 hidden group-hover:block bg-blue-500 text-white text-sm px-2 py-1 rounded shadow"
         on:click={() => {
           showEditUserRole = true;
         }}

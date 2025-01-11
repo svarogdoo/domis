@@ -44,7 +44,7 @@
       <option value="Admin">Admin</option>
     </select>
 
-    <div>
+    <div class="flex flex-wrap gap-y-2 gap-x-2 justify-center">
       <button
         class="text-light bg-green-600 text-white py-2 px-12 rounded-lg text-center tracking-widest hover:bg-green-700"
         on:click={saveNewUserRole}
