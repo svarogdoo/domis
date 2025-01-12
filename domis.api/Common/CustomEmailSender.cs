@@ -65,6 +65,7 @@ public class CustomEmailSender(ILogger<CustomEmailSender> logger, ISendGridClien
     public async Task SendOrderConfirmationAsync(string email, OrderConfirmationDto order)
     {
         var subject = $"Domis Enterijeri - Potvrda narudžbine #{order.OrderId}";
+        var createdAtBelgrade = TimeZoneInfo.ConvertTimeFromUtc(order.CreatedAt, DateTimeHelper.BelgradeTimeZone).ToString("dd.MM.yyyy. HH:mm");
 
         var shippingAddress = $"{order.InvoiceAddress?.Address}";
         if (!string.IsNullOrWhiteSpace(order.InvoiceAddress?.Apartment))
@@ -78,7 +79,7 @@ public class CustomEmailSender(ILogger<CustomEmailSender> logger, ISendGridClien
             <div style='font-family: Arial, sans-serif; color: #333;'>
                 <h1 style='color: #4CAF50;'>Hvala vam na narudžbini #{order.OrderId}</h1>
                 <p>Ovo su detalji vaše narudžbine:</p>
-        
+
                 <h2 style='border-bottom: 1px solid #ddd; padding-bottom: 5px;'>Stavke narudžbine</h2>
                 <ul style='list-style-type: none; padding: 0;'>
                     {string.Join("", order.OrderItems.Select(item => $@"
@@ -90,16 +91,18 @@ public class CustomEmailSender(ILogger<CustomEmailSender> logger, ISendGridClien
                 </ul>
 
                 <p style='font-weight: bold;'>Ukupna cena: {order.TotalPrice?.ToString("F2")} RSD</p>
-        
+
                 <h2 style='border-bottom: 1px solid #ddd; padding-bottom: 5px;'>Detalji isporuke</h2>
                 <p><strong>Ime i prezime:</strong> {order.InvoiceAddress?.FirstName} {order.InvoiceAddress?.LastName}</p>
                 <p><strong>Adresa:</strong> {shippingAddress}</p>
                 <p><strong>Telefon:</strong> +381 {order.InvoiceAddress?.PhoneNumber}</p>
-        
+
+                <p><strong>Datum kreiranja narudžbine:</strong> {createdAtBelgrade}</p>
+
                 <p style='margin-top: 20px;'>Ukoliko imate bilo kakva pitanja, slobodno nas kontaktirajte.</p>
-            
+                
                 <a href='https://www.domisenterijeri.com' style='color: #8f1410; text-decoration: underline; margin-top: 20px;'>Posetite našu stranicu</a>
-            
+                
                 <p style='font-size: 1.4em; color: #8f1410; margin-top: 10px;'>Pozdrav, Vaši Domis Enterijeri</p>
             </div>
         ";
