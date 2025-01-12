@@ -77,6 +77,8 @@ public class OrderService(
         if (receiver is not null)
             await emailSender.SendOrderConfirmationAsync(receiver, order);
 
+        await emailSender.SendOrderConfirmationInternallyAsync("lukardvn@gmail.com", role, order);
+
         return order.OrderId;
     }
 

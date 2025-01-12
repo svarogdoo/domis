@@ -1,4 +1,5 @@
-﻿using SendGrid.Helpers.Mail;
+﻿using System.Text;
+using SendGrid.Helpers.Mail;
 using SendGrid;
 using System.Text.Encodings.Web;
 using domis.api.Models;
@@ -12,6 +13,7 @@ public interface ICustomEmailSender<TUser> where TUser: UserEntity, new()
     Task SendPasswordResetCodeAsync(UserEntity user, string email, string resetCode);
     Task SendConfirmationLinkAsync(UserEntity user, string toEmail, string confirmationLink);
     Task SendOrderConfirmationAsync(string email, OrderConfirmationDto order);
+    Task SendOrderConfirmationInternallyAsync(string userEmail, string role, OrderConfirmationDto order);
 }
 
 public class CustomEmailSender(ILogger<CustomEmailSender> logger, ISendGridClient sendGridClient) 
@@ -105,8 +107,41 @@ public class CustomEmailSender(ILogger<CustomEmailSender> logger, ISendGridClien
         await SendEmailAsync(email, subject, message);
     }
 
+    public async Task SendOrderConfirmationInternallyAsync(string userEmail, string role, OrderConfirmationDto order)
+    {
+        var subject = $"Domis Enterijeri - Potvrda narudžbine #{order.OrderId}";
+        var message = $"Potvrda narudžbine #{order.OrderId}";
+        
+        var csvData = GenerateCsvAttachment(order, userEmail, role, out var attachmentFileName);
 
-    private async Task SendEmailAsync(string toEmail, string subject, string message)
+        //TODO: replace with domis internal email
+        await SendEmailAsync("lukardvn@gmail.com", subject, message, csvData, attachmentFileName);
+    }
+    
+    private static byte[] GenerateCsvAttachment(OrderConfirmationDto order, string userEmail, string role, out string attachmentFileName)
+    {        
+        var csv = new StringBuilder();
+
+        var orderId = order.OrderId;
+        var createdAtBelgrade = TimeZoneInfo.ConvertTimeFromUtc(order.CreatedAt, DateTimeHelper.BelgradeTimeZone).ToString("yyyy-MM-dd-HH-mm-ss");
+
+        foreach (var item in order.OrderItems)
+        {
+            var quantity = item.UnitsQuantity;
+            var sku = item.Sku;
+            var price = item.ProductPrice;
+            
+            //TODO: check values
+            csv.AppendLine($"{orderId},{role},x,{userEmail},{userEmail},{orderId},{createdAtBelgrade},{sku},{price},{quantity},0,0");
+        }
+        
+        var csvData = Encoding.UTF8.GetBytes(csv.ToString());
+        attachmentFileName = $"Profaktura-{createdAtBelgrade}-{Guid.NewGuid()}.csv";
+        return csvData;
+    }
+
+    private async Task SendEmailAsync(string toEmail, string subject, string message,
+        byte[]? attachmentData = null, string? attachmentFileName = null)
     {
         var msg = new SendGridMessage()
         {
@@ -118,6 +153,9 @@ public class CustomEmailSender(ILogger<CustomEmailSender> logger, ISendGridClien
         };
         msg.AddTo(new EmailAddress(toEmail));
 
+        if (attachmentData != null && !string.IsNullOrEmpty(attachmentFileName))
+            msg.AddAttachment(attachmentFileName, Convert.ToBase64String(attachmentData));
+        
         var response = await sendGridClient.SendEmailAsync(msg);
         logger.LogInformation(response is { IsSuccessStatusCode: true }
                                ? $"Email to {toEmail} queued successfully!"

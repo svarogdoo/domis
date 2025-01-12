@@ -78,7 +78,7 @@ public static class CartEndpoints
         {                
             var user = await userManager.GetUserAsync(http.User);
 
-            var response = await cartService.UpdateCartItemQuantity(request.cartItemId, request.quantity, user);
+            var response = await cartService.UpdateCartItemQuantity(request.cartItemId, request.packageQuantity, user);
 
             return Results.Ok(new UpdateCartItemResponse(response));
         }).WithDescription("Update cart item quantity");
@@ -98,7 +98,7 @@ public static class CartEndpoints
 
             var cart = await cartService.Cart(user, cartId);
             
-            if (user is null && cartId is null) return Results.BadRequest();
+            //if (user is null && cartId is null) return Results.BadRequest();
 
             return cart != null
                 ? Results.Ok(cart)

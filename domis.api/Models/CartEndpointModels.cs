@@ -53,7 +53,7 @@ public record CreateCartItemRequest(int? CartId, int ProductId, decimal Quantity
 
 public record CreateCartItemResponse(int? cartId);
 
-public record UpdateCartItemRequest(int cartItemId, decimal quantity);
+public record UpdateCartItemRequest(int cartItemId, decimal packageQuantity);
 public record UpdateCartItemResponse(bool updated);
 
 public record DeleteCartItemResponse(bool deleted);

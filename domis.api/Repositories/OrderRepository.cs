@@ -209,7 +209,8 @@ public class OrderRepository(IDbConnection connection, PriceAndSizeHelper helper
                 InvoiceAddress = await GetOrderShippingById(createOrder.InvoiceOrderShippingId),
                 DeliveryAddress = createOrder.DeliveryOrderShippingId.HasValue 
                     ? await GetOrderShippingById(createOrder.DeliveryOrderShippingId.Value) 
-                    : null
+                    : null,
+                CreatedAt = DateTime.UtcNow
             };
         }
         catch (Exception ex)
@@ -237,7 +238,7 @@ public class OrderRepository(IDbConnection connection, PriceAndSizeHelper helper
                 cartItem.ProductId, userRole, cartItem.Quantity, sizing);
 
             // If the price hasn't changed, do nothing
-            if (cartItem.ProductPrice == expectedPrice) continue;
+            if (cartItem.CartItemPricePerPackage == expectedPrice) continue;
             
             // Log or notify about the price change, if necessary
             Log.Information($"Price mismatch for product ID {cartItem.ProductId}: Expected price {expectedPrice}, but found {cartItem.ProductPrice}");
@@ -248,7 +249,7 @@ public class OrderRepository(IDbConnection connection, PriceAndSizeHelper helper
     
     private static decimal CalculateTotalAmount(IEnumerable<CartItemWithPriceDto> cartItems, decimal discount)
     {
-        var total = cartItems.Sum(i => i.ProductPrice * i.Quantity);
+        var total = cartItems.Sum(i => i.CartItemPricePerPackage * i.Quantity);
         var discountedTotal = total - total * discount; //discount not needed
         
         return total;
@@ -267,7 +268,7 @@ public class OrderRepository(IDbConnection connection, PriceAndSizeHelper helper
                 createOrder.PaymentVendorTypeId,
                 PaymentAmount = totalAmount,
                 createOrder.Comment,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow //TODO: maybe change to local time?
             }, transaction);
 
             return result;

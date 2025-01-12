@@ -71,8 +71,10 @@ public class ProductDetails
 public class OrderItemWithPriceDto
 {
     public int OrderItemId { get; set; }
+    public int Sku { get; set; }
     public string? ProductName { get; set; }
     public int ProductId { get; set; }
     public decimal ProductPrice { get; set; }
     public decimal? Quantity { get; set; }
+    public decimal? UnitsQuantity { get; set; }
 }
