@@ -98,7 +98,7 @@ public static class CartEndpoints
 
             var cart = await cartService.Cart(user, cartId);
             
-            if (user is null && cartId is null) return Results.BadRequest();
+            //if (user is null && cartId is null) return Results.BadRequest();
 
             return cart != null
                 ? Results.Ok(cart)

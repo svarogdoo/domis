@@ -138,13 +138,16 @@ public static class OrderQueries
 
 
     public const string CreateOrderItems = @"
-        INSERT INTO domis.order_item (order_id, product_id, quantity, order_item_amount, created_at)
+        INSERT INTO domis.order_item (order_id, product_id, quantity, order_item_amount, price_unit, created_at, units_quantity, sku)
         SELECT 
             @OrderId,
             ci.product_id,
             ci.quantity,
             ci.price,
-            @CreatedAt
+            ci.price_unit,
+            @CreatedAt,
+            ci.units_quantity,
+            ci.sku
         FROM domis.cart_item ci
         WHERE ci.cart_id = @CartId
         RETURNING id;"; // Assuming order_item_id is the primary key
@@ -284,9 +287,12 @@ public static class OrderQueries
         SELECT
             oi.id AS OrderItemId,
             oi.product_id AS ProductId,
+            p.sku as Sku,
             p.product_name AS ProductName,
             oi.order_item_amount as ProductPrice,
-            oi.quantity AS Quantity         
+            oi.quantity AS Quantity,
+            oi.units_quantity AS UnitsQuantity,
+            oi.price_unit as PricePerUnit
         FROM
             domis.order_item oi
         JOIN 

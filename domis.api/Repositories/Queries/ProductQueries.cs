@@ -228,6 +228,12 @@ public static class ProductQueries
         SELECT EXISTS 
         (SELECT 1 FROM domis.product WHERE id = @ProductId);"
     ;
+    
+    public const string GetProductSkuById = @"
+        SELECT sku 
+        FROM domis.product 
+        WHERE id = @ProductId;"
+    ;
 
     public const string UpdateProduct = @"
         UPDATE domis.product
