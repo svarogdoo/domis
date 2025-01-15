@@ -126,16 +126,20 @@ public class CustomEmailSender(ILogger<CustomEmailSender> logger, ISendGridClien
         var csv = new StringBuilder();
 
         var orderId = order.OrderId;
-        var createdAtBelgrade = TimeZoneInfo.ConvertTimeFromUtc(order.CreatedAt, DateTimeHelper.BelgradeTimeZone).ToString("yyyy-MM-dd-HH-mm-ss");
+        var createdAtBelgrade = TimeZoneInfo.ConvertTimeFromUtc(order.CreatedAt, DateTimeHelper.BelgradeTimeZone).ToString("yyyy-MM-dd HH:mm");
 
         foreach (var item in order.OrderItems)
         {
-            var quantity = item.UnitsQuantity;
+            var unitQuantity = item.UnitsQuantity;
             var sku = item.Sku;
-            var price = item.ProductPrice;
+            var unitPrice = item.PricePerUnit;
             
-            //TODO: check values
-            csv.AppendLine($"{orderId},{role},x,{userEmail},{userEmail},{orderId},{createdAtBelgrade},{sku},{price},{quantity},0,0");
+            role = role.Contains("vp", StringComparison.CurrentCultureIgnoreCase)
+                ? "VP" 
+                : string.Empty;
+            
+            //TODO: sifra kupca
+            csv.AppendLine($"{orderId},{role},sifra-kupca,{userEmail},{userEmail},{orderId},{createdAtBelgrade},{sku},{unitPrice},{unitQuantity},0,0");
         }
         
         var csvData = Encoding.UTF8.GetBytes(csv.ToString());

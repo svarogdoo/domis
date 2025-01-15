@@ -78,7 +78,7 @@ public static class CartEndpoints
         {                
             var user = await userManager.GetUserAsync(http.User);
 
-            var response = await cartService.UpdateCartItemQuantity(request.cartItemId, request.packageQuantity, user);
+            var response = await cartService.UpdateCartItemQuantity(request.cartItemId, request.quantity, user);
 
             return Results.Ok(new UpdateCartItemResponse(response));
         }).WithDescription("Update cart item quantity");

@@ -75,6 +75,7 @@ public class OrderItemWithPriceDto
     public string? ProductName { get; set; }
     public int ProductId { get; set; }
     public decimal ProductPrice { get; set; }
+    public decimal PricePerUnit { get; set; }
     public decimal? Quantity { get; set; }
     public decimal? UnitsQuantity { get; set; }
 }

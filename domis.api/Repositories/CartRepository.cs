@@ -136,13 +136,16 @@ public class CartRepository(IDbConnection connection, PriceAndSizeHelper helper)
             var size = await helper.GetProductSizing(ci.ProductId);
             var pakSize = PriceAndSizeHelper.PakSizeAsNumber(size);
             var unitsQuantity = newPackageQuantity * pakSize;
+            var pricePerPackage = await helper.GetPriceBasedOnRoleAndQuantity(ci.ProductId, role, newPackageQuantity, size);
+            var pricePerUnit = pricePerPackage / pakSize;
             
             var rowsAffected = await connection.ExecuteAsync(CartQueries.UpdateCartItemQuantityAndPrice, new
             {
                 CartItemId = cartItemId,
                 Quantity = newPackageQuantity,
                 ModifiedAt = DateTime.UtcNow,
-                Price = await helper.GetPriceBasedOnRoleAndQuantity(ci.ProductId, role, newPackageQuantity, size),
+                Price = pricePerPackage,
+                PricePerUnit = pricePerUnit,
                 UnitsQuantity = unitsQuantity
             });
 
@@ -263,6 +266,7 @@ public class CartRepository(IDbConnection connection, PriceAndSizeHelper helper)
     private async Task<int?> AddNewCartItem(int? cartId, int productId, int sku, decimal packageQuantity, decimal unitsQuantity, string role, Size? size)
     {
         var pricePerPackage = await helper.GetPriceBasedOnRoleAndQuantity(productId, role, packageQuantity, size);
+        var pricePerUnit = pricePerPackage / PriceAndSizeHelper.PakSizeAsNumber(size);
         
         var parameters = new
         {
@@ -271,6 +275,7 @@ public class CartRepository(IDbConnection connection, PriceAndSizeHelper helper)
             Sku = sku,
             Quantity = packageQuantity,
             Price = pricePerPackage,
+            PricePerUnit = pricePerUnit,
             CreatedAt = DateTime.UtcNow,
             ModifiedAt = DateTime.UtcNow,
             UnitsQuantity = unitsQuantity
@@ -285,10 +290,10 @@ public class CartRepository(IDbConnection connection, PriceAndSizeHelper helper)
         var currentPackageQuantity = await connection.ExecuteScalarAsync<decimal>(CartQueries.GetCIQuantityByCartAndProduct, new { CartId = cartId, ProductId = productId });
 
         //ovde sad moram porediti sa brojem paketa u paleti
-        var packagesInPallet = PriceAndSizeHelper.PalSizeAsNumber(size) / PriceAndSizeHelper.PalSizeAsNumber(size);
+        var packagesInPallet = PriceAndSizeHelper.PalSizeAsNumber(size) / PriceAndSizeHelper.PakSizeAsNumber(size);
         
         var totalPackageQuantity = currentPackageQuantity + addedPackageQuantity;
-        if (totalPackageQuantity < packagesInPallet)
+        if (totalPackageQuantity < packagesInPallet || !role.Contains("vp", StringComparison.CurrentCultureIgnoreCase))
         {
             await connection.ExecuteScalarAsync<int>(CartQueries.UpdateCIQuantityByCartAndProduct, new
             {
@@ -302,6 +307,7 @@ public class CartRepository(IDbConnection connection, PriceAndSizeHelper helper)
         else
         {
             var updatedPriceForPal = await helper.GetPriceBasedOnRoleAndQuantity(productId, role, totalPackageQuantity, size);
+            var pricePerUnit = updatedPriceForPal / PriceAndSizeHelper.PakSizeAsNumber(size);
             
             await connection.ExecuteScalarAsync<int>(CartQueries.UpdateCIPriceAndQuantityByCartAndProduct, new
             {
@@ -309,6 +315,8 @@ public class CartRepository(IDbConnection connection, PriceAndSizeHelper helper)
                 ProductId = productId,
                 Quantity = totalPackageQuantity,
                 Price = updatedPriceForPal,
+                PricePerUnit = pricePerUnit,
+                UnitsQuantity = unitsQuantity,
                 ModifiedAt = DateTime.UtcNow
             });
         }
