@@ -46,7 +46,6 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
     public async Task<IEnumerable<ProductPreviewDto>> GetAll()
     {
         //TO-DO: check if we need this, and if we do, check if we want to include Featured image as well
-
         try
         {
             var products = await connection.QueryAsync<ProductPreviewDto>(ProductQueries.GetAll);

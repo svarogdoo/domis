@@ -427,4 +427,14 @@ public static class ProductQueries
         WHERE product_id = @ProductId
         ORDER BY IsActive DESC, StartDate DESC
     ";
+
+    public const string GetProductQuantityType = @"
+        SELECT 
+            pq.name AS QuantityTypeName
+        FROM domis.product p
+        INNER JOIN domis.product_quantity_type pq
+            ON p.quantity_type_id = pq.id
+        WHERE p.id = @ProductId;
+    ";
+
 }
