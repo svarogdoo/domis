@@ -372,12 +372,11 @@ public static class ProductQueries
         LEFT JOIN domis.product_image pi ON p.id = pi.product_id AND pi.image_type_id = 1
         LEFT JOIN domis.image i ON pi.image_id = i.id
         LEFT JOIN domis.image_type it ON pi.image_type_id = it.id
-        WHERE p.active = TRUE
-          AND s.is_active = TRUE
+        WHERE s.is_active = TRUE
           AND (s.start_date IS NULL OR s.start_date <= @CurrentTime)
           AND (s.end_date IS NULL OR s.end_date >= @CurrentTime)
     ";
-
+    
     public const string UpdateProductSizing = @"
         UPDATE domis.product_packaging
         SET
