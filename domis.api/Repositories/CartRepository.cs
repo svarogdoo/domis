@@ -101,18 +101,12 @@ public class CartRepository(IDbConnection connection, PriceAndSizeHelper helper)
             
             // if (addedPakQuantity % pakSize != 0 || pakSize == null)
             //     throw new ArgumentException($"Quantity - {addedPakQuantity} must be in increments of the pak size - {pakSize}.");
-            
-            // var palSize = PriceAndSizeHelper.PalSizeAsNumber(sizing);
 
             var cartItemExists = await connection.ExecuteScalarAsync<bool>(CartQueries.CheckIfProductExistsInCart, new { CartId = cartId, ProductId = productId });
 
             return cartItemExists
                 ? await UpdateExistingCartItem(cartId, productId, addedPackageQuantity, (decimal)unitsQuantity!, role, sizing)
                 : await AddNewCartItem(cartId, productId, (int)sku, addedPackageQuantity, (decimal)unitsQuantity!, role, sizing);
-            
-            // return cartItemExists 
-            //     ? await UpdateExistingCartItem(cartId, productId, addedPackageQuantity * (decimal)pakSize!, role, sizing) 
-            //     : await AddNewCartItem(cartId, productId, addedPackageQuantity * (decimal)pakSize!, role, sizing);
         }
         catch (Exception ex)
         {
@@ -136,7 +130,9 @@ public class CartRepository(IDbConnection connection, PriceAndSizeHelper helper)
             var size = await helper.GetProductSizing(ci.ProductId);
             var pakSize = PriceAndSizeHelper.PakSizeAsNumber(size);
             var unitsQuantity = newPackageQuantity * pakSize;
-            var pricePerPackage = await helper.GetPriceBasedOnRoleAndQuantity(ci.ProductId, role, newPackageQuantity, size);
+            var productQuantityType = await connection.QueryFirstOrDefaultAsync<string>(ProductQueries.GetProductQuantityType, new { ci.ProductId });
+
+            var pricePerPackage = await helper.GetPriceBasedOnRoleAndQuantity(ci.ProductId, role, newPackageQuantity, size, productQuantityType);
             var pricePerUnit = pricePerPackage / pakSize;
             
             var rowsAffected = await connection.ExecuteAsync(CartQueries.UpdateCartItemQuantityAndPrice, new
@@ -265,8 +261,16 @@ public class CartRepository(IDbConnection connection, PriceAndSizeHelper helper)
     
     private async Task<int?> AddNewCartItem(int? cartId, int productId, int sku, decimal packageQuantity, decimal unitsQuantity, string role, Size? size)
     {
-        var pricePerPackage = await helper.GetPriceBasedOnRoleAndQuantity(productId, role, packageQuantity, size);
+        var productQuantityType = await connection.QueryFirstOrDefaultAsync<string>(ProductQueries.GetProductQuantityType, new { ProductId = productId });
+
+        var pricePerPackage = await helper.GetPriceBasedOnRoleAndQuantity(productId, role, packageQuantity, size, productQuantityType);
         var pricePerUnit = pricePerPackage / PriceAndSizeHelper.PakSizeAsNumber(size);
+        
+        if (productQuantityType == "Piece")
+        {
+            unitsQuantity = packageQuantity;
+            //pricePerPackage = pricePerUnit;
+        }
         
         var parameters = new
         {
@@ -288,11 +292,13 @@ public class CartRepository(IDbConnection connection, PriceAndSizeHelper helper)
     private async Task<int?> UpdateExistingCartItem(int? cartId, int productId, decimal addedPackageQuantity, decimal unitsQuantity, string role, Size? size)
     {
         var currentPackageQuantity = await connection.ExecuteScalarAsync<decimal>(CartQueries.GetCIQuantityByCartAndProduct, new { CartId = cartId, ProductId = productId });
-
-        //ovde sad moram porediti sa brojem paketa u paleti
         var packagesInPallet = PriceAndSizeHelper.PalSizeAsNumber(size) / PriceAndSizeHelper.PakSizeAsNumber(size);
-        
         var totalPackageQuantity = currentPackageQuantity + addedPackageQuantity;
+        
+        var productQuantityType = await connection.QueryFirstOrDefaultAsync<string>(ProductQueries.GetProductQuantityType, new { ProductId = productId });
+        if (productQuantityType == "Piece")
+            unitsQuantity = addedPackageQuantity;
+        
         if (totalPackageQuantity < packagesInPallet || !role.Contains("vp", StringComparison.CurrentCultureIgnoreCase))
         {
             await connection.ExecuteScalarAsync<int>(CartQueries.UpdateCIQuantityByCartAndProduct, new
@@ -306,9 +312,14 @@ public class CartRepository(IDbConnection connection, PriceAndSizeHelper helper)
         }
         else
         {
-            var updatedPriceForPal = await helper.GetPriceBasedOnRoleAndQuantity(productId, role, totalPackageQuantity, size);
+            var updatedPriceForPal = await helper.GetPriceBasedOnRoleAndQuantity(productId, role, totalPackageQuantity, size, productQuantityType);
             var pricePerUnit = updatedPriceForPal / PriceAndSizeHelper.PakSizeAsNumber(size);
-            
+
+            //TODO: sta raditi sa ovim? znaci za proizvode koji se prodaju na komad za VP-ove
+            // if (productQuantityType == "Piece") 
+            // {
+            //     updatedPriceForPal = pricePerUnit;
+            // }
             await connection.ExecuteScalarAsync<int>(CartQueries.UpdateCIPriceAndQuantityByCartAndProduct, new
             {
                 CartId = cartId,
@@ -348,11 +359,13 @@ public class CartRepository(IDbConnection connection, PriceAndSizeHelper helper)
         if (cartItems == null || cartItems.Count == 0)
             throw new InvalidOperationException("Cart is empty. Cannot validate items.");
 
+        //TODO: actually update cart item in db
         foreach (var cartItem in cartItems)
         {
             var sizing = await helper.GetProductSizing(cartItem.ProductId);
             
-            var expectedPrice = await helper.GetPriceBasedOnRoleAndQuantity(cartItem.ProductId, userRole, cartItem.Quantity, sizing);
+            var productQuantityType = await connection.QueryFirstOrDefaultAsync<string>(ProductQueries.GetProductQuantityType, new { cartItem.ProductId });
+            var expectedPrice = await helper.GetPriceBasedOnRoleAndQuantity(cartItem.ProductId, userRole, cartItem.Quantity, sizing, productQuantityType);
 
             //just for sale
             cartItem.ProductDetails.Price *= PriceAndSizeHelper.PakSizeAsNumber(sizing);

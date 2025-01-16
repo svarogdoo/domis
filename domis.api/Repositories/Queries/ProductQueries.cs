@@ -372,12 +372,11 @@ public static class ProductQueries
         LEFT JOIN domis.product_image pi ON p.id = pi.product_id AND pi.image_type_id = 1
         LEFT JOIN domis.image i ON pi.image_id = i.id
         LEFT JOIN domis.image_type it ON pi.image_type_id = it.id
-        WHERE p.active = TRUE
-          AND s.is_active = TRUE
+        WHERE s.is_active = TRUE
           AND (s.start_date IS NULL OR s.start_date <= @CurrentTime)
           AND (s.end_date IS NULL OR s.end_date >= @CurrentTime)
     ";
-
+    
     public const string UpdateProductSizing = @"
         UPDATE domis.product_packaging
         SET
@@ -428,4 +427,14 @@ public static class ProductQueries
         WHERE product_id = @ProductId
         ORDER BY IsActive DESC, StartDate DESC
     ";
+
+    public const string GetProductQuantityType = @"
+        SELECT 
+            pq.name AS QuantityTypeName
+        FROM domis.product p
+        INNER JOIN domis.product_quantity_type pq
+            ON p.quantity_type_id = pq.id
+        WHERE p.id = @ProductId;
+    ";
+
 }

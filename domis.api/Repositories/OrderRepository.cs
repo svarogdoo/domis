@@ -4,6 +4,7 @@ using domis.api.Common;
 using domis.api.DTOs.Cart;
 using domis.api.DTOs.Order;
 using domis.api.Models;
+using domis.api.Repositories.Helpers;
 using domis.api.Repositories.Queries;
 using MailKit.Search;
 using Serilog;
@@ -234,8 +235,9 @@ public class OrderRepository(IDbConnection connection, PriceAndSizeHelper helper
         {
             var sizing = await helper.GetProductSizing(cartItem.ProductId);
             var palSize = PriceAndSizeHelper.PalSizeAsNumber(sizing);
+            var productQuantityType = await connection.QueryFirstOrDefaultAsync<string>(ProductQueries.GetProductQuantityType, new { cartItem.ProductId });
             var expectedPrice = await helper.GetPriceBasedOnRoleAndQuantity(
-                cartItem.ProductId, userRole, cartItem.Quantity, sizing);
+                cartItem.ProductId, userRole, cartItem.Quantity, sizing, productQuantityType);
 
             // If the price hasn't changed, do nothing
             if (cartItem.CartItemPricePerPackage == expectedPrice) continue;

@@ -8,14 +8,14 @@ namespace domis.api.Repositories;
 
 public class PriceAndSizeHelper(IDbConnection connection)
 {
-    public async Task<decimal?> GetPriceBasedOnRoleAndQuantity(int productId, string userRole, decimal packageQuantity, Size? size)
+    public async Task<decimal?> GetPriceBasedOnRoleAndQuantity(int productId, string userRole, decimal packageQuantity, Size? size, string? productQuantityType)
     {
         try
         {
             return userRole switch
             {
-                "User" or "Admin" => await GetProductPriceRegular(productId, size),
-                "VP1" or "VP2" or "VP3" or "VP4" => await GetProductPriceVp(productId, userRole, packageQuantity, size),
+                "User" or "Admin" => await GetProductPriceRegular(productId, size, productQuantityType),
+                "VP1" or "VP2" or "VP3" or "VP4" => await GetProductPriceVp(productId, userRole, packageQuantity, size), //TODO: do we pass productQuantityType
                 _ => throw new NotSupportedException($"Role '{userRole}' is not supported.")
             };
         }
@@ -26,12 +26,15 @@ public class PriceAndSizeHelper(IDbConnection connection)
         }
     }
     
-    private async Task<decimal?> GetProductPriceRegular(int productId, Size? size)
+    private async Task<decimal?> GetProductPriceRegular(int productId, Size? size, string? productQuantityType)
     {
         //Regular users don't get discount on quantity (they don't have pallets)
         //but there is check to see if product is on sale (query)
         var effectivePrice = await connection.ExecuteScalarAsync<decimal?>(ProductQueries.GetProductEffectivePrice, new { ProductId = productId });
-        var pakSize = PakSizeAsNumber(size); 
+        var pakSize = PakSizeAsNumber(size);
+
+        if (productQuantityType is "Piece")
+            return effectivePrice;
         
         return effectivePrice * (pakSize ?? 1);
     }
