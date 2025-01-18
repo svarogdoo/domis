@@ -19,6 +19,7 @@
   let showSnackbar = false;
 
   let salePrice: number = initialPrice ?? 0;
+  let salePercentage: number;
   let usePercentage: boolean = true;
   let startDate: Date = new Date();
   let hasSaleEndDate: boolean = true;
