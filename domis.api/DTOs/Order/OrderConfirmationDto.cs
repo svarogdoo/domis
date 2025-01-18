@@ -7,4 +7,5 @@ public class OrderConfirmationDto
     public decimal? TotalPrice { get; init; }
     public OrderShippingDto? InvoiceAddress { get; set; }
     public OrderShippingDto? DeliveryAddress { get; set; }
+    public DateTime CreatedAt { get; init; }
 }

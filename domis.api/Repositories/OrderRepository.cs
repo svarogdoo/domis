@@ -4,6 +4,7 @@ using domis.api.Common;
 using domis.api.DTOs.Cart;
 using domis.api.DTOs.Order;
 using domis.api.Models;
+using domis.api.Repositories.Helpers;
 using domis.api.Repositories.Queries;
 using MailKit.Search;
 using Serilog;
@@ -209,7 +210,8 @@ public class OrderRepository(IDbConnection connection, PriceAndSizeHelper helper
                 InvoiceAddress = await GetOrderShippingById(createOrder.InvoiceOrderShippingId),
                 DeliveryAddress = createOrder.DeliveryOrderShippingId.HasValue 
                     ? await GetOrderShippingById(createOrder.DeliveryOrderShippingId.Value) 
-                    : null
+                    : null,
+                CreatedAt = DateTime.UtcNow
             };
         }
         catch (Exception ex)
@@ -233,11 +235,12 @@ public class OrderRepository(IDbConnection connection, PriceAndSizeHelper helper
         {
             var sizing = await helper.GetProductSizing(cartItem.ProductId);
             var palSize = PriceAndSizeHelper.PalSizeAsNumber(sizing);
+            var productQuantityType = await connection.QueryFirstOrDefaultAsync<string>(ProductQueries.GetProductQuantityType, new { cartItem.ProductId });
             var expectedPrice = await helper.GetPriceBasedOnRoleAndQuantity(
-                cartItem.ProductId, userRole, cartItem.Quantity, sizing);
+                cartItem.ProductId, userRole, cartItem.Quantity, sizing, productQuantityType);
 
             // If the price hasn't changed, do nothing
-            if (cartItem.ProductPrice == expectedPrice) continue;
+            if (cartItem.CartItemPricePerPackage == expectedPrice) continue;
             
             // Log or notify about the price change, if necessary
             Log.Information($"Price mismatch for product ID {cartItem.ProductId}: Expected price {expectedPrice}, but found {cartItem.ProductPrice}");
@@ -248,7 +251,7 @@ public class OrderRepository(IDbConnection connection, PriceAndSizeHelper helper
     
     private static decimal CalculateTotalAmount(IEnumerable<CartItemWithPriceDto> cartItems, decimal discount)
     {
-        var total = cartItems.Sum(i => i.ProductPrice * i.Quantity);
+        var total = cartItems.Sum(i => i.CartItemPricePerPackage * i.Quantity);
         var discountedTotal = total - total * discount; //discount not needed
         
         return total;
@@ -267,7 +270,7 @@ public class OrderRepository(IDbConnection connection, PriceAndSizeHelper helper
                 createOrder.PaymentVendorTypeId,
                 PaymentAmount = totalAmount,
                 createOrder.Comment,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow //TODO: maybe change to local time?
             }, transaction);
 
             return result;

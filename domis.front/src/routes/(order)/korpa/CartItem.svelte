@@ -10,20 +10,25 @@
   export let item: CartProduct;
 
   let quantity = item.quantity;
+  let debounceTimeout: ReturnType<typeof setTimeout>;
 
-  function handleQuantityChange() {
-    let num = Number(quantity);
+    function handleQuantityChange() {
+      clearTimeout(debounceTimeout);
 
-    if (isNaN(num) || num === 0) {
-      quantity = item.quantity;
-      return;
-    }
+      debounceTimeout = setTimeout(() => {
+        let num = Number(quantity);
 
-    quantity = Math.round(num);
-    item.quantity = quantity;
+        if (isNaN(num) || num === 0) {
+          quantity = item.quantity;
+          return;
+        }
 
-    cart.update(item.cartItemId, item.quantity);
-  }
+        quantity = Math.round(num);
+        item.quantity = quantity;
+
+        cart.update(item.cartItemId, item.quantity);
+      }, 500);
+    } 
 
   function removeItemFromCart() {
     cart.remove(item.cartItemId);

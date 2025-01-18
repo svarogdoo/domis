@@ -17,7 +17,7 @@ public interface ICartRepository
     Task<int> CreateCartAsync(string? userId);
     Task<bool> UpdateCartStatusAsync(int cartId, int statusId);
     Task<int?> CreateCartItemAsync(int? cartId, int productId, decimal addedPackageQuantity, string? userId, string role, decimal discount = 0);
-    Task<bool> UpdateCartItemQuantityAsync(int cartItemId, decimal newPakQuantity, string role);
+    Task<bool> UpdateCartItemQuantityAsync(int cartItemId, decimal newPackageQuantity, string role);
     Task<bool> DeleteCartItemAsync(int cartItemId);
     Task<bool> DeleteCartAsync(int cartId);
     Task<CartDto?> Cart( string userRole, string? userId, int? cartId);
@@ -92,26 +92,21 @@ public class CartRepository(IDbConnection connection, PriceAndSizeHelper helper)
             var existingCartId = await connection.ExecuteScalarAsync<int?>(CartQueries.CheckIfCartExists, new { CartId = cartId, UserId = userId });
             cartId = existingCartId ?? await CreateCartAsync(userId);
             
-            var productExists = await connection.ExecuteScalarAsync<bool>(ProductQueries.CheckIfProductExists, new { ProductId = productId });
-            if (!productExists) throw new NotFoundException($"Product with ID {productId} does not exist.");
+            var sku = await connection.QuerySingleOrDefaultAsync<int?>(ProductQueries.GetProductSkuById, new { ProductId = productId });
+            if (sku is null) throw new NotFoundException($"Product with ID {productId} does not exist.");
 
             var sizing = await helper.GetProductSizing(productId);
-            // var pakSize = PriceAndSizeHelper.PakSizeAsNumber(sizing);
+            var pakSize = PriceAndSizeHelper.PakSizeAsNumber(sizing);
+            var unitsQuantity = addedPackageQuantity * pakSize;
             
             // if (addedPakQuantity % pakSize != 0 || pakSize == null)
             //     throw new ArgumentException($"Quantity - {addedPakQuantity} must be in increments of the pak size - {pakSize}.");
-            
-            // var palSize = PriceAndSizeHelper.PalSizeAsNumber(sizing);
 
             var cartItemExists = await connection.ExecuteScalarAsync<bool>(CartQueries.CheckIfProductExistsInCart, new { CartId = cartId, ProductId = productId });
 
             return cartItemExists
-                ? await UpdateExistingCartItem(cartId, productId, addedPackageQuantity, role, sizing)
-                : await AddNewCartItem(cartId, productId, addedPackageQuantity, role, sizing);
-            
-            // return cartItemExists 
-            //     ? await UpdateExistingCartItem(cartId, productId, addedPackageQuantity * (decimal)pakSize!, role, sizing) 
-            //     : await AddNewCartItem(cartId, productId, addedPackageQuantity * (decimal)pakSize!, role, sizing);
+                ? await UpdateExistingCartItem(cartId, productId, addedPackageQuantity, (decimal)unitsQuantity!, role, sizing)
+                : await AddNewCartItem(cartId, productId, (int)sku, addedPackageQuantity, (decimal)unitsQuantity!, role, sizing);
         }
         catch (Exception ex)
         {
@@ -120,7 +115,7 @@ public class CartRepository(IDbConnection connection, PriceAndSizeHelper helper)
         }
     }
 
-    public async Task<bool> UpdateCartItemQuantityAsync(int cartItemId, decimal newPakQuantity, string role)
+    public async Task<bool> UpdateCartItemQuantityAsync(int cartItemId, decimal newPackageQuantity, string role)
     {
         try
         {
@@ -133,16 +128,21 @@ public class CartRepository(IDbConnection connection, PriceAndSizeHelper helper)
                 throw new NotFoundException($"Cart item with ID {cartItemId} does not exist.");
             
             var size = await helper.GetProductSizing(ci.ProductId);
-            
-            // if (addedQuantity % pakSize != 0)
-            //     throw new ArgumentException($"Quantity {addedQuantity} must be in increments of the pak size {pakSize}.");
+            var pakSize = PriceAndSizeHelper.PakSizeAsNumber(size);
+            var unitsQuantity = newPackageQuantity * pakSize;
+            var productQuantityType = await connection.QueryFirstOrDefaultAsync<string>(ProductQueries.GetProductQuantityType, new { ci.ProductId });
+
+            var pricePerPackage = await helper.GetPriceBasedOnRoleAndQuantity(ci.ProductId, role, newPackageQuantity, size, productQuantityType);
+            var pricePerUnit = pricePerPackage / pakSize;
             
             var rowsAffected = await connection.ExecuteAsync(CartQueries.UpdateCartItemQuantityAndPrice, new
             {
                 CartItemId = cartItemId,
-                Quantity = newPakQuantity,
+                Quantity = newPackageQuantity,
                 ModifiedAt = DateTime.UtcNow,
-                Price = await helper.GetPriceBasedOnRoleAndQuantity(ci.ProductId, role, newPakQuantity, size)
+                Price = pricePerPackage,
+                PricePerUnit = pricePerUnit,
+                UnitsQuantity = unitsQuantity
             });
 
             return rowsAffected > 0;
@@ -259,52 +259,75 @@ public class CartRepository(IDbConnection connection, PriceAndSizeHelper helper)
     #region ExtensionMethods
     
     
-    private async Task<int?> AddNewCartItem(int? cartId, int productId, decimal packageQuantity, string role, Size? size)
+    private async Task<int?> AddNewCartItem(int? cartId, int productId, int sku, decimal packageQuantity, decimal unitsQuantity, string role, Size? size)
     {
-        var pricePerPackage = await helper.GetPriceBasedOnRoleAndQuantity(productId, role, packageQuantity, size);
+        var productQuantityType = await connection.QueryFirstOrDefaultAsync<string>(ProductQueries.GetProductQuantityType, new { ProductId = productId });
+
+        var pricePerPackage = await helper.GetPriceBasedOnRoleAndQuantity(productId, role, packageQuantity, size, productQuantityType);
+        var pricePerUnit = pricePerPackage / PriceAndSizeHelper.PakSizeAsNumber(size);
+        
+        if (productQuantityType == "Piece")
+        {
+            unitsQuantity = packageQuantity;
+            //pricePerPackage = pricePerUnit;
+        }
         
         var parameters = new
         {
             CartId = cartId,
             ProductId = productId,
+            Sku = sku,
             Quantity = packageQuantity,
             Price = pricePerPackage,
+            PricePerUnit = pricePerUnit,
             CreatedAt = DateTime.UtcNow,
-            ModifiedAt = DateTime.UtcNow
+            ModifiedAt = DateTime.UtcNow,
+            UnitsQuantity = unitsQuantity
         };
 
         await connection.ExecuteScalarAsync<int>(CartQueries.CreateCartItem, parameters);
         return cartId;
     }
 
-    private async Task<int?> UpdateExistingCartItem(int? cartId, int productId, decimal addedPackageQuantity, string role, Size? size)
+    private async Task<int?> UpdateExistingCartItem(int? cartId, int productId, decimal addedPackageQuantity, decimal unitsQuantity, string role, Size? size)
     {
         var currentPackageQuantity = await connection.ExecuteScalarAsync<decimal>(CartQueries.GetCIQuantityByCartAndProduct, new { CartId = cartId, ProductId = productId });
-
-        //ovde sad moram porediti sa brojem paketa u paleti
-        var packagesInPallet = PriceAndSizeHelper.PalSizeAsNumber(size) / PriceAndSizeHelper.PalSizeAsNumber(size);
-        
+        var packagesInPallet = PriceAndSizeHelper.PalSizeAsNumber(size) / PriceAndSizeHelper.PakSizeAsNumber(size);
         var totalPackageQuantity = currentPackageQuantity + addedPackageQuantity;
-        if (totalPackageQuantity < packagesInPallet)
+        
+        var productQuantityType = await connection.QueryFirstOrDefaultAsync<string>(ProductQueries.GetProductQuantityType, new { ProductId = productId });
+        if (productQuantityType == "Piece")
+            unitsQuantity = addedPackageQuantity;
+        
+        if (totalPackageQuantity < packagesInPallet || !role.Contains("vp", StringComparison.CurrentCultureIgnoreCase))
         {
             await connection.ExecuteScalarAsync<int>(CartQueries.UpdateCIQuantityByCartAndProduct, new
             {
                 CartId = cartId,
                 ProductId = productId,
                 Quantity = totalPackageQuantity,
-                ModifiedAt = DateTime.UtcNow
+                ModifiedAt = DateTime.UtcNow,
+                UnitsQuantity = unitsQuantity
             });
         }
         else
         {
-            var updatedPriceForPal = await helper.GetPriceBasedOnRoleAndQuantity(productId, role, totalPackageQuantity, size);
-            
+            var updatedPriceForPal = await helper.GetPriceBasedOnRoleAndQuantity(productId, role, totalPackageQuantity, size, productQuantityType);
+            var pricePerUnit = updatedPriceForPal / PriceAndSizeHelper.PakSizeAsNumber(size);
+
+            //TODO: sta raditi sa ovim? znaci za proizvode koji se prodaju na komad za VP-ove
+            // if (productQuantityType == "Piece") 
+            // {
+            //     updatedPriceForPal = pricePerUnit;
+            // }
             await connection.ExecuteScalarAsync<int>(CartQueries.UpdateCIPriceAndQuantityByCartAndProduct, new
             {
                 CartId = cartId,
                 ProductId = productId,
                 Quantity = totalPackageQuantity,
                 Price = updatedPriceForPal,
+                PricePerUnit = pricePerUnit,
+                UnitsQuantity = unitsQuantity,
                 ModifiedAt = DateTime.UtcNow
             });
         }
@@ -336,11 +359,13 @@ public class CartRepository(IDbConnection connection, PriceAndSizeHelper helper)
         if (cartItems == null || cartItems.Count == 0)
             throw new InvalidOperationException("Cart is empty. Cannot validate items.");
 
+        //TODO: actually update cart item in db
         foreach (var cartItem in cartItems)
         {
             var sizing = await helper.GetProductSizing(cartItem.ProductId);
             
-            var expectedPrice = await helper.GetPriceBasedOnRoleAndQuantity(cartItem.ProductId, userRole, cartItem.Quantity, sizing);
+            var productQuantityType = await connection.QueryFirstOrDefaultAsync<string>(ProductQueries.GetProductQuantityType, new { cartItem.ProductId });
+            var expectedPrice = await helper.GetPriceBasedOnRoleAndQuantity(cartItem.ProductId, userRole, cartItem.Quantity, sizing, productQuantityType);
 
             //just for sale
             cartItem.ProductDetails.Price *= PriceAndSizeHelper.PakSizeAsNumber(sizing);

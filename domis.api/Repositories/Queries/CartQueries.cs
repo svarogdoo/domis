@@ -25,8 +25,8 @@ public static class CartQueries
                 WHERE id = @CartId;";
     
     public const string CreateCartItem = @"
-                INSERT INTO domis.cart_item (cart_id, product_id, quantity, price, created_at, modified_at)
-                VALUES (@CartId, @ProductId, @Quantity, @Price, @CreatedAt, @ModifiedAt)
+                INSERT INTO domis.cart_item (cart_id, product_id, sku, quantity, price, price_unit, created_at, modified_at, units_quantity)
+                VALUES (@CartId, @ProductId, @Sku, @Quantity, @Price, @PricePerUnit, @CreatedAt, @ModifiedAt, @UnitsQuantity)
                 RETURNING id;";
     
     public const string UpdateCartItemQuantity = @"
@@ -36,7 +36,7 @@ public static class CartQueries
     
     public const string UpdateCartItemQuantityAndPrice = @"
                 UPDATE domis.cart_item
-                SET quantity = @Quantity, modified_at = @ModifiedAt, price = @Price
+                SET quantity = @Quantity, modified_at = @ModifiedAt, price = @Price, price_unit = @PricePerUnit, units_quantity = @UnitsQuantity
                 WHERE id = @CartItemId;";
     
     public const string DeleteCartItem = @"
@@ -134,7 +134,7 @@ public static class CartQueries
 
     public const string UpdateCIQuantityByCartAndProduct = @"
         UPDATE domis.cart_item 
-        SET quantity = @Quantity, modified_at = @ModifiedAt
+        SET quantity = @Quantity, modified_at = @ModifiedAt, units_quantity = @UnitsQuantity
         WHERE cart_id = @CartId AND product_id = @ProductId
         RETURNING Id;";
     
@@ -142,7 +142,9 @@ public static class CartQueries
         UPDATE domis.cart_item 
         SET quantity = @Quantity, 
             price = @Price, 
-            modified_at = @ModifiedAt
+            price_unit = @PricePerUnit,
+            modified_at = @ModifiedAt,
+            units_quantity = @UnitsQuantity,
         WHERE cart_id = @CartId AND product_id = @ProductId
         RETURNING Id;";
 
@@ -153,9 +155,11 @@ public static class CartQueries
             ci.cart_id AS CartId, 
             ci.product_id AS ProductId,
             ci.quantity AS Quantity,
+            ci.units_quantity as UnitsQuantity,
             p.id AS ProductId,
             p.product_name AS ProductName,
-            p.price AS ProductPrice
+            p.price AS ProductPrice,
+            ci.price AS CartItemPricePerPackage
         FROM 
             domis.cart_item ci
         JOIN 

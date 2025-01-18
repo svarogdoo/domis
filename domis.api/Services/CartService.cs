@@ -13,7 +13,7 @@ public interface ICartService
     Task<int> CreateCart(string? userId);
     Task<bool> UpdateCartStatus(int cartId, int statusId);
     Task<int?> CreateCartItem(int? cartId, int productId, decimal packageQuantity, UserEntity? user);
-    Task<bool> UpdateCartItemQuantity(int cartItemId, decimal quantity, UserEntity? user);
+    Task<bool> UpdateCartItemQuantity(int cartItemId, decimal packageQuantity, UserEntity? user);
     Task<bool> DeleteCartItem(int cartItemId);
     Task<bool> DeleteCart(int cartId);
     Task<CartDto?> Cart(UserEntity? user, int? cartId);
@@ -40,13 +40,13 @@ public class CartService(ICartRepository cartRepository, IUserRepository userRep
         return await cartRepository.CreateCartItemAsync(cartId, productId, packageQuantity, user?.Id, role ?? Roles.User.GetName());
     }
 
-    public async Task<bool> UpdateCartItemQuantity(int cartItemId, decimal quantity, UserEntity? user)
+    public async Task<bool> UpdateCartItemQuantity(int cartItemId, decimal packageQuantity, UserEntity? user)
     {        
         var role = user is not null
             ? await userRepo.GetUserRoleAsync(user.Id)
             : Roles.User.GetName();
         
-        return await cartRepository.UpdateCartItemQuantityAsync(cartItemId, quantity, role ?? Roles.User.GetName());
+        return await cartRepository.UpdateCartItemQuantityAsync(cartItemId, packageQuantity, role ?? Roles.User.GetName());
     }
 
     public async Task<bool> DeleteCartItem(int cartItemId) => 

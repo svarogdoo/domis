@@ -1,4 +1,5 @@
-﻿using SendGrid.Helpers.Mail;
+﻿using System.Text;
+using SendGrid.Helpers.Mail;
 using SendGrid;
 using System.Text.Encodings.Web;
 using domis.api.Models;
@@ -12,6 +13,7 @@ public interface ICustomEmailSender<TUser> where TUser: UserEntity, new()
     Task SendPasswordResetCodeAsync(UserEntity user, string email, string resetCode);
     Task SendConfirmationLinkAsync(UserEntity user, string toEmail, string confirmationLink);
     Task SendOrderConfirmationAsync(string email, OrderConfirmationDto order);
+    Task SendOrderConfirmationInternallyAsync(string userEmail, string role, OrderConfirmationDto order);
 }
 
 public class CustomEmailSender(ILogger<CustomEmailSender> logger, ISendGridClient sendGridClient) 
@@ -63,6 +65,7 @@ public class CustomEmailSender(ILogger<CustomEmailSender> logger, ISendGridClien
     public async Task SendOrderConfirmationAsync(string email, OrderConfirmationDto order)
     {
         var subject = $"Domis Enterijeri - Potvrda narudžbine #{order.OrderId}";
+        var createdAtBelgrade = TimeZoneInfo.ConvertTimeFromUtc(order.CreatedAt, DateTimeHelper.BelgradeTimeZone).ToString("dd.MM.yyyy. HH:mm");
 
         var shippingAddress = $"{order.InvoiceAddress?.Address}";
         if (!string.IsNullOrWhiteSpace(order.InvoiceAddress?.Apartment))
@@ -76,7 +79,7 @@ public class CustomEmailSender(ILogger<CustomEmailSender> logger, ISendGridClien
             <div style='font-family: Arial, sans-serif; color: #333;'>
                 <h1 style='color: #4CAF50;'>Hvala vam na narudžbini #{order.OrderId}</h1>
                 <p>Ovo su detalji vaše narudžbine:</p>
-        
+
                 <h2 style='border-bottom: 1px solid #ddd; padding-bottom: 5px;'>Stavke narudžbine</h2>
                 <ul style='list-style-type: none; padding: 0;'>
                     {string.Join("", order.OrderItems.Select(item => $@"
@@ -88,16 +91,18 @@ public class CustomEmailSender(ILogger<CustomEmailSender> logger, ISendGridClien
                 </ul>
 
                 <p style='font-weight: bold;'>Ukupna cena: {order.TotalPrice?.ToString("F2")} RSD</p>
-        
+
                 <h2 style='border-bottom: 1px solid #ddd; padding-bottom: 5px;'>Detalji isporuke</h2>
                 <p><strong>Ime i prezime:</strong> {order.InvoiceAddress?.FirstName} {order.InvoiceAddress?.LastName}</p>
                 <p><strong>Adresa:</strong> {shippingAddress}</p>
                 <p><strong>Telefon:</strong> +381 {order.InvoiceAddress?.PhoneNumber}</p>
-        
+
+                <p><strong>Datum kreiranja narudžbine:</strong> {createdAtBelgrade}</p>
+
                 <p style='margin-top: 20px;'>Ukoliko imate bilo kakva pitanja, slobodno nas kontaktirajte.</p>
-            
+                
                 <a href='https://www.domisenterijeri.com' style='color: #8f1410; text-decoration: underline; margin-top: 20px;'>Posetite našu stranicu</a>
-            
+                
                 <p style='font-size: 1.4em; color: #8f1410; margin-top: 10px;'>Pozdrav, Vaši Domis Enterijeri</p>
             </div>
         ";
@@ -105,8 +110,45 @@ public class CustomEmailSender(ILogger<CustomEmailSender> logger, ISendGridClien
         await SendEmailAsync(email, subject, message);
     }
 
+    public async Task SendOrderConfirmationInternallyAsync(string userEmail, string role, OrderConfirmationDto order)
+    {
+        var subject = $"Domis Enterijeri - Potvrda narudžbine #{order.OrderId}";
+        var message = $"Potvrda narudžbine #{order.OrderId}";
+        
+        var csvData = GenerateCsvAttachment(order, userEmail, role, out var attachmentFileName);
 
-    private async Task SendEmailAsync(string toEmail, string subject, string message)
+        //TODO: replace with domis internal email
+        await SendEmailAsync("lukardvn@gmail.com", subject, message, csvData, attachmentFileName);
+    }
+    
+    private static byte[] GenerateCsvAttachment(OrderConfirmationDto order, string userEmail, string role, out string attachmentFileName)
+    {        
+        var csv = new StringBuilder();
+
+        var orderId = order.OrderId;
+        var createdAtBelgrade = TimeZoneInfo.ConvertTimeFromUtc(order.CreatedAt, DateTimeHelper.BelgradeTimeZone).ToString("yyyy-MM-dd HH:mm");
+
+        foreach (var item in order.OrderItems)
+        {
+            var unitQuantity = item.UnitsQuantity;
+            var sku = item.Sku;
+            var unitPrice = item.PricePerUnit;
+            
+            role = role.Contains("vp", StringComparison.CurrentCultureIgnoreCase)
+                ? "VP" 
+                : string.Empty;
+            
+            //TODO: sifra kupca
+            csv.AppendLine($"{orderId},{role},sifra-kupca,{userEmail},{userEmail},{orderId},{createdAtBelgrade},{sku},{unitPrice},{unitQuantity},0,0");
+        }
+        
+        var csvData = Encoding.UTF8.GetBytes(csv.ToString());
+        attachmentFileName = $"Profaktura-{createdAtBelgrade}-{Guid.NewGuid()}.csv";
+        return csvData;
+    }
+
+    private async Task SendEmailAsync(string toEmail, string subject, string message,
+        byte[]? attachmentData = null, string? attachmentFileName = null)
     {
         var msg = new SendGridMessage()
         {
@@ -118,6 +160,9 @@ public class CustomEmailSender(ILogger<CustomEmailSender> logger, ISendGridClien
         };
         msg.AddTo(new EmailAddress(toEmail));
 
+        if (attachmentData != null && !string.IsNullOrEmpty(attachmentFileName))
+            msg.AddAttachment(attachmentFileName, Convert.ToBase64String(attachmentData));
+        
         var response = await sendGridClient.SendEmailAsync(msg);
         logger.LogInformation(response is { IsSuccessStatusCode: true }
                                ? $"Email to {toEmail} queued successfully!"
