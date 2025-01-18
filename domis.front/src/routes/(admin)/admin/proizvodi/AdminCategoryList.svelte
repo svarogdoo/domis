@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { categories } from "../../../../../stores/categories";
+  import { categories } from "../../../../stores/categories";
 
   export let selectedCategoryId: string = "";
 

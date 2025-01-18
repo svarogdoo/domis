@@ -4,10 +4,9 @@
     getCategoryProductsBasicInfo,
     getProduct,
   } from "../../../../services/product-service";
-  import Sale from "./Sale.svelte";
-  import AdminCategoryList from "./specifikacija/AdminCategoryList.svelte";
-  import Prices from "./specifikacija/Prices.svelte";
-  import Specification from "./specifikacija/Specification.svelte";
+  import Sale from "./(sale)/Sale.svelte";
+  import Specification from "./(specification)/Specification.svelte";
+  import AdminCategoryList from "./AdminCategoryList.svelte";
 
   enum ViewOptions {
     Spec,
@@ -24,6 +23,8 @@
   let saleHistory: Array<SaleInfo>;
 
   let viewOption = ViewOptions.Spec;
+
+  let showNewProductModal = false;
 
   $: if (selectedCategoryId) {
     selectedProductId = 0;
@@ -53,27 +54,34 @@
 <div class="flex flex-col w-full items-center">
   <div class="flex flex-col w-full lg:w-4/5">
     <!-- Product selection -->
-    <div class="flex gap-x-2 lg:gap-x-8">
-      <div class="w-60">
-        <AdminCategoryList bind:selectedCategoryId />
-      </div>
-      {#if productsList}
-        <div class="flex flex-col gap-y-2 relative w-60">
-          <h2 class="font-bold">Proizvodi</h2>
-          <select
-            bind:value={selectedProductId}
-            on:change={() => setSelectedProduct(selectedProductId)}
-            class="block w-full border rounded-lg px-2 py-1 bg-white text-left font-light"
-          >
-            <option disabled value={0}>Izaberite proizvod</option>
-            {#each productsList as product}
-              <option value={product.id}>
-                {product.name}
-              </option>
-            {/each}
-          </select>
+    <div class="w-full flex justify-between items-center">
+      <div class="flex gap-x-2 lg:gap-x-8">
+        <div class="w-60">
+          <AdminCategoryList bind:selectedCategoryId />
         </div>
-      {/if}
+        {#if productsList}
+          <div class="flex flex-col gap-y-2 relative w-60">
+            <h2 class="font-bold">Proizvodi</h2>
+            <select
+              bind:value={selectedProductId}
+              on:change={() => setSelectedProduct(selectedProductId)}
+              class="block w-full border rounded-lg px-2 py-1 bg-white text-left font-light"
+            >
+              <option disabled value={0}>Izaberite proizvod</option>
+              {#each productsList as product}
+                <option value={product.id}>
+                  {product.name}
+                </option>
+              {/each}
+            </select>
+          </div>
+        {/if}
+      </div>
+      <!-- <button
+        on:click={() => (showNewProductModal = true)}
+        class="px-5 py-1 rounded-lg shadow-md bg-blue-400 hover:bg-blue-500 hover:shadow-lg text-white font-light text-2xl"
+        >+
+      </button> -->
     </div>
 
     {#if selectedProduct}
@@ -93,12 +101,12 @@
             : ''}">Popusti</button
         >
         <!-- <button
-          on:click={() => (viewOption = ViewOptions.Prices)}
-          class="w-20 lg:w-36 text-center tracking-wider py-3 hover:bg-gray-100 {viewOption ===
-          ViewOptions.Prices
-            ? 'bg-gray-50'
-            : ''}">Cene</button
-        > -->
+        on:click={() => (viewOption = ViewOptions.Prices)}
+        class="w-20 lg:w-36 text-center tracking-wider py-3 hover:bg-gray-100 {viewOption ===
+        ViewOptions.Prices
+          ? 'bg-gray-50'
+          : ''}">Cene</button
+      > -->
       </div>
 
       <div class="py-4 bg-gray-100">
@@ -119,12 +127,12 @@
             productId={selectedProduct.id}
           />
           <!-- {:else if viewOption === ViewOptions.Prices}
-          <Prices
-            on:save={handleSavePrices}
-            {prices}
-            initialPrice={selectedProduct.price.perUnit}
-            productId={selectedProduct.id}
-          /> -->
+        <Prices
+          on:save={handleSavePrices}
+          {prices}
+          initialPrice={selectedProduct.price.perUnit}
+          productId={selectedProduct.id}
+        /> -->
         {/if}
       </div>
     {/if}

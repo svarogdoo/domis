@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { formatDate } from "../../../../helpers/dateFormatter";
-  import { formatPrice } from "../../../../helpers/numberFormatter";
+  import { formatDate } from "../../../../../helpers/dateFormatter";
+  import { formatPrice } from "../../../../../helpers/numberFormatter";
 
   export let sale: SaleInfo;
 </script>

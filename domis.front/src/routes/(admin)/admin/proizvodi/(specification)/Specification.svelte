@@ -4,7 +4,7 @@
   import RadioButton from "../../../../../components/RadioButton.svelte";
   import { QuantityType, quantityTypeOptions } from "../../../../../enums";
   import Toggle from "../../../../../components/Toggle.svelte";
-  import Input from "./Input.svelte";
+  import Input from "../Input.svelte";
 
   export let id: number;
   export let attributes: ProductAttributes;

@@ -1,11 +1,11 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
-  import Snackbar from "../../../../components/Snackbar.svelte";
-  import Toggle from "../../../../components/Toggle.svelte";
-  import { postProductOnSale } from "../../../../services/product-service";
   import SaleHistoryItem from "./SaleHistoryItem.svelte";
-  import Input from "./specifikacija/Input.svelte";
-  import DatePicker from "../../../../components/DatePicker.svelte";
+  import { postProductOnSale } from "../../../../../services/product-service";
+  import DatePicker from "../../../../../components/DatePicker.svelte";
+  import Toggle from "../../../../../components/Toggle.svelte";
+  import Input from "../Input.svelte";
+  import Snackbar from "../../../../../components/Snackbar.svelte";
   import SaleHistoryMobileItem from "./SaleHistoryMobileItem.svelte";
 
   export let saleHistory: Array<SaleInfo> | null;
@@ -19,7 +19,6 @@
   let showSnackbar = false;
 
   let salePrice: number = initialPrice ?? 0;
-  let salePercentage: number;
   let usePercentage: boolean = true;
   let startDate: Date = new Date();
   let hasSaleEndDate: boolean = true;
