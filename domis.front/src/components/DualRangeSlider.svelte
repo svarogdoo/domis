@@ -177,8 +177,11 @@
   }
 </script>
 
-<div class="range_container">
-  <p class="font-light text-center text-sm mb-2">{start} - {end} {unit}</p>
+<div class="w-1/2 lg:w-3/4 flex flex-col justify-center">
+  <p class="font-light text-nowrap ml-28 lg:ml-0 lg:text-center text-sm mb-2">
+    {start} - {end}
+    {unit}
+  </p>
 
   <div class="w-full">
     <div class="sliders_control">
@@ -231,12 +234,12 @@
 </div>
 
 <style>
-  .range_container {
+  /* .range_container {
     display: flex;
     flex-direction: column;
     width: 80%;
     justify-content: center;
-  }
+  } */
 
   .sliders_control {
     position: relative;

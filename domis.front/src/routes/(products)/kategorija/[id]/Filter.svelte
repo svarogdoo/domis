@@ -9,7 +9,7 @@
   const dispatch = createEventDispatcher<{ change: string }>();
 </script>
 
-<div class="w-full flex gap-x-8 items-center">
+<div class="w-full flex lg:gap-x-8 items-center">
   <p class="mb-5">{filter.displayName}</p>
   <DualRangeSlider
     min={filter.minValue}

@@ -4,6 +4,7 @@
   import { filters } from "../filter";
   import refreshIcon from "$lib/icons/refresh.svg";
   import Filter from "../Filter.svelte";
+  import { createEventDispatcher } from "svelte";
 
   let filterChoices = {
     price: {
@@ -19,6 +20,8 @@
       maxHeight: filters.height.maxValue,
     },
   };
+
+  const dispatch = createEventDispatcher<{ save: string }>();
 
   $: {
     const params = $page.url.searchParams;
@@ -86,6 +89,8 @@
     else url.searchParams.delete("maxHeight");
 
     goto(url.pathname + url.search);
+
+    dispatch("save", "true");
   }
 
   function clearFilters() {
@@ -101,6 +106,7 @@
     url.searchParams.delete("maxHeight");
 
     goto(url.pathname + url.search);
+    dispatch("save", "true");
   }
 </script>
 

@@ -184,10 +184,10 @@
   {#if isFilterOpen}
     <button
       class="fixed inset-0 w-full bg-black bg-opacity-50 flex items-center justify-center z-50"
-      on:click={() => (isFilterOpen = !isFilterOpen)}
+      on:click={() => (isFilterOpen = true)}
     >
       <div class="bg-white w-full p-8">
-        <Filters />
+        <Filters on:save={() => (isFilterOpen = false)} />
       </div>
     </button>
   {/if}
