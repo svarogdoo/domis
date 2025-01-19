@@ -1,6 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
-  import DoubleRangeSlider from "../../../../components/DoubleRangeSlider.svelte";
+  import DualRangeSlider from "../../../../components/DualRangeSlider.svelte";
 
   export let filter: FilterData;
   export let initMin: number;
@@ -10,12 +10,12 @@
 </script>
 
 <div class="w-full flex gap-x-8 items-center">
-  <p class="mt-6">{filter.displayName}</p>
-  <DoubleRangeSlider
+  <p class="mb-5">{filter.displayName}</p>
+  <DualRangeSlider
     min={filter.minValue}
     max={filter.maxValue}
-    start={initMin}
-    end={initMax}
+    {initMin}
+    {initMax}
     unit={filter.unit}
     on:change={(change) => dispatch("change", change.detail)}
   />
