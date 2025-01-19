@@ -56,11 +56,11 @@ public class ProductService(
     {
         var categoryExists = await categoryRepo.CategoryExists(newProduct.CategoryId);
         if (!categoryExists) 
-            throw new ArgumentException("Category does not exist.");
+            throw new ArgumentException("Izabrana kategorija ne postoji.");
         
         var skuExists = await repository.CheckIfSkuExists(newProduct.Sku);
         if (skuExists)
-            throw new ArgumentException("Sku is a duplicate.");
+            throw new ArgumentException("Proizvod sa ovim SKU već postoji.");
 
         var productId = await repository.CreateProduct(newProduct);
         if (productId < 1) throw new Exception("Error occurred while creating product.");
