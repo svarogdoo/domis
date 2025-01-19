@@ -8,8 +8,6 @@ using domis.api.Repositories.Helpers;
 using domis.api.Repositories.Queries;
 using MailKit.Search;
 using Serilog;
-// ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-
 namespace domis.api.Repositories;
 
 public interface IOrderRepository
@@ -331,7 +329,7 @@ public class OrderRepository(IDbConnection connection, PriceAndSizeHelper helper
             OrderDetailsDto? orderDetails = null;
 
             var result = await connection
-                .QueryAsync<OrderDetailsDto, OrderStatusDetailsDto, OrderShippingDetailsDto, PaymentDetailsDto, OrderItemDto,
+                .QueryAsync<OrderDetailsDto, OrderStatusDetailsDto, OrderShippingDetailsDto, PaymentDetailsDto, OrderItemDto?,
                     ProductDetails, string, OrderDetailsDto>(
                     OrderQueries.GetOrderDetails,
                     (order, orderStatus, orderShipping, paymentDetails, orderItem, product, url) =>
@@ -438,7 +436,7 @@ public class OrderRepository(IDbConnection connection, PriceAndSizeHelper helper
                             orderDetails.OrderStatus = orderStatus;
                             orderDetails.InvoiceOrderShipping = orderShipping;
                             orderDetails.PaymentDetails = paymentDetails;
-                            orderDetails.OrderItems = new List<OrderItemDto>();
+                            orderDetails.OrderItems = [];
                             orderDictionary.Add(order.OrderId, orderDetails);
                         }
 
