@@ -39,6 +39,8 @@ public interface IProductRepository
     Task<IEnumerable<ProductSaleHistoryDto>> GetSaleHistory(int productId);
     Task<bool> UpdateProductPricing(int productId, ProductPriceUpdateDto updatedPricing);
     Task<int> CreateProduct(CreateProductRequest product);
+    Task<int> CreateProduct(CreateProductInitialRequest product);
+    Task<bool> CheckIfSkuExists(int sku);
 }
 
 public class ProductRepository(IDbConnection connection, IMapper mapper) : IProductRepository
@@ -383,6 +385,31 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
         }
     }
 
+    public async Task<int> CreateProduct(CreateProductInitialRequest product)
+    {
+        try
+        {
+            const string query = @"
+                INSERT INTO domis.product (product_name, title, sku, active)
+                VALUES (@Name, @Name, @Sku, false)
+                RETURNING id;
+            ";
+            
+            var productId = await connection.ExecuteScalarAsync<int>(query, new
+            {
+                product.Name,
+                product.Sku
+            });
+            
+            return productId;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "An error occurred while creating product on request {product}", product);
+            return -1;
+        }
+    }
+
     private async Task UpdateVpPrices(int productId, List<ProductVpPriceUpdateDto> updatedVpPrices)
     {
         foreach (var vpPrice in updatedVpPrices)
@@ -561,6 +588,12 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
         {
             productDetail.Price = null;
         }
+    }
+    
+    public async Task<bool> CheckIfSkuExists(int sku)
+    {
+        const string checkSkuQuery = "SELECT EXISTS (SELECT 1 FROM domis.product WHERE sku = @Sku)";
+        return await connection.ExecuteScalarAsync<bool>(checkSkuQuery, new { sku });
     }
     #endregion ExtensionMethods
 }

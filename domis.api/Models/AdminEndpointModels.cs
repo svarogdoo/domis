@@ -19,3 +19,5 @@ public record CreateProductRequest(
     ProductPriceUpdateDto? Price,
     Size? Size
 );
+
+public record CreateProductInitialRequest(int CategoryId, string Name, int Sku);

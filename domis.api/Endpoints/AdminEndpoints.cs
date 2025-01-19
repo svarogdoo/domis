@@ -209,7 +209,27 @@ public static class AdminEndpoints
         })
         .WithDescription("Gets history of product sale (reduced prices)").RequireAuthorization(Roles.Admin.GetName());
 
-        group.MapPost("/product", async ([FromBody] CreateProductRequest request, IProductService productService) =>
+        group.MapPost("/product", async ([FromBody] CreateProductInitialRequest request, IProductService productService) =>
+        {
+            try
+            {
+                var product = await productService.AddProduct(request);
+
+                return product is null 
+                    ? Results.StatusCode(500) 
+                    : Results.Ok(product);
+            }
+            catch (ArgumentException ex)
+            {
+                return Results.BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return Results.Problem(detail: ex.Message, statusCode: 500);
+            }
+        }).WithDescription("Add new product");//.RequireAuthorization(Roles.Admin.GetName());
+        
+        group.MapPost("/product-2", async ([FromBody] CreateProductRequest request, IProductService productService) =>
         {
             try
             {
