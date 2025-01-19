@@ -41,6 +41,14 @@ export async function putProduct(product: any) {
   }
 }
 
+export async function postProduct(newProduct: NewProduct) {
+  return fetchDataWithJsonBody(
+    `${API_URL}/api/admin/product`,
+    "POST",
+    JSON.stringify(newProduct)
+  ).catch((error) => error.errorMessage ?? false);
+}
+
 export async function getCategoryProductsBasicInfo(categoryId: string) {
   return fetchData<Array<Product>>(
     `${API_URL}/api/products/basic-info?categoryId=${categoryId}`

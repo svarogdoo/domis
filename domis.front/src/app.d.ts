@@ -145,6 +145,11 @@ declare global {
     isActive?: boolean;
     saleInfo: SaleInfo | null;
   }
+  interface NewProduct {
+    sku: number;
+    name: string;
+    categoryId: number;
+  }
   interface ProductPricing {
     perUnit?: number;
     perBox?: number;

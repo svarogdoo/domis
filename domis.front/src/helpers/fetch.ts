@@ -84,8 +84,12 @@ async function handleResponse(res: Response) {
 
   handleTokenExpired(res.status);
 
-  const error = new Error(res.statusText) as any;
+  const errorBody = await res.json().catch(() => null);
+  const errorMessage = errorBody || res.statusText || "An error occurred";
+
+  const error = new Error(errorMessage) as any;
   error.status = res.status;
+  error.errorMessage = errorMessage;
 
   // Attempt to parse the response body for error details
   try {
