@@ -137,7 +137,7 @@
     >
     <button
       on:click={clearFilters}
-      class="w-12 text-light bg-domis-dark text-white py-1 px-2 rounded-lg text-center tracking-widest hover:bg-gray-600 disabled:bg-gray-400"
+      class="w-12 flex justify-center items-center text-light bg-domis-dark text-white py-1 px-2 rounded-lg tracking-widest hover:bg-gray-600 disabled:bg-gray-400"
       ><img src={refreshIcon} alt="" class="w-8 h-auto text-white" /></button
     >
   </div>
