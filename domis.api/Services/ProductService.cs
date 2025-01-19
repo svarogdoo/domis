@@ -10,6 +10,7 @@ namespace domis.api.Services;
 public interface IProductService
 {
     Task<ProductDetailsDto?> AddProduct(CreateProductRequest newProduct);
+    Task<ProductDetailsDto?> AddProduct(CreateProductInitialRequest newProduct);
     Task<IEnumerable<ProductPreviewDto>> GetAll();
     Task<ProductDetailsDto?> GetByIdWithDetails(int id, UserEntity? user);
     Task<ProductDetailsDto?> Update(ProductUpdateDto product);
@@ -48,6 +49,27 @@ public class ProductService(
 
         var productResult = await GetByIdWithDetails(productId, null);
         
+        return productResult;
+    }
+
+    public async Task<ProductDetailsDto?> AddProduct(CreateProductInitialRequest newProduct)
+    {
+        var categoryExists = await categoryRepo.CategoryExists(newProduct.CategoryId);
+        if (!categoryExists) 
+            throw new ArgumentException("Izabrana kategorija ne postoji.");
+        
+        var skuExists = await repository.CheckIfSkuExists(newProduct.Sku);
+        if (skuExists)
+            throw new ArgumentException("Proizvod sa ovim SKU već postoji.");
+
+        var productId = await repository.CreateProduct(newProduct);
+        if (productId < 1) throw new Exception("Error occurred while creating product.");
+        
+        var res1 = await AssignProductToCategory(new AssignProductToCategoryRequest(productId, newProduct.CategoryId, false));
+        if (!res1) return null;
+        
+        var productResult = await GetByIdWithDetails(productId, null);
+
         return productResult;
     }
 
@@ -106,11 +128,7 @@ public class ProductService(
     public async Task<bool> AssignProductToCategory(AssignProductToCategoryRequest request)
     {
         var productExists = await repository.ProductExists(request.ProductId);
-        if (!productExists) throw new ArgumentException("Product does not exist.");
-        
-        var categoryExists = await categoryRepo.CategoryExists(request.CategoryId);
-        if (!categoryExists) 
-            throw new ArgumentException("Category does not exist.");
+        if (!productExists) throw new ArgumentException("Product has not been created.");
         
         return await repository.AssignProductToCategory(request);
     }
