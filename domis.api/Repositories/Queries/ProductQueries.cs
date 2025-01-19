@@ -214,14 +214,10 @@ public static class ProductQueries
     ;
 
     public const string UpdateProductsByNivelacija = @"
-            UPDATE domis.product
-            SET price = CASE
-                WHEN sku = @Sku THEN @Price
-            END,
-            stock = CASE
-                WHEN sku = @Sku THEN @Stock
-            END
-            WHERE sku = @Sku"
+        UPDATE domis.product
+        SET price = @Price,
+            stock = @Stock
+        WHERE sku = @Sku;"
     ;
 
     public const string CheckIfProductExists = @"
@@ -375,6 +371,7 @@ public static class ProductQueries
         WHERE s.is_active = TRUE
           AND (s.start_date IS NULL OR s.start_date <= @CurrentTime)
           AND (s.end_date IS NULL OR s.end_date >= @CurrentTime)
+          AND (s.sale_price < p.price)
     ";
     
     public const string UpdateProductSizing = @"

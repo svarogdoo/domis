@@ -139,9 +139,9 @@ public class SyncService : ISyncService
                 var splitLine = line.Split(';');
 
                 if (splitLine.Length != 3 ||
-                    !int.TryParse(splitLine[0], out int sku) ||
-                    !decimal.TryParse(splitLine[1], out decimal price) ||
-                    !decimal.TryParse(splitLine[2], out decimal stock))
+                    !int.TryParse(splitLine[0], out var sku) ||
+                    !decimal.TryParse(splitLine[1], NumberStyles.Number, new CultureInfo("fr-FR"), out var price) ||
+                    !decimal.TryParse(splitLine[2], NumberStyles.Number, new CultureInfo("fr-FR"), out var stock))
                 {
                     continue;
                 }
