@@ -485,7 +485,7 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
     public async Task<IEnumerable<ProductPreviewDto>> GetProductsOnSaleAsync()
     {
         //TODO: ukljuciti i filter da je proizvod aktivan u query, ali i proveriti da li vraca sve rezultate
-        var productsOnSale = await connection.QueryAsync<ProductPreviewDto, SaleInfo, ProductPreviewDto>(
+        var productsOnSale = await connection.QueryAsync<ProductPreviewDto, SaleInfo?, ProductPreviewDto>(
             ProductQueries.GetProductsOnSale,
             (product, saleInfo) =>
             {
