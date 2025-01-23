@@ -73,11 +73,11 @@ export const paymentVendorOptions = [
     value: 1,
     label: "Plaćanje pouzećem",
   },
-  {
-    value: 2,
-    label: "Uplata na račun",
-    text: "Izvršite uplatu direktno na naš račun. Kao poziv na broj navedite broj svoje porudžbine, u suprotnom vaša porudžbina neće biti obrađena i isporučena.",
-  },
+  // {
+  //   value: 2,
+  //   label: "Uplata na račun",
+  //   text: "Izvršite uplatu direktno na naš račun. Kao poziv na broj navedite broj svoje porudžbine, u suprotnom vaša porudžbina neće biti obrađena i isporučena.",
+  // },
 ];
 
 // Order Status
