@@ -94,7 +94,7 @@ public static class ProductQueries
                 p.Id AS Id,
                 p.sku AS Sku,
                 p.product_name AS Name,
-                p.is_active AS IsActive
+                p.active AS IsActive
             FROM domis.product p
             INNER JOIN domis.product_category pc ON p.id = pc.product_id
             INNER JOIN CategoryHierarchy ch ON pc.category_id = ch.id
