@@ -18,12 +18,12 @@
   }
 
   export let selectedCategoryId: string;
+  export let reloadKey: number;
 
   let products: Array<Product>;
 
-  $: if (selectedCategoryId) {
-    setProducts();
-  }
+  $: reloadKey, setProducts();
+  $: selectedCategoryId, setProducts();
 
   async function setProducts() {
     products = await getCategoryProductsBasicInfo(selectedCategoryId);
@@ -54,6 +54,7 @@
   }
 
   function handleSpecificationSave() {
+    console.info("saveddd");
     setProducts();
   }
 

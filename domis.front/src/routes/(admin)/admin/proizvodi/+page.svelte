@@ -13,6 +13,7 @@
   }
 
   let selectedCategoryId: string;
+  let reloadKey = 0;
 
   let flattenedCategories: Array<FlattenedCategory>;
   $: categories.subscribe((value) => {
@@ -48,8 +49,8 @@
     if (!res || typeof res === "string") {
       snackbarStore.showSnackbar(`Greška pri čuvanju proizvoda! ${res}`, false);
     } else {
-      snackbarStore.showSnackbar("Uspešno sačuvan proizvod!", false);
-      selectedCategoryId = selectedCategoryId;
+      snackbarStore.showSnackbar("Uspešno sačuvan proizvod!", true);
+      reloadKey++;
     }
   }
 
@@ -138,7 +139,7 @@
     {/if}
 
     {#if selectedCategoryId}
-      <ProductsTable {selectedCategoryId} />
+      <ProductsTable {selectedCategoryId} {reloadKey} />
     {/if}
   </div>
 </div>
