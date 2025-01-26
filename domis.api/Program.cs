@@ -3,10 +3,6 @@ using domis.api.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.RegisterServices();
-
-var app = builder.Build();
-
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(
@@ -17,6 +13,10 @@ builder.Services.AddCors(options =>
                 .AllowAnyHeader();
         });
 });
+
+builder.RegisterServices();
+
+var app = builder.Build();
 
 app.UseCors();
 
