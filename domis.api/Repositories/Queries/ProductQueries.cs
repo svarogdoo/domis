@@ -397,7 +397,7 @@ public static class ProductQueries
         SELECT id AS Id, product_name AS Name, sku AS Sku, 'Product' AS Type
         FROM domis.product
         WHERE active = true 
-          AND (product_name ILIKE @SearchTerm OR CAST(sku AS TEXT) ILIKE @SearchTerm)
+          AND (product_name ILIKE @SearchTerm OR CAST(sku AS TEXT) ILIKE @SearchTerm OR title ILIKE @SearchTerm)
         UNION
         SELECT id AS Id, category_name AS Name, NULL AS Sku, 'Category' AS Type
         FROM domis.category
