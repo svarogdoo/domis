@@ -5,6 +5,7 @@
   import { QuantityType, quantityTypeOptions } from "../../../../../enums";
   import Toggle from "../../../../../components/Toggle.svelte";
   import Input from "../Input.svelte";
+  import { createEventDispatcher } from "svelte";
 
   export let id: number;
   export let attributes: ProductAttributes;
@@ -12,6 +13,8 @@
   export let size: ProductSizing;
   export let initIsActive: boolean | undefined;
   export let name: string;
+
+  const dispatch = createEventDispatcher<{ save: string }>();
 
   let snackbarMessage: string;
   let isSnackbarSuccess: boolean;
@@ -105,6 +108,7 @@
     if (res) {
       snackbarMessage = "Uspešno sačuvan proizvod!";
       isSnackbarSuccess = true;
+      dispatch("save", "saved");
     } else {
       snackbarMessage = "Greška pri čuvanju proizvoda!";
       isSnackbarSuccess = false;
@@ -134,7 +138,7 @@
     <div class="flex justify-between">
       <div class="flex flex-col">
         <h2
-          class="mt-4 mb-2 text-md lg:text-xl"
+          class="mt-4 mb-2 text-md lg:text-xl text-wrap"
           placeholder="Postojeći naziv proizvoda"
         >
           {name}

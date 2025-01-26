@@ -21,24 +21,10 @@ export async function searchProductsOrCategories(searchTerm: string) {
 }
 
 export async function putProduct(product: any) {
-  try {
-    const response = await fetch(`${API_URL}/api/products`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(product),
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    return true;
-  } catch (error) {
-    console.error("There was a problem with the PUT request:", error);
-    throw error;
-  }
+  return putDataWithJsonBody(
+    `${API_URL}/api/products`,
+    JSON.stringify(product)
+  ).catch((error) => false);
 }
 
 export async function postProduct(newProduct: NewProduct) {
