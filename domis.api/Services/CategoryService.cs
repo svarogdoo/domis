@@ -40,8 +40,19 @@ public class CategoryService(ICategoryRepository repository, IProductRepository 
         var role = user is not null
             ? await userRepo.GetUserRoleAsync(user.Id) ?? Roles.User.GetName()
             : Roles.User.GetName();
+
+        var categoryWithProducts = await repository.GetCategoryProducts(categoryId, options, filters, discount, role);
+
+        //razmisliti o ovome -> trenutno: samo na prvoj stranici vracam max vrednosti za filtere
+        if (options.PageNumber != 1) return categoryWithProducts;
         
-        return await repository.GetCategoryProducts(categoryId, options, filters, discount, role);
+        if (categoryWithProducts == null) return null;
+        
+        var maxFilterValues = await repository.GetProductsMaxFilterValues(categoryId);
+        categoryWithProducts.MaxFilters = maxFilterValues;
+
+        return categoryWithProducts;
+
     }
 
     public async Task<IEnumerable<ProductDetailsDto>> PutCategoryOnSale(CategorySaleRequest request)
