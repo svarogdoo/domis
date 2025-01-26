@@ -2,25 +2,14 @@
   import { onMount } from "svelte";
   import { getAdminUsers } from "../../../../services/admin-service";
   import AdminUserItem from "./AdminUserItem.svelte";
-  import Snackbar from "../../../../components/Snackbar.svelte";
   import AdminUserItemMobile from "./AdminUserItemMobile.svelte";
+  import { snackbarStore } from "../../../../stores/snackbar";
 
   let users: Array<AdminUser>;
-
-  let snackbarMessage: string;
-  let isSnackbarSuccess: boolean;
-  let showSnackbar = false;
 
   onMount(() => {
     setAdminUsers();
   });
-
-  function handleShowSnackbar() {
-    showSnackbar = true;
-    setTimeout(function () {
-      showSnackbar = false;
-    }, 3000); // Close after 3s
-  }
 
   async function setAdminUsers() {
     const tempUsers = await getAdminUsers();
@@ -33,15 +22,11 @@
 
   async function handleSave(event: any) {
     if (event?.detail?.success) {
-      snackbarMessage = "Uspešno sačuvana rola korisnika!";
-      isSnackbarSuccess = true;
+      snackbarStore.showSnackbar("Uspešno sačuvana rola korisnika!", true);
       await setAdminUsers();
     } else {
-      snackbarMessage = "Greška pri čuvanju role korisnika!";
-      isSnackbarSuccess = false;
+      snackbarStore.showSnackbar("Greška pri čuvanju role korisnika!", false);
     }
-
-    handleShowSnackbar();
   }
 </script>
 
@@ -71,11 +56,6 @@
       </tbody>
     </table>
   {/if}
-  <Snackbar
-    message={snackbarMessage}
-    isSuccess={isSnackbarSuccess}
-    {showSnackbar}
-  />
 </div>
 
 <style>

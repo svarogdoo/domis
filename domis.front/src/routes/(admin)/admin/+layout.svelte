@@ -1,4 +1,6 @@
 <script>
+  import Snackbar from "../../../components/Snackbar.svelte";
+  import { snackbarStore } from "../../../stores/snackbar";
   import AdminPanelSidebar from "./AdminPanelSidebar.svelte";
 </script>
 
@@ -10,3 +12,9 @@
     <slot />
   </div>
 </div>
+
+<Snackbar
+  showSnackbar={$snackbarStore.show}
+  message={$snackbarStore.message}
+  isSuccess={$snackbarStore.isSuccess}
+/>

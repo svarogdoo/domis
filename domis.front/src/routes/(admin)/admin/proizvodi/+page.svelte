@@ -9,6 +9,7 @@
   import Input from "./Input.svelte";
   import Snackbar from "../../../../components/Snackbar.svelte";
   import ProductsTable from "./ProductsTable.svelte";
+  import { snackbarStore } from "../../../../stores/snackbar";
 
   interface FlattenedCategory {
     id: string;

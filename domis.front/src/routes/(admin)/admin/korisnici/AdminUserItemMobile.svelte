@@ -14,7 +14,7 @@
   };
 </script>
 
-<tr class="group hover:bg-domis-light cursor-pointer w-full">
+<tr class="group hover:bg-slate-100 cursor-pointer w-full">
   <button
     on:click={() => {
       showEditUserRole = true;

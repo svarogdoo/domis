@@ -23,7 +23,7 @@
         ? 'bg-green-200 text-black'
         : 'bg-domis-dark text-white'}"
     >
-      {product.isActive ? "Aktivan" : "Neaktivan"}
+      {product.isActive ? "aktivan" : "neaktivan"}
     </p>
   </td>
 </tr>
