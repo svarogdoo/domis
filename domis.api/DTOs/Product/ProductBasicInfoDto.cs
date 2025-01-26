@@ -6,6 +6,7 @@ public class ProductBasicInfoDto
     public required int Id { get; set; }
     public int? Sku { get; set; }
     public string? Name { get; set; }
+    public bool IsActive { get; set; }
 }
 
 public class ProductPriceDto
