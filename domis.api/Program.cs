@@ -7,6 +7,19 @@ builder.RegisterServices();
 
 var app = builder.Build();
 
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(
+        policy =>
+        {
+            policy.AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader();
+        });
+});
+
+app.UseCors();
+
 app.RegisterMiddlewares();
 
 app.RegisterProductEndpoints();

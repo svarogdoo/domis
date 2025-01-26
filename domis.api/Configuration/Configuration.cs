@@ -54,17 +54,6 @@ public static class Configuration
         builder.Services.AddScoped<IDbConnection>(sp =>
             new NpgsqlConnection(connectionString));
 
-        builder.Services.AddCors(options =>
-        {
-            options.AddDefaultPolicy(
-                policy =>
-                {
-                    policy.AllowAnyOrigin()
-                          .AllowAnyMethod()
-                          .AllowAnyHeader();
-                });
-        });
-
         builder.Services.AddSendGrid(options =>
             options.ApiKey = Environment.GetEnvironmentVariable("SENDGRID_API_KEY") ?? "Sendgrid API key Not Set"
         );
@@ -138,7 +127,7 @@ public static class Configuration
 
         app.UseHttpsRedirection();
 
-        app.UseCors();
+        //app.UseCors();
 
         app.MapCustomIdentityApi<UserEntity>();
 
