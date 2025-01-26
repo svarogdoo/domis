@@ -20,12 +20,23 @@
     Images,
   }
 
+  interface FlattenedCategory {
+    id: string;
+    name: string;
+    level: number;
+  }
+
   let snackbarMessage: string;
   let isSnackbarSuccess: boolean;
   let showSnackbar = false;
 
   let selectedCategoryId: string;
   let selectedProductId: number = 0;
+
+  let flattenedCategories: Array<FlattenedCategory>;
+  $: categories.subscribe((value) => {
+    flattenedCategories = flattenCategories(value);
+  });
 
   let name = "";
   let sku = "";
@@ -104,6 +115,26 @@
       showSnackbar = false;
     }, 3000); // Close after 3s
   }
+
+  function flattenCategories(
+    categories: Array<Category>,
+    level: number = 0
+  ): Array<FlattenedCategory> {
+    return categories.flatMap((category) => {
+      const { id, name, subcategories } = category;
+
+      // Add the current category with the given level
+      const current = { id, name, level };
+
+      // Recursively flatten subcategories, if any
+      const subcategoriesFlattened = subcategories
+        ? flattenCategories(subcategories, level + 1)
+        : [];
+
+      // Combine the current category with its flattened subcategories
+      return [current, ...subcategoriesFlattened];
+    });
+  }
 </script>
 
 <div class="flex flex-col w-full items-center">
@@ -112,7 +143,10 @@
     <div class="w-full flex justify-between items-end">
       <div class="flex flex-wrap gap-y-4 gap-x-2 lg:gap-x-8">
         <div class="w-60">
-          <AdminCategoryList bind:selectedCategoryId />
+          <AdminCategoryList
+            bind:selectedCategoryId
+            categoriesList={flattenedCategories}
+          />
         </div>
         {#if productsList}
           <div class="flex flex-col gap-y-2 relative w-60">
@@ -147,7 +181,7 @@
       >
         <div class="bg-white w-auto py-8 px-16 flex flex-col gap-y-4">
           <p class="font-light text-center text-lg mb-4">
-            {$categories.find((x) => x.id === selectedCategoryId)?.name}
+            {flattenedCategories.find((x) => x.id === selectedCategoryId)?.name}
           </p>
           <Input
             bind:value={name}

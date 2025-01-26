@@ -153,7 +153,7 @@
           bind:value={title}
           title="Naslov"
           placeholder="Unesite naziv proizvoda u što manje reči"
-          width="96"
+          width="116"
           gap="12"
           error=""
         />
