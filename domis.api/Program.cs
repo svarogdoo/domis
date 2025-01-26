@@ -3,22 +3,9 @@ using domis.api.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddCors(options =>
-{
-    options.AddDefaultPolicy(
-        policy =>
-        {
-            policy.AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader();
-        });
-});
-
 builder.RegisterServices();
 
 var app = builder.Build();
-
-app.UseCors();
 
 app.RegisterMiddlewares();
 
