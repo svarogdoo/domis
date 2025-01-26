@@ -7,7 +7,7 @@
 </script>
 
 <tr
-  class="w-full hover:bg-slate-100 active:bg-slate-100 cursor-pointer"
+  class="w-full hover:bg-slate-100 cursor-pointer"
   on:click={() => dispatch("click", product)}
 >
   <td class="max-w-24 text-center px-2 py-1">{product.sku}</td>
