@@ -93,7 +93,7 @@
         dateString={startDate.toLocaleString()}
         title="Početak akcije"
       />
-      <div class="mt-4">
+      <div class="mt-6">
         <Toggle
           bind:isActive={hasSaleEndDate}
           activeText="Akcija ima kraj"

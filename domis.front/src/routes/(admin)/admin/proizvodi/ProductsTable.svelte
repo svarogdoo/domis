@@ -7,6 +7,8 @@
   import Sale from "./(sale)/Sale.svelte";
   import Specification from "./(specification)/Specification.svelte";
   import ProductRow from "./ProductRow.svelte";
+  import closeIcon from "$lib/icons/x-mark.svg";
+  import { onMount } from "svelte";
 
   enum ViewOptions {
     Spec,
@@ -54,6 +56,20 @@
   function handleSpecificationSave() {
     setProducts();
   }
+
+  const handleClickOutside = (event: MouseEvent) => {
+    const searchField = document.getElementById("product-modal");
+    if (searchField && !searchField.contains(event.target as Node)) {
+      showProductEdit = false;
+    }
+  };
+
+  onMount(() => {
+    document.addEventListener("click", handleClickOutside);
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  });
 </script>
 
 <div class="w-full py-6">
@@ -80,13 +96,18 @@
     class="fixed inset-0 w-full bg-black bg-opacity-50 lg:py-2 flex items-center justify-center z-50"
   >
     <div
+      id="product-modal"
       class="relative bg-white w-auto h-full py-1 px-2 lg:py-8 lg:px-16 flex flex-col overflow-y-scroll"
     >
       <button
-        class="absolute top-2 right-2 px-2 py-1 text-white bg-domis-dark rounded-lg"
+        class="absolute top-2 right-2 px-2 py-1 rounded-lg"
         on:click={() => (showProductEdit = false)}
       >
-        X
+        <img
+          src={closeIcon}
+          alt=""
+          class="w-6 h-auto hover:scale-125 transition ease-in-out"
+        />
       </button>
       <div class="flex text-sm lg:text-md mt-8">
         <button
