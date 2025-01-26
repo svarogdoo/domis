@@ -1,13 +1,8 @@
 <script lang="ts">
-  import { getProductSaleHistory } from "../../../../services/admin-service";
-  import {
-    getCategoryProductsBasicInfo,
-    postProduct,
-  } from "../../../../services/product-service";
+  import { postProduct } from "../../../../services/product-service";
   import { categories } from "../../../../stores/categories";
   import AdminCategoryList from "./AdminCategoryList.svelte";
   import Input from "./Input.svelte";
-  import Snackbar from "../../../../components/Snackbar.svelte";
   import ProductsTable from "./ProductsTable.svelte";
   import { snackbarStore } from "../../../../stores/snackbar";
 
@@ -16,10 +11,6 @@
     name: string;
     level: number;
   }
-
-  let snackbarMessage: string;
-  let isSnackbarSuccess: boolean;
-  let showSnackbar = false;
 
   let selectedCategoryId: string;
 
@@ -55,21 +46,11 @@
     showNewProductModal = false;
 
     if (!res || typeof res === "string") {
-      snackbarMessage = "Greška pri čuvanju proizvoda! " + res;
-      isSnackbarSuccess = false;
+      snackbarStore.showSnackbar(`Greška pri čuvanju proizvoda! ${res}`, false);
     } else {
-      snackbarMessage = "Uspešno sačuvan proizvod!";
-      isSnackbarSuccess = true;
-      setProducts();
+      snackbarStore.showSnackbar("Uspešno sačuvan proizvod!", false);
+      selectedCategoryId = selectedCategoryId;
     }
-    handleShowSnackbar();
-  }
-
-  function handleShowSnackbar() {
-    showSnackbar = true;
-    setTimeout(function () {
-      showSnackbar = false;
-    }, 3000); // Close after 3s
   }
 
   function flattenCategories(
@@ -159,11 +140,5 @@
     {#if selectedCategoryId}
       <ProductsTable {selectedCategoryId} />
     {/if}
-
-    <Snackbar
-      message={snackbarMessage}
-      isSuccess={isSnackbarSuccess}
-      {showSnackbar}
-    />
   </div>
 </div>

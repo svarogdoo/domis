@@ -1,5 +1,4 @@
 <script lang="ts">
-  import Snackbar from "../../../../components/Snackbar.svelte";
   import { mapQuantityTypeToString, QuantityType } from "../../../../enums";
   import {
     formatPrice,
@@ -10,15 +9,12 @@
     getPaketString,
   } from "../../../../helpers/stringFormatter";
   import { cart } from "../../../../stores/cart";
+  import { snackbarStore } from "../../../../stores/snackbar";
 
   export let product: Product;
   export let isExtraChecked: boolean;
   export let quantityType: QuantityType;
   export let productPrice: ProductPricing;
-
-  let snackbarMessage: string;
-  let isSnackbarSuccess: boolean;
-  let showSnackbar = false;
 
   let boxInput: number = 0;
   let amountInput: number = 0;
@@ -79,13 +75,6 @@
       totalPrice = amountInput * productPrice.perUnit;
   }
 
-  function handleShowSnackbar() {
-    showSnackbar = true;
-    setTimeout(function () {
-      showSnackbar = false;
-    }, 3000); // Close after 3s
-  }
-
   async function addItemToCart() {
     if (amountInput === 0) return;
 
@@ -100,13 +89,13 @@
     disabledAddButton = false;
 
     if (res) {
-      snackbarMessage = "Dodali ste proizvod u korpu!";
-      isSnackbarSuccess = true;
+      snackbarStore.showSnackbar("Dodali ste proizvod u korpu!", true);
     } else {
-      snackbarMessage = "Greška pri dodavanju proizvoda u korpu!";
-      isSnackbarSuccess = false;
+      snackbarStore.showSnackbar(
+        "Greška pri dodavanju proizvoda u korpu!",
+        false
+      );
     }
-    handleShowSnackbar();
   }
 </script>
 
@@ -200,10 +189,4 @@
     class="bg-domis-dark mt-2 text-white py-3 uppercase tracking-widest hover:bg-gray-700 disabled:bg-gray-400"
     >Dodaj u korpu</button
   >
-
-  <Snackbar
-    message={snackbarMessage}
-    isSuccess={isSnackbarSuccess}
-    {showSnackbar}
-  />
 </div>

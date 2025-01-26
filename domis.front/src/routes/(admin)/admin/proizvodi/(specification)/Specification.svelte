@@ -1,11 +1,11 @@
 <script lang="ts">
   import { putProduct } from "../../../../../services/product-service";
-  import Snackbar from "../../../../../components/Snackbar.svelte";
   import RadioButton from "../../../../../components/RadioButton.svelte";
   import { QuantityType, quantityTypeOptions } from "../../../../../enums";
   import Toggle from "../../../../../components/Toggle.svelte";
   import Input from "../Input.svelte";
   import { createEventDispatcher } from "svelte";
+  import { snackbarStore } from "../../../../../stores/snackbar";
 
   export let id: number;
   export let attributes: ProductAttributes;
@@ -15,10 +15,6 @@
   export let name: string;
 
   const dispatch = createEventDispatcher<{ save: string }>();
-
-  let snackbarMessage: string;
-  let isSnackbarSuccess: boolean;
-  let showSnackbar = false;
 
   let title = attributes.title ?? "";
   let description = initDescription ?? "";
@@ -82,13 +78,6 @@
     } else errors.pallet = "";
   }
 
-  function handleShowSnackbar() {
-    showSnackbar = true;
-    setTimeout(function () {
-      showSnackbar = false;
-    }, 3000); // Close after 3s
-  }
-
   async function submit() {
     let res = await putProduct({
       id: id,
@@ -106,14 +95,11 @@
     });
 
     if (res) {
-      snackbarMessage = "Uspešno sačuvan proizvod!";
-      isSnackbarSuccess = true;
+      snackbarStore.showSnackbar("Uspešno sačuvan proizvod!", true);
       dispatch("save", "saved");
     } else {
-      snackbarMessage = "Greška pri čuvanju proizvoda!";
-      isSnackbarSuccess = false;
+      snackbarStore.showSnackbar("Greška pri čuvanju proizvoda!", false);
     }
-    handleShowSnackbar();
   }
 
   function validateAndSubmit(event: Event) {
@@ -264,10 +250,5 @@
         >
       </div>
     </form>
-    <Snackbar
-      message={snackbarMessage}
-      isSuccess={isSnackbarSuccess}
-      {showSnackbar}
-    />
   </div>
 </div>

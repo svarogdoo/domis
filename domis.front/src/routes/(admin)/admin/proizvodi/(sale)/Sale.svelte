@@ -5,18 +5,14 @@
   import DatePicker from "../../../../../components/DatePicker.svelte";
   import Toggle from "../../../../../components/Toggle.svelte";
   import Input from "../Input.svelte";
-  import Snackbar from "../../../../../components/Snackbar.svelte";
   import SaleHistoryMobileItem from "./SaleHistoryMobileItem.svelte";
+  import { snackbarStore } from "../../../../../stores/snackbar";
 
   export let saleHistory: Array<SaleInfo> | null;
   export let initialPrice: number | undefined;
   export let productId: number;
 
   const dispatch = createEventDispatcher();
-
-  let snackbarMessage: string;
-  let isSnackbarSuccess: boolean;
-  let showSnackbar = false;
 
   let salePrice: number = initialPrice ?? 0;
   let salePercentage: number;
@@ -42,14 +38,11 @@
     let res = await postProductOnSale(saleInfo);
 
     if (res) {
-      snackbarMessage = "Uspešno aktiviran popust!";
-      isSnackbarSuccess = true;
+      snackbarStore.showSnackbar("Uspešno aktiviran popust!", true);
       dispatch("save");
     } else {
-      snackbarMessage = "Greška pri aktiviranju popusta!";
-      isSnackbarSuccess = false;
+      snackbarStore.showSnackbar("Greška pri aktiviranju popusta!", false);
     }
-    handleShowSnackbar();
   }
 
   async function handleDeactivatedSale(event: any) {
@@ -62,13 +55,6 @@
       isSnackbarSuccess = false;
     }
     handleShowSnackbar();
-  }
-
-  function handleShowSnackbar() {
-    showSnackbar = true;
-    setTimeout(function () {
-      showSnackbar = false;
-    }, 3000); // Close after 3s
   }
 
   const handleStartDateChanged = (event: CustomEvent<string>) => {
@@ -170,12 +156,6 @@
       </tbody>
     </table>
   {/if}
-
-  <Snackbar
-    message={snackbarMessage}
-    isSuccess={isSnackbarSuccess}
-    {showSnackbar}
-  />
 </div>
 
 <style>
