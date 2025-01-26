@@ -35,14 +35,14 @@
       {/if}
     </div>
   </td>
-  {#if showEditUserRole}
-    <AdminEditUserRolePopup
-      bind:show={showEditUserRole}
-      {user}
-      on:save={handleSave}
-    />
-  {/if}
 </tr>
+{#if showEditUserRole}
+  <AdminEditUserRolePopup
+    bind:show={showEditUserRole}
+    {user}
+    on:save={handleSave}
+  />
+{/if}
 
 <style>
   td {

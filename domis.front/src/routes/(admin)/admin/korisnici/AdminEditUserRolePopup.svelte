@@ -2,7 +2,7 @@
   import { createEventDispatcher } from "svelte";
   import { updateUserRole } from "../../../../services/admin-service";
 
-  export let show = false;
+  export let show: boolean;
   export let user: AdminUser;
 
   let selectedRole: string = user?.role;
