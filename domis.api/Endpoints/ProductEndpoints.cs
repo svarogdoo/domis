@@ -59,7 +59,7 @@ public static class ProductEndpoints
             {
                 return Results.Problem(ex.Message);
             }
-        }).WithDescription("update product").RequireAuthorization(Roles.Admin.GetName());
+        }).WithDescription("update product").RequireAuthorization("Admin");
 
         group.MapGet("/basic-info", async ([FromQuery]int categoryId, IProductService productService) =>
         {

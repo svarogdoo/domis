@@ -93,13 +93,14 @@ public static class ProductQueries
             SELECT
                 p.Id AS Id,
                 p.sku AS Sku,
-                p.product_name AS Name
+                p.product_name AS Name,
+                p.active AS IsActive
             FROM domis.product p
             INNER JOIN domis.product_category pc ON p.id = pc.product_id
             INNER JOIN CategoryHierarchy ch ON pc.category_id = ch.id
             --WHERE p.active = true -- filter to include only active products, ...REMOVED because only admin uses this
         )
-        SELECT Id, Sku, Name
+        SELECT Id, Sku, Name, IsActive
         FROM ActiveProductsInCategory
         ORDER BY Name; -- Ensure you have a column to order by
     ";
@@ -397,7 +398,7 @@ public static class ProductQueries
         SELECT id AS Id, product_name AS Name, sku AS Sku, 'Product' AS Type
         FROM domis.product
         WHERE active = true 
-          AND (product_name ILIKE @SearchTerm OR CAST(sku AS TEXT) ILIKE @SearchTerm)
+          AND (product_name ILIKE @SearchTerm OR CAST(sku AS TEXT) ILIKE @SearchTerm OR title ILIKE @SearchTerm)
         UNION
         SELECT id AS Id, category_name AS Name, NULL AS Sku, 'Category' AS Type
         FROM domis.category

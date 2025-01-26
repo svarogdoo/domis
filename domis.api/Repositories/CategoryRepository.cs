@@ -22,6 +22,7 @@ public interface ICategoryRepository
     Task<CategoryWithProductsDto?> GetCategoryProducts(int categoryId, PageOptions options, ProductFilter? filters, decimal discount, string role);
     Task<bool> CategoryExists(int categoryId);
     Task<IEnumerable<SaleEntity>> PutCategoryOnSale(CategorySaleRequest request);
+    Task<MaxFilterValues?> GetProductsMaxFilterValues(int categoryId);
 }
 
 public class CategoryRepository(IDbConnection connection) : ICategoryRepository
@@ -185,6 +186,38 @@ public class CategoryRepository(IDbConnection connection) : ICategoryRepository
             Log.Error(ex, "An error occurred while putting the product on sale for Category {CategoryId}", request.CategoryId);
             throw;
         }    
+    }
+
+    public async Task<MaxFilterValues?> GetProductsMaxFilterValues(int categoryId)
+    {
+        const string sql = @"
+            WITH RECURSIVE CategoryHierarchy AS (
+                -- Anchor member: Start with the given category
+                SELECT id
+                FROM domis.category
+                WHERE id = @CategoryId
+
+                UNION ALL
+
+                -- Recursive member: Join to get all subcategories
+                SELECT c.id
+                FROM domis.category c
+                INNER JOIN CategoryHierarchy ch ON c.parent_category_id = ch.id
+            )
+            SELECT
+                MAX(p.price) AS MaxPrice,
+                MAX(p.width) AS MaxWidth,
+                MAX(p.length) AS MaxLength,
+                MAX(p.height) AS MaxHeight,
+                MAX(p.depth) AS MaxDepth,
+                MAX(p.thickness) AS MaxThickness
+            FROM domis.product p
+            INNER JOIN domis.product_category pc ON p.id = pc.product_id
+            INNER JOIN CategoryHierarchy ch ON pc.category_id = ch.id;";
+        
+        var maxFilterValues = await connection.QueryFirstOrDefaultAsync<MaxFilterValues?>(sql, new { CategoryId = categoryId });
+
+        return maxFilterValues;
     }
 
     private async Task<IEnumerable<CategoryPath>> GetCategoryPath(int categoryId) 
