@@ -100,7 +100,7 @@ public static class ProductQueries
             INNER JOIN CategoryHierarchy ch ON pc.category_id = ch.id
             --WHERE p.active = true -- filter to include only active products, ...REMOVED because only admin uses this
         )
-        SELECT Id, Sku, Name
+        SELECT Id, Sku, Name, IsActive
         FROM ActiveProductsInCategory
         ORDER BY Name; -- Ensure you have a column to order by
     ";
