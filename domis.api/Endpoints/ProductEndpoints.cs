@@ -61,6 +61,7 @@ public static class ProductEndpoints
             }
         }).WithDescription("update product").RequireAuthorization("Admin");
 
+        //TODO: just admin?
         group.MapGet("/basic-info", async ([FromQuery]int categoryId, IProductService productService) =>
         {
             var products = await productService.GetProductsBasicInfoByCategory(categoryId);
