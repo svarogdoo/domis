@@ -150,7 +150,7 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
 
 
     public async Task<IEnumerable<ProductBasicInfoDto>> GetProductsBasicInfoByCategory(int categoryId)
-    {
+    { 
         try
         {
             var products = await connection.QueryAsync<ProductBasicInfoDto>(ProductQueries.GetAllByCategory, new { CategoryId = categoryId });
