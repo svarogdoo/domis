@@ -102,7 +102,7 @@ public static class ProductQueries
         )
         SELECT Id, Sku, Name, IsActive
         FROM ActiveProductsInCategory
-        ORDER BY Name; -- Ensure you have a column to order by
+        ORDER BY IsActive DESC, Name;
     ";
     
     public const string GetProductsWithPricesByCategory = @"
