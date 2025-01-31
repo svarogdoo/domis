@@ -3,6 +3,7 @@ using domis.api.DTOs.Product;
 using domis.api.Models;
 using domis.api.Services;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace domis.api.Endpoints;
@@ -248,5 +249,32 @@ public static class AdminEndpoints
                 return Results.Problem(detail: ex.Message, statusCode: 500);
             }
         }).WithDescription("Add new product");//.RequireAuthorization(Roles.Admin.GetName());
+        
+        group.MapPost("/users/{userId}/lock", async (string userId, UserManager<IdentityUser> userManager) =>
+        {
+            var user = await userManager.FindByIdAsync(userId);
+            if (user == null)
+                return Results.NotFound("User not found");
+
+            await userManager.SetLockoutEnabledAsync(user, true);
+            await userManager.SetLockoutEndDateAsync(user, DateTimeOffset.MaxValue);
+
+            return Results.Ok("Korisnik zaključan.");
+        })
+        .WithDescription("Lock user")
+        .RequireAuthorization(Roles.Admin.GetName());
+        
+        group.MapPost("/users/{userId}/unlock", async (string userId, UserManager<IdentityUser> userManager) =>
+        {
+            var user = await userManager.FindByIdAsync(userId);
+            if (user == null)
+                return Results.NotFound("User not found");
+
+            await userManager.SetLockoutEndDateAsync(user, null);
+
+            return Results.Ok("Korisnik otključan.");
+        })
+        .WithDescription("Unlock user")
+        .RequireAuthorization(Roles.Admin.GetName());
     }
 }
