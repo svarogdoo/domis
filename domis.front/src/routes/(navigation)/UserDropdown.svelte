@@ -61,7 +61,7 @@
     >
       {#if loggedIn}
         <ul>
-          {#if userStore.isUserVP()}
+          {#if userStore.isUserVP() || userStore.isUserAdmin()}
             <p class="text-xs text-start mb-2 pt-1 pr-1 text-domis-primary">
               {$userStore.userRole}
             </p>
