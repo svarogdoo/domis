@@ -150,7 +150,7 @@
     {#if hasActiveSale}
       <button
         on:click={handleDeactivatedSale}
-        class="text-white self-end w-36 tracking-wide text-center text-sm bg-slate-600 hover:bg-slate-800 px-3 py-2 rounded-lg -mb-2"
+        class="text-white self-end w-36 tracking-wide text-center text-sm bg-slate-600 hover:bg-slate-800 px-3 py-2 rounded-lg"
       >
         Deaktiviraj akciju
       </button>
