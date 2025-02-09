@@ -49,6 +49,14 @@ export async function postProductOnSale(saleInfo: any) {
   ).catch(() => false);
 }
 
+export async function deactivateProductSale(productIdArray: Array<number>) {
+  return fetchDataWithJsonBody(
+    `${API_URL}/api/admin/product/sale`,
+    "DELETE",
+    JSON.stringify(productIdArray)
+  ).catch(() => false);
+}
+
 export const productService = {
   getProduct,
   getProducts,

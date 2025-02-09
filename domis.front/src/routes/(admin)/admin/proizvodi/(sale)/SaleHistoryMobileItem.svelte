@@ -5,7 +5,7 @@
   export let sale: SaleInfo;
 </script>
 
-<tr class="group hover:bg-domis-light cursor-pointer">
+<tr class="group bg-white hover:bg-domis-light cursor-pointer">
   <td class="w-32">
     <div class="w-full flex flex-col text-center gap-y-2">
       <p class={sale.isActive ? "font-semibold" : ""}>

@@ -54,7 +54,6 @@
   }
 
   function handleSpecificationSave() {
-    console.info("saveddd");
     setProducts();
   }
 

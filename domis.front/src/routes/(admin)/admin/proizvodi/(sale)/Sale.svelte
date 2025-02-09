@@ -1,7 +1,10 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
   import SaleHistoryItem from "./SaleHistoryItem.svelte";
-  import { postProductOnSale } from "../../../../../services/product-service";
+  import {
+    deactivateProductSale,
+    postProductOnSale,
+  } from "../../../../../services/product-service";
   import DatePicker from "../../../../../components/DatePicker.svelte";
   import Toggle from "../../../../../components/Toggle.svelte";
   import Input from "../Input.svelte";
@@ -20,11 +23,24 @@
   let startDate: Date = new Date();
   let hasSaleEndDate: boolean = true;
   let endDate: Date = new Date();
+  let hasActiveSale = false;
+
+  $: if (saleHistory) hasActiveSale = checkActiveSale();
 
   let errors = {
     salePrice: "",
     salePercentage: "",
   };
+
+  function checkActiveSale() {
+    if (
+      saleHistory &&
+      saleHistory.length > 0 &&
+      saleHistory.find((x) => x.isActive === true)
+    )
+      return true;
+    else return false;
+  }
 
   async function submitSale() {
     let saleInfo = {
@@ -46,15 +62,14 @@
   }
 
   async function handleDeactivatedSale(event: any) {
-    if (event.detail.success) {
-      snackbarMessage = "Uspešno deaktiviran popust!";
-      isSnackbarSuccess = true;
+    let res = await deactivateProductSale([productId]);
+
+    if (res !== false) {
+      snackbarStore.showSnackbar("Uspešno deaktiviran popust!", true);
       dispatch("save");
     } else {
-      snackbarMessage = "Greška pri deaktiviranju popusta!";
-      isSnackbarSuccess = false;
+      snackbarStore.showSnackbar("Greška pri deaktiviranju popusta!", false);
     }
-    handleShowSnackbar();
   }
 
   const handleStartDateChanged = (event: CustomEvent<string>) => {
@@ -68,7 +83,7 @@
   };
 </script>
 
-<div class="flex flex-col gap-y-2 lg:gap-y-6 lg:px-8">
+<div class="flex w-full flex-col gap-y-2 lg:gap-y-6 lg:px-8">
   <div
     id="sale-form"
     class="mt-1 mb-2 flex flex-col gap-y-2 lg:gap-y-6 p-2 rounded-lg bg-grey-50"
@@ -132,6 +147,14 @@
   </div>
 
   {#if saleHistory && saleHistory.length > 0}
+    {#if hasActiveSale}
+      <button
+        on:click={handleDeactivatedSale}
+        class="text-white self-end w-36 tracking-wide text-center text-sm bg-slate-600 hover:bg-slate-800 px-3 py-2 rounded-lg -mb-2"
+      >
+        Deaktiviraj akciju
+      </button>
+    {/if}
     <table class="hidden lg:table table-hover">
       <thead class="w-full bg-domis-dark text-white">
         <th class="text-start w-32">Cena</th>

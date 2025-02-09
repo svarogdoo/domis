@@ -32,7 +32,7 @@
 
 <div class="flex flex-col w-full items-center lg:px-12">
   {#if users?.length && users.length > 0}
-    <table class="hidden w-full lg:table">
+    <table class="hidden w-3/4 lg:table">
       <thead class=" bg-domis-dark text-white">
         <th class="text-start w-40">Ime</th>
         <th class="text-start w-40">Prezime</th>

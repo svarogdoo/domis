@@ -5,7 +5,7 @@
   export let sale: SaleInfo;
 </script>
 
-<tr class="group hover:bg-domis-light cursor-pointer">
+<tr class="group bg-white hover:bg-domis-light cursor-pointer">
   <td class="w-32 {sale.isActive ? 'font-semibold' : ''}">
     {formatPrice(sale.salePrice) ?? "0.00"} RSD</td
   >
