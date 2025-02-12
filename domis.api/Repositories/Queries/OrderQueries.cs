@@ -220,18 +220,18 @@ public static class OrderQueries
             os.status_name AS OrderStatusName,
             o.invoice_order_shipping_id AS InvoiceOrderShippingId,
             o.delivery_order_shipping_id AS DeliveryOrderShippingId,
-            osh.first_name AS ShippingFirstName,
-            osh.last_name AS ShippingLastName,
-            osh.company_name AS ShippingCompanyName,
-            osh.country_id AS ShippingCountryId,
+            iosh.first_name AS ShippingFirstName,
+            iosh.last_name AS ShippingLastName,
+            iosh.company_name AS ShippingCompanyName,
+            iosh.country_id AS ShippingCountryId,
             c.country_name AS ShippingCountryName,
-            osh.city AS ShippingCity,
-            osh.address AS ShippingAddress,
-            osh.apartment AS ShippingApartment,
-            osh.county AS ShippingCounty,
-            osh.postal_code AS ShippingPostalCode,
-            osh.phone_number AS ShippingPhoneNumber,
-            osh.email AS ShippingEmail,
+            iosh.city AS ShippingCity,
+            iosh.address AS ShippingAddress,
+            iosh.apartment AS ShippingApartment,
+            iosh.county AS ShippingCounty,
+            iosh.postal_code AS ShippingPostalCode,
+            iosh.phone_number AS ShippingPhoneNumber,
+            iosh.email AS ShippingEmail,
             o.payment_status_id AS PaymentStatusId,
             ps.status_name AS PaymentStatusName,
             o.payment_vendor_type_id AS PaymentVendorTypeId,
@@ -250,8 +250,8 @@ public static class OrderQueries
         FROM
             domis.order o
             LEFT JOIN domis.order_status os ON o.status_id = os.id
-            LEFT JOIN domis.order_shipping osh ON o.delivery_order_shipping_id = osh.id
-            LEFT JOIN domis.country c ON osh.country_id = c.id
+            LEFT JOIN domis.order_shipping iosh ON o.invoice_order_shipping_id = iosh.id
+            LEFT JOIN domis.country c ON iosh.country_id = c.id
             LEFT JOIN domis.payment_status ps ON o.payment_status_id = ps.id
             LEFT JOIN domis.payment_vendor_type pvt ON o.payment_vendor_type_id = pvt.id
             LEFT JOIN domis.order_item oi ON o.id = oi.order_id
@@ -261,6 +261,27 @@ public static class OrderQueries
         WHERE
             pi.image_type_id IS NULL OR pi.image_type_id = 1;"
     ; 
+    
+    public const string GetDeliveryOrderShipping = @"
+        SELECT
+            dosh.first_name AS ShippingFirstName,
+            dosh.last_name AS ShippingLastName,
+            dosh.company_name AS ShippingCompanyName,
+            dosh.country_id AS ShippingCountryId,
+            c.country_name AS ShippingCountryName,
+            dosh.city AS ShippingCity,
+            dosh.address AS ShippingAddress,
+            dosh.apartment AS ShippingApartment,
+            dosh.county AS ShippingCounty,
+            dosh.postal_code AS ShippingPostalCode,
+            dosh.phone_number AS ShippingPhoneNumber,
+            dosh.email AS ShippingEmail
+        FROM domis.order o
+        LEFT JOIN domis.order_shipping dosh ON o.delivery_order_shipping_id = dosh.id
+        LEFT JOIN domis.country c ON dosh.country_id = c.id
+        WHERE o.id = @OrderId AND o.delivery_order_shipping_id IS NOT NULL
+        LIMIT 1;";
+
 
     public const string GetOrdersByUserId = @"
         SELECT 

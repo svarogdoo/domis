@@ -31,9 +31,9 @@ public static class AuthConfiguration
             //options.SignIn.RequireConfirmedEmail = true;
         });
 
-        services.AddAuthentication().AddBearerToken(IdentityConstants.BearerScheme, options => {
-            options.BearerTokenExpiration = TimeSpan.FromHours(12);
-        });
+        // services.AddAuthentication().AddBearerToken(IdentityConstants.BearerScheme, options => {
+        //     options.BearerTokenExpiration = TimeSpan.FromHours(12);
+        // });
      
         services.AddAuthorizationBuilder()
              .AddPolicy("Admin", policy => policy.RequireRole("Admin"))
