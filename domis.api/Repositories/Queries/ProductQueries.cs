@@ -102,6 +102,7 @@ public static class ProductQueries
         )
         SELECT Id, Sku, Name, IsActive
         FROM ActiveProductsInCategory
+        GROUP BY Id, Sku, Name, IsActive
         ORDER BY IsActive DESC, Name;
     ";
     
