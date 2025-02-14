@@ -174,6 +174,29 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
             Log.Error(ex, "An error occurred while updating products"); throw;
         }
     }
+    
+    //TODO: check with DOMIS - if we want to deactivate products that we do not receive in nivelacija - call this!
+    public async Task<bool> NivelacijaUpdateProductBatch2(IEnumerable<NivelacijaRecord> records)
+    {
+        try
+        {
+            var nivelacijaRecords = records as NivelacijaRecord[] ?? records.ToArray();
+            var skuList = nivelacijaRecords.Select(r => r.Sku).ToArray();
+
+            var parameters = new
+            {
+                records = nivelacijaRecords,
+                SkuList = skuList
+            };
+
+            var result = await connection.ExecuteAsync(ProductQueries.UpdateProductsByNivelacija2, parameters);
+            return result > 0;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "An error occurred while updating products"); throw;
+        }
+    }
 
     public async Task<ProductDetailsDto?> Update(ProductUpdateDto product)
     {
