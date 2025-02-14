@@ -180,6 +180,22 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
     {
         try
         {
+            // try this if we decide to go this route
+//             await connection.ExecuteAsync("CREATE TEMP TABLE temp_products (sku INT PRIMARY KEY, price DECIMAL, stock DECIMAL);");
+//
+//             await connection.ExecuteAsync("COPY temp_products (sku, price, stock) FROM STDIN", records);
+//
+//             await connection.ExecuteAsync("""
+//                   UPDATE domis.product p
+//                   SET price = t.price, stock = t.stock
+//                   FROM temp_products t
+//                   WHERE p.sku = t.sku;
+//
+//                   UPDATE domis.product
+//                   SET active = false
+//                   WHERE sku NOT IN (SELECT sku FROM temp_products);
+//             """);
+            
             var nivelacijaRecords = records as NivelacijaRecord[] ?? records.ToArray();
             var skuList = nivelacijaRecords.Select(r => r.Sku).ToArray();
 
