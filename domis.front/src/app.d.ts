@@ -108,6 +108,11 @@ declare global {
     image?: string;
     subcategories?: Array<Category>;
   }
+  interface FlattenedCategory {
+    id: string;
+    name: string;
+    level: number;
+  }
   interface CategoryData {
     category?: CategoryDetails;
     products: Array<CategoryProduct>;
@@ -320,6 +325,43 @@ declare global {
     minValue: number;
     maxValue: number;
     unit: string;
+  }
+
+  interface AdminOrder {
+    orderId: number;
+    userId: string;
+    amount: number;
+    comment: string;
+    deliveryOrderShipping: AdminShippingDetails;
+    invoiceOrderShipping: AdminShippingDetails;
+    orderCreatedAt: Date;
+    orderItems: Array<AdminOrderItem>;
+    orderStatusId: OrderStatus; // da bude samo id, bez name sa imenom statusa
+    paymentType: PaymentVendorType; // todo status odgovarajuci
+  }
+  interface AdminShippingDetails {
+    orderShippingId: number;
+    shippingAddress: string;
+    shippingApartment: string;
+    shippingCity: string;
+    shippingCompanyName: string;
+    shippingCountryId: number;
+    shippingCountryName: string;
+    shippingCounty: string;
+    shippingEmail: string;
+    shippingFirstName: string;
+    shippingLastName: string;
+    shippingPhoneNumber: string;
+    shippingPostalCode: string;
+  }
+  interface AdminOrderItem {
+    orderItemAmount: number;
+    orderItemCreatedAt: Date;
+    orderItemId: number;
+    orderItemModifiedAt: string;
+    orderItemQuantity: number;
+    productDetails: ProductDetails;
+    productId: number;
   }
 }
 

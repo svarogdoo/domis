@@ -14,10 +14,10 @@
     Proizvodi
   </a>
   <a
-    href="/admin/porudzbine"
+    href="/admin/kategorije"
     class="w-full py-3 flex items-center justify-center hover:bg-gray-100 border-b border-gray-300"
   >
-    Porudžbine
+    Kategorije
   </a>
   <a
     href="/admin/korisnici"
@@ -25,6 +25,14 @@
   >
     Korisnici
   </a>
+
+  <!-- <a
+    href="/admin/porudzbine"
+    class="w-full py-3 flex items-center justify-center hover:bg-gray-100 border-b border-gray-300"
+  >
+    Porudžbine
+  </a> -->
+
   <li
     class="w-full py-3 flex items-center justify-center hover:bg-gray-100 border-b border-gray-300"
   >

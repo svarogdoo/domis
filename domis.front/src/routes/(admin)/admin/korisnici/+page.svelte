@@ -30,7 +30,7 @@
   }
 </script>
 
-<div class="flex flex-col w-full items-center lg:px-12">
+<div class="flex flex-col w-full gap-y-2 lg:gap-y-8 items-center lg:px-12">
   {#if users?.length && users.length > 0}
     <table class="hidden w-3/4 lg:table">
       <thead class=" bg-domis-dark text-white">

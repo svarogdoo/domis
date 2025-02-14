@@ -17,3 +17,7 @@ export function getProductSaleHistory(productId: number) {
     `${API_URL}/api/admin/product/${productId}/sale-history`
   ).catch((error) => []);
 }
+
+export function getAdminOrders() {
+  return fetchData<Array<AdminOrder>>(`${API_URL}/api/admin/orders`);
+}
