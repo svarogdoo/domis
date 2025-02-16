@@ -13,12 +13,12 @@
   >
     Proizvodi
   </a>
-  <a
+  <!-- <a
     href="/admin/kategorije"
     class="w-full py-3 flex items-center justify-center hover:bg-gray-100 border-b border-gray-300"
   >
     Kategorije
-  </a>
+  </a> -->
   <a
     href="/admin/korisnici"
     class="w-full py-3 flex items-center justify-center hover:bg-gray-100 border-b border-gray-300"

@@ -9,6 +9,7 @@
   import ProductRow from "./ProductRow.svelte";
   import closeIcon from "$lib/icons/x-mark.svg";
   import { onMount } from "svelte";
+  import Images from "./(images)/Images.svelte";
 
   enum ViewOptions {
     Spec,
@@ -39,6 +40,7 @@
     let productId = event.detail.id;
     if (productId === undefined) return;
     detailedProduct = null;
+    console.info(productId);
     detailedProduct = { ...(await getProduct(productId)) };
     setSaleHistory(productId);
 
@@ -97,7 +99,7 @@
   >
     <div
       id="product-modal"
-      class="relative bg-white w-auto h-full py-1 px-2 lg:py-8 lg:px-16 flex flex-col overflow-y-scroll"
+      class="relative bg-white w-full lg:w-2/3 2xl:w-1/3 h-full py-1 px-2 lg:py-8 lg:px-16 flex flex-col overflow-y-scroll"
     >
       <button
         class="absolute top-2 right-2 px-2 py-1 rounded-lg"
@@ -115,16 +117,27 @@
           class="w-28 lg:w-36 text-center tracking-wider py-3 hover:bg-gray-100 {viewOption ===
           ViewOptions.Spec
             ? 'bg-gray-100'
-            : ''}">Specifikacija</button
-        >
+            : ''}"
+          >Specifikacija
+        </button>
         <button
           on:click={() => (viewOption = ViewOptions.Sale)}
           class="w-28 lg:w-36 text-center tracking-wider py-3 hover:bg-gray-100 {viewOption ===
           ViewOptions.Sale
             ? 'bg-gray-100'
-            : ''}">Popusti</button
-        >
+            : ''}"
+          >Popusti
+        </button>
+        <button
+          on:click={() => (viewOption = ViewOptions.Images)}
+          class="w-28 lg:w-36 text-center tracking-wider py-3 hover:bg-gray-100 {viewOption ===
+          ViewOptions.Images
+            ? 'bg-gray-100'
+            : ''}"
+          >Slike
+        </button>
       </div>
+
       <div class="py-4 bg-gray-100">
         {#if detailedProduct && viewOption === ViewOptions.Spec}
           <Specification
@@ -142,6 +155,11 @@
             {saleHistory}
             initialPrice={detailedProduct.price?.perUnit}
             productId={detailedProduct.id}
+          />
+        {:else if detailedProduct && viewOption === ViewOptions.Images}
+          <Images
+            productId={detailedProduct.id}
+            images={detailedProduct.images}
           />
         {/if}
       </div>

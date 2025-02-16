@@ -68,7 +68,7 @@
           {/if}
           {#if userStore.isUserAdmin()}
             <UserDropdownItem href="/admin/proizvodi" text="Proizvodi" />
-            <UserDropdownItem href="/admin/kategorije" text="Kategorije" />
+            <!-- <UserDropdownItem href="/admin/kategorije" text="Kategorije" /> -->
             <UserDropdownItem href="/admin/korisnici" text="Korisnici" />
             <!-- <UserDropdownItem href="/admin/porudzbine" text="Porudžbine" /> -->
           {:else}
