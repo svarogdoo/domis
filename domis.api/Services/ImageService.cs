@@ -17,7 +17,7 @@ public interface IImageService
 public class ImageService(
     IImageRepository repository, 
     IProductRepository productRepo,
-    IAzureBlobService abs
+    IAzureBlobService azureBlobService
     ) : IImageService
 {
     public async Task<List<ImageGetDto>> GetImages(int productId)
@@ -66,17 +66,9 @@ public class ImageService(
             throw new ArgumentException("Data URLs has not been provided.");
 
         var productName = await productRepo.GetProductName(productId);
-
-        // sada bi trebalo zvati azure servis i uploadovati svaki od novododatih urlova
-        // kao response vratiti putanju do azure slike
-
-        var imageUrl = await abs.UploadImage(request.DataUrls[0]);
-
-        // nakon toga, pozvati metodu repozitorijuma da upise u tabele image i product_image
-        // za image tabelu nam treba: image_name, image_url
-        // za product_image tabelu nam treba: product_id, image_id(dobijamo iz prethodne metode)
-
-        //todo: implement
-        return await repository.AddGalleryImages();
+        
+        var uploadedImageUrls = await azureBlobService.UploadBase64Images(productName ?? string.Empty, request.DataUrls);
+        
+        return await repository.AddImages(productId, productName ?? string.Empty, uploadedImageUrls, 2);
     }
 }
