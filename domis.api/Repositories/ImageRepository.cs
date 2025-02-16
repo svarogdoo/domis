@@ -12,6 +12,8 @@ public interface IImageRepository
     Task DeleteFeaturedImage(int productId);
     Task<ProductImageDto?> GetProductImageById(int productId, int imageId);
     Task DeleteProductImage(int imageId);
+    
+    Task<bool> AddGalleryImages();
 }
 
 public class ImageRepository(IDbConnection connection) : IImageRepository
@@ -48,6 +50,11 @@ public class ImageRepository(IDbConnection connection) : IImageRepository
 
     public async Task DeleteProductImage(int imageId) 
         => await connection.ExecuteAsync(ImageQueries.DeleteProductImage, new { ImageId = imageId });
+
+    public async Task<bool> AddGalleryImages()
+    {
+        throw new NotImplementedException();
+    }
 }
 
 //TODO: move and change

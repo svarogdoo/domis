@@ -41,6 +41,7 @@ public interface IProductRepository
     Task<int> CreateProduct(CreateProductRequest product);
     Task<int> CreateProduct(CreateProductInitialRequest product);
     Task<bool> CheckIfSkuExists(int sku);
+    Task<string?> GetProductName(int productId);
 }
 
 public class ProductRepository(IDbConnection connection, IMapper mapper) : IProductRepository
@@ -634,5 +635,19 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
         const string checkSkuQuery = "SELECT EXISTS (SELECT 1 FROM domis.product WHERE sku = @Sku)";
         return await connection.ExecuteScalarAsync<bool>(checkSkuQuery, new { sku });
     }
+    
+
+    public async Task<string?> GetProductName(int productId)
+    {
+        const string sqlQuery = """
+                    SELECT 
+                        COALESCE(title, product_name) AS ProductName
+                    FROM domis.product
+                    WHERE id = @ProductId;
+        """;
+        
+        return await connection.QueryFirstOrDefaultAsync<string>(sqlQuery, new { ProductId = productId });
+    }
+
     #endregion ExtensionMethods
 }

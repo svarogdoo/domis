@@ -1,4 +1,6 @@
+using domis.api.Common;
 using domis.api.DTOs.Image;
+using domis.api.Models;
 using domis.api.Repositories;
 
 namespace domis.api.Services;
@@ -8,11 +10,14 @@ public interface IImageService
     Task<List<ImageGetDto>> GetImages(int productId);
     Task<bool> AddProductImage(int productId, IFormFile image, int imageTypeId);
     Task<bool> DeleteProductImageAsync(int productId, int imageId);
+    
+    Task<bool> AddGalleryImages(int productId, AddGalleryImagesRequest request);
 }
 
 public class ImageService(
     IImageRepository repository, 
-    IProductRepository productRepo//, IAzureBlobService azureBlobService
+    IProductRepository productRepo,
+    IAzureBlobService abs
     ) : IImageService
 {
     public async Task<List<ImageGetDto>> GetImages(int productId)
@@ -51,4 +56,27 @@ public class ImageService(
         return true;
     }
 
+    public async Task<bool> AddGalleryImages(int productId, AddGalleryImagesRequest request)
+    {
+        var exists = await productRepo.ProductExists(productId);
+        if (!exists)
+            throw new NotFoundException("Product does not exist.");
+
+        if (request.DataUrls.Count == 0)
+            throw new ArgumentException("Data URLs has not been provided.");
+
+        var productName = await productRepo.GetProductName(productId);
+
+        // sada bi trebalo zvati azure servis i uploadovati svaki od novododatih urlova
+        // kao response vratiti putanju do azure slike
+
+        var imageUrl = await abs.UploadImage(request.DataUrls[0]);
+
+        // nakon toga, pozvati metodu repozitorijuma da upise u tabele image i product_image
+        // za image tabelu nam treba: image_name, image_url
+        // za product_image tabelu nam treba: product_id, image_id(dobijamo iz prethodne metode)
+
+        //todo: implement
+        return await repository.AddGalleryImages();
+    }
 }
