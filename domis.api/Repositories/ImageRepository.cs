@@ -75,23 +75,23 @@ public class ImageRepository(IDbConnection connection) : IImageRepository
 
         var insertedIds = new List<int>();
         
-        // var findMaxIndexQuery = """
-        //     SELECT COALESCE(MAX(
-        //         CAST(SPLIT_PART(image_name, '_', 2) AS INTEGER)
-        //     ), 0)
-        //     FROM domis.image
-        //     WHERE image_name LIKE @ProductNamePattern;
-        // """;
-        //
-        // var maxIndex = await connection.ExecuteScalarAsync<int>(findMaxIndexQuery, new { ProductNamePattern = productName + "_%" });
+        var findMaxIndexQuery = """
+            SELECT COALESCE(MAX(
+                CAST(SPLIT_PART(image_name, '_', 2) AS INTEGER)
+            ), 0)
+            FROM domis.image
+            WHERE image_name LIKE @ProductNamePattern;
+        """;
+        
+        var maxIndex = await connection.ExecuteScalarAsync<int>(findMaxIndexQuery, new { ProductNamePattern = productName + "_%" });
 
-        var index = 1;
+        //var index = 1;
 
         foreach (var imageUrl in imageUrls)
         {
             var parameters = new
             {
-                ImageName = $"{productName}_{index++}",
+                ImageName = $"{productName}_{maxIndex++}",
                 BlobUrl = imageUrl
             };
 
