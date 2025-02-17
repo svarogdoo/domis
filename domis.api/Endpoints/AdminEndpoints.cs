@@ -300,7 +300,7 @@ public static class AdminEndpoints
         })
         .WithDescription("Add gallery images to product.");
 
-        group.MapDelete("/images/{imageId:int}", async (int productId, int imageId, IImageService imageService) =>
+        group.MapDelete("/images/{imageId:int}/products/{productId:int}", async (int imageId, int productId, IImageService imageService) =>
         {
             try
             {
