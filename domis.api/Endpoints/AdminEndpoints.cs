@@ -8,12 +8,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace domis.api.Endpoints;
 
-//TODO: uncomment RequireAuthorization at endpoints
+//TODO: uncomment RequireAuthorization
 public static class AdminEndpoints
 {
     public static void RegisterAdminEndpoints(this IEndpointRouteBuilder routes)
     {
-        var group = routes.MapGroup("/api/admin").WithTags("Admin").RequireAuthorization("Admin");
+        var group = routes.MapGroup("/api/admin").WithTags("Admin"); //RequireAuthorization(Roles.Admin.GetName());
 
         group.MapGet("/users", async (IAdminService adminService) =>
         {
