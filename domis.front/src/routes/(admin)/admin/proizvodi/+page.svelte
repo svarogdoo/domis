@@ -18,6 +18,7 @@
   let flattenedCategories: Array<FlattenedCategory>;
   $: categories.subscribe((value) => {
     flattenedCategories = flattenCategories(value);
+    selectedCategoryId = value[1].id;
   });
 
   let name = "";
