@@ -32,6 +32,7 @@ export async function fetchData<T>(url: string, method?: string): Promise<T> {
 }
 
 export async function putDataWithJsonBody(url: string, json: string) {
+  loadingSpinnerStore.showSpinner();
   return svelteKitFetch(url, {
     method: "put",
     body: json,
@@ -43,7 +44,8 @@ export async function putDataWithJsonBody(url: string, json: string) {
     .then(handleResponse)
     .catch((error) => {
       throw error;
-    });
+    })
+    .finally(() => loadingSpinnerStore.hideSpinner());
 }
 
 export async function deleteData(url: string) {
