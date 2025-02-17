@@ -44,11 +44,11 @@ public class ImageService(
     {
         var image = await repository.GetProductImageById(productId, imageId);
         if (image == null)
-            return false;
+            throw new NotFoundException("Slika nije pronađena.");
 
         if (image.ImageTypeId == 1)
-            return false;
-
+            throw new ArgumentException("Slika je naslovna slika. Nije dozvoljeno brisanje, samo promena.");
+ 
         await repository.DeleteProductImage(imageId);
 
         //await azureBlobService.DeleteImage(image.ImageUrl);

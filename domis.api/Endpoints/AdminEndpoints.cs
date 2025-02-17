@@ -275,7 +275,7 @@ public static class AdminEndpoints
         })
         .WithDescription("Unlock user");
 
-        group.MapPost("/products/{productId:int}/gallery-images", async (int productId, [FromBody] AddGalleryImagesRequest request, IImageService imageService) =>
+        group.MapPost("/images/{productId:int}/gallery-images", async (int productId, [FromBody] AddGalleryImagesRequest request, IImageService imageService) =>
         {
             try
             {
@@ -299,5 +299,28 @@ public static class AdminEndpoints
             }
         })
         .WithDescription("Add gallery images to product.");
+
+        group.MapDelete("/images/{imageId:int}", async (int productId, int imageId, IImageService imageService) =>
+        {
+            try
+            {
+                var result = await imageService.DeleteProductImageAsync(productId, imageId);
+                
+                return Results.NoContent();
+            }
+            catch (NotFoundException ex)
+            {                
+                return Results.NotFound(ex.Message);
+            }
+            catch (ArgumentException ex)
+            {
+                return Results.BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return Results.Problem(detail: ex.Message, statusCode: 500);
+            }
+        })
+        .WithDescription("Delete image from gallery.");
     }
 }

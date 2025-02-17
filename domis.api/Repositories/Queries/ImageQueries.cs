@@ -4,7 +4,7 @@ public static class ImageQueries
 {
     public const string GetProductImages = @"
             SELECT
-                i.Id as ImageId,
+                i.Id as Id,
                 i.blob_url AS Url,
                 it.image_type_name AS Type
             FROM domis.product_image pi
@@ -32,7 +32,11 @@ public static class ImageQueries
         WHERE product_id = @ProductId AND image_type_id = 1
     ";
     
+    public const string DeleteImage = @"
+        DELETE FROM domis.image WHERE id = @ImageId
+    ";
+    
     public const string DeleteProductImage = @"
-        DELETE FROM domis.product_image WHERE id = @ImageId
+        DELETE FROM domis.product_image WHERE image_id = @ImageId
     ";
 }
