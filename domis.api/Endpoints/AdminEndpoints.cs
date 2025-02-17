@@ -230,6 +230,7 @@ public static class AdminEndpoints
             }
         }).WithDescription("Add new product");//.RequireAuthorization(Roles.Admin.GetName());
         
+        //this one is not in use, *I think*
         group.MapPost("/product-2", async ([FromBody] CreateProductRequest request, IProductService productService) =>
         {
             try
@@ -276,5 +277,32 @@ public static class AdminEndpoints
         })
         .WithDescription("Unlock user")
         .RequireAuthorization(Roles.Admin.GetName());
+
+        group.MapPost("/products/{productId:int}/gallery-images",
+                async (int productId, [FromBody] AddGalleryImagesRequest request, IImageService imageService) =>
+                {
+                    try
+                    {
+                        var success = await imageService.AddGalleryImages(productId, request);
+
+                        return success
+                            ? Results.Ok("Slike uspešno dodate.")
+                            : Results.StatusCode(500);
+                    }
+                    catch (NotFoundException ex)
+                    {
+                        return Results.NotFound(ex.Message);
+                    }
+                    catch (ArgumentException ex)
+                    {
+                        return Results.BadRequest(ex.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        return Results.Problem(detail: ex.Message, statusCode: 500);
+                    }
+                })
+            .WithDescription("Add gallery images to product.");
+        //.RequireAuthorization(Roles.Admin.GetName());
     }
 }

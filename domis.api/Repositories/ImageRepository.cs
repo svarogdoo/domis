@@ -12,6 +12,9 @@ public interface IImageRepository
     Task DeleteFeaturedImage(int productId);
     Task<ProductImageDto?> GetProductImageById(int productId, int imageId);
     Task DeleteProductImage(int imageId);
+    
+    Task<bool> AddGalleryImages();
+    Task<bool> AddImages(int productId, string productName, List<string> imageUrls, int imageTypeId);
 }
 
 public class ImageRepository(IDbConnection connection) : IImageRepository
@@ -48,6 +51,74 @@ public class ImageRepository(IDbConnection connection) : IImageRepository
 
     public async Task DeleteProductImage(int imageId) 
         => await connection.ExecuteAsync(ImageQueries.DeleteProductImage, new { ImageId = imageId });
+
+    public async Task<bool> AddGalleryImages()
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<bool> AddImages(int productId, string productName, List<string> imageUrls, int imageTypeId)
+    {
+        var imageIds = await InsertIntoImage(productName, imageUrls);
+        await InsertIntoProductImage(productId, imageIds, imageTypeId);
+
+        return true;
+    }
+
+    private async Task<List<int>> InsertIntoImage(string productName, List<string> imageUrls)
+    {
+        var query = """
+                INSERT INTO domis.image (image_name, blob_url)
+                VALUES (@ImageName, @BlobUrl)
+                RETURNING id;
+        """;
+
+        var insertedIds = new List<int>();
+        
+        var findMaxIndexQuery = """
+            SELECT COALESCE(MAX(
+                CAST(SPLIT_PART(image_name, '_', 2) AS INTEGER)
+            ), 0)
+            FROM domis.image
+            WHERE image_name LIKE @ProductNamePattern;
+        """;
+        
+        var index = await connection.ExecuteScalarAsync<int>(findMaxIndexQuery, new { ProductNamePattern = productName + "_%" });
+        
+        foreach (var imageUrl in imageUrls)
+        {
+            var parameters = new
+            {
+                ImageName = $"{productName}_{++index}",
+                BlobUrl = imageUrl
+            };
+
+            var insertedId = await connection.ExecuteScalarAsync<int>(query, parameters);
+            insertedIds.Add(insertedId);
+        }
+
+        return insertedIds;
+    }
+
+    private async Task InsertIntoProductImage(int productId, List<int> imageIds, int imageTypeId)
+    {
+        var query = """
+                INSERT INTO domis.product_image (product_id, image_id, image_type_id)
+                VALUES (@ProductId, @ImageId, @ImageTypeId);
+        """;
+        
+        foreach (var imageId in imageIds)
+        {
+            var parameters = new
+            {
+                ProductId = productId,
+                ImageId = imageId,
+                ImageTypeId = imageTypeId
+            };
+
+            await connection.ExecuteScalarAsync<int>(query, parameters);
+        }
+    }
 }
 
 //TODO: move and change

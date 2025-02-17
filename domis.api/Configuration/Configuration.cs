@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using System.Text.Json.Serialization;
+using Azure.Storage.Blobs;
 using domis.api.Common;
 using domis.api.Database;
 using domis.api.Extensions;
@@ -11,6 +12,7 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using MailKit.Net.Smtp;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Npgsql;
 using SendGrid.Extensions.DependencyInjection;
 using Serilog;
@@ -107,8 +109,18 @@ public static class Configuration
         builder.Services.AddScoped<IUserExtensionRepository, UserExtensionRepository>();
 
         //builder.Services.AddHttpClient<ISyncService, SyncService>();
-        // builder.Services.AddScoped<IAzureBlobService, AzureBlobService>();
-
+        
+        //TODO: azure blob service config
+        builder.Services.Configure<AzureBlobStorageSettings>(builder.Configuration.GetSection("AzureBlobStorage"));
+        builder.Services.AddScoped<IAzureBlobService, AzureBlobService>();
+        builder.Services.AddScoped(provider =>
+        {
+            var settings = provider.GetRequiredService<IOptions<AzureBlobStorageSettings>>().Value;
+            var blobServiceClient = new BlobServiceClient(settings.ConnectionString);
+            return blobServiceClient.GetBlobContainerClient(settings.ContainerName);
+        });
+        
+        
         builder.Services.AddSingleton<SmtpClient>(serviceProvider =>
         {
             var client = new SmtpClient();

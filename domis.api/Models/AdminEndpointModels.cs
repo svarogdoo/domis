@@ -21,3 +21,5 @@ public record CreateProductRequest(
 );
 
 public record CreateProductInitialRequest(int CategoryId, string Name, int Sku);
+
+public record AddGalleryImagesRequest(List<string> DataUrls);

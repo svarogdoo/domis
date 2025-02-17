@@ -221,6 +221,18 @@ public static class ProductQueries
             stock = @Stock
         WHERE sku = @Sku;"
     ;
+    
+    public const string UpdateProductsByNivelacija2 = """
+          UPDATE domis.product
+          SET price = @Price,
+              stock = @Stock
+          WHERE sku = @Sku;
+  
+          UPDATE domis.product
+          SET active = false
+          WHERE sku NOT IN (SELECT UNNEST(@SkuList));
+      """;
+
 
     public const string CheckIfProductExists = @"
         SELECT EXISTS 
