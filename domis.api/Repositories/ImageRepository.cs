@@ -83,15 +83,13 @@ public class ImageRepository(IDbConnection connection) : IImageRepository
             WHERE image_name LIKE @ProductNamePattern;
         """;
         
-        var maxIndex = await connection.ExecuteScalarAsync<int>(findMaxIndexQuery, new { ProductNamePattern = productName + "_%" });
-
-        //var index = 1;
-
+        var index = await connection.ExecuteScalarAsync<int>(findMaxIndexQuery, new { ProductNamePattern = productName + "_%" });
+        
         foreach (var imageUrl in imageUrls)
         {
             var parameters = new
             {
-                ImageName = $"{productName}_{maxIndex++}",
+                ImageName = $"{productName}_{++index}",
                 BlobUrl = imageUrl
             };
 
