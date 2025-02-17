@@ -15,10 +15,9 @@ public static class ImageQueries
     public const string Temp = @"
         SELECT 
             pi.id AS ImageId,
-            pi.image_id AS ImageUrl,
             pi.image_type_id AS ImageTypeId
         FROM domis.product_image pi
-        WHERE pi.product_id = @ProductId AND pi.id = @ImageId
+        WHERE pi.product_id = @ProductId AND pi.image_id = @ImageId
     ";
     
     public const string AddProductImage = @"
