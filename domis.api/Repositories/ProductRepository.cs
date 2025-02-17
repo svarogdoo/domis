@@ -167,6 +167,7 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
     {
         try
         {
+            //TODO: proveriti da li hocemo da deaktiviramo proizvode koji nisu prisutni u nivelaciji - UpdateProductsByNivelacija2
             var result = await connection.ExecuteAsync(ProductQueries.UpdateProductsByNivelacija, records);
             return result > 0;
         }
