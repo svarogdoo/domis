@@ -105,7 +105,7 @@
   >
     <div
       id="product-modal"
-      class="relative bg-white w-full lg:w-2/3 2xl:w-1/3 h-full py-1 px-2 lg:py-8 lg:px-16 flex flex-col overflow-y-scroll"
+      class="relative bg-white w-full lg:w-2/3 h-full py-1 px-2 lg:py-8 lg:px-16 flex flex-col overflow-y-scroll"
     >
       <button
         class="absolute top-2 right-2 px-2 py-1 rounded-lg"
