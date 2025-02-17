@@ -7,6 +7,7 @@ using domis.api.Models;
 using domis.api.Repositories.Helpers;
 using domis.api.Repositories.Queries;
 using MailKit.Search;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using Serilog;
 namespace domis.api.Repositories;
 
@@ -428,13 +429,13 @@ public class OrderRepository(IDbConnection connection, PriceAndSizeHelper helper
                 .QueryAsync<OrderDetailsDto, OrderStatusDetailsDto, OrderShippingDetailsDto, PaymentDetailsDto, OrderItemDto,
                     ProductDetails, string, OrderDetailsDto>(
                     OrderQueries.GetAllOrders,
-                    (order, orderStatus, orderShipping, paymentDetails, orderItem, product, url) =>
+                    (order, orderStatus, invoiceOrderShipping, paymentDetails, orderItem, product, url) =>
                     {
                         if (!orderDictionary.TryGetValue(order.OrderId, out var orderDetails))
                         {
                             orderDetails = order;
                             orderDetails.OrderStatus = orderStatus;
-                            orderDetails.InvoiceOrderShipping = orderShipping;
+                            orderDetails.InvoiceOrderShipping = invoiceOrderShipping;
                             orderDetails.PaymentDetails = paymentDetails;
                             orderDetails.OrderItems = [];
                             orderDictionary.Add(order.OrderId, orderDetails);
@@ -442,7 +443,7 @@ public class OrderRepository(IDbConnection connection, PriceAndSizeHelper helper
 
                         if (orderDetails.OrderItems.Any(oi => oi.OrderItemId == orderItem.OrderItemId))
                             return orderDetails;
-                        
+                    
                         orderItem.ProductDetails = product;
                         orderItem.ProductDetails.Url = url;
                         orderDetails.OrderItems.Add(orderItem);
@@ -452,12 +453,21 @@ public class OrderRepository(IDbConnection connection, PriceAndSizeHelper helper
                     splitOn: "OrderStatusId,InvoiceOrderShippingId,PaymentStatusId,OrderItemId,ProductName,Url"
                 );
 
+            foreach (var orderDetails in orderDictionary.Values)
+            {
+                var deliveryOrderShipping = await connection.QuerySingleOrDefaultAsync<OrderShippingDetailsDto>(
+                    OrderQueries.GetDeliveryOrderShipping, new { orderDetails.OrderId });
+                
+                if (deliveryOrderShipping is not null)
+                    orderDetails.DeliveryOrderShipping = deliveryOrderShipping;
+            }
+            
             return orderDictionary.Values.OrderByDescending(o => o.OrderId).ToList();
         }
         catch (Exception ex)
         {
             Log.Error(ex, $"An error occurred while fetching orders: {ex.Message}");
             throw;
-        }    
+        }
     }
 }

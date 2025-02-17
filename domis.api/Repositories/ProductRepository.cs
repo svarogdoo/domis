@@ -41,6 +41,7 @@ public interface IProductRepository
     Task<int> CreateProduct(CreateProductRequest product);
     Task<int> CreateProduct(CreateProductInitialRequest product);
     Task<bool> CheckIfSkuExists(int sku);
+    Task<string?> GetProductName(int productId);
 }
 
 public class ProductRepository(IDbConnection connection, IMapper mapper) : IProductRepository
@@ -166,7 +167,47 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
     {
         try
         {
+            //TODO: proveriti da li hocemo da deaktiviramo proizvode koji nisu prisutni u nivelaciji - UpdateProductsByNivelacija2
             var result = await connection.ExecuteAsync(ProductQueries.UpdateProductsByNivelacija, records);
+            return result > 0;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "An error occurred while updating products"); throw;
+        }
+    }
+    
+    //TODO: check with DOMIS - if we want to deactivate products that we do not receive in nivelacija - call this!
+    public async Task<bool> NivelacijaUpdateProductBatch2(IEnumerable<NivelacijaRecord> records)
+    {
+        try
+        {
+            // try this if we decide to go this route
+//             await connection.ExecuteAsync("CREATE TEMP TABLE temp_products (sku INT PRIMARY KEY, price DECIMAL, stock DECIMAL);");
+//
+//             await connection.ExecuteAsync("COPY temp_products (sku, price, stock) FROM STDIN", records);
+//
+//             await connection.ExecuteAsync("""
+//                   UPDATE domis.product p
+//                   SET price = t.price, stock = t.stock
+//                   FROM temp_products t
+//                   WHERE p.sku = t.sku;
+//
+//                   UPDATE domis.product
+//                   SET active = false
+//                   WHERE sku NOT IN (SELECT sku FROM temp_products);
+//             """);
+            
+            var nivelacijaRecords = records as NivelacijaRecord[] ?? records.ToArray();
+            var skuList = nivelacijaRecords.Select(r => r.Sku).ToArray();
+
+            var parameters = new
+            {
+                records = nivelacijaRecords,
+                SkuList = skuList
+            };
+
+            var result = await connection.ExecuteAsync(ProductQueries.UpdateProductsByNivelacija2, parameters);
             return result > 0;
         }
         catch (Exception ex)
@@ -595,5 +636,19 @@ public class ProductRepository(IDbConnection connection, IMapper mapper) : IProd
         const string checkSkuQuery = "SELECT EXISTS (SELECT 1 FROM domis.product WHERE sku = @Sku)";
         return await connection.ExecuteScalarAsync<bool>(checkSkuQuery, new { sku });
     }
+    
+
+    public async Task<string?> GetProductName(int productId)
+    {
+        const string sqlQuery = """
+                    SELECT 
+                        COALESCE(title, product_name) AS ProductName
+                    FROM domis.product
+                    WHERE id = @ProductId;
+        """;
+        
+        return await connection.QueryFirstOrDefaultAsync<string>(sqlQuery, new { ProductId = productId });
+    }
+
     #endregion ExtensionMethods
 }

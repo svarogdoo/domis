@@ -32,7 +32,7 @@ public static class AuthConfiguration
         });
 
         services.AddAuthentication().AddBearerToken(IdentityConstants.BearerScheme, options => {
-            options.BearerTokenExpiration = TimeSpan.FromHours(12);
+            // options.BearerTokenExpiration = TimeSpan.FromHours(12);
         });
      
         services.AddAuthorizationBuilder()
