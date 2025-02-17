@@ -1,6 +1,7 @@
 import { get } from "svelte/store";
 import { API_URL } from "../config";
 import { userStore } from "../stores/user";
+import { loadingSpinnerStore } from "../stores/loadingSpinner";
 
 let svelteKitFetch: typeof fetch = fetch; // resolves warning
 let headers: { [key: string]: string } = {};
@@ -18,6 +19,7 @@ export const setAuthToken = (token: string | null) => {
 };
 
 export async function fetchData<T>(url: string, method?: string): Promise<T> {
+  loadingSpinnerStore.showSpinner();
   return svelteKitFetch(url, {
     method,
     headers,
@@ -25,7 +27,8 @@ export async function fetchData<T>(url: string, method?: string): Promise<T> {
     .then(handleResponse)
     .catch((error) => {
       throw error;
-    });
+    })
+    .finally(() => loadingSpinnerStore.hideSpinner());
 }
 
 export async function putDataWithJsonBody(url: string, json: string) {
@@ -44,10 +47,13 @@ export async function putDataWithJsonBody(url: string, json: string) {
 }
 
 export async function deleteData(url: string) {
+  loadingSpinnerStore.showSpinner();
   return svelteKitFetch(url, {
     method: "delete",
     headers,
-  }).then(handleResponse);
+  })
+    .then(handleResponse)
+    .finally(() => loadingSpinnerStore.hideSpinner());
 }
 
 export async function fetchDataWithJsonBody<T>(
@@ -55,6 +61,7 @@ export async function fetchDataWithJsonBody<T>(
   method: string,
   json: string
 ): Promise<T> {
+  loadingSpinnerStore.showSpinner();
   return svelteKitFetch(url, {
     method,
     body: json,
@@ -66,7 +73,8 @@ export async function fetchDataWithJsonBody<T>(
     .then(handleResponse)
     .catch((error) => {
       throw error;
-    });
+    })
+    .finally(() => loadingSpinnerStore.hideSpinner());
 }
 
 async function handleResponse(res: Response) {

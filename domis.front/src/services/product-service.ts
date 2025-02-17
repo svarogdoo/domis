@@ -1,4 +1,5 @@
 import {
+  deleteData,
   fetchData,
   fetchDataWithJsonBody,
   putDataWithJsonBody,
@@ -55,6 +56,28 @@ export async function deactivateProductSale(productIdArray: Array<number>) {
     "DELETE",
     JSON.stringify(productIdArray)
   ).catch(() => false);
+}
+
+export async function postProductGalleryImages(
+  productId: number,
+  imagesArray: ImageUpload
+) {
+  return fetchDataWithJsonBody(
+    `${API_URL}/api/admin/images/${productId}/gallery-images`,
+    "POST",
+    JSON.stringify(imagesArray)
+  ).catch(() => false);
+}
+
+export async function deleteProductGalleryImages(
+  imageId: number,
+  productId: number
+) {
+  return deleteData(
+    `${API_URL}/api/admin/images/${imageId}/products/${productId}`
+  )
+    .then((res) => true)
+    .catch(() => false);
 }
 
 export const productService = {

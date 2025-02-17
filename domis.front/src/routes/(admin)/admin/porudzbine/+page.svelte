@@ -3,7 +3,6 @@
 
   export let data;
   let orders = data.props.orders;
-  console.info("jeee", orders);
 </script>
 
 <section class="w-full flex flex-col items-center gap-y-2 lg:gap-y-8 lg:px-12">

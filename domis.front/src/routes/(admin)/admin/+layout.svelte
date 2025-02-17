@@ -1,6 +1,8 @@
 <script>
+  import LoadingSpinner from "../../../components/LoadingSpinner.svelte";
   import Snackbar from "../../../components/Snackbar.svelte";
   import { snackbarStore } from "../../../stores/snackbar";
+  import { loadingSpinnerStore } from "../../../stores/loadingSpinner";
   import AdminPanelSidebar from "./AdminPanelSidebar.svelte";
 </script>
 
@@ -18,3 +20,5 @@
   message={$snackbarStore.message}
   isSuccess={$snackbarStore.isSuccess}
 />
+
+<LoadingSpinner showSpinner={$loadingSpinnerStore.show} />

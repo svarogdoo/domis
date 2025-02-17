@@ -102,6 +102,9 @@ declare global {
     url: string;
     type: string;
   }
+  interface ImageUpload {
+    dataUrls: Array<string>;
+  }
 
   interface Category {
     id: string;

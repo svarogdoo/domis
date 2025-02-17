@@ -1,11 +1,18 @@
 <script lang="ts">
   import AddImageBox from "./AddImageBox.svelte";
   import binIcon from "$lib/icons/bin.svg";
-  import updateIcon from "$lib/icons/refresh.svg";
   import { snackbarStore } from "../../../../../stores/snackbar";
+  import {
+    deleteProductGalleryImages,
+    postProductGalleryImages,
+  } from "../../../../../services/product-service";
+  import { createEventDispatcher } from "svelte";
+  import { loadingSpinnerStore } from "../../../../../stores/loadingSpinner";
 
   export let productId: number;
   export let images: Array<Image>;
+
+  const dispatch = createEventDispatcher<{ save: number }>();
 
   let featuredImage: Image | undefined;
   let galleryImages: Array<Image>;
@@ -21,43 +28,40 @@
     imageId?: number
   ) {
     let uploadedImage = event.detail[0];
-    console.info(uploadedImage);
-
     //TODO: call upsert endpoint
 
-    if (imageId) {
-      console.info(imageId);
+    if (!imageId) {
       snackbarStore.showSnackbar("Uspešno sačuvana slika!", true);
     } else {
-      snackbarStore.showSnackbar("Greška pri čuvanju  slike!", false);
+      snackbarStore.showSnackbar(
+        "Ne podržavamo zamenu glavne slike, ali biċe uskoro!",
+        false
+      );
     }
   }
 
-  function handleAddGalleryImage(event: CustomEvent<string[]>) {
+  async function handleAddGalleryImage(event: CustomEvent<string[]>) {
     let uploadedImages = event.detail;
 
-    //TODO: call post endpoint
-
-    if (uploadedImages) {
-      console.info(uploadedImages);
-
+    if (
+      uploadedImages &&
+      (await postProductGalleryImages(productId, { dataUrls: uploadedImages }))
+    ) {
       snackbarStore.showSnackbar(
         `Uspešno sačuvan${uploadedImages.length > 1 ? "e nove slike" : "a nova slika"}!`,
         true
       );
+      dispatch("save", productId);
     } else {
       snackbarStore.showSnackbar("Greška pri čuvanju nove slike!", false);
     }
   }
 
-  function handleDeleteGalleryImage(imageId: number) {
-    console.info(imageId);
-
-    //TODO: call delete endpoint
-
-    if (imageId) {
-      console.info(imageId);
+  async function handleDeleteGalleryImage(imageId: number) {
+    let res = await deleteProductGalleryImages(imageId, productId);
+    if (imageId && res) {
       snackbarStore.showSnackbar("Uspešno obrisana slika!", true);
+      dispatch("save", productId);
     } else {
       snackbarStore.showSnackbar("Greška pri brisanju  slike!", false);
     }

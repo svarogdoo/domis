@@ -40,7 +40,6 @@
     let productId = event.detail.id;
     if (productId === undefined) return;
     detailedProduct = null;
-    console.info(productId);
     detailedProduct = { ...(await getProduct(productId)) };
     setSaleHistory(productId);
 
@@ -57,6 +56,13 @@
 
   function handleSpecificationSave() {
     setProducts();
+  }
+
+  async function handleImagesSave(event: CustomEvent) {
+    let productId = event.detail;
+
+    detailedProduct = null;
+    detailedProduct = { ...(await getProduct(productId)) };
   }
 
   const handleClickOutside = (event: MouseEvent) => {
@@ -160,6 +166,7 @@
           <Images
             productId={detailedProduct.id}
             images={detailedProduct.images}
+            on:save={(event) => handleImagesSave(event)}
           />
         {/if}
       </div>
