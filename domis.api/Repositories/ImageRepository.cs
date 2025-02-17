@@ -51,8 +51,8 @@ public class ImageRepository(IDbConnection connection) : IImageRepository
 
     public async Task DeleteProductImage(int imageId)
     {
-        await connection.ExecuteAsync(ImageQueries.DeleteImage, new { ImageId = imageId });
         await connection.ExecuteAsync(ImageQueries.DeleteProductImage, new { ImageId = imageId });
+        await connection.ExecuteAsync(ImageQueries.DeleteImage, new { ImageId = imageId });
     }
 
     public async Task<bool> AddGalleryImages()
@@ -128,6 +128,5 @@ public class ImageRepository(IDbConnection connection) : IImageRepository
 public class ProductImageDto
 {
     public int ImageId { get; set; }
-    public string ImageUrl { get; set; } // You can adapt this to match your schema
     public int ImageTypeId { get; set; } // 1 = Featured, 2 = Regular
 }
