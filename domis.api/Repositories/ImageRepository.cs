@@ -49,8 +49,11 @@ public class ImageRepository(IDbConnection connection) : IImageRepository
     public async Task DeleteFeaturedImage(int productId) 
         => await connection.ExecuteAsync(ImageQueries.DeleteFeaturedImage, new { ProductId = productId });
 
-    public async Task DeleteProductImage(int imageId) 
-        => await connection.ExecuteAsync(ImageQueries.DeleteProductImage, new { ImageId = imageId });
+    public async Task DeleteProductImage(int imageId)
+    {
+        await connection.ExecuteAsync(ImageQueries.DeleteImage, new { ImageId = imageId });
+        await connection.ExecuteAsync(ImageQueries.DeleteProductImage, new { ImageId = imageId });
+    }
 
     public async Task<bool> AddGalleryImages()
     {
