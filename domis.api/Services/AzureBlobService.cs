@@ -8,43 +8,12 @@ namespace domis.api.Services;
 
 public interface IAzureBlobService
 {
-    Task<string> UploadImage(IFormFile image);
-    Task<string> UploadImageFromBase64(string productName, string base64Image);
     Task<List<string>> UploadBase64Images(string productName, List<string> dataUrls);
-    Task DeleteImage(string imageId);
+    Task DeleteImage(string imageUrl);
 }
 
 public class AzureBlobService(BlobContainerClient containerClient) : IAzureBlobService
 {
-    //TODO: actually implement
-    public async Task<string> UploadImage(IFormFile image)
-    {
-        var blobName = Guid.NewGuid().ToString();
-        var blobClient = containerClient.GetBlobClient(blobName);
-
-        await using (var stream = image.OpenReadStream())
-        {
-            await blobClient.UploadAsync(stream, overwrite: true);
-        }
-
-        return blobClient.Uri.ToString();    }
-
-    public async Task<string> UploadImageFromBase64(string productName, string base64Image)
-    {
-        var base64Data = base64Image.Split(',')[1];
-        var imageBytes = Convert.FromBase64String(base64Data);
-
-        var blobName = productName + Guid.NewGuid() + ".webp";
-        var blobClient = containerClient.GetBlobClient(blobName);
-
-        await using (var stream = new MemoryStream(imageBytes))
-        {
-            await blobClient.UploadAsync(stream, overwrite: true);
-        }
-
-        return blobClient.Uri.ToString();
-    }
-    
     public async Task<List<string>> UploadBase64Images(string productName, List<string> dataUrls)
     {
         var imageUrls = new List<string>();
@@ -89,6 +58,36 @@ public class AzureBlobService(BlobContainerClient containerClient) : IAzureBlobS
 
         return imageUrls;
     }
+    
+    public async Task DeleteImage(string imageUrl)
+    {
+        try
+        {
+            var blobName = GetBlobNameFromUrl(imageUrl);
+            var blobClient = containerClient.GetBlobClient(blobName);
+            
+            var blobExists = await blobClient.ExistsAsync();
+            if (!blobExists.Value)
+            {
+                Log.Warning("Blob does not exist: {BlobName}", blobName);
+                return;
+            }
+
+            await blobClient.DeleteAsync();
+            Log.Information("Successfully deleted image: {BlobName}", blobName);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to delete image: {ImageUrl}", imageUrl);
+        }
+    }
+
+    private static string GetBlobNameFromUrl(string imageUrl)
+    {
+        Uri uri = new(imageUrl);
+        return uri.Segments.Last();
+    }
+
 
     private static string SanitizeProductName(string productName)
     {
@@ -103,10 +102,5 @@ public class AzureBlobService(BlobContainerClient containerClient) : IAzureBlobS
             .Replace("<", "-") // Replace less-than signs with dashes
             .Replace(">", "-") // Replace greater-than signs with dashes
             .Replace("|", "-"); // Replace pipes with dashes
-    }
-
-    public Task DeleteImage(string imageId)
-    {
-        throw new NotImplementedException();
     }
 }

@@ -304,9 +304,34 @@ public static class AdminEndpoints
         {
             try
             {
-                var result = await imageService.DeleteProductImageAsync(productId, imageId);
-                
+                await imageService.DeleteGalleryImage(productId, imageId);
                 return Results.NoContent();
+            }
+            catch (NotFoundException ex)
+            {                
+                return Results.NotFound(ex.Message);
+            }
+            catch (ArgumentException ex)
+            {
+                return Results.BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return Results.Problem(detail: ex.Message, statusCode: 500);
+            }
+        })
+        .WithDescription("Delete image from gallery.");
+        
+        
+        group.MapPut("/images/{productId:int}/featured-image", async (int productId, [FromBody]string dataUrl, IImageService imageService) =>
+        {
+            try
+            {
+                var success = await imageService.UpdateFeaturedImage(productId, dataUrl);
+            
+                return success
+                    ? Results.Ok("Slika uspešno promenjena.")
+                    : Results.StatusCode(500);            
             }
             catch (NotFoundException ex)
             {                

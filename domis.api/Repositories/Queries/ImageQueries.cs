@@ -12,11 +12,13 @@ public static class ImageQueries
             JOIN domis.image_type it ON pi.image_type_id = it.id
             WHERE pi.product_id = @ProductId;";
 
-    public const string Temp = @"
+    public const string GetImageDetailsByProductIdAndImageId = @"
         SELECT 
             pi.id AS ImageId,
-            pi.image_type_id AS ImageTypeId
+            pi.image_type_id AS ImageTypeId,
+            i.blob_url AS BlobUrl
         FROM domis.product_image pi
+        JOIN domis.image i ON pi.image_id = i.id
         WHERE pi.product_id = @ProductId AND pi.image_id = @ImageId
     ";
     
