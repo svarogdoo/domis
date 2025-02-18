@@ -346,6 +346,6 @@ public static class AdminEndpoints
                 return Results.Problem(detail: ex.Message, statusCode: 500);
             }
         })
-        .WithDescription("Delete image from gallery.");
+        .WithDescription("Updates featured image while deleting the old one.");
     }
 }
