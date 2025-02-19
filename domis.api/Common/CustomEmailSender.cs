@@ -117,7 +117,8 @@ public class CustomEmailSender(ILogger<CustomEmailSender> logger, ISendGridClien
         
         var csvData = GenerateCsvAttachment(order, userEmail, role, out var attachmentFileName);
 
-        //TODO: replace with domis internal email
+        //TODO: THIS!!! once in Production
+        //await SendEmailAsync("komercijala@domisenterijeri.com", subject, message, csvData, attachmentFileName);
         await SendEmailAsync("lukardvn@gmail.com", subject, message, csvData, attachmentFileName);
     }
     
