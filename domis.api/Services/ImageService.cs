@@ -8,10 +8,9 @@ namespace domis.api.Services;
 public interface IImageService
 {
     Task<List<ImageGetDto>> GetImages(int productId);
-    Task<bool> AddProductImage(int productId, IFormFile image, int imageTypeId);
-    Task<bool> DeleteProductImageAsync(int productId, int imageId);
-    
+    Task<bool> DeleteGalleryImage(int productId, int imageId);
     Task<bool> AddGalleryImages(int productId, AddGalleryImagesRequest request);
+    Task<bool> UpdateFeaturedImage(int productId, string dataUrl);
 }
 
 public class ImageService(
@@ -23,24 +22,7 @@ public class ImageService(
     public async Task<List<ImageGetDto>> GetImages(int productId)
         => await repository.GetImages(productId);
 
-    public async Task<bool> AddProductImage(int productId, IFormFile image, int imageTypeId)
-    {
-        if (!await productRepo.ProductExists(productId))
-            return false;
-
-        //var imageUrl = await azureBlobService.UploadImage(image);
-
-        if (imageTypeId == 1) 
-        {
-            await repository.DeleteFeaturedImage(productId);
-        }
-
-        var imageId = await repository.AddProductImage(productId, "imageUrl", imageTypeId);
-
-        return true;
-    }
-
-    public async Task<bool> DeleteProductImageAsync(int productId, int imageId)
+    public async Task<bool> DeleteGalleryImage(int productId, int imageId)
     {
         var image = await repository.GetProductImageById(productId, imageId);
         if (image == null)
@@ -50,8 +32,9 @@ public class ImageService(
             throw new ArgumentException("Slika je naslovna slika. Nije dozvoljeno brisanje, samo promena.");
  
         await repository.DeleteProductImage(imageId);
+        await repository.DeleteImage(imageId);
 
-        //await azureBlobService.DeleteImage(image.ImageUrl);
+        await azureBlobService.DeleteImage(image.BlobUrl);
 
         return true;
     }
@@ -69,6 +52,28 @@ public class ImageService(
         
         var uploadedImageUrls = await azureBlobService.UploadBase64Images(productName ?? string.Empty, request.DataUrls);
         
-        return await repository.AddImages(productId, productName ?? string.Empty, uploadedImageUrls, 2);
+        return await repository.AddGalleryImages(productId, productName ?? string.Empty, uploadedImageUrls, 2);
+    }
+
+    public async Task<bool> UpdateFeaturedImage(int productId, string dataUrl)
+    {
+        var exists = await productRepo.ProductExists(productId);
+        if (!exists)
+            throw new NotFoundException("Product does not exist.");   
+        
+        if (string.IsNullOrEmpty(dataUrl))
+            throw new ArgumentException("Data URLs has not been provided.");
+        
+        var productName = await productRepo.GetProductName(productId);
+
+        var uploadedImageUrl = await azureBlobService.UploadBase64Images(productName ?? string.Empty, [dataUrl]);
+        
+        var result =  await repository.UpdateFeaturedImage(productId, productName ?? string.Empty, uploadedImageUrl[0]);
+        if (result > 0)
+        {
+            await azureBlobService.DeleteImage(dataUrl);
+        }
+
+        return true;
     }
 }
