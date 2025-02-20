@@ -1,11 +1,11 @@
 import { fetchData } from "../helpers/fetch";
 import { categories } from "../stores/categories";
-import { API_URL } from "../config";
+import { PUBLIC_API_URL } from "$env/static/public";
 import type { SortType } from "../enums";
 
 export function getCategories() {
   try {
-    return fetchData<Array<Category>>(`${API_URL}/api/categories`);
+    return fetchData<Array<Category>>(`${PUBLIC_API_URL}/api/categories`);
   } catch {
     return [];
   }
@@ -34,7 +34,7 @@ export function getCategoryProducts(
   if (minHeight) queryParams.append("minHeight", minHeight.toString());
   if (maxHeight) queryParams.append("maxHeight", maxHeight.toString());
 
-  const url = `${API_URL}/api/categories/${id}/products?${queryParams.toString()}`;
+  const url = `${PUBLIC_API_URL}/api/categories/${id}/products?${queryParams.toString()}`;
 
   return fetchData<CategoryData>(url);
 }
