@@ -1,7 +1,9 @@
 import { get } from "svelte/store";
-import { API_URL } from "../config";
+import { PUBLIC_API_URL } from "$env/static/public";
 import { userStore } from "../stores/user";
 import { loadingSpinnerStore } from "../stores/loadingSpinner";
+
+console.info(import.meta.env);
 
 let svelteKitFetch: typeof fetch = fetch; // resolves warning
 let headers: { [key: string]: string } = {};
@@ -117,7 +119,7 @@ async function handleTokenExpired(responseStatus: number) {
   var user = get(userStore);
 
   if (responseStatus === 401 && user.refreshToken) {
-    const result = await svelteKitFetch(`${API_URL}/refresh`, {
+    const result = await svelteKitFetch(`${PUBLIC_API_URL}/refresh`, {
       method: "POST",
       body: JSON.stringify({ refreshToken: user.refreshToken }),
       headers: {
