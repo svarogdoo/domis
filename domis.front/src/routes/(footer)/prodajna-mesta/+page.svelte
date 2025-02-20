@@ -69,7 +69,7 @@
     salesPoints = hardcodedSalesPoints;
     //   try {
     //     salesPoints = await fetchData<SalesPoint[]>(
-    //       `${API_URL}/api/sales-points`
+    //       `${PUBLIC_API_URL}/api/sales-points`
     //     );
     //   } catch (error) {
     //     console.error("Failed to fetch sales points:", error);
