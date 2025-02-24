@@ -3,8 +3,6 @@ import { PUBLIC_API_URL } from "$env/static/public";
 import { userStore } from "../stores/user";
 import { loadingSpinnerStore } from "../stores/loadingSpinner";
 
-console.info(import.meta.env);
-
 let svelteKitFetch: typeof fetch = fetch; // resolves warning
 let headers: { [key: string]: string } = {};
 
