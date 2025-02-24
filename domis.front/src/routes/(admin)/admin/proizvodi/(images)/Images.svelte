@@ -5,9 +5,9 @@
   import {
     deleteProductGalleryImages,
     postProductGalleryImages,
+    upsertFeaturedImage,
   } from "../../../../../services/product-service";
   import { createEventDispatcher } from "svelte";
-  import { loadingSpinnerStore } from "../../../../../stores/loadingSpinner";
 
   export let productId: number;
   export let images: Array<Image>;
@@ -22,16 +22,13 @@
     galleryImages = images.filter((x) => x.type === "Gallery");
   }
 
-  function handleUpdateFeaturedImage(
-    isNew: boolean,
-    event: CustomEvent<string[]>,
-    imageId?: number
-  ) {
+  async function handleUpdateFeaturedImage(event: CustomEvent<string[]>) {
     let uploadedImage = event.detail[0];
-    //TODO: call upsert endpoint
+    let res = await upsertFeaturedImage(productId, uploadedImage);
 
-    if (!imageId) {
+    if (res) {
       snackbarStore.showSnackbar("Uspešno sačuvana slika!", true);
+      dispatch("save", productId);
     } else {
       snackbarStore.showSnackbar(
         "Ne podržavamo zamenu glavne slike, ali biċe uskoro!",
@@ -77,8 +74,7 @@
     <div class="relative">
       <AddImageBox
         isFeatured={true}
-        on:click={(event) =>
-          handleUpdateFeaturedImage(true, event, featuredImage?.id)}
+        on:click={(event) => handleUpdateFeaturedImage(event)}
       />
       <img
         src={featuredImage.url}
@@ -87,7 +83,7 @@
       />
     </div>
   {:else}
-    <AddImageBox on:click={(event) => handleUpdateFeaturedImage(true, event)} />
+    <AddImageBox on:click={(event) => handleUpdateFeaturedImage(event)} />
   {/if}
 
   <div class="w-full h-0.5 my-8 bg-gray-400"></div>

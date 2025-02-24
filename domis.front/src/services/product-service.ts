@@ -80,6 +80,18 @@ export async function deleteProductGalleryImages(
     .catch(() => false);
 }
 
+export async function upsertFeaturedImage(
+  productId: number,
+  imageString: string
+) {
+  return putDataWithJsonBody(
+    `${PUBLIC_API_URL}/api/admin/images/${productId}/featured-image`,
+    JSON.stringify(imageString)
+  )
+    .then((res) => true)
+    .catch(() => false);
+}
+
 export const productService = {
   getProduct,
   getProducts,
